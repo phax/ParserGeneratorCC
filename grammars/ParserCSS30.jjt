@@ -1,0 +1,1552 @@
+/**
+ * Copyright (C) 2014-2018 Philip Helger (www.helger.com)
+ * philip[at]helger[dot]com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+options {
+// JavaCC options
+  // LOOKAHEAD = 2;
+  CHOICE_AMBIGUITY_CHECK = 5;
+  // DEBUG_PARSER = true;
+  // DEBUG_LOOKAHEAD = true;
+  // DEBUG_TOKEN_MANAGER = true;
+  // ERROR_REPORTING = false;
+  JAVA_UNICODE_ESCAPE = true;
+  UNICODE_INPUT = true;
+  IGNORE_CASE = true;
+  // USER_TOKEN_MANAGER = true;
+  // SUPPORT_CLASS_VISIBILITY_PUBLIC = false;
+  USER_CHAR_STREAM = true;
+  FORCE_LA_CHECK = true;
+  // The modern template is quicker!
+  // When changing it here, change it in ALL jjt files!
+  JAVA_TEMPLATE_TYPE = "modern";
+
+// JJTree options
+  // MULTI = true;
+  // VISITOR = true;
+  // BUILD_NODE_FILES = false;
+  // NODE_DEFAULT_VOID = true;
+  NODE_CLASS = "com.helger.css.parser.CSSNode";
+  NODE_PREFIX = "";
+  // NODE_USES_PARSER = true;
+  TRACK_TOKENS = true;
+  // NODE_SCOPE_HOOK = true;
+}
+
+PARSER_BEGIN(ParserCSS30)
+package com.helger.css.parser;
+
+public class ParserCSS30 extends com.helger.css.parser.AbstractParserCSS
+{
+  private static final org.slf4j.Logger s_aLogger = org.slf4j.LoggerFactory.getLogger (ParserCSS30.class);
+}
+PARSER_END(ParserCSS30)
+
+TOKEN_MGR_DECLS :
+{
+  private static final org.slf4j.Logger s_aLogger = org.slf4j.LoggerFactory.getLogger (ParserCSS30TokenManager.class);
+
+  protected com.helger.css.reader.errorhandler.ICSSParseErrorHandler m_aCustomErrorHandler;
+  protected boolean m_bBrowserCompliantMode = false;
+
+  /**
+   * Set a custom error handler to use.
+   *
+   * @param aCustomErrorHandler
+   *        The custom error handler to use. May be <code>null</code>.
+   */
+  public final void setCustomErrorHandler (final com.helger.css.reader.errorhandler.ICSSParseErrorHandler aCustomErrorHandler)
+  {
+    m_aCustomErrorHandler = aCustomErrorHandler;
+  }
+
+  void backup(final int nChars) {
+    input_stream.backup(nChars);
+  }
+}
+
+<DEFAULT>
+MORE :
+{
+  < "/*" > : IN_COMMENT
+}
+
+<IN_COMMENT>
+MORE :
+{
+  < ~[] > : IN_COMMENT
+}
+
+<IN_COMMENT>
+SPECIAL_TOKEN :
+{
+  < "*/" > : DEFAULT
+}
+
+<DEFAULT, IN_NTH, IN_UNKNOWN_RULE>
+TOKEN :
+{
+  < S: (" "|"\t"|"\n"|"\r\n"|"\r"|"\f")+ >
+| < W: ( <S> )? >
+}
+
+<IN_NTH>
+TOKEN :
+{
+  < N: "n" >
+| < ODD: "odd" >
+| < EVEN: "even" >
+| < INTEGER: ( ["0"-"9"] )+ >
+}
+
+<DEFAULT, IN_NTH, IN_UNKNOWN_RULE>
+TOKEN :
+{
+  < PLUS: "+" >
+| < MINUS: "-" >
+| < LROUND: "(" >
+| < RROUND: ")" > : DEFAULT
+}
+
+<DEFAULT, IN_UNKNOWN_RULE>
+TOKEN :
+{
+// private reg ex come first (no actions possible!)
+  < #H: ["0"-"9","a"-"f"] >
+| < #HNUM: <H>
+         | <H><H>
+         | <H><H><H>
+         | <H><H><H><H>
+         | <H><H><H><H><H>
+         | <H><H><H><H><H><H>
+         >
+
+// nonascii  [^\0-\177] - everything except 0x00-0x7f
+| < #NONASCII: ["\u0080"-"\uffff"] >
+
+| < #ESCAPE_UNICODE: "\\" <HNUM> ( "\r\n"
+                                 | [" ","\t","\r","\n","\f"]
+                                 )? >
+| < #ESCAPE_OTHER: "\\" ~["\n","\r","\f","0"-"9","a"-"f"] >
+| < #ESCAPE: <ESCAPE_UNICODE>
+           | <ESCAPE_OTHER> >
+// nmstart      [_a-z]|{nonascii}|{escape}
+| < #NMSTART: ["_","a"-"z"]
+            | <NONASCII>
+            | <ESCAPE>
+            >
+// nmchar       [_a-z0-9-]|{nonascii}|{escape}
+| < #NMCHAR: ["_","a"-"z","0"-"9","-"]
+           | <NONASCII>
+           | <ESCAPE>
+           >
+// First, inside a string, a backslash followed by a newline is ignored (i.e., the string is deemed not to contain either the backslash or the newline).
+| < STRING_EOL: "\\" ( "\n"
+                     | "\r\n"
+                     | "\r"
+                     | "\f" ) >  { matchedToken.image = ""; }
+| < STRING1: "\"" ( ~["\n","\r","\f","\\","\""]
+                  | <STRING_EOL>
+                  | <ESCAPE>
+                  )* "\"" >
+| < STRING2: "'" ( ~["\n","\r","\f","\\","'"]
+                 | <STRING_EOL>
+                 | <ESCAPE>
+                 )* "'" >
+| < INVALID_STRING1: "\"" ( ~["\n","\r","\f","\\","\""]
+                          | <STRING_EOL>
+	                        | <ESCAPE>
+	                        )* >
+| < INVALID_STRING2: "'" ( ~["\n","\r","\f","\\","'"]
+                         | <STRING_EOL>
+                         | <ESCAPE>
+                         )* >
+| < #NAME: ( <NMCHAR> )+ >
+| < #NUM: ( ["0"-"9"] )+
+        | ( ["0"-"9"] )* "." ( ["0"-"9"] )+ >
+| < #URLCHAR: ["!","#","$","%","&","*"-"[","]"-"~"]
+            | <NONASCII>
+            | <ESCAPE> >
+| < #URANGE_H: <H>
+             | "?" >
+| < #URANGE_PLACEHOLDER: <URANGE_H>
+                       | <URANGE_H><URANGE_H>
+                       | <URANGE_H><URANGE_H><URANGE_H>
+                       | <URANGE_H><URANGE_H><URANGE_H><URANGE_H>
+                       | <URANGE_H><URANGE_H><URANGE_H><URANGE_H><URANGE_H>
+                       | <URANGE_H><URANGE_H><URANGE_H><URANGE_H><URANGE_H><URANGE_H>
+                       >
+| < NUMBER: <NUM> >
+
+| < LBRACE: <W> "{" >
+| < RBRACE: "}" >
+| < LSQUARE: "[" >
+| < RSQUARE: "]" >
+| < DOT: "." >
+| < COMMA: <W> "," >
+| < SEMICOLON: ";" >
+| < COLON: ":" >
+| < ASTERISK: "*" >
+| < SLASH: "/" >
+| < EQUALS: "=" >
+| < DASH: "|" >
+| < GREATER: ">" >
+| < TILDE: "~" >
+| < HASH: "#" <NAME> >
+| < INCLUDES: "~=" >
+| < DASHMATCH: "|=" >
+| < PREFIXMATCH: "^=" >
+| < SUBFIXMATCH: "$=" >
+| < SUBSTRINGMATCH: "*=" >
+| < CDO: "<!--" >
+| < CDC: "-->" >
+| < CHARSET_SYM: "@charset" >
+| < IMPORT_SYM: "@import" >
+| < NAMESPACE_SYM: "@namespace" >
+| < PAGE_SYM: "@page" >
+| < TOPLEFTCORNER_SYM:      "@top-left-corner" >
+| < TOPLEFT_SYM:            "@top-left" >
+| < TOPCENTER_SYM:          "@top-center" >
+| < TOPRIGHT_SYM:           "@top-right" >
+| < TOPRIGHTCORNER_SYM:     "@top-right-corner" >
+| < BOTTOMLEFTCORNER_SYM:   "@bottom-left-corner" >
+| < BOTTOMLEFT_SYM:         "@bottom-left" >
+| < BOTTOMCENTER_SYM:       "@bottom-center" >
+| < BOTTOMRIGHT_SYM:        "@bottom-right" >
+| < BOTTOMRIGHTCORNER_SYM:  "@bottom-right-corner" >
+| < LEFTTOP_SYM:            "@left-top" >
+| < LEFTMIDDLE_SYM:         "@left-middle" >
+| < LEFTBOTTOM_SYM:         "@left-bottom" >
+| < RIGHTTOP_SYM:           "@right-top" >
+| < RIGHTMIDDLE_SYM:        "@right-middle" >
+| < RIGHTBOTTOM_SYM:        "@right-bottom" >
+| < MEDIA_SYM: "@media" >
+| < FONTFACE_SYM: "@-" <IDENT> "-font-face"
+                | "@font-face" >
+| < KEYFRAMES_SYM: "@-" <IDENT> "-keyframes"
+                 | "@keyframes" >
+| < VIEWPORT_SYM: "@-" <IDENT> "-viewport"
+                | "@viewport" >
+| < SUPPORTS_SYM: "@supports" >
+| < AT_UNKNOWN: "@" <IDENT>
+              | "@" > : IN_UNKNOWN_RULE
+| < IMPORTANT_SYM: "!" ( <S> )* "important" >
+
+// before IDENT!
+| < INHERIT: "inherit" >
+| < AND_SYM: "and" >
+| < NOT_SYM: "not" >
+| < ONLY_SYM: "only" >
+| < FROM_SYM: "from" >
+| < TO_SYM: "to" >
+| < OR_SYM: "or" >
+
+// ident        (--|-|$|*)?{nmstart}{nmchar}*
+// Note: "*" hack for IE <= 6
+// Note: "$" hack for IE <= 7
+| < IDENT: ( "--"
+           | "-"
+           | "$" ( <S> )*
+           | "*" ( <S> )* )?
+           <NMSTART>
+           ( <NMCHAR> )* > { matchedToken.image = CSSParseHelper.validateIdentifier(image); }
+
+
+| < EM: <NUM> "em" >           { matchedToken.image = CSSParseHelper.splitNumber(image) + "em"; }
+| < EX: <NUM> "ex" >           { matchedToken.image = CSSParseHelper.splitNumber(image) + "ex"; }
+| < FR: <NUM> "fr" >           { matchedToken.image = CSSParseHelper.splitNumber(image) + "fr"; }
+| < PX: <NUM> "px" >           { matchedToken.image = CSSParseHelper.splitNumber(image) + "px"; }
+| < CH: <NUM> "ch" >           { matchedToken.image = CSSParseHelper.splitNumber(image) + "ch"; }
+| < REM: <NUM> "rem" >         { matchedToken.image = CSSParseHelper.splitNumber(image) + "rem"; }
+| < VW: <NUM> "vw" >           { matchedToken.image = CSSParseHelper.splitNumber(image) + "vw"; }
+| < VH: <NUM> "vh" >           { matchedToken.image = CSSParseHelper.splitNumber(image) + "vh"; }
+| < VMIN: <NUM> "vmin" >       { matchedToken.image = CSSParseHelper.splitNumber(image) + "vmin"; }
+| < VMAX: <NUM> "vmax" >       { matchedToken.image = CSSParseHelper.splitNumber(image) + "vmax"; }
+| < DPI: <NUM> "dpi" >         { matchedToken.image = CSSParseHelper.splitNumber(image) + "dpi"; }
+| < DPCM: <NUM> "dpcm" >       { matchedToken.image = CSSParseHelper.splitNumber(image) + "dpcm"; }
+| < DPPX: <NUM> "dppx" >       { matchedToken.image = CSSParseHelper.splitNumber(image) + "dppx"; }
+| < LENGTH_CM: <NUM> "cm" >    { matchedToken.image = CSSParseHelper.splitNumber(image) + "cm"; }
+| < LENGTH_MM: <NUM> "mm" >    { matchedToken.image = CSSParseHelper.splitNumber(image) + "mm"; }
+| < LENGTH_Q:  <NUM> "q" >     { matchedToken.image = CSSParseHelper.splitNumber(image) + "q"; }
+| < LENGTH_IN: <NUM> "in" >    { matchedToken.image = CSSParseHelper.splitNumber(image) + "in"; }
+| < LENGTH_PT: <NUM> "pt" >    { matchedToken.image = CSSParseHelper.splitNumber(image) + "pt"; }
+| < LENGTH_PC: <NUM> "pc" >    { matchedToken.image = CSSParseHelper.splitNumber(image) + "pc"; }
+| < ANGLE_DEG: <NUM> "deg" >   { matchedToken.image = CSSParseHelper.splitNumber(image) + "deg"; }
+| < ANGLE_RAD: <NUM> "rad" >   { matchedToken.image = CSSParseHelper.splitNumber(image) + "rad"; }
+| < ANGLE_GRAD: <NUM> "grad" > { matchedToken.image = CSSParseHelper.splitNumber(image) + "grad"; }
+| < ANGLE_TURN: <NUM> "turn" > { matchedToken.image = CSSParseHelper.splitNumber(image) + "turn"; }
+| < TIME_MS: <NUM> "ms" >      { matchedToken.image = CSSParseHelper.splitNumber(image) + "ms"; }
+| < TIME_S: <NUM> "s" >        { matchedToken.image = CSSParseHelper.splitNumber(image) + "s"; }
+| < FREQ_HZ: <NUM> "hz" >      { matchedToken.image = CSSParseHelper.splitNumber(image) + "hz"; }
+| < FREQ_KHZ: <NUM> "khz" >    { matchedToken.image = CSSParseHelper.splitNumber(image) + "khz"; }
+| < PERCENTAGE: <NUM> "%" >    { matchedToken.image = CSSParseHelper.splitNumber(image) + "%"; }
+// | < DIMENSION: <NUM> <IDENT> >
+
+| < #URL_CONTENT: ( <S> )* ( <STRING1>
+                           | <STRING2>
+                           | ( <URLCHAR> )*
+                           ) ( <S> )* >
+| < URL: "url(" <URL_CONTENT> ")" >  { matchedToken.image = CSSParseHelper.trimUrl(image); }
+
+| < FUNCTION_CALC: "calc("
+                 | "-" <IDENT> "-calc(" >
+| < FUNCTION_NOT: ":not(" >
+| < FUNCTION_NTH: "nth-child("
+                | "nth-last-child("
+                | "nth-of-type("
+                | "nth-last-of-type(" > : IN_NTH
+// Expressions were abandoned after IE8
+| < FUNCTION_EXPRESSION: "expression(" >
+// Extension for IE
+//   filter: progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+| < FUNCTION: <IDENT> "("
+            | "progid" ( <S> )* <COLON> ( <S> )* <IDENT> ( <DOT> <IDENT> )* ( <S> )* "("
+            > { matchedToken.image = image.toString (); }
+// Unicode range
+| < URANGE: "u+" ( <HNUM>
+                 | <HNUM> "-" <HNUM>
+                 | <URANGE_PLACEHOLDER>
+                 ) >
+}
+
+// Single line comments are handled in all states except in unknown rules, because
+// there, tokens are simply chained together to a string
+<DEFAULT, IN_NTH>
+SPECIAL_TOKEN :
+{
+  // Skip until end of line or ";" or "}"
+  // Don't consume ";" or "}" characters!
+  < SINGLE_LINE_COMMENT: "//" (~["\n","\r",";","}"])* ("\n"|"\r"|"\r\n")? >
+}
+
+<*> TOKEN:
+{
+  < UNKNOWN: ~[] >
+  {
+    if (m_aCustomErrorHandler != null)
+      m_aCustomErrorHandler.onIllegalCharacter (image.charAt (0));
+    else
+      s_aLogger.error("Illegal character: " + image.toString());
+  }
+}
+
+JAVACODE
+private void errorUnexpectedRule(final String sRule, final String sMsg) #void
+{
+  if (m_aCustomErrorHandler != null)
+    m_aCustomErrorHandler.onCSSUnexpectedRule (token, sRule, sMsg);
+  else
+    s_aLogger.warn("[" + token.beginLine + ":" + token.beginColumn + "] Unexpected rule '" + sRule + "': " + sMsg);
+}
+
+JAVACODE
+private Token errorSkipTo(final ParseException ex, final int... aKinds) throws ParseException
+{
+  // Skip until (including) the first matching token
+  Token tok;
+  do
+  {
+    tok = getNextToken();
+    if (tok.kind == EOF)
+    {
+      // Encountered EOF while skipping - throw the original exception!
+      throw ex;
+    }
+  } while (!com.helger.commons.collection.ArrayHelper.contains (aKinds, tok.kind));
+
+  if (s_aLogger.isDebugEnabled ())
+    s_aLogger.debug ("Skipped until token " + tok.toString ());
+
+  if (m_aCustomErrorHandler != null)
+    m_aCustomErrorHandler.onCSSParseError (ex, tok);
+  else
+    s_aLogger.warn("CSS recoverable parse error", ex);
+  return tok;
+}
+
+JAVACODE
+/**
+ * Skip to matching closing ')'
+ * @return all the string that was skipped. Never <code>null</code>
+ */
+private String javaSkipToClosingParantheses() throws ParseException #void {
+  final StringBuilder aSB = new StringBuilder ();
+  int nNesting = 1;
+  while (true) {
+    final Token tok = getNextToken();
+    aSB.append (tok.image);
+    if (tok.kind == LROUND)
+      nNesting++;
+    else
+      if (tok.kind == RROUND) {
+        nNesting--;
+        // Use <= to handle unbalanced brackets
+        if (nNesting <= 0)
+          break;
+      }
+      else {
+        if (tok.kind == EOF)
+          throw new ParseEOFException ("EOF while searching for matching closing ')'.");
+        // Sometimes token images contain parenthesis
+        nNesting += com.helger.commons.string.StringHelper.getCharCount (tok.image, '(');
+        nNesting -= com.helger.commons.string.StringHelper.getCharCount (tok.image, ')');
+      }
+  }
+  return aSB.toString ();
+}
+
+JAVACODE
+/**
+ * Skip to next opening '{'
+ * @return all the string that was skipped. Never <code>null</code>
+ */
+private String javaSkipToOpeningBrace() throws ParseException #void {
+  final StringBuilder aSB = new StringBuilder ();
+  Token tok;
+  while (true) {
+    tok = getNextToken();
+    if (tok.kind == EOF)
+      throw new ParseEOFException ("EOF while searching for opening '{'.");
+    if (tok.kind == LBRACE)
+      break;
+    aSB.append (tok.image);
+  }
+  return aSB.toString ();
+}
+
+JAVACODE
+/**
+ * Skip to matching closing '}'
+ * @param nInitialNesting Initial nesting level (0 or 1).
+ * @return all the string that was skipped. Never <code>null</code>
+ * @throws ParseEOFException If EOF occurs while skipping
+ */
+private String javaSkipToClosingBrace(final int nInitialNesting) throws ParseEOFException #void {
+  final StringBuilder aSB = new StringBuilder ();
+  int nNesting = nInitialNesting;
+  while (true) {
+    final Token tok = getNextToken();
+    if (tok.kind == LBRACE)
+      nNesting++;
+    else
+      if (tok.kind == RBRACE) {
+        nNesting--;
+        // Use <= to handle unbalanced brackets
+        if (nNesting <= 0)
+          break;
+      }
+      else {
+        if (tok.kind == EOF)
+          throw new ParseEOFException ("EOF while searching for matching closing '}'.");
+        // Token images never contain brackets
+      }
+    aSB.append (tok.image);
+  }
+  // System.out.println ("SKIP-TO-} -- '" + aSB + "'");
+  return aSB.toString ();
+}
+
+JAVACODE
+/**
+ * Skip to matching closing '}' or the next ';' on the same level
+ * @param nInitialNesting Initial nesting level (0 or 1).
+ * @return all the string that was skipped. Never <code>null</code>
+ * @throws ParseEOFException If EOF occurs while skipping
+ */
+private String javaSkipToClosingBraceOrSemicolon(final int nInitialNesting) throws ParseEOFException #void {
+  final StringBuilder aSB = new StringBuilder ();
+  int nNesting = nInitialNesting;
+  while (true) {
+    final Token tok = getNextToken();
+    if (tok.kind == LBRACE)
+      nNesting++;
+    else
+      if (tok.kind == RBRACE) {
+        nNesting--;
+        // Use <= to handle unbalanced brackets
+        if (nNesting <= 0)
+          break;
+      }
+      else
+        if (tok.kind == SEMICOLON) {
+          if (nNesting == 1)
+            break;
+        }
+        else {
+          if (tok.kind == EOF)
+            throw new ParseEOFException ("EOF while searching for matching closing '}' or ';'.");
+          // Token images never contain brackets
+        }
+    aSB.append (tok.image);
+  }
+  // System.out.println ("SKIP-TO-}; -- '" + aSB + "'");
+  return aSB.toString ();
+}
+
+JAVACODE
+/**
+ * Browser compliant skip to matching closing '}' (being inside a '}')
+ * @param ex The source ParseException. May not be <code>null</code>
+ * @throws ParseEOFException If EOF occurs while skipping
+ */
+private void browserCompliantSkip(final ParseException ex) throws ParseEOFException #void {
+  javaSkipToClosingBrace (1);
+  // push back last token (char count!!)
+  token_source.backup(1);
+  if (m_aCustomErrorHandler != null)
+    m_aCustomErrorHandler.onCSSBrowserCompliantSkip (ex, ex.currentToken, token);
+}
+
+JAVACODE
+/**
+ * Browser compliant skip to the next closing '}' (not being inside a '}')
+ * @param ex The source ParseException. May not be <code>null</code>
+ * @throws ParseEOFException If EOF occurs while skipping
+ */
+private void browserCompliantSkipSelector(final ParseException ex) throws ParseEOFException #void {
+  javaSkipToClosingBrace (0);
+  // push back last token (char count!!)
+  token_source.backup(1);
+  if (m_aCustomErrorHandler != null)
+    m_aCustomErrorHandler.onCSSBrowserCompliantSkip (ex, ex.currentToken, token);
+}
+
+JAVACODE
+/**
+ * Browser compliant skip to matching closing '}' or ';'
+ * @param ex The source ParseException. May not be <code>null</code>
+ * @throws ParseEOFException If EOF occurs while skipping
+ */
+private void browserCompliantSkipDecl(final ParseException ex) throws ParseEOFException #void {
+  javaSkipToClosingBraceOrSemicolon (1);
+  // push back last token (char count!!)
+  token_source.backup(1);
+  if (m_aCustomErrorHandler != null)
+    m_aCustomErrorHandler.onCSSBrowserCompliantSkip (ex, ex.currentToken, token);
+}
+
+//
+// whole stylesheet
+//
+CSSNode styleSheet() #Root : {}
+{
+try{
+  ( <S> | <CDO> | <CDC> )*
+  ( LOOKAHEAD( <CHARSET_SYM> )
+    charsetRule()
+    ( <S> | <CDO> | <CDC> )*
+  )?
+  ( LOOKAHEAD( <IMPORT_SYM> )
+    importRule()
+    ( <S> | <CDO> | <CDC> )*
+  )*
+  ( LOOKAHEAD( <NAMESPACE_SYM> )
+    namespaceRule()
+    ( <S> | <CDO> | <CDC> )*
+  )*
+  ( ( styleRule()
+    | mediaRule()
+    | pageRule()
+    | fontfaceRule()
+    | keyframesRule()
+    | viewportRule()
+    | supportsRule()
+    | unknownRule()
+    | charsetRule()   { errorUnexpectedRule ("@charset", "charset rule in the middle of the file is not allowed!"); }
+    | importRule()    { errorUnexpectedRule ("@import", "import rule in the middle of the file is not allowed!"); }
+    | namespaceRule() { errorUnexpectedRule ("@namespace", "namespace rule in the middle of the file is not allowed!"); }
+    )
+    ( <S> | <CDO> | <CDC> )*
+// ignore too many closing brackets
+// ignore empty semicolons
+    ( ( <RBRACE> | <SEMICOLON> )
+      ( <S> | <CDO> | <CDC> )*
+    )*
+    ( syntaxCrap() )?
+  )*
+  <EOF>
+} catch (ParseEOFException ex) {
+  if (m_bBrowserCompliantMode) {
+    /* ignore special EOF excpetion */
+  }
+  else
+    throw ex;
+}
+  { return jjtThis; }
+}
+
+void syntaxCrap() #void : {}
+{
+  <UNKNOWN>
+//try {
+//} catch (ParseEOFException ex) {
+//  if (m_bBrowserCompliantMode) {
+//    if (m_aCustomErrorHandler != null)
+//      m_aCustomErrorHandler.onCSSBrowserCompliantSkip (ex, ex.currentToken, token);
+//  }
+//  else
+//    throw ex;
+//}
+}
+
+
+//
+// Generic utility rules
+//
+String string() #void : {}
+{
+  ( <STRING1>
+  | <STRING2>
+  )
+  { return token.image; }
+}
+
+String anyIdentifier() #void : {}
+{
+  ( <IDENT>
+  | <INHERIT>
+  | <AND_SYM>
+  | <NOT_SYM>
+  | <ONLY_SYM>
+  | <FROM_SYM>
+  | <TO_SYM>
+  | <OR_SYM>
+  )
+  { return token.image; }
+}
+
+void url() : {}
+{
+  <URL>  { jjtThis.setText (token.image); }
+}
+
+void function() :
+{ String sPlain; }
+{
+  ( <FUNCTION> { jjtThis.setText (token.image + ")"); }
+    ( <S> )*
+    // Support functions without parameters (e.g. "gray ()")
+    ( expr() )?
+    <RROUND>
+  | <FUNCTION_EXPRESSION> { jjtThis.setText (token.image); }
+    // get content of all skipped chars
+    sPlain = javaSkipToClosingParantheses() { jjtThis.appendText (sPlain); }
+  )
+}
+
+String unaryOperator() #void : {}
+{
+  ( <MINUS>
+  | <PLUS>
+  )
+  { return token.image; }
+}
+
+Token dimension() #void :
+{ Token t; }
+{
+  ( t = <EM>
+  | t = <EX>
+  | t = <FR>
+  | t = <PX>
+  | t = <CH>
+  | t = <REM>
+  | t = <VW>
+  | t = <VH>
+  | t = <VMIN>
+  | t = <VMAX>
+  | t = <DPI>
+  | t = <DPCM>
+  | t = <DPPX>
+  | t = <LENGTH_CM>
+  | t = <LENGTH_MM>
+  | t = <LENGTH_Q>
+  | t = <LENGTH_IN>
+  | t = <LENGTH_PT>
+  | t = <LENGTH_PC>
+  | t = <ANGLE_DEG>
+  | t = <ANGLE_RAD>
+  | t = <ANGLE_GRAD>
+  | t = <ANGLE_TURN>
+  | t = <TIME_MS>
+  | t = <TIME_S>
+  | t = <FREQ_HZ>
+  | t = <FREQ_KHZ>
+  )
+  { return t; }
+}
+
+void mathUnit() :
+{
+  String sPrefix = null;
+  Token t = null;
+}
+{
+  ( sPrefix = unaryOperator() )?
+  ( t = <NUMBER>
+  | t = <PERCENTAGE>
+  | t = dimension()
+  | function()
+  | <LROUND>
+    ( <S> )*
+    mathSum()
+    ( <S> )*
+    <RROUND>
+  )
+  {
+    if (sPrefix != null)
+      jjtThis.appendText (sPrefix);
+    if (t != null)
+      jjtThis.appendText (t.image);
+  }
+}
+
+void mathProductOperator() : {}
+{
+  <ASTERISK> { jjtThis.setText ("*"); }
+| <SLASH>    { jjtThis.setText ("/"); }
+}
+
+void mathProduct() : {}
+{
+  mathUnit()
+  ( LOOKAHEAD(2)
+    ( <S> )*
+    mathProductOperator()
+    ( <S> )*
+    mathUnit()
+  )*
+}
+
+void mathSumOperator() : {}
+{
+  ( <PLUS>  { jjtThis.setText ("+"); }
+  | <MINUS> { jjtThis.setText ("-"); }
+  )
+}
+
+void mathSum() #void : {}
+{
+  mathProduct()
+  ( LOOKAHEAD(2)
+    <S>
+    mathSumOperator()
+    <S>
+    mathProduct ()
+  )*
+}
+
+void math() : {}
+{
+  <FUNCTION_CALC>
+  ( <S> )*
+  mathSum()
+  ( <S> )*
+  <RROUND>
+}
+
+// for css3-grid-layout
+void lineName() : {}
+{
+  <IDENT> { jjtThis.setText (token.image); }
+}
+
+void lineNames() : {}
+{
+  <LSQUARE>
+  ( <S> )*
+  ( LOOKAHEAD(2)
+    lineName()
+    ( ( <S> )? 
+      lineName()
+    )*
+    ( <S> )*
+  )?
+  <RSQUARE>
+}
+
+void exprTerm() :
+{
+  String sPrefix = null;
+  Token t = null;
+}
+{
+  ( ( sPrefix = unaryOperator() )?
+    ( t = <NUMBER>
+    | t = <PERCENTAGE>
+    | t = dimension()
+    )
+  | sPrefix = string()
+// Hack to allow "from" and "to" as identifiers (e.g. in linear-gradient)
+// Also allow "or" as parameter to "x:lang(no)"
+  | sPrefix = anyIdentifier()
+  | url()
+  | t = <HASH>
+  | function()
+  | math()
+  | t = <URANGE>
+  | lineNames()
+  )
+  ( <S> )*
+  {
+    if (sPrefix != null)
+      jjtThis.appendText (sPrefix);
+    if (t != null)
+      jjtThis.appendText (t.image);
+  }
+}
+
+void exprOperator() : {}
+{
+  ( <SLASH>  ( <S> )* { jjtThis.setText ("/"); }
+  | <COMMA>  ( <S> )* { jjtThis.setText (","); }
+  /* Extension for Microsoft filters (alpha=50) */
+  | <EQUALS> ( <S> )* { jjtThis.setText ("="); }
+  )
+}
+
+void expr() : {}
+{
+  exprTerm()
+  ( ( exprOperator() )?
+    exprTerm()
+  )*
+}
+
+//
+// Charset rule
+//
+void charsetRule() :
+{ String sStr; }
+{
+  <CHARSET_SYM>
+  ( <S> )+
+  sStr = string() { jjtThis.setText (sStr); }
+  ( <S> )*
+  <SEMICOLON>
+}
+
+//
+// Import rule
+//
+void importRule() :
+{ String sUrl; }
+{
+  <IMPORT_SYM>
+  ( <S> )*
+  ( sUrl = string() { jjtThis.setText (sUrl); }
+  | url()
+  )
+  ( <S> )*
+  ( mediaList() )?
+  <SEMICOLON>
+}
+
+//
+// Namespace rule
+//
+void namespaceRulePrefix() : {}
+{
+  <IDENT> { jjtThis.setText (token.image); }
+}
+
+void namespaceRuleURL() :
+{ String s; }
+{
+  // URL tokens are always passed without the quotes!
+  ( <URL>        { jjtThis.setText (token.image); }
+  | s = string() { jjtThis.setText (CSSParseHelper.unescapeURL (s)); }
+  )
+}
+
+void namespaceRule() : {}
+{
+  <NAMESPACE_SYM>
+  ( <S> )*
+  ( namespaceRulePrefix()
+    ( <S> )*
+  )?
+  namespaceRuleURL()
+  ( <S> )*
+  <SEMICOLON>
+}
+
+//
+// Style rule
+//
+void namespacePrefix() : {}
+{
+  ( <IDENT>    { jjtThis.setText (token.image); }
+  | <ASTERISK> { jjtThis.setText (token.image); }
+  )?
+  <DASH>        { jjtThis.appendText ("|"); }
+}
+
+void elementName() : {}
+{
+  ( <IDENT>    { jjtThis.setText (token.image); }
+  | <ASTERISK> { jjtThis.setText (token.image); }
+  )
+}
+
+void typeSelector() #void : {}
+{
+  ( LOOKAHEAD(2)
+    namespacePrefix()
+  )?
+  elementName()
+}
+
+void hash() : {}
+{
+  <HASH> { jjtThis.setText (token.image); }
+}
+
+void _class() #Class :
+{ String sIdentifier; }
+{
+  <DOT>
+  sIdentifier = anyIdentifier() { jjtThis.setText ("." + sIdentifier); }
+}
+
+void attribOperator() : {}
+{
+  ( <EQUALS>         { jjtThis.setText ("=");  }
+  | <INCLUDES>       { jjtThis.setText ("~="); }
+  | <DASHMATCH>      { jjtThis.setText ("|="); }
+  | <PREFIXMATCH>    { jjtThis.setText ("^="); }  /* new in 3.0 */
+  | <SUBFIXMATCH>    { jjtThis.setText ("$="); }  /* new in 3.0 */
+  | <SUBSTRINGMATCH> { jjtThis.setText ("*="); }  /* new in 3.0 */
+  )
+}
+
+void attribValue() :
+{ String sStr; }
+{
+  ( <IDENT>         { jjtThis.setText (token.image); }
+  | sStr = string() { jjtThis.setText (sStr); }
+  )
+}
+
+void attrib() : {}
+{
+  <LSQUARE>
+  ( <S> )*
+  ( LOOKAHEAD(2)
+    namespacePrefix()
+  )?
+  <IDENT> { jjtThis.setText (token.image); }
+  /* Hack for html[xmlns*=""] */
+  ( <ASTERISK> { jjtThis.appendText ("*"); } )?
+  ( <S> )*
+  ( attribOperator()
+    ( <S> )*
+    attribValue()
+    ( <S> )*
+  )?
+  <RSQUARE>
+}
+
+void pseudoNth () #nth :
+{ Token t; String s; }
+{
+  ( <S> )*
+  ( LOOKAHEAD(3)
+    ( s = unaryOperator() { jjtThis.appendText (s); } )?
+    ( t = <INTEGER> { jjtThis.appendText (t.image); } )?
+    t = <N>        { jjtThis.appendText ("n"); }
+    ( LOOKAHEAD(2)
+      ( <S> )*
+      s = unaryOperator() { jjtThis.appendText (s); }
+      ( <S> )*
+      t = <INTEGER> { jjtThis.appendText (t.image); }
+    )?
+  | LOOKAHEAD(2)
+    ( s = unaryOperator() { jjtThis.appendText (s); } )?
+    t = <INTEGER> { jjtThis.appendText (t.image); }
+  | t = <EVEN>    { jjtThis.appendText (t.image); }
+  | t = <ODD>     { jjtThis.appendText (t.image); }
+  )
+  ( <S> )*
+}
+
+void pseudo() : {}
+{
+  <COLON> { jjtThis.setText (":"); }
+  /* Extension for "::-moz-selection */
+  ( <COLON> { jjtThis.appendText (":"); } )?
+  ( <FUNCTION_NTH> { jjtThis.appendText (token.image); }
+    pseudoNth()
+    <RROUND>  // do not append because of expression!
+  | LOOKAHEAD( <FUNCTION> )
+    <FUNCTION> { jjtThis.appendText (token.image); }
+    ( <S> )*
+    ( expr() )?
+    <RROUND>  // do not append because of expression!
+  | <IDENT> { jjtThis.appendText (token.image); }
+  )
+}
+
+void negation() : {}
+{
+  <FUNCTION_NOT> { jjtThis.setText (":not("); }
+  ( <S> )*
+  ( selector ()
+    ( <S> )*
+    ( <COMMA>
+      ( <S> )*
+      selector()
+      ( <S> )*
+    )*
+  )?
+  <RROUND>
+}
+
+void simpleSelectorSequence() #void : {}
+{
+  LOOKAHEAD(2)
+  ( typeSelector()
+    ( hash()
+    | _class()
+    | attrib()
+    | pseudo()
+    | negation()
+    )*
+  )
+  | ( hash()
+    | _class()
+    | attrib()
+    | pseudo()
+    | negation()
+    )+
+// Extension for CSS animations (e.g. 50%)
+  | <PERCENTAGE>
+}
+
+void selectorCombinator() : {}
+{
+  ( LOOKAHEAD(2)
+    ( <S> )*
+    <PLUS>       { jjtThis.setText ("+"); }
+  | LOOKAHEAD(2)
+    ( <S> )*
+    <GREATER>    { jjtThis.setText (">"); }
+  | LOOKAHEAD(2)
+    ( <S> )*
+    <TILDE>      { jjtThis.setText ("~"); }
+  | <S>          { jjtThis.setText (" "); }
+  )
+}
+
+void selector() : {}
+{
+  simpleSelectorSequence()
+  ( LOOKAHEAD(3)
+    selectorCombinator()
+    ( <S> )*
+    simpleSelectorSequence()
+  )*
+}
+
+void property() : {}
+{
+  <IDENT> { jjtThis.setText (token.image); }
+  ( <S> )*
+}
+
+void important() : {}
+{
+  <IMPORTANT_SYM> { jjtThis.setText (token.image); }
+  ( <S> )*
+}
+
+void styleDeclaration() : {}
+{
+try{
+  property()
+  <COLON>
+  ( <S> )*
+  /* Was before version 4 optional ->
+     to handle e.g. "background-color:;"
+     Rule: ( expr() )? */
+  expr()
+  ( important() )?
+} catch (/*final*/ ParseException ex) {
+  if (m_bBrowserCompliantMode)
+    browserCompliantSkipDecl (ex);
+  else
+    throw ex;
+}
+}
+
+void styleDeclarationOrRule() #void : {}
+{
+  ( styleDeclaration()
+  | ( mediaRule()     { errorUnexpectedRule ("@media", "media rule in the middle of a rule-set is not allowed!"); }
+    | pageRule()      { errorUnexpectedRule ("@page", "page rule in the middle of a rule-set is not allowed!"); }
+    | fontfaceRule()  { errorUnexpectedRule ("@font-face", "font-face rule in the middle of a rule-set is not allowed!"); }
+    | keyframesRule() { errorUnexpectedRule ("@keyframes", "keyframes rule in the middle of a rule-set is not allowed!"); }
+    | viewportRule()  { errorUnexpectedRule ("@viewport", "viewport rule in the middle of a rule-set is not allowed!"); }
+    | supportsRule()  { errorUnexpectedRule ("@supports", "supports rule in the middle of a rule-set is not allowed!"); }
+    | unknownRule()   { errorUnexpectedRule ("@", "Unknown rule in the middle of a rule-set is not allowed!"); }
+    | charsetRule()   { errorUnexpectedRule ("@charset", "charset rule in the middle of a rule-set is not allowed!"); }
+    | importRule()    { errorUnexpectedRule ("@import", "import rule in the middle of a rule-set is not allowed!"); }
+    | namespaceRule() { errorUnexpectedRule ("@namespace", "namespace rule in the middle of a rule-set is not allowed!"); }
+    )
+    ( <S> | <CDO> | <CDC> )*
+  )
+}
+
+CSSNode styleDeclarationList() : {}
+{
+  ( <S> )*
+  ( styleDeclarationOrRule() )?
+  ( <SEMICOLON>
+    ( <S> )*
+    ( styleDeclarationOrRule() )?
+  )*
+  { return jjtThis; }
+}
+
+void styleDeclarationBlock() #void : {}
+{
+  <LBRACE>
+try{
+  styleDeclarationList()
+  <RBRACE>
+} catch (/*final*/ ParseException ex) {
+  if (m_bBrowserCompliantMode)
+    browserCompliantSkip (ex);
+  else
+    errorSkipTo (ex, RBRACE);
+}
+}
+
+void styleRule() : {}
+{
+try{
+  selector ()
+  ( <S> )*
+  ( <COMMA>
+    ( <S> )*
+    selector()
+    ( <S> )*
+  )*
+  styleDeclarationBlock()
+} catch (/*final*/ ParseException ex) {
+  if (m_bBrowserCompliantMode)
+    browserCompliantSkipSelector (ex);
+  else
+    throw ex;
+}
+}
+
+//
+// Media rule
+//
+void mediaModifier() : {}
+{
+  ( <ONLY_SYM> { jjtThis.setText (token.image); }
+    <S>
+  | <NOT_SYM>  { jjtThis.setText (token.image); }
+    <S>
+  )?
+}
+
+void medium() : {}
+{
+  <IDENT> { jjtThis.setText (token.image); }
+}
+
+void mediaFeature() : {}
+{
+  <IDENT>  { jjtThis.setText (token.image); }
+}
+
+void mediaExpr() : {}
+{
+  <LROUND>
+  ( <S> )*
+  mediaFeature()
+  ( <S> )*
+  ( <COLON>
+    ( <S> )*
+    expr()
+  )?
+  <RROUND>
+  ( <S> )*
+}
+
+void mediaQuery() : {}
+{
+  ( mediaModifier()
+    medium()
+    ( <S> )*
+    ( <AND_SYM>
+      ( <S> )*
+      mediaExpr()
+    )*
+  | mediaExpr()
+    ( <AND_SYM>
+      ( <S> )*
+      mediaExpr()
+    )*
+  )
+}
+
+void mediaList() : {}
+{
+  mediaQuery()
+  ( <COMMA>
+    ( <S> )*
+    mediaQuery()
+  )*
+}
+
+void mediaRuleList() #void : {}
+{
+  ( ( styleRule()
+    | mediaRule()
+    | pageRule()
+    | fontfaceRule()
+    | keyframesRule()
+    | viewportRule()
+    | supportsRule()
+    | unknownRule()
+    | charsetRule()   { errorUnexpectedRule ("@charset", "charset rule in the middle of a @media rule is not allowed!"); }
+    | importRule()    { errorUnexpectedRule ("@import", "import rule in the middle of a @media rule is not allowed!"); }
+    | namespaceRule() { errorUnexpectedRule ("@namespace", "namespace rule in the middle of a @media rule is not allowed!"); }
+    )
+    ( <S> )*
+  )+
+}
+
+void mediaRule() : {}
+{
+  <MEDIA_SYM>
+  ( <S> )*
+  ( mediaList() )?
+  <LBRACE>
+try{
+  ( <S> )*
+  ( mediaRuleList() )?
+  <RBRACE>
+} catch (/*final*/ ParseException ex) {
+  if (m_bBrowserCompliantMode)
+    browserCompliantSkip (ex);
+  else
+    errorSkipTo (ex, RBRACE);
+}
+}
+
+//
+// Page rule
+//
+String pseudoPage() #void : {}
+{
+  <COLON>
+  <IDENT> { return ':' + token.image; }
+// Should only be: "left" | "right" | "first" | "blank"
+}
+
+// pseudo_page+ | IDENT pseudo_page*
+void pageSelector() :
+{ String s; }
+{
+  ( s = pseudoPage() { jjtThis.setText (s); }
+  | <IDENT>          { jjtThis.setText (token.image); }
+  )
+  ( s = pseudoPage() { jjtThis.appendText (s); } )*
+  ( <S> )*
+}
+
+void pageSelectorList() #void : {}
+{
+  pageSelector()
+  ( <COMMA>
+    ( <S> )*
+    pageSelector()
+  )*
+}
+
+void pageMarginSymbol() : {}
+{
+  ( <TOPLEFTCORNER_SYM>     { jjtThis.setText (token.image); }
+  | <TOPLEFT_SYM>           { jjtThis.setText (token.image); }
+  | <TOPCENTER_SYM>         { jjtThis.setText (token.image); }
+  | <TOPRIGHT_SYM>          { jjtThis.setText (token.image); }
+  | <TOPRIGHTCORNER_SYM>    { jjtThis.setText (token.image); }
+  | <BOTTOMLEFTCORNER_SYM>  { jjtThis.setText (token.image); }
+  | <BOTTOMLEFT_SYM>        { jjtThis.setText (token.image); }
+  | <BOTTOMCENTER_SYM>      { jjtThis.setText (token.image); }
+  | <BOTTOMRIGHT_SYM>       { jjtThis.setText (token.image); }
+  | <BOTTOMRIGHTCORNER_SYM> { jjtThis.setText (token.image); }
+  | <LEFTTOP_SYM>           { jjtThis.setText (token.image); }
+  | <LEFTMIDDLE_SYM>        { jjtThis.setText (token.image); }
+  | <LEFTBOTTOM_SYM>        { jjtThis.setText (token.image); }
+  | <RIGHTTOP_SYM>          { jjtThis.setText (token.image); }
+  | <RIGHTMIDDLE_SYM>       { jjtThis.setText (token.image); }
+  | <RIGHTBOTTOM_SYM>       { jjtThis.setText (token.image); }
+  )
+}
+
+void pageBody() #void : {}
+{
+/* the non-empty rule must come first! */
+  ( pageMarginSymbol()
+    ( <S> )*
+    styleDeclarationBlock()
+    ( <S> )*
+    pageBody()
+  | ( styleDeclaration() )?
+    ( <SEMICOLON>
+      ( <S> )*
+      pageBody()
+    )?
+  )
+}
+
+void pageRuleBlock() : {}
+{
+  <LBRACE>
+try{
+  ( <S> )*
+  pageBody()
+  <RBRACE>
+} catch (/*final*/ ParseException ex) {
+  if (m_bBrowserCompliantMode)
+    browserCompliantSkip (ex);
+  else
+    errorSkipTo (ex, RBRACE);
+}
+}
+
+void pageRule() : {}
+{
+  <PAGE_SYM>
+  ( <S> )*
+  ( pageSelectorList() )?
+  pageRuleBlock()
+}
+
+//
+// Font face rule
+//
+void fontfaceRule() : {}
+{
+  <FONTFACE_SYM>  { jjtThis.setText (token.image); }
+  styleDeclarationBlock()
+}
+
+//
+// Keyframes rule
+// http://dev.w3.org/csswg/css3-animations/#keyframes
+//
+void keyframesIdentifier() :  {}
+{
+  <IDENT> { jjtThis.setText (token.image); }
+}
+
+void singleKeyframeSelector() : {}
+{
+  ( <FROM_SYM>   { jjtThis.setText (token.image); }
+  | <TO_SYM>     { jjtThis.setText (token.image); }
+  | <PERCENTAGE> { jjtThis.setText (token.image); }
+  )
+}
+
+void keyframesSelector() : {}
+{
+  singleKeyframeSelector()
+  ( <S> )*
+  ( <COMMA>
+    ( <S> )*
+    singleKeyframeSelector()
+    ( <S> )*
+  )*
+}
+
+void keyframesBlocks() #void : {}
+{
+  ( keyframesSelector()
+    styleDeclarationBlock()
+    ( <S> )*
+  )*
+}
+
+void keyframesRule() : {}
+{
+  <KEYFRAMES_SYM> { jjtThis.setText (token.image); }
+  <S>
+  keyframesIdentifier()
+  <LBRACE>
+try{
+  ( <S> )*
+  keyframesBlocks()
+  <RBRACE>
+} catch (/*final*/ ParseException ex) {
+  if (m_bBrowserCompliantMode)
+    browserCompliantSkip (ex);
+  else
+    errorSkipTo (ex, RBRACE);
+}
+}
+
+//
+// Viewport rule
+// http://dev.w3.org/csswg/css-device-adapt/#the-atviewport-rule
+//
+void viewportRule() : {}
+{
+  <VIEWPORT_SYM> { jjtThis.setText (token.image); }
+  styleDeclarationBlock()
+}
+
+//
+// Supports rule
+// http://www.w3.org/TR/2013/CR-css3-conditional-20130404/#at-supports
+//
+void supportsConditionInParens() : {}
+{
+  "("
+  ( <S> )*
+  ( styleDeclaration()
+  | supportsCondition()
+  )
+  ")"
+/* | general_enclosed */
+}
+
+void supportsNegation() : {}
+{
+  <NOT_SYM>
+  ( <S> )+
+  supportsConditionInParens()
+}
+
+void supportsConditionOperator() : {}
+{
+  ( <AND_SYM> { jjtThis.setText (token.image); }
+  | <OR_SYM>  { jjtThis.setText (token.image); }
+  )
+}
+
+void supportsCondition() : {}
+{
+  ( supportsNegation()
+  | supportsConditionInParens()
+    ( LOOKAHEAD(2)
+      ( <S> )+
+      supportsConditionOperator()
+      ( <S> )+
+      supportsConditionInParens()
+    )*
+  )
+  ( <S> )*
+}
+
+void supportsRuleBodyRule() #void : {}
+{
+  ( styleRule()
+  | mediaRule()
+  | pageRule()
+  | fontfaceRule()
+  | keyframesRule()
+  | supportsRule()
+  | unknownRule()
+  | charsetRule()   { errorUnexpectedRule ("@charset", "charset rule in the middle of a @supports rule is not allowed!"); }
+  | importRule()    { errorUnexpectedRule ("@import", "import rule in the middle of a @supports rule is not allowed!"); }
+  | namespaceRule() { errorUnexpectedRule ("@namespace", "namespace rule in the middle of a @supports rule is not allowed!"); }
+  | viewportRule()  { errorUnexpectedRule ("@viewport", "viewport rule in the middle of a @supports rule is not allowed!"); }
+  )
+}
+
+void supportsRuleBody() #void : {}
+{
+  <LBRACE>
+try{
+  ( <S> )*
+  ( supportsRuleBodyRule()
+    ( <S> )*
+  )*
+  <RBRACE>
+} catch (/*final*/ ParseException ex) {
+  if (m_bBrowserCompliantMode)
+    browserCompliantSkip (ex);
+  else
+    errorSkipTo (ex, RBRACE);
+}
+}
+
+void supportsRule() : {}
+{
+  <SUPPORTS_SYM>
+  ( <S> )*
+  supportsCondition()
+  supportsRuleBody()
+}
+
+//
+// Unknown rule
+//
+void unknownRuleParameterList() :
+{ String s; }
+{
+  s = javaSkipToOpeningBrace() { jjtThis.setText (s); }
+}
+
+void unknownRuleBody() :
+{ String s; }
+{
+  s = javaSkipToClosingBrace(1) { jjtThis.setText (s); }
+}
+
+// Any unsupported rule
+void unknownRule() : {}
+{
+  ( <AT_UNKNOWN>            { jjtThis.setText (token.image); }
+// Special page margin symbols also starting with "@" :(
+  | <TOPLEFTCORNER_SYM>     { jjtThis.setText (token.image); }
+  | <TOPLEFT_SYM>           { jjtThis.setText (token.image); }
+  | <TOPCENTER_SYM>         { jjtThis.setText (token.image); }
+  | <TOPRIGHT_SYM>          { jjtThis.setText (token.image); }
+  | <TOPRIGHTCORNER_SYM>    { jjtThis.setText (token.image); }
+  | <BOTTOMLEFTCORNER_SYM>  { jjtThis.setText (token.image); }
+  | <BOTTOMLEFT_SYM>        { jjtThis.setText (token.image); }
+  | <BOTTOMCENTER_SYM>      { jjtThis.setText (token.image); }
+  | <BOTTOMRIGHT_SYM>       { jjtThis.setText (token.image); }
+  | <BOTTOMRIGHTCORNER_SYM> { jjtThis.setText (token.image); }
+  | <LEFTTOP_SYM>           { jjtThis.setText (token.image); }
+  | <LEFTMIDDLE_SYM>        { jjtThis.setText (token.image); }
+  | <LEFTBOTTOM_SYM>        { jjtThis.setText (token.image); }
+  | <RIGHTTOP_SYM>          { jjtThis.setText (token.image); }
+  | <RIGHTMIDDLE_SYM>       { jjtThis.setText (token.image); }
+  | <RIGHTBOTTOM_SYM>       { jjtThis.setText (token.image); }
+  )
+  unknownRuleParameterList()
+  unknownRuleBody()
+  // Manually switch from IN_UNKNOWN_RULE to DEFAULT again
+  { token_source.SwitchTo (DEFAULT); }
+}
+
+//
+// Error handling
+//
+void invalid () : {}
+{
+  ( <INVALID_STRING1>
+  | <INVALID_STRING2>
+  )
+}

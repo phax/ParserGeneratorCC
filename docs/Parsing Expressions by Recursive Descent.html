@@ -1,0 +1,1154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>Parsing Expressions by Recursive Descent</title>
+<style type="text/css">
+body {
+	margin: 10ex 10% 10ex 10% ;
+}
+.indented {
+	display: block;
+	margin-right: 10ex;
+	margin-left: 10ex;
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+.extraInfo {
+	margin-right: 10ex;
+	margin-left: 10ex;
+	background-color: #CCC;
+}
+.kbd { font-family: "Courier New", Courier, monospace, sans-serif ;
+}
+pre { font-family:"Courier New", Courier, monospace ;
+}
+</style></head>
+
+<body>
+
+<h1 align="center">Parsing Expressions by Recursive Descent</h1>
+
+<p align="center">Theodore Norvell (C) 1999 with updates later on.</p>
+
+<p>This article is about parsing expressions such as <span class="kbd">a*b - a*d - e*f</span>
+ using a technique known as recursive descent. I've assumed you know at 
+least a little bit about context-free grammars and parsing.
+</p><p>Parsing expressions by recursive descent poses two classic problems
+</p><ol>
+  <li>how to get the abstract syntax tree (or other output) to follow the precedence and associativity of
+    operators and</li>
+  <li>how to do so efficiently when there are many levels of precedence. </li>
+</ol>
+
+<p>The classic solution to the first problem does not solve the second. I will present the
+classic solution, a well known alternative known as the "Shunting Yard
+Algorithm", and a less well known one that I have called "Precedence
+Climbing". &nbsp; </p>
+<h2>Contents</h2>
+<ul>
+  <li><a href="#grammar">An example grammar for expressions</a></li>
+  <li><a href="#RDP">Recursive-descent recognition</a></li>
+  <li><a href="#shunting_yard">The shunting yard algorithm</a></li>
+  <li><a href="#classic">The classic solution</a></li>
+  <li><a href="#climbing">Precedence climbing</a></li>
+  <li><a href="#more_climbing">Deriving precedence climbing</a></li>
+  <li><a href="#bib">Bibliographic Notes</a></li>
+</ul>
+<h2><a name="grammar" id="grammar"></a>An example grammar for expressions</h2>
+
+<p>Consider the following example grammar, <em>G</em>, </p>
+
+<pre>&nbsp;&nbsp;&nbsp; E --&gt; E "+" E
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | E "-" E
+        | "-" E
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | E "*" E
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | E "/" E
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | E "^" E
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | "(" E ")"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | v</pre>
+
+<p>in which&nbsp; <span class="kbd">v</span>&nbsp; is a terminal representing identifiers and/or constants. </p>
+
+<p>We want to build a parser that will 
+
+</p><ol>
+  <li>Produce an error message if its input is not in the language of this grammar.</li>
+  <li>Produce an "abstract syntax tree" (AST) reflecting the structure of the input,
+    if the input is in the language of the grammar.</li>
+</ol>
+
+<p>Each  input in the language will have a single AST based on the following precedence and
+associativity rules: 
+
+</p><ul>
+  <li>Parentheses have precedence over all operators.</li>
+  <li>^ (exponentiation) has precedence over unary - and the binary operators /, *, -, and +.</li>
+  <li>* and / have precedence over unary - and binary - and +.</li>
+  <li>Unary - has precedence over binary - and +.</li>
+  <li>^ is right associative while all other binary operators are left associative.</li>
+</ul>
+
+<p>For example the first three rules tell us that </p>
+
+<pre>&nbsp;&nbsp;&nbsp; a ^ b * c ^ d + e ^ f / g ^ (h + i)</pre>
+
+<p>parses to the tree </p>
+
+<pre>&nbsp;&nbsp;&nbsp; +( *( ^(a,b), ^(c,d) ), /( ^(e,f), ^(g,+(h,i)) ) )</pre>
+
+<p>while the last rule tells us that </p>
+
+<pre>&nbsp;&nbsp;&nbsp; a - b - c</pre>
+
+<p>parses to <tt>-(-(a,b),c)</tt> rather than <tt>-(a,-(b,c))</tt>, whereas </p>
+
+<pre>&nbsp;&nbsp;&nbsp; a ^ b ^ c</pre>
+
+<p>parses to<tt> ^(a, ^(b,c))</tt> rather than <tt>^(^(a,b), c)</tt>. </p>
+<p>The precedence of binary ^ over unary - tells us that </p>
+<pre>&nbsp;&nbsp;&nbsp; - a ^ - b</pre>
+<p>parses to <span class="kbd">-(^(a, -(b)))</span>. Some programming 
+language designers choose to put unary operators at the highest level of
+ precedence. I chose to give unary - a lower precedence than *, /, and ^
+ because having some binary operators with higher precedence than some 
+unary operators makes the parsing problem just a bit more challenging 
+and raises some issues that otherwise wouldn't come up.</p>
+<p class="extraInfo">Aside: I am assuming that the desired output of the parser is an abstract syntax
+tree (AST). The same considerations arise if the output is to be some other form such as
+reverse-polish notation (RPN), calls to an analyzer and code generator (for one-pass
+compilers), or a numerical result (as in a calculator). All the algorithms I present are
+easily modified for these forms of output.</p>
+
+<h2><a name="RDP"></a>Recursive-descent recognition </h2>
+
+<p>The idea of recursive-descent parsing is to transform each nonterminal of a grammar
+into a subroutine that will recognize exactly that nonterminal in the input. </p>
+
+<p>Left recursive grammars, such as <em>G</em>, are unsuitable for recursive-descent parsing because a left-recursive production
+leads to an infinite recursion. While the parser may be
+partially correct, it may not terminate. </p>
+
+<p>We can transform <em>G</em> to an equivalent non-left-recursive grammar <em>G</em>1 as follows: </p>
+
+<pre>&nbsp;&nbsp;&nbsp; E --&gt; P {B P}
+&nbsp;&nbsp;&nbsp; P --&gt; v | "(" E ")" | U P
+&nbsp;&nbsp;&nbsp; B --&gt; "+" | "-" | "*" | "/" | "^"
+    U --&gt; "-"</pre>
+
+<p>The braces "{" and "}" represent zero or more repetitions of what
+is inside of them. Thus you can think of E as having an infinity of alternatives:</p>
+
+<pre>&nbsp;&nbsp;&nbsp; E --&gt; P | P B P | P B P B P | ... ad infinitum</pre>
+
+<p>The language described by this grammar is the same as that of grammar <em>G</em>, that is, <em>L</em>(<em>G</em>1)<em> =
+L</em>(<em>G</em>).</p>
+
+<p>Not only is left recursion eliminated, but the <em>G</em>1 is unambiguous and each choice can be made by looking at the
+next token in the input.</p>
+<p class="extraInfo">Aside: Technically, G1 is an example of what is 
+called an LL(1) grammar. I don't want to make this essay more technical 
+than it needs to be, so I'm not going to stop and go into what that 
+means. End of Aside.</p>
+<p>Let's look at a <em>recursive descent recognizer</em> based on this grammar. I call
+this algorithm a <em>recognizer</em> rather than a <em>parser</em> because all it does is to recognize whether the input is in
+the language of the grammar or not. It does not produce an abstract syntax
+tree, or any other form of output that represents the contents of the input.</p>
+
+<p>I'll assume that the following subroutines exist:
+
+</p><ul>
+  <li>"<span class="kbd">next</span>" returns the next token of input or special marker "<span class="kbd">end</span>" to
+    represent that there are no more input tokens. "<span class="kbd">next</span>" does not alter the input
+    stream.</li>
+  <li>"<span class="kbd">consume</span>" reads one token. When "<span class="kbd">next=end</span>", consume is still
+    allowed, but has no effect.</li>
+  <li>"<span class="kbd">error</span>" stops the parsing process and reports an error.</li>
+</ul>
+
+<p>Using these, let's construct a subroutine "<span class="kbd">expect</span>", which I will use
+throughout this essay</p>
+
+<pre><u>expect</u>( <u>tok</u> ) <strong>is</strong>
+&nbsp;&nbsp; <strong>if</strong> next = tok 
+       consume
+&nbsp;&nbsp; <strong>else</strong>
+       error</pre>
+
+<p>We will now write a subroutine called "<span class="kbd">Erecognizer</span>". If it does not call
+"<span class="kbd">error</span>", then the input was an expression according to the above grammars. If it
+does call "<span class="kbd">error</span>", then the input contained a syntax error, e.g., unmatched
+parentheses, a missing operator or operand, etc.</p>
+
+<pre><u>Erecognizer</u> <strong>is</strong>
+&nbsp;&nbsp; E()
+&nbsp;&nbsp; expect( end )</pre>
+
+<pre><u>E</u> <strong>is</strong>
+    P
+    <strong>while</strong> next is a binary operator
+       consume
+       P</pre>
+
+<pre><u>P</u> <strong>is</strong>
+    <strong>if</strong> next is a v
+         consume
+    <strong>else</strong> <strong>if</strong> next = "("
+         consume
+         E
+         expect( ")" )
+    <strong>else</strong> <strong>if</strong> next is a unary operator
+         consume
+         P
+    <strong>else</strong>
+         error</pre>
+
+<p>Notice how the structure of the recognition algorithm mirrors the structure of the
+grammar. This is the essence of recursive descent parsing.</p>
+
+<p>The difference between a recognizer and a parser is that a parser produces some kind of
+output that reflects the structure of the input. Next we will look at a way to modify the
+above recognition algorithm to be a parsing algorithm. It will build an AST, according to
+the precedence and associativity rules, using a method known as the "shunting
+yard" algorithm.</p>
+
+<h2><a name="shunting_yard" id="shunting_yard"></a>The shunting yard algorithm</h2>
+
+<p>The idea of the shunting yard algorithm is to keep operators on a 
+stack until both their operands have been parsed. The operands are kept 
+on a second stack. The
+shunting yard algorithm can be used to directly evaluate expressions as 
+they are parsed
+(it is commonly used in electronic calculators for this task), to create
+ a reverse Polish
+notation translation of an infix expression, or to create an abstract 
+syntax tree. I'll
+create an abstract syntax tree, so my operand stacks will contain trees.</p>
+
+<p>The key to the algorithm is to keep the operators on the operator 
+stack ordered by precedence (lowest at bottom and highest at top), at 
+least in the absence of parentheses. Before pushing an operator onto the
+ operator stack, all higher precedence operators are cleared from the 
+stack. Clearing an operator consists of removing the operator from the 
+operator stack and its operand(s) from the operand stack, making a new 
+tree, and pushing that tree onto the operand stack. At the end of an 
+expression the
+remaining operators are put into trees with their operands and that is 
+that.</p>
+<p>The following table illustrates the process for an input of <span class="kbd">x*y+z.</span> Stacks are written with their tops to the left. The sentinel value acts as an operator of lowest precedence.</p>
+<table width="100%" cellspacing="0" cellpadding="0" border="4">
+  <tbody><tr>
+    <td><strong>Remaining input</strong></td>
+    <td><strong>Operand Stack </strong></td>
+    <td><strong>Operator Stack </strong></td>
+    <td><strong>Next Action </strong></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>x * y + z end </td>
+    <td>&nbsp;</td>
+    <td>sentinel</td>
+    <td>Push x on to the operand stack.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>* y + z end</td>
+    <td>x</td>
+    <td>sentinel</td>
+    <td>Compare the precedence of * with the precedence of the sentinel.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td> * y + z end </td>
+    <td>x</td>
+    <td>sentinel</td>
+    <td>It's higher, so push * on to the operator stack </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td> y + z end </td>
+    <td>x</td>
+    <td>binary(*) sentinel</td>
+    <td>Push y on to the operand stack. </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>+ z end </td>
+    <td>y x</td>
+    <td>binary(*) sentinel</td>
+    <td>Compare the precedence of + with the precedence of * .</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>+ z end </td>
+    <td>y x </td>
+    <td>binary(*) sentinel</td>
+    <td>It's lower, so make a tree from *, y, and x .</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>+ z end </td>
+    <td>*(x,y)</td>
+    <td>sentinel</td>
+    <td>Compare the precedence of + with the precedence of the sentinel.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>+ z end </td>
+    <td>*(x,y)</td>
+    <td>sentinel</td>
+    <td>It's higher, so push + on to the operator stack. </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>z  end </td>
+    <td>*(x,y)</td>
+    <td>binary(+) sentinel</td>
+    <td>Push z on to the operator stack .</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>end </td>
+    <td>z *(x,y)</td>
+    <td>binary(+) sentinel</td>
+    <td>Make a tree from +, z, and *(x,y).</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>end</td>
+    <td>+( *(x,y), z ) </td>
+    <td>sentinel</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</tbody></table>
+<p>Compare this to parsing <span class="kbd">x + y * z</span>.</p>
+<table width="100%" cellspacing="0" cellpadding="0" border="4">
+  <tbody><tr>
+    <td><strong>Remaining input</strong></td>
+    <td><strong>Operand Stack </strong></td>
+    <td><strong>Operator Stack </strong></td>
+    <td><strong>Next Action </strong></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>x + y * z end </td>
+    <td>&nbsp;</td>
+    <td>sentinel</td>
+    <td>Push x on to the operand stack </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>+ y * z end </td>
+    <td>x</td>
+    <td>sentinel</td>
+    <td>Compare the precedence of + with the precedence of the sentinel</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td> + y * z end </td>
+    <td>x</td>
+    <td>sentinel</td>
+    <td>It's higher, so push + on to the operator stack </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td> y * z end </td>
+    <td>x</td>
+    <td>binary(+) sentinel</td>
+    <td>Push y on to the operand stack </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td> * z end </td>
+    <td>y x</td>
+    <td>binary(+) sentinel</td>
+    <td>Compare the precedence of * with the precedence of +.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>* z end </td>
+    <td>y x </td>
+    <td>binary(+) sentinel</td>
+    <td>It's higher so, push * on to the operator stack </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>z  end </td>
+    <td>y x </td>
+    <td>binary(*) binary(+) sentinel</td>
+    <td>Push z on to the operand stack </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td> end </td>
+    <td>z y x </td>
+    <td>binary(*) binary(+) sentinel</td>
+    <td>Make a tree from *, y, and z </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>end</td>
+    <td> *(y, z) x </td>
+    <td>binary(+) sentinel</td>
+    <td>Make a tree from +, x, and *(y,z) </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>end</td>
+    <td>+( x, *(y, z) ) </td>
+    <td>sentinel</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</tbody></table>
+<p>&nbsp;</p>
+<p>In addition to "<span class="kbd">next</span>", "<span class="kbd">consume</span>", "<span class="kbd">end</span>",
+"<span class="kbd">error</span>", and "<span class="kbd">expect</span>", which are explained in the previous section, I
+will assume that the following subroutines and constants exist: 
+
+</p><ul>
+  <li>"<span class="kbd">binary</span>" converts a token matched by B to an operator.</li>
+  <li>"<span class="kbd">unary</span>" converts a token matched by U to an operator. We require that
+    functions "<span class="kbd">unary</span>" and "<span class="kbd">binary</span>" have disjoint ranges. (For example <span class="kbd">unary("-")</span> and <span class="kbd">binary("-")</span> are not equal.)</li>
+  <li>"<span class="kbd">mkLeaf</span>" converts a token matched by v to a tree.</li>
+  <li>"<span class="kbd">mkNode</span>" takes an operator and one or two trees and returns a tree.</li>
+  <li>"<span class="kbd">push</span>", "<span class="kbd">pop</span>", "<span class="kbd">top</span>": the usual stack operations.</li>
+  <li>"<span class="kbd">empty</span>": an empty stack</li>
+  <li>"<span class="kbd">sentinel</span>" is a value that is not in the range of either <span class="kbd">unary</span> or <span class="kbd">binary</span>.</li>
+</ul>
+
+<p>In the algorithm that follows, I compare operators and the sentinel with a &gt; sign.
+This comparison is defined as follows: 
+
+</p><ul>
+  <li><span class="kbd">binary(</span>x<span class="kbd">) &gt; binary(</span>y<span class="kbd">)</span>, if x has higher precedence than y, or x is left associative
+    and x and y have equal precedence.</li>
+  <li><span class="kbd">unary(</span>x<span class="kbd">) &gt; binary(</span>y<span class="kbd">)</span>, if x has precedence higher or equal to y's</li>
+  <li><span class="kbd">op &gt; unary(</span>y<span class="kbd">)</span>, never (where op is any unary or binary operator)</li>
+  <li><span class="kbd">sentinel &gt; </span>op, never (where op is any unary or binary operator)</li>
+  <li>op<span class="kbd"> &gt; sentinel</span>&nbsp; (where op is any unary or binary operator): This case doesn't
+    arise.</li>
+</ul>
+
+<p>Now we define the following subroutines:</p>
+
+<p class="extraInfo">Aside: I hope the pseudo-code notation is fairly clear.&nbsp; I'll just comment
+that I'm assuming that parameters are passed by reference, so only 2 stacks are created
+throughout the execution of EParser.</p>
+
+<pre><u>Eparser</u> <strong>is</strong>
+   <strong>var</strong> <u>operators</u> : Stack of Operator := empty
+   <strong>var</strong> <u>operands</u> : Stack of Tree := empty
+   push( operators, sentinel )
+&nbsp;&nbsp; E( operators, operands )
+&nbsp;&nbsp; expect( end )
+   <strong>return</strong> top( operands )</pre>
+
+<pre><u>E</u>( <u>operators</u>, <u>operands</u> ) <strong>is</strong>
+    P( operators, operands )
+    <strong>while</strong> next is a binary operator
+       pushOperator( binary(next), operators, operands )
+       consume
+       P( operators, operands )
+    <strong>while</strong> top(operators) <strong>not</strong>= sentinel
+       popOperator( operators, operands )</pre>
+
+<pre><u>P</u>( <u>operators</u>, <u>operands</u> ) <strong>is</strong>
+    <strong>if</strong> next is a v
+         push( operands, mkLeaf( v ) )
+         consume
+    <strong>else</strong> <strong>if</strong> next = "("
+         consume
+         push( operators, sentinel )
+         E( operators, operands )
+         expect( ")" )
+         pop( operators )
+    <strong>else</strong> <strong>if</strong> next is a unary operator
+         pushOperator( unary(next), operators, operands )
+         consume
+         P( operators, operands )
+    <strong>else</strong>
+         error</pre>
+
+<pre><u>popOperator</u>( <u>operators</u>, <u>operands</u> ) <strong>is</strong>
+   <strong>if</strong> top(operators) is binary
+        <strong>const</strong> <u>t1</u> := pop( operands )
+        <strong>const</strong> <u>t0</u> := pop( operands )
+        push( operands, mkNode( pop(operators), t0, t1 ) )
+   <strong>else</strong>
+        push( operands, mkNode( pop(operators), pop(operands) ) )</pre>
+
+<pre><u>pushOperator</u>( <u>op</u>, <u>operators</u>, <u>operands</u> ) <strong>is</strong>
+    <strong>while</strong> top(operators) &gt; op
+       popOperator( operators, operands )
+    push( op, operators )</pre>
+<p>Usually the shunting yard algorithm is presented without the use of 
+recursion. This may be more efficient and might aid in generating better
+ error messages, but I find the code a bit harder to understand. </p>
+<h2><a name="classic"></a>The classic solution</h2>
+
+<p>The classic solution to recursive-descent parsing of expressions is to create a new
+nonterminal for each level of precedence as follows. <em>G</em>2: </p>
+
+<pre>&nbsp;&nbsp;&nbsp; E --&gt; T {( "+" | "-" ) T}
+&nbsp;&nbsp;&nbsp; T --&gt; F {( "*" | "/" ) F}
+&nbsp;&nbsp;&nbsp; F --&gt; P ["^" F]
+&nbsp;&nbsp;&nbsp; P --&gt; v | "(" E ")" | "-" T</pre>
+
+<p>(The brackets [ and ] enclose an optional part of the production. As before, the braces
+{ and } enclose parts of the productions that may be repeated 0 or more times, and | separates alternatives. The
+unquoted parentheses ( and ) serve only to group elements in a production.)</p>
+
+<p>Grammar <em>G</em>2 describes the same language as the previous two grammars: <em>L</em>(<em>G</em>2)<em> = L</em>(<em>G</em>1)
+= <em>L</em>(<em>G</em>) </p>
+
+<p>The grammar is ambiguous; for example, <span class="kbd">-x*y</span> has two parse trees: <span class="kbd">E(T(F(P("-", T(F(P("x")), "*")))))</span> and <span class="kbd">E(T(F(P("-",T(F(P("x"))))),"*",F(P("y"))))</span>. The ambiguity is
+resolved by staying in each loop (in the productions for E and T) as long as possible and
+by taking the option —if possible— in the production for F. With these policy in place, all
+choices can be made by looking only at the next token of input. </p>
+
+<p class="extraInfo">Aside: If our precedence had been such that our 
+unary operator had highest precedence, then the grammar would not have 
+been ambiguous.  For those who are interested in such things, I'll note 
+that this grammar is not LL(1); LL(1) grammars are never ambiguous. 
+Nevertheless everything works out just fine, if we adopt the policies 
+mentioned in the previous paragraph. End of Aside.</p>
+
+<p>Note that the left-associative and the right-associative operators are treated
+differently; left-associative operators are consumed in a loop, while right-associative
+operators are handled with right-recursive productions. This is to make the tree building
+a bit easier.</p>
+<p>Here is an example of parsing <span class="kbd">a*b - c^d - e*f </span>by recursive descent.</p>
+<p><img src="Parsing%20Expressions%20by%20Recursive%20Descent-Dateien/exp_parsing-0.png" width="576" height="347"></p>
+<p>Each contour line shows what is recognized by each invocation of E, 
+T, or F. For instance we can see that the top level call to E invokes T 
+three times; these three invocations of T respectively recognize <span class="kbd">a*b, c^d</span>, and <span class="kbd">e*f</span>.
+ Not shown are the calls to P, of which there is one for each variable. 
+Another way to look at it is that the contour lines show the parse tree 
+(or would if I'd included the contour lines for P). The solid lines show
+ the AST that we would like to be constructed.</p>
+<p>We can transform this grammar to a parser written in pseudo code.</p>
+
+<pre><u>Eparser</u> <strong>is</strong>
+   <strong>var</strong> <u>t</u> : Tree
+&nbsp;&nbsp; t := E
+&nbsp;&nbsp; expect( end )
+&nbsp;&nbsp; <strong>return</strong> t</pre>
+
+<pre><u>E</u> <strong>is</strong>
+   <strong>var</strong> <u>t</u> : Tree
+&nbsp;&nbsp; t := T
+&nbsp;&nbsp; <strong>while</strong> next = "+" <strong>or</strong> next = "-"
+&nbsp;&nbsp;    <strong>const</strong> <u>op</u> := binary(next)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; consume
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>const</strong> <u>t1</u> := T
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t := mkNode( op, t, t1 )
+&nbsp;&nbsp; <strong>return</strong> t</pre>
+
+<pre><u>T</u> is
+   <strong>var</strong> <u>t</u> : Tree
+   t := F
+&nbsp;&nbsp; <strong>while</strong> next = "*" <strong>or</strong> next = "/"
+&nbsp;&nbsp;    <strong>const</strong> <u>op</u> := binary(next)
+&nbsp;&nbsp;&nbsp;   consume
+&nbsp;&nbsp;&nbsp;   <strong>const</strong> <u>t1</u> := F
+&nbsp;&nbsp;&nbsp;   t := mkNode( op, t, t1 )
+&nbsp;&nbsp; <strong>return</strong> t</pre>
+
+<pre><u>F</u> <strong>is</strong>
+   <strong>var</strong> t : Tree
+   t := P
+&nbsp;&nbsp; <strong>if</strong> next = "^"
+&nbsp;&nbsp;      consume
+&nbsp;&nbsp;&nbsp;     <strong>const </strong><u>t1</u> := F
+&nbsp;&nbsp;&nbsp;     <strong>return</strong> mkNode( binary("^"), t, t1)
+&nbsp;&nbsp; <strong>else</strong>
+        <strong>return</strong> t</pre>
+
+<pre><u>P</u> <strong>is</strong>
+   <strong>var</strong> <u>t</u> : Tree
+&nbsp;&nbsp; <strong>if</strong> next is a v
+&nbsp;&nbsp;      t := mkLeaf( next )
+&nbsp;&nbsp;      consume
+&nbsp;&nbsp;      <strong>return</strong> t
+&nbsp;&nbsp; <strong>else </strong><strong>if</strong> next = "("
+&nbsp;&nbsp;      consume
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t := E
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expect( ")" )
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>return</strong> t&nbsp;&nbsp; 
+   <strong>else</strong> <strong>if</strong> next = "-"
+        consume
+        t := F
+        <strong>return</strong> mkNode( unary("-"), t)
+   <strong>else</strong> 
+        error</pre>
+
+<p>It may be worthwhile to trace this algorithm on a few example inputs. </p>
+
+<p>This classic solution has a few drawbacks: 
+
+</p><ul>
+  <li>The size of the code is proportional to the number of precedence levels.</li>
+  <li>The speed of the algorithm is proportional to the number of precedence levels.</li>
+  <li>The number of precedence levels and the set of operators is built in.</li>
+</ul>
+
+<p>When there are a large number of precedence levels, as in the C and C++ languages, the
+first two disadvantages become problematic. In Pascal the number of precedence levels was
+deliberately kept small because —I suspect— its designer, Niklaus Wirth, was aware of the
+shortcomings of this method when the number of precedence levels is large.</p>
+
+<p>The size problem can be overcome by creating one subroutine that is parameterized by
+precedence level rather than writing a separate routine for each level. But the speed
+problem remains. Note that the number of calls to parse an expression consisting of a
+single identifier is proportional to the number of levels of precedence.</p>
+
+<p>For languages in which the set of operators and their precedences and
+ associativity are not hard-coded, we need a more flexible approach.</p>
+
+<h2><a name="climbing"></a>Precedence climbing</h2>
+
+<p>A method that solves all the listed problems for the classic solution, while being
+simpler than the shunting-yard algorithm, is what I call "precedence climbing". (Note, however, that we will climb <em>down</em> the precedence levels.) </p>
+
+<p>Consider the input sequence</p>
+
+<pre>    a ^ b * c + d + e</pre>
+
+<p>The E subroutine of the classic solution will deal with this by three calls to T, and
+by consuming the 2 "+"s, building a tree</p>
+
+<p align="center">+(+(result of first call, result of second call), result of third call)</p>
+
+<p>We say that this loop directly consumes the two "+" operators.</p>
+
+<p>The precedence climbing algorithm has a similar loop, but it always directly consumes
+the first binary operator, then it consumes the next binary operator that is of lower
+precedence, then the next operator that is of lower precedence than that. When it consumes
+a left-associative operator, the same loop will also consume the next operator of equal
+precedence. Let me rewrite the example with operators written at different heights
+according to their precedence:</p>
+
+<pre>             +   +
+         *
+     ^   
+   a   b   c   d   e</pre>
+
+<p>One loop can consume all 4 operators, creating the tree</p>
+
+<p align="center">+(+(*(^(result of first call, result of second call) result of 3rd
+call), result of 4th call), result of 5th call)</p>
+
+<p>Each operator is assigned a precedence number. To make things more interesting lets add
+a few more binary operators and use the following precedence tables: </p>
+
+<table height="21" cellpadding="20" border="1">
+  <tbody><tr>
+    <td valign="top" height="15"><table width="77" cellpadding="5" border="1">
+      <caption>Unary operators</caption>
+      <tbody><tr>
+        <td width="27">-</td>
+        <td width="38">4</td>
+      </tr>
+    </tbody></table>
+    </td>
+    <td height="15"><table width="175" height="151" cellpadding="5" border="1">
+      <caption>Binary operators</caption>
+      <tbody><tr>
+        <td width="24" height="19">||</td>
+        <td width="25" height="19">0</td>
+        <td width="108" height="19">Left Associative</td>
+      </tr>
+      <tr>
+        <td width="24" height="19">&amp;&amp;</td>
+        <td width="25" height="19">1</td>
+        <td width="108" height="19">Left Associative</td>
+      </tr>
+      <tr>
+        <td width="24" height="19">=</td>
+        <td width="25" height="19">2</td>
+        <td width="108" height="19">Left Associative</td>
+      </tr>
+      <tr>
+        <td width="24" height="19">+, -</td>
+        <td width="25" height="19">3</td>
+        <td width="108" height="19">Left Associative</td>
+      </tr>
+      <tr>
+        <td width="24" height="19">*, /</td>
+        <td width="25" height="19">5</td>
+        <td width="108" height="19">Left Associative</td>
+      </tr>
+      <tr>
+        <td width="24" valign="top" height="20">^</td>
+        <td width="25" height="20">6</td>
+        <td width="108" height="20">Right Associative</td>
+      </tr>
+    </tbody></table>
+    </td>
+  </tr>
+</tbody></table>
+
+<p>We use the following grammar <em>G</em>3, in which nonterminal <span class="kbd">Exp</span> is parameterized by a
+precedence level. The idea is that <span class="kbd">Exp(p)</span> recognizes expressions which contain no binary
+operators (other than in parentheses) with precedence less than <span class="kbd">p</span></p>
+
+<pre>E --&gt; Exp(0) 
+Exp(p) --&gt; P {B Exp(q)} 
+P --&gt; U Exp(q) | "(" E ")" | v
+B --&gt; "+" | "-"  | "*" |"/" | "^" | "||" | "&amp;&amp;" | "="
+U --&gt; "-"</pre>
+
+<p>The loop implied by the braces, { and }, in the production for Exp(p) presents a
+problem: when should the loop be exited? This choice is resolved as follows: 
+
+</p><ul>
+  <li>If the next token is a binary operator and the precedence of that operator is greater or
+    equal to <span class="kbd">p</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then the loop is (re)entered.</li>
+  <li>Otherwise the loop is exited.</li>
+</ul>
+
+<p>In the productions for <span class="kbd">Exp(p)</span> and <span class="kbd">P</span>, the recursive use of <span class="kbd">Exp</span> is parameterized, by a
+value <span class="kbd">q</span>. So there is a second choice to resolve: how is <span class="kbd">q</span> chosen? The value of <span class="kbd">q</span> is chosen
+according to the previous operator: 
+
+</p><ul>
+  <li>In the binary operator case: <ul>
+      <li>if the binary operator is left associative, <span class="kbd">q</span> = the precedence of the operator + 1,</li>
+      <li>if the binary operator is right associative,&nbsp;&nbsp;<span class="kbd">q</span> = the precedence of the
+        operator.</li>
+    </ul>
+  </li>
+  <li>After unary operators,&nbsp; <ul>
+      <li><span class="kbd">q</span>=the precedence of the operator.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>&nbsp;Consider what will happen in parsing the expression,&nbsp; <span class="kbd">a * b - c * d - e * f
+= g * h - i * j - k * l</span>. To make things clearer, I'll present this expression 2
+dimensionally to show the precedences of the operators:</p>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+2                       =
+3           -     -           -     -
+5        *     *     *     *     *     *
+        a b   c d   e f   g h   i j   k l
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0  0     0     0&nbsp;&nbsp;&nbsp; </pre>
+
+<p>The call to Exp(0) will directly consume exactly the operators indicated by a 0 underneath. The
+sub-expressions: <span class="kbd">a</span>, <span class="kbd">b</span>, <span class="kbd">c*d</span>, <span class="kbd">e*f</span>, and <span class="kbd">g*h-i*k-k*l </span>will be parsed by calls to <span class="kbd">P</span> and <span class="kbd">Exp(6)</span>,
+<span class="kbd">Exp(4)</span>, <span class="kbd">Exp(4)</span> and <span class="kbd">Exp(3)</span> respectively. The whole parse is illustrated by</p>
+<p><img src="Parsing%20Expressions%20by%20Recursive%20Descent-Dateien/exp_parsing-1.png" width="910" height="394"> </p>
+<p>In this picture, each call to <span class="kbd">Exp</span> is 
+indicated by a dashed contour. The number immediately inside the contour
+ indicates the value of the p parameter. Not shown are the calls to <span class="kbd">P</span>, of which there is one for each variable, in this example.</p>
+<p>What about right-associative operators? Consider an expression </p>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a^b^c</pre>
+
+<p>Because of the different way right-associative operators are treated, <span class="kbd">Exp(0)</span> will only
+directly consume the first <span class="kbd">^</span>, as the second will be gobbled up by a recursive call to Exp(6). </p>
+<p><img src="Parsing%20Expressions%20by%20Recursive%20Descent-Dateien/exp_parsing-2.png" width="413" height="289"></p>
+<p>A recursive-descent parser based on this method looks  like this:</p>
+
+<pre><u>Eparser</u> <strong>is</strong>
+   <strong>var</strong> <u>t</u> : Tree
+&nbsp;&nbsp; t := Exp( 0 )
+&nbsp;&nbsp; expect( end )
+&nbsp;&nbsp; <strong>return</strong> t</pre>
+
+<pre><u>Exp</u>( <u>p</u> ) <strong>is</strong>
+    <strong>var</strong> <u>t</u> : Tree
+    t := P
+    <strong>while</strong> next is a binary operator <strong>and</strong> prec(binary(next)) &gt;= p
+       <strong>const </strong><u>op</u> := binary(next)
+       consume
+       <strong>const</strong> <u>q</u> := <strong>case</strong> associativity(op)
+                  <strong>of</strong> Right: prec( op )
+                     Left:  1+prec( op )
+       <strong>const</strong> <u>t1</u> := Exp( q )
+       t := mkNode( op, t, t1)
+    <strong>return</strong> t</pre>
+
+<pre><u>P</u> <strong>is</strong>
+    <strong>if</strong> next is a unary operator
+         <strong>const </strong><u>op</u> := unary(next)
+         consume
+         q := prec( op )
+         <strong>const </strong><u>t</u> := Exp( q )
+         <strong>return</strong> mkNode( op, t )
+    <strong>else</strong> <strong>if</strong> next = "("
+         consume
+         <strong>const</strong> <u>t</u> := Exp( 0 )
+         expect ")"
+         <strong>return</strong> t
+    <strong>else</strong> <strong>if</strong> next is a v
+         <strong>const</strong> <u>t</u> := mkLeaf( next )
+         consume
+         <strong>return</strong> t<strong>
+    else</strong>
+         error</pre>
+
+<h3>Implementations</h3>
+<p>I've used precedence climbing in a JavaCC parser for a subset of C++. You can find that <a href="https://github.com/theodore-norvell/the-teaching-machine-and-webwriter/blob/master/trunk/tm/src/tm/cpp/parser/cplusplus.jj#L2169">here</a>. I've also
+  used it in a parser based on monadic parsing written in Haskell. </p>
+<p><a href="http://www.engr.mun.ca/~mpbl">Michael Bruce-Lockhart</a> has implemented a table driven version of the precedence climbing 
+algorithm. Download it here <a href="http://www.engr.mun.ca/~theo/Misc/parser.js">parser.js</a> and <a href="http://www.engr.mun.ca/~theo/Misc/parserTest.htm">parserTest.htm</a>.</p>
+<p> Alex de Kruijff has written an implementation of the precedence 
+climbing algorithm as a Java library called Kilmop. You can find it <a href="http://klimop.kruijff.org/">here</a>.</p>
+<p>Christian Kaps has created an implementation of the precedence climbing algorithm in PHP. You can find it at <a href="https://github.com/mohiva/pyramid">https://github.com/mohiva/pyramid</a>.</p>
+<p>Terrence Parr has implemented the idea of precedence climbing in  version 4 of <a href="http://www.engr.mun.ca/~theo/Misc/www.antlr.org">the ANTLR parser generator</a>. You can read about it in his new <a href="http://pragprog.com/book/tpantlr2/the-definitive-antlr-4-reference">book</a>.</p>
+<p>Matthieu Grandrie implemented precedence climbing (and the shunting yard) in <a href="https://github.com/matthieucham/calculator">Python for for a calculator program</a>. </p>
+<h2><a name="more_climbing" id="more_climbing"></a>Deriving precedence climbing</h2>
+<div class="extraInfo">
+<p>As I write this section, it is 2013. I first posted the previous 
+sections over 10 years ago. Lately I've thought a bit more about 
+precedence climbing. I don't want to make the previous section any 
+longer than it already is, so I'm adding this new section. For the 
+interested, it presents an approach to  deriving the algorithm by a 
+combination of grammar transformation and program transformation. Keith 
+Clarke did a similar thing long ago [0], but I thought I'd take a crack 
+at it myself. After completing this section, I read Clarke's paper and 
+found that his approach and presentation is almost the same as mine. The
+ main difference is that I generalize the algorithm to handle postfix 
+operators and nonassociative operators. Also, as discussed later, Clarke
+ uses a clever idea to avoid needing the variable I've called "r".</p>
+<p>If you are not interested in this, then skip to <a href="#bib">the next section</a>.</p></div>
+<p>Let's start with a left-recursive grammar.</p>
+<pre>S --&gt; E0 end
+E0 --&gt; E1 | E1 "=" E1
+E1 --&gt; E2 | E1 "+" E2
+E2 --&gt; E3 | E2 "*" E3
+E3 --&gt; E4 | E3 "!"
+E4 --&gt; E5 | E5 "^" E4
+E5 --&gt; P
+P --&gt; "-" E2 | "(" E0 ")" | v
+</pre>
+<p> We have (in order of increasing precedence)</p>
+<ul>
+  <li>a nonassociative binary operator "=" (e.g., "a=b=c" is not in the language of S),</li>
+  <li>a left-associative operator "+", </li>
+  <li>a prefix operator "-"</li>
+  <li>another left-associative operator "*"</li>
+  <li>a postfix operator "!"</li>
+  <li>a right-associative operator "^".</li>
+</ul>
+<p>Nonassociative operators aren't found in many languages. That's 
+because we can ban "a=b=c", but it is harder to ban "a=(b=c)". 
+Nevertheless, they are easy to add to the grammar and make the problem 
+just a bit more interesting.</p>
+<p>This grammar is not unambiguous, but it almost is. The ambiguity is 
+because "-" has lower precedence than "*" and "^". For example, <span class="kbd">-a*b</span> can be parsed two ways: like <span class="kbd">-(a*b)</span> and like <span class="kbd">(-a)*b</span>. I won't worry about the ambiguity for now. I'll just note that the parse we want is the one that is like <span class="kbd">-(a*b)</span>; later on, we'll check that our parser really does produce the right tree for <span class="kbd">-a*b</span>. There are other ways of handling unary operators; one advantage of the present approach is that <span class="kbd">a*-b</span> is in the language.</p>
+<p>This grammar has both a prefix and postfix operators. But there is a subtle lack of symmetry between them. Note that <span class="kbd">a^-b</span> is in the language of S, whereas <span class="kbd">b!^a</span>
+ is not. In essence, I'm treating postfix operators as binary operators 
+that have no right operand. We'll come back to this issue at the very 
+end of this section. Meanwhile, we'll leave the grammar as is.</p>
+<p>Note that we can use the same symbol for a prefix or binary 
+operators. (E.g., making '-' a binary operator as well as prefix is 
+perfectly fine.) However, I'll assume that the sets of postfix and 
+binary operators don't overlap. The reason is that it is easy to 
+distinguish a unary from a binary operator based on the left context: 
+unary operators follow the start of the expression, left parentheses, 
+binary operators, and unary operators. It is not so easy to tell a 
+binary operator from a postfix operator. Also if we allow operators to 
+be unary, binary and postfix, there is more ambiguity. For example <span class="kbd">a--b</span> is unambiguous if <span class="kbd">-</span> is unary and binary, but ambiguous, if <span class="kbd">-</span> is also postfix.</p>
+<h3>First transformation: Eliminate left recursion and factor</h3>
+<p>There is a transformation rule that A --&gt; a | A b can be written 
+as A --&gt; a {b} where {b} means 0 or more b. We can apply rule this to
+ nonterminals E1, E2, and E3.</p>
+<p>Another rule says we can rewrite A --&gt; s | s b as A --&gt; s [b], 
+where [b] means 0 or 1 b. We apply this to nonterminals E0 and E4.</p>
+<p>The result is</p>
+<pre>S --&gt; E0 end
+E0 --&gt; E1 [ "=" E1 ]
+E1 --&gt; E2 { "+" E2 }
+E2 --&gt; E3 {"*" E3 }
+E3 --&gt; E4 { "!" }
+E4 --&gt; E5 [ "^" E4 ]
+E5 --&gt; P
+P --&gt; "-" E2 | "(" E0 ")" | v
+</pre>
+<p> At this point, if we convert to recursive descent code, we get the <a href="#classic">"classic" algorithm</a>. </p>
+<h3>  Second transformation: Substitutions</h3>
+<p>Next we substitute right-hand sides for left-hand sides. We start by rewriting <span class="kbd">E4</span>'s rule to <span class="kbd">E4 --&gt; P ["^" E4]</span>. Then <span class="kbd">E3</span> can be rewritten as <span class="kbd">E3 --&gt; P ["^" E4] { "!" }</span> and we work backwards like this to <span class="kbd">E0</span>. The result is</p>
+<pre>S --&gt; E0 end
+E0 --&gt; P [ "^" E4 ] { "!" } {"*" E3 } { "+" E2 } [ "=" E1 ]
+E1 --&gt; P [ "^" E4 ] { "!" } {"*" E3 } { "+" E2 }
+E2 --&gt; P [ "^" E4 ] { "!" } {"*" E3 }
+E3 --&gt; P [ "^" E4 ] { "!" }
+E4 --&gt; P [ "^" E4 ]
+P --&gt; "-" E2 | "(" E0 ")" | v
+</pre>
+<p>(<span class="kbd">E5</span> is no longer reachable, so I trashed it.) </p>
+<p>It's a hard to believe we are making progress; bear with me.</p>
+<h3>Third transformation: Compaction</h3>
+<p>Now we want to take advantage of the similarity of the rules for E0 
+through E4. To do this we need a bit more notation. First we'll use a 
+parameterized nonterminal E: so <span class="kbd">E(<em>n</em>)</span> below will match the same strings as <span class="kbd">E<em>n</em></span> above. Second, I'll use the notation <span class="kbd">?(<em>B</em>)</span>, where <em><span class="kbd">B</span></em>
+ is a boolean expression, as a "test". The meaning of a test is that a 
+particular alternative of the grammar can only be taken when <em><span class="kbd">B</span></em> is true. For example <span class="kbd">X [ ?(B) Y]</span> means the same as <span class="kbd">X [Y]</span> when <em><span class="kbd">B</span></em> is true, but means the same as <span class="kbd">X</span> when <em><span class="kbd">B</span></em> is false. Here is the compacted grammar.</p>
+<pre>S --&gt; E(0) end
+E(p) --&gt; P [ ?(p&#8804;4) "^" E(4) ] { ?(p&#8804;3) "!" } { ?(p&#8804;2) "*" E(3) } { ?(p&#8804;1) "+" E(2) } [ ?(p&#8804;0) "=" E(1) ]
+P --&gt; "-" E(2) | "(" E(0) ")" | v
+</pre>
+<p> Now we are getting somewhere.</p>
+<h3><a name="making-a-parser"></a>Making a deterministic recognizer</h3>
+<p>The fourth transformation is easier to explain as a code 
+transformation than as a grammar transformation, so, to get ready, we 
+convert our grammar to a recognizer using the usual recursive descent 
+magic. I won't add any tree building commands yet, as they clutter 
+things up.</p>
+<pre>S <strong>is</strong> E(0) expect( end )
+
+E(p) <strong>is</strong>  
+    P
+    <strong>if</strong> p&#8804;4 <strong>and</strong> next="^" <strong>then</strong> ( consume ; E(4) )
+    <strong>while</strong> p&#8804;3 <strong>and</strong> next="!" <strong>do</strong>  consume
+    <strong>while</strong> p&#8804;2 <strong>and</strong> next="*" <strong>do</strong> ( consume ; E(3) )
+    <strong>while</strong> p&#8804;1 <strong>and</strong> next="+" <strong>do</strong> ( consume ; E(2) )
+    <strong>if</strong> p&#8804;0 <strong>and</strong> next="=" <strong>then</strong> ( consume ; E(1) )
+
+P <strong>is</strong> 
+    <strong>if</strong> next="-" <strong>then</strong> ( consume ; E(2) )
+    <strong>else</strong> <strong>if</strong> next = "(" <strong>then</strong> ( consume ; E(0) ; expect( ")" ) )
+    <strong>else</strong> <strong>if</strong> next is a v <strong>then</strong> consume 
+    <strong>else</strong> error
+</pre>
+<p> This is a deterministic algorithm for an ambiguous grammar: While 
+converting from a grammar to a set of subroutines, I've made a decision 
+about what happens in the ambiguous cases. So, even though there are no 
+tree building commands, at this point we should stop and consider 
+strings such as <span class="kbd">-a*b</span> and <span class="kbd">-a+b</span>,
+ and see whether they are parsed "correctly". I.e., we should ask: if we
+ did have tree building commands, would the right tree be built? Here is
+ what happens for <span class="kbd">-a*b</span> . <span class="kbd">S</span> calls <span class="kbd">E(0)</span>, <span class="kbd">E(0)</span> calls <span class="kbd">P</span>, and <span class="kbd">P</span> consumes the "<span class="kbd">-</span>" and then calls <span class="kbd">E(2)</span>. After consuming "<span class="kbd">a</span>", the call to <span class="kbd">E(2)</span> sees the "<span class="kbd">*</span>". The crucial decision is to consume the "<span class="kbd">*</span>" and the "<span class="kbd">b</span>" in the loop, rather than returning from <span class="kbd">E(2)</span> as soon as "<span class="kbd">a</span>" is consumed. The right tree is built -- or would be, if we were building trees. By contrast, in parsing <span class="kbd">-a+b</span>, <span class="kbd">E(2)</span> consumes the "<span class="kbd">a</span>" and then must return; so it is the call to <span class="kbd">E(0)</span> that consumes the "<span class="kbd">+</span>". The tree we would get is the same as that for <span class="kbd">(-a)+b</span>, just as desired.</p>
+<h3>Fourth transformation: Combining the while loops and the if commands</h3>
+<p>The next transformation is the trickiest one. We want to combine the 
+sequence of if commands and while loops in procedure E into one single 
+while loop. If I have two identical loops sequentially, say</p>
+<pre>    <strong>while</strong> A <strong>do</strong> X
+    <strong>while</strong> A <strong>do</strong> X    ,</pre>
+<p>we can rewrite them as one loop</p>
+<pre>    <strong>while</strong> A <strong>do</strong> X</pre>
+<p>What if the loops are different?. Suppose we have two successive <strong>while</strong> commands</p>
+<pre>    <strong>while</strong> A <strong>do</strong> X
+    <strong>while</strong> B <strong>do</strong> Y  ,</pre>
+<p>and, furthermore, know that <span class="kbd"><strong>not</strong> A</span> is a loop invariant of the second loop (i.e. that  <span class="kbd"><strong>not</strong> A <strong>and</strong> B</span> implies that executing <span class="kbd">Y</span> leaves <span class="kbd">A</span> false), then we can rewrite to</p>
+<pre>    <strong>while</strong> A <strong>or</strong> B <strong>do</strong> <strong>if</strong> A <strong>then</strong> X <strong>else</strong> Y</pre>
+<p>Similarly, if we have an <strong>if</strong> command followed by a <strong>while</strong> command</p>
+<pre>    <strong>if</strong> A <strong>then</strong> X
+    <strong>while</strong> B <strong>do</strong> Y  ,</pre>
+<p>and, furthermore, know that <span class="kbd"><strong>not</strong> A</span> is an invariant of the loop and that after executing <span class="kbd">X</span>, <span class="kbd">A</span> will be false, then we can rewrite to</p>
+<pre>    <strong>while</strong> A <strong>or</strong> B <strong>do</strong> <strong>if</strong> A <strong>then</strong> X <strong>else</strong> Y</pre>
+<p>What if there is no special relationship between the conditions and 
+the commands? Then we can create one. We can use a counter to keep track
+ of how many of the original loops and ifs our one loop is still 
+emulating: For example</p>
+<pre>    <strong>if</strong> A <strong>do</strong> X
+    <strong>while</strong> B <strong>do</strong> Y
+    <strong>while</strong> C <strong>do</strong> Z</pre>
+<p>can <em>always</em> be rewritten as </p>
+<pre>    <strong>var</strong> r := 2
+    <strong>while</strong> 2&#8804;r <strong>and</strong> A
+       <strong>or</strong> 1&#8804;r <strong>and</strong> B
+       <strong>or</strong> 0&#8804;r <strong>and</strong> C
+    <strong>do</strong>
+        <strong>if</strong> 2&#8804;r <strong>and</strong> A <strong>then</strong>      (X ; r := 1)
+        <strong>else</strong> <strong>if</strong> 1&#8804;r <strong>and</strong> B <strong>then</strong> (Y ; r := 1)
+        <strong>else</strong>                   (Z ; r := 0)</pre>
+<p>where <span class="kbd">r</span> is a fresh variable. The <span class="kbd">r</span> variable acts as a ratchet; it prevents backsliding. Once <span class="kbd">X</span> is executed, we set <span class="kbd">r</span> to ensure <span class="kbd">X</span> is never executed again. Once <span class="kbd">Y</span> is executed, we set <span class="kbd">r</span> to ensure that <span class="kbd">X</span> is never executed in the future. Once <span class="kbd">Z</span> is executed, we set r to ensure that neither <span class="kbd">X</span> nor <span class="kbd">Y</span> is executed in the future.</p>
+<p>Applying this loop fusing idea to our latest <span class="kbd">E</span> procedure we get</p>
+<pre>E(p) <strong>is</strong>  
+    P
+    <strong>var</strong> r := 4
+    <strong>while</strong> p&#8804;4&#8804;r <strong>and</strong> next="^"
+    <strong>   or</strong> p&#8804;3&#8804;r <strong>and</strong> next="!"
+    <strong>   or</strong> p&#8804;2&#8804;r <strong>and</strong> next="*"
+    <strong>   or</strong> p&#8804;1&#8804;r <strong>and</strong> next="+"
+    <strong>   or</strong> p&#8804;0&#8804;r <strong>and</strong> next="="
+    <strong>do</strong> 
+        <strong>if</strong> p&#8804;4&#8804;r <strong>and</strong> next="^" <strong>then</strong>      (consume ; E(4) ; r := 3)
+        <strong>else</strong> <strong>if</strong> p&#8804;3&#8804;r <strong>and</strong> next="!" <strong>then</strong> (consume ;        r := 3)
+        <strong>else</strong> <strong>if</strong> p&#8804;2&#8804;r <strong>and</strong> next="*" <strong>then</strong> (consume ; E(3) ; r := 2)
+        <strong>else</strong> <strong>if</strong> p&#8804;1&#8804;r <strong>and</strong> next="+" <strong>then</strong> (consume ; E(2) ; r := 1)
+        <strong>else</strong> /* p&#8804;0&#8804;r <strong>and</strong> next="=" */   (consume ; E(1) ; r := -1)
+</pre>
+<h3> Fifth transformation: Making it table driven</h3>
+<p>Take a look at the latest <span class="kbd">E</span> procedure. If we
+ could eliminate the differences between the branches of the nested ifs,
+ we wouldn't need any branching within the loop body. If we could 
+eliminate the differences between the disjuncts of the loop guard, we 
+could greatly simplify the loop guard. The differences come down to 
+whether an operator is binary or postfix and three numbers:</p>
+<ul>
+  <li><span class="kbd">prec(b)</span>: the precedence of the operator <span class="kbd">b</span> (i.e., the highest value of <span class="kbd">p</span> such that an invocation of <span class="kbd">E(p)</span> can directly consume the operator),</li>
+  <li><span class="kbd">rightPrec(b)</span>: the lowest precedence allowed for operators in <span class="kbd">b</span>'s right operand, and</li>
+  <li><span class="kbd">nextPrec(b)</span>: a value for <span class="kbd">r</span> that prevents the loop from consuming operators whose precedence is too low.</li>
+</ul>
+<p>For example, for + these numbers are respectively 1 (from <span class="kbd">p&#8804;1&#8804;r <strong>and</strong> next="+"</span>), 2 (from <span class="kbd">E(2)</span>), and 1 (from <span class="kbd">r := 1</span>).</p>
+<p>We make the following three tables.</p>
+<table width="90%" border="1">
+  <tbody><tr class="kbd">
+    <th class="kbd" scope="row" align="right"><strong><em>b</em></strong></th>
+    <td align="center"><strong>=</strong></td>
+    <td align="center"><strong>+</strong></td>
+    <td align="center"><strong>*</strong></td>
+    <td align="center"><strong>!</strong></td>
+    <td align="center"><strong>^</strong></td>
+  </tr>
+  <tr>
+    <th class="kbd" scope="row" align="right">prec(<em>b</em>)</th>
+    <td align="center">0</td>
+    <td align="center">1</td>
+    <td align="center">2</td>
+    <td align="center">3</td>
+    <td align="center">4</td>
+  </tr>
+  <tr>
+    <th class="kbd" scope="row" align="right">rightPrec(<em>b</em>)</th>
+    <td align="center">1</td>
+    <td align="center">2</td>
+    <td align="center">3</td>
+    <td align="center">NA</td>
+    <td align="center">4</td>
+  </tr>
+  <tr>
+    <th class="kbd" scope="row" align="right">nextPrec(b)</th>
+    <td align="center">-1</td>
+    <td align="center">1</td>
+    <td align="center">2</td>
+    <td align="center">3</td>
+    <td align="center">3</td>
+  </tr>
+</tbody></table>
+<p>Now we rewrite the latest E procedure to use the tables and, after simplifying, we get</p>
+<pre>E(p) <strong>is</strong>  
+    P
+    <strong>var</strong> r := 4
+    <strong>while</strong> next is a binary or a postfix operator
+      <strong>and</strong> p&#8804;prec(next)&#8804;r <strong>do</strong>
+        <strong>const</strong> b := next
+        consume
+        <strong>if</strong> b is binary <strong>then</strong> E( rightPrec(b) )
+        r := nextPrec(b) </pre>
+<p>This transformation is the one that really makes the algorithm both 
+compact and efficient. The number of operations executed and the size of
+ the code (excluding the table) are now both independent of the number 
+of precedence levels.</p>
+<p>We don't really need three tables. We can define <span class="kbd">rightPrec(b)=1+prec(b)</span> when <span class="kbd">b</span> is left-associative or nonassociative, and <span class="kbd">rightPrec(b)=prec(b)</span> when <span class="kbd">b</span> is right-associative. We can define <span class="kbd">nextPrec(b)=prec(b)</span> when <span class="kbd">b</span> is left-associative or postfix, and <span class="kbd">nextPrec(b)=prec(b)-1</span> when <span class="kbd">b</span> is right-associative or nonassociative. (If we have a postfix operator <span class="kbd">$</span> and want to prevent, say, <span class="kbd">a$$</span>", we make <span class="kbd">nextPrec('$')=prec('$')-1</span>.</p>
+<p>The really alert reader may notice that we didn't have the <span class="kbd">r</span> variable or the <span class="kbd">nextPrec</span> function in <a href="#climbing">the previous section</a>.
+ We need them here because we have nonassociative operators and postfix 
+operators. It also simplifies the argument that the transformation is 
+correct. I'll leave it as an exercise to eliminate <span class="kbd">r</span> when it's not needed. (Or you can read Clarke's paper [0].)</p>
+<p>In the case of postfix operators, the use of <span class="kbd">r</span> and <span class="kbd">nextPrec</span> ensures that, for example, <span class="kbd">a!^b</span> is an error, just as it is in the original grammar. If we want to allow such strings, we can set <span class="kbd">nextPrec('!')</span> to 4. In the <a href="#making-a-parser">first version of procedure E</a>, this amounts to a backwards jump like this:</p>
+<pre>E(p) <strong>is</strong>  
+    P
+    L: <strong>if</strong> p&#8804;4 and next="^" <strong>then</strong> ( consume ; E(4) )
+    <strong>if</strong> p&#8804;3 and next="!" <strong>then</strong> ( consume ; goto L)
+    <strong>while</strong> p&#8804;2 and next="*" <strong>do</strong> ( consume ; E(3) )
+    <strong>while</strong> p&#8804;1 and next="+" <strong>do</strong> ( consume ; E(2) )
+    <strong>if</strong> p&#8804;0 and next="=" <strong>then</strong> ( consume ; E(1) )
+</pre>
+<p>In general, the nextPrec for any postfix operator can be the 
+precedence of the highest precedence operator. This allows a postfix 
+operator to be followed by any binary or postfix operator, just as a 
+prefix operator can follow any binary or prefix operator.</p>
+<h3>Adding tree building operations</h3>
+<p>Finally, we add the tree building operations. Strictly speaking they 
+should have been added as soon as we went to code, so that we could see 
+that the right tree is built for ambiguous inputs and that subsequent 
+transformations have no effect on the tree that is finally built.</p>
+<pre>S <strong>is</strong> <strong>const</strong> t := E(0) ; expect( end ) ; output(t)
+
+E(p) <strong>is</strong>  
+    <strong>var</strong> t := P
+    <strong>var</strong> r := 4
+    <strong>while</strong> next is a binary or a postfix operator
+      <strong>and</strong> p&#8804;prec(next)&#8804;r <strong>do</strong>
+        <strong>const</strong> b := next
+        consume
+        <strong>if</strong> b is binary <strong>then</strong> 
+            <strong>const</strong> t1 := E( rightPrec(b) )
+            t := mknode(binary(b), t, t1)
+        <strong>else</strong> t := mknode(postfix(b), t) 
+        r := nextPrec(b) 
+    <strong>return</strong> t
+
+P is 
+    <strong>if</strong> next="-" <strong>then</strong> ( consume ; <strong>const</strong> t:= E(2) ; <strong>return</strong> mknode(prefix('-', t)) )
+    <strong>else</strong> <strong>if</strong> next = "(" <strong>then</strong> ( consume ; <strong>const</strong> t := E(0) ; expect(")") ; <strong>return</strong> t )
+    <strong>else</strong> <strong>if</strong> next is a v <strong>then</strong> ( <strong>const</strong> t :=  mkleaf(next) ; consume ;  <strong>return</strong> t )
+    <strong>else</strong> error</pre>
+<h2><a name="bib"></a>Bibliographic Notes </h2>
+<p>Recursive descent seems to have been first described by Peter Lucas, 
+who, with a team from IBM's Vienna laboratory, used it in their ALGOL 60
+ compiler. In his report [2], he writes</p>
+<p class="indented">The translator will be designed in such a way, that 
+each meaning of a metalinguistic variable corresponds to a subroutine 
+which carries out the transformation of the string of symbols.</p>
+<p>Another early use of recursive descent parsing was in an ALGOL 60 
+Compiler for the Elliott Brothers' 803 and 503 computers; it was 
+designed by a team of three programmers led by <a href="http://research.microsoft.com/en-us/people/thoare/">C. A. R. Hoare</a>. From Hoare's report on that compiler: </p>
+<p class="indented">The main work is done by a set of procedures, each 
+of which is capable of processing one of the syntactic units defined in 
+the ALGOL 60 report. Where one syntactic unit is defined as consisting 
+of other units, the procedure will be capable of activating other 
+procedures, and where necessary, itself. For example, the procedure 
+"compile arithmetic expression" must be capable of compiling the 
+bracketed constituents of an arithmetic expression, which are themselves
+ arithmetic expressions; this is achieved by a recursive entry to the 
+very procedure "compile arithmetic expression" which is currently 
+engaged on translating the whole expression. [3]</p>
+<p>You can use this compiler yourself; see <a href="http://elliott803.sourceforge.net/docs/algol.html">http://elliott803.sourceforge.net/docs/algol.html</a>. You can read the (disassembled) compiler at <a href="http://www.billp.org/ccs/ElliottAlgol/">http://www.billp.org/ccs/ElliottAlgol/</a>.</p>
+<p>I'm not sure who invented what I am calling the classic algorithm. (Anyone know?)  It was made popular, I think, by <a href="http://en.wikipedia.org/wiki/Niklaus_Wirth">Niklaus Wirth</a> who used it in various compilers, notably for Pascal. I learned it from one of Wirth's books. </p>
+<p>The Shunting-Yard Algorithm was apparently invented by <a href="http://en.wikipedia.org/wiki/Edsger_W._Dijkstra">Edsger Dijkstra</a> around 1960 in connection with one of the first ALGOL 60 compilers. It is described in <a href="http://www.cs.utexas.edu/%7EEWD/MCReps/MR35.PDF">a Mathematisch Centrum report</a>
+ (starting around page 21) [1]. I say "aparently", as essentially the 
+same algorithm is described by Friedrich. Bauer and Klaus Samelson in 
+1960 [5]. I think I first saw a version of it described in an <a href="http://www.engr.mun.ca/~theo/Misc/ti-ad-1976-july.png">ad for the TI SR-52 and SR-56 calculators</a>,
+ two of the earliest pocket calculators to handle precedence. (Prior to 
+1976, pocket calculators either used RPN or treated 2+3*4 as (2+3)*2.)</p>
+<p>I first saw what I've called the precedence climbing method described by <a href="http://www.dcs.qmul.ac.uk/%7Ekeithc/">Keith Clarke</a> in a <a href="http://compilers.iecc.com/comparch/article/92-05-140">posting to comp.compilers
+  in 1992</a>. Keith gives a proof of its correctness, relative to the 
+classic algorithm, by means of program transformation in a 1985 report <a href="http://antlr.org/papers/Clarke-expr-parsing-1986.pdf">"The top-down parsing of expressions"</a> [0]. The algorithm appears to have been first invented by <a href="http://www.cl.cam.ac.uk/~mr10/">Martin Richards</a> for use in the CPL and BCPL compilers. It can be found in the section 6.6 of <em>BCPL -- the language and its compiler</em>
+ [4] and can still be found in recent distributions of BCPL's compiler. 
+Neither Clarke nor Richards had a special name for the algorithm, so my 
+one contribution (besides extending it to postfix and non-associative 
+operators) is suggesting the name "precedence climbing".</p>
+<p>It turns out that precedence climbing is a special case of a more 
+flexible technique called Pratt parsing.&nbsp; Pratt parsing was first 
+described in a paper by Vaughn Pratt [6]. This connection was brought to
+ my attention by  
+
+
+<a href="http://andychu.net/">Andy Chu</a> who wrote about it in  <a href="http://www.oilshell.org/blog/2016/11/03.html">a blog post</a> [7]. &nbsp;I've explored this connection in my own web article&nbsp;<a href="http://www.engr.mun.ca/~theo/Misc/pratt_parsing.htm">From Precedence Climbing to Pratt Parsing</a> [8].</p>
+<h3>References</h3>
+<p>[0] Keith Clarke, <a href="http://antlr.org/papers/Clarke-expr-parsing-1986.pdf">"The top-down parsing of expressions"</a>, Research Report 383, Dept of Computer Science, Queen Mary College. Archived at <a href="http://antlr.org/papers/Clarke-expr-parsing-1986.pdf">http://antlr.org/papers/Clarke-expr-parsing-1986.pdf</a>.</p>
+<p>[1] Edsger W. Dijkstra, "Algol 60 translation : An Algol 60 
+translator for the x1 and Making a translator for Algol 60", Research 
+Report 35, Mathematisch Centrum, Amsterdam, 1961. Reprint archived at <a href="http://www.cs.utexas.edu/users/EWD/MCReps/MR35.PDF">http://www.cs.utexas.edu/users/EWD/MCReps/MR35.PDF</a>.</p>
+<p>[2] Peter Lucas, "The Structure of Formula-Translators", ALGOL Bulletin, Issue Sup 16, Sep. 1961. Archived at <a href="http://archive.computerhistory.org/resources/text/algol/algol_bulletin/AS16/AS16.HTM">http://archive.computerhistory.org/resources/text/algol/algol_bulletin/AS16/AS16.HTM</a>.</p>
+<p>[3] C. A. R. Hoare, "Report on the Elliott ALGOL translator", The 
+Computer Journal, Vol. 5, No. 2, pp. 127-129, 1962. Archived at <a href="http://comjnl.oxfordjournals.org/content/5/2/127.short">http://comjnl.oxfordjournals.org/content/5/2/127.short</a>.</p>
+<p>[4] Martin Richards and Collin Whitby-Stevens, <em>BCPL -- the language and its compiler</em>, 1st ed., Cambridge University Press, 1979.</p>
+<p>[5] F. L. Bauer and K. Samelson, "Sequential formula translation", Communications of the ACM, vol 3, #2, February, 1960.</p>
+<p>[6] Vaughn R. Pratt, "Top down operator precedence", Proceedings of 
+the 1st symposium on principles of programming languages (POPL), 1973, <a href="http://dl.acm.org/citation.cfm?id=512931">http://dl.acm.org/citation.cfm?id=512931</a></p>
+<p>[7] Andy Chu, "Pratt Parsing and Precedence Climbing Are the Same Algorithm", Nov 2016. <a href="http://www.oilshell.org/blog/2016/11/01.html">http://www.oilshell.org/blog/2016/11/01.html</a></p>
+<p>[8] Theodore S. Norvell, "From Precedence Climbing to Pratt Parsing", 2016, <a href="http://www.engr.mun.ca/~theo/Misc/www.engr.mun.ca/~theo/Misc/exp_parsing.htm">www.engr.mun.ca/~theo/Misc/pratt_parsing.htm</a></p>
+<h2>Acknowledgement</h2>
+<p>Thanks to 
+
+
+ Colas Schretter for pointing out an error in the precedence climbing algorithm and suggesting a correction.</p>
+<p>I am grateful to Keith Clarke and Martin Richards for helping me 
+trace the origins of what I've called precedence climbing&nbsp;and to 
+Andy Chu for pointing out the connection to Pratt parsing.</p>
+<p>Thanks to everyone who took the trouble to e-mail me to tell me that 
+they found this article useful, to point me to an implementation, or to 
+tell me that I've made an error.</p>
+<p>&nbsp;</p>
+
+
+</body></html>

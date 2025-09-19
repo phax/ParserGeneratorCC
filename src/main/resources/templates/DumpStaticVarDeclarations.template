@@ -1,0 +1,11 @@
+    protected ${charStreamName}  input_stream;
+
+#if !TABLE_DRIVEN
+    private final int[] jjrounds = new int[${stateSetSize}];
+    private final int[] jjstateSet = new int[2 * ${stateSetSize}];
+#fi
+    private final StringBuilder jjimage = new StringBuilder();
+    private StringBuilder image = jjimage;
+    private int jjimageLen;
+    private int lengthOfMatch;
+    protected int curChar;

@@ -1,0 +1,20 @@
+import java.io.IOException;
+
+/**
+ * Abstract interface for reading from a stream.
+ * The buffering should be done internally.
+ */
+public interface Provider extends java.io.Closeable
+{
+  /**
+   * Reads characters into an array
+   *
+   * @param aDest Destination buffer. May not be <code>null</code>.
+   * @param nOfs Offset at which to start storing characters. Must be &ge; 0.
+   * @param nLen The maximum possible number of characters to read. Must be &ge; 0.
+   * @return The number of characters read, or -1 at the end of the stream
+   * @exception IOException if reading fails
+   */
+  int read (char [] aDest, int nOfs, int nLen) throws IOException;
+}
+ 
