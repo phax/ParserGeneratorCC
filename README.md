@@ -8,7 +8,7 @@ The overall goal is to maintain compatibility to JavaCC but
 * The code itself should be better maintainable
 * The code itself should conform to best-practices
 * Because this is NOT JavaCC the class names are similar, but the base package name changed from `net.javacc` to `com.helger.pgcc`
-* The created code requires Java 1.5  
+* The created code requires at least Java 1.5  
 
 See https://github.com/phax/ph-javacc-maven-plugin/ for a Maven plugin that uses this CC.
 
@@ -31,7 +31,7 @@ Add the following to your pom.xml to use this artifact (replacing `x.y.z` with t
 
 * v2.0.0 - 2025-09-19
     * Using Java 17 as the baseline
-    * Updated to ph-commons 17
+    * Updated to ph-commons 12
 * v1.1.4 - 2022-01-10
     * Updated to ph-commons 10
     * Java non-modern style no longer creates constructors without a Charset. See [issue #29](https://github.com/phax/ParserGeneratorCC/issues/29) - thanks @sfuhrm
