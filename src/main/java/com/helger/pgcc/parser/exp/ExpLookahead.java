@@ -35,11 +35,11 @@ package com.helger.pgcc.parser.exp;
 
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.pgcc.parser.Token;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes lookahead rule for a particular expansion or expansion sequence
@@ -81,7 +81,7 @@ public class ExpLookahead extends Expansion
   /**
    * @return the action_tokens
    */
-  @Nonnull
+  @NonNull
   public final ICommonsList <Token> getActionTokens ()
   {
     return m_action_tokens;

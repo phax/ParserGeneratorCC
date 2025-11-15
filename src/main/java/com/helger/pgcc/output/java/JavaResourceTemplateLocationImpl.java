@@ -33,13 +33,13 @@
  */
 package com.helger.pgcc.output.java;
 
-import com.helger.annotation.Nonempty;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.annotation.Nonempty;
 
 public class JavaResourceTemplateLocationImpl implements IJavaResourceTemplateLocations
 {
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getTokenTemplateResourceUrl ()
   {

@@ -68,6 +68,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.state.ESuccess;
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.CPG;
@@ -77,8 +79,6 @@ import com.helger.pgcc.output.cpp.OtherFilesGenCPP;
 import com.helger.pgcc.output.java.OtherFilesGenJava;
 import com.helger.pgcc.utils.EOptionType;
 import com.helger.pgcc.utils.OptionInfo;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Entry point.
@@ -231,7 +231,7 @@ public class Main
    * @throws IOException
    *         on IO error
    */
-  @Nonnull
+  @NonNull
   public static ESuccess mainProgram (final String... args) throws IOException
   {
     // Initialize all static state

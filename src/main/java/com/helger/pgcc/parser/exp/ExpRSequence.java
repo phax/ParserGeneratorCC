@@ -36,11 +36,11 @@ package com.helger.pgcc.parser.exp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.NfaState;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes regular expressions which are sequences of other regular
@@ -67,7 +67,7 @@ public class ExpRSequence extends AbstractExpRegularExpression
     m_units = seq;
   }
 
-  @Nonnull
+  @NonNull
   public final List <AbstractExpRegularExpression> getUnits ()
   {
     return m_units;

@@ -33,8 +33,8 @@
  */
 package com.helger.pgcc;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public enum EJDKVersion
 {
@@ -62,12 +62,12 @@ public enum EJDKVersion
     m_nMajor = nMajor;
   }
 
-  public boolean isNewerOrEqualsThan (@Nonnull final EJDKVersion aOther)
+  public boolean isNewerOrEqualsThan (@NonNull final EJDKVersion aOther)
   {
     return m_nMajor >= aOther.m_nMajor;
   }
 
-  public boolean isOlderThan (@Nonnull final EJDKVersion aOther)
+  public boolean isOlderThan (@NonNull final EJDKVersion aOther)
   {
     return m_nMajor < aOther.m_nMajor;
   }

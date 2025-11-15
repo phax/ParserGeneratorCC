@@ -39,18 +39,18 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.rt.StackTraceHelper;
 import com.helger.base.string.StringHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 public final class PGPrinter
 {
   public static interface IPrinter extends AutoCloseable
   {
-    void println (@Nonnull String s);
+    void println (@NonNull String s);
 
     void flush ();
   }
@@ -60,7 +60,7 @@ public final class PGPrinter
     private final PrintStream m_aPS;
     private final boolean m_bCanClose;
 
-    public PSPrinter (@Nonnull final PrintStream aPS, final boolean bCanClose)
+    public PSPrinter (@NonNull final PrintStream aPS, final boolean bCanClose)
     {
       m_aPS = aPS;
       m_bCanClose = bCanClose;
@@ -72,7 +72,7 @@ public final class PGPrinter
         m_aPS.close ();
     }
 
-    public void println (@Nonnull final String s)
+    public void println (@NonNull final String s)
     {
       if (StringHelper.isEmpty (s))
         m_aPS.println ();
@@ -92,12 +92,12 @@ public final class PGPrinter
   private PGPrinter ()
   {}
 
-  public static void init (@Nonnull final IPrinter aPrinter)
+  public static void init (@NonNull final IPrinter aPrinter)
   {
     init (aPrinter, aPrinter);
   }
 
-  public static void init (@Nonnull final IPrinter aPrinterInfo, @Nonnull final IPrinter aPrinterError)
+  public static void init (@NonNull final IPrinter aPrinterInfo, @NonNull final IPrinter aPrinterError)
   {
     ValueEnforcer.notNull (aPrinterInfo, "PrinterInfo");
     ValueEnforcer.notNull (aPrinterError, "PrinterError");
@@ -105,7 +105,7 @@ public final class PGPrinter
     s_aErr = aPrinterError;
   }
 
-  public static void debug (@Nonnull final String sMsg)
+  public static void debug (@NonNull final String sMsg)
   {
     s_aOut.println (sMsg);
   }
@@ -115,29 +115,29 @@ public final class PGPrinter
     s_aOut.println (null);
   }
 
-  public static void info (@Nonnull final String sMsg)
+  public static void info (@NonNull final String sMsg)
   {
     s_aOut.println (sMsg);
   }
 
-  public static void warn (@Nonnull final String sMsg)
+  public static void warn (@NonNull final String sMsg)
   {
     warn (sMsg, null);
   }
 
-  public static void warn (@Nonnull final String sMsg, @Nullable final Throwable t)
+  public static void warn (@NonNull final String sMsg, @Nullable final Throwable t)
   {
     s_aErr.println (sMsg);
     if (t != null)
       s_aErr.println (StackTraceHelper.getStackAsString (t));
   }
 
-  public static void error (@Nonnull final String sMsg)
+  public static void error (@NonNull final String sMsg)
   {
     error (sMsg, null);
   }
 
-  public static void error (@Nonnull final String sMsg, @Nullable final Throwable t)
+  public static void error (@NonNull final String sMsg, @Nullable final Throwable t)
   {
     s_aErr.println (sMsg);
     if (t != null)
@@ -156,13 +156,13 @@ public final class PGPrinter
     s_aErr.close ();
   }
 
-  @Nonnull
+  @NonNull
   public static PrintWriter getOutWriter ()
   {
     return new PrintWriter (new OutputStreamWriter (System.out, Charset.defaultCharset ()));
   }
 
-  @Nonnull
+  @NonNull
   public static PrintWriter getErrWriter ()
   {
     return new PrintWriter (new OutputStreamWriter (System.err, Charset.defaultCharset ()));

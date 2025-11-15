@@ -66,6 +66,8 @@ package com.helger.pgcc.jjtree;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.state.ESuccess;
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.jjtree.output.JJTreeStateCpp;
@@ -74,8 +76,6 @@ import com.helger.pgcc.jjtree.output.NodeFilesCpp;
 import com.helger.pgcc.jjtree.output.NodeFilesJava;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.Options;
-
-import jakarta.annotation.Nonnull;
 
 public class JJTree
 {
@@ -146,7 +146,7 @@ public class JJTree
    *        commandline arguments
    * @return {@link ESuccess}
    */
-  @Nonnull
+  @NonNull
   public ESuccess main (final String [] args)
   {
     // initialize static state for allowing repeat runs without exiting

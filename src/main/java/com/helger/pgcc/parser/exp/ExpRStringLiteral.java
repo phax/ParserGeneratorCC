@@ -72,6 +72,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.reflection.GenericReflection;
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.output.EOutputLanguage;
@@ -85,8 +87,6 @@ import com.helger.pgcc.parser.NfaState;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.parser.Token;
 import com.helger.pgcc.parser.TokenizerData;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes string literals.
@@ -759,7 +759,7 @@ public class ExpRStringLiteral extends AbstractExpRegularExpression
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   private static String _getCaseChar (final char c, final EOutputLanguage eOutputLanguage)
   {
     if (false)

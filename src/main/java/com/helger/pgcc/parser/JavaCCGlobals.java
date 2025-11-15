@@ -45,6 +45,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.string.StringHelper;
 import com.helger.base.string.StringImplode;
@@ -57,9 +60,6 @@ import com.helger.pgcc.PGVersion;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpAction;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This package contains data created as a result of parsing and semanticizing a JavaCC input file.
@@ -368,7 +368,7 @@ public final class JavaCCGlobals
    *        file name
    * @return tool names
    */
-  @Nonnull
+  @NonNull
   public static List <String> getToolNames (final String fileName)
   {
     final Charset aCS = Options.getOutputEncoding ();
@@ -429,8 +429,8 @@ public final class JavaCCGlobals
     }
   }
 
-  @Nonnull
-  public static String addEscapes (@Nonnull final String str)
+  @NonNull
+  public static String addEscapes (@NonNull final String str)
   {
     final StringBuilder retval = new StringBuilder (str.length () * 2);
     for (final char ch : str.toCharArray ())
@@ -528,7 +528,7 @@ public final class JavaCCGlobals
     s_ccol = tt.beginColumn;
   }
 
-  protected static void printTokenOnly (@Nonnull final Token t, @Nonnull final PrintWriter ostr)
+  protected static void printTokenOnly (@NonNull final Token t, @NonNull final PrintWriter ostr)
   {
     for (; s_cline < t.beginLine; s_cline++)
     {
@@ -553,7 +553,7 @@ public final class JavaCCGlobals
     }
   }
 
-  public static void printToken (@Nonnull final Token t, @Nonnull final PrintWriter ostr)
+  public static void printToken (@NonNull final Token t, @NonNull final PrintWriter ostr)
   {
     Token tt = t.specialToken;
     if (tt != null)
@@ -569,7 +569,7 @@ public final class JavaCCGlobals
     printTokenOnly (t, ostr);
   }
 
-  protected static void printTokenList (@Nonnull final List <Token> list, @Nonnull final PrintWriter ostr)
+  protected static void printTokenList (@NonNull final List <Token> list, @NonNull final PrintWriter ostr)
   {
     Token t = null;
     for (final Iterator <Token> it = list.iterator (); it.hasNext ();)
@@ -582,7 +582,7 @@ public final class JavaCCGlobals
       printTrailingComments (t);
   }
 
-  protected static void printLeadingComments (@Nonnull final Token t, @Nonnull final PrintWriter ostr)
+  protected static void printLeadingComments (@NonNull final Token t, @NonNull final PrintWriter ostr)
   {
     if (t.specialToken == null)
       return;
@@ -602,8 +602,8 @@ public final class JavaCCGlobals
     }
   }
 
-  @Nonnull
-  public static String printTokenOnly (@Nonnull final Token t)
+  @NonNull
+  public static String printTokenOnly (@NonNull final Token t)
   {
     final StringBuilder aSB = new StringBuilder (t.image.length () * 2);
     for (; s_cline < t.beginLine; s_cline++)
@@ -630,8 +630,8 @@ public final class JavaCCGlobals
     return aSB.toString ();
   }
 
-  @Nonnull
-  public static String printToken (@Nonnull final Token t)
+  @NonNull
+  public static String printToken (@NonNull final Token t)
   {
     final StringBuilder aSB = new StringBuilder ();
     Token tt = t.specialToken;
@@ -649,8 +649,8 @@ public final class JavaCCGlobals
     return aSB.toString ();
   }
 
-  @Nonnull
-  protected static String printLeadingComments (@Nonnull final Token t)
+  @NonNull
+  protected static String printLeadingComments (@NonNull final Token t)
   {
     if (t.specialToken == null)
       return "";
@@ -673,8 +673,8 @@ public final class JavaCCGlobals
     return aSB.toString ();
   }
 
-  @Nonnull
-  public static String printTrailingComments (@Nonnull final Token t)
+  @NonNull
+  public static String printTrailingComments (@NonNull final Token t)
   {
     if (t.next == null)
       return "";
@@ -713,7 +713,7 @@ public final class JavaCCGlobals
     s_sNextStateForEof = null;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   static String getFileExtension ()
   {
@@ -735,7 +735,7 @@ public final class JavaCCGlobals
    *        source string
    * @return result string
    */
-  public static String replaceBackslash (@Nonnull final String str)
+  public static String replaceBackslash (@NonNull final String str)
   {
     if (str.indexOf ('\\') < 0)
     {

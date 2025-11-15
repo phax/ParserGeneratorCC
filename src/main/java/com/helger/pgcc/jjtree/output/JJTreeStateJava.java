@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.pgcc.EJDKVersion;
@@ -46,8 +48,6 @@ import com.helger.pgcc.jjtree.JJTreeIO;
 import com.helger.pgcc.jjtree.JJTreeOptions;
 import com.helger.pgcc.output.OutputFile;
 import com.helger.pgcc.parser.Options;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Generate the State of a tree.
@@ -65,7 +65,7 @@ public final class JJTreeStateJava
     io.println ();
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   private static String _nameState ()
   {
@@ -87,7 +87,7 @@ public final class JJTreeStateJava
     }
   }
 
-  private static void _insertState (@Nonnull final PrintWriter ostr)
+  private static void _insertState (@NonNull final PrintWriter ostr)
   {
     final EJDKVersion eJavaVersion = Options.getJdkVersion ();
     final boolean bEmptyImplType = eJavaVersion.isNewerOrEqualsThan (EJDKVersion.JDK_1_7);

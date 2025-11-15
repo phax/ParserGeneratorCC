@@ -41,6 +41,7 @@ import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,14 +56,12 @@ import com.helger.io.file.FilenameHelper;
 import com.helger.io.file.IFileFilter;
 import com.helger.pgcc.jjtree.JJTree;
 
-import jakarta.annotation.Nonnull;
-
 public final class GrammarsParsingFuncTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (GrammarsParsingFuncTest.class);
 
-  private static void _parseCreatedJavaFiles (@Nonnull final File fGrammarDest,
-                                              @Nonnull final Charset aCharset) throws FileNotFoundException
+  private static void _parseCreatedJavaFiles (@NonNull final File fGrammarDest,
+                                              @NonNull final Charset aCharset) throws FileNotFoundException
   {
     // Parse all created Java files
     for (final File fJava : new FileSystemIterator (fGrammarDest).withFilter (IFileFilter.filenameEndsWith (".java")))

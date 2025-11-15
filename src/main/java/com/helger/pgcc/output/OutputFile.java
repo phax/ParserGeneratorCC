@@ -45,6 +45,8 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.WillCloseWhenClosed;
 import com.helger.base.io.nonblocking.NonBlockingBufferedReader;
 import com.helger.base.io.stream.NullOutputStream;
@@ -57,8 +59,6 @@ import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.Options;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This class handles the creation and maintenance of the boiler-plate classes, such as Token.java,
@@ -327,7 +327,7 @@ public class OutputFile implements AutoCloseable
 
   private final class TrapClosePrintWriter extends PrintWriter
   {
-    public TrapClosePrintWriter (final OutputStream os, @Nonnull final Charset aCS)
+    public TrapClosePrintWriter (final OutputStream os, @NonNull final Charset aCS)
     {
       super (new OutputStreamWriter (os, aCS));
     }

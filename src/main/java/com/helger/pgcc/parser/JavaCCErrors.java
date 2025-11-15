@@ -33,13 +33,13 @@
  */
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.parser.exp.CharacterRange;
 import com.helger.pgcc.parser.exp.Expansion;
 import com.helger.pgcc.parser.exp.SingleCharacter;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Output error messages and keep track of totals.
@@ -53,7 +53,7 @@ public final class JavaCCErrors
   private JavaCCErrors ()
   {}
 
-  @Nonnull
+  @NonNull
   private static String _getLocationInfo (@Nullable final Object node)
   {
     if (node instanceof NormalProduction)

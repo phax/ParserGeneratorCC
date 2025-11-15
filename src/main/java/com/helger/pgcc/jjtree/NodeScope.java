@@ -33,7 +33,7 @@
  */
 package com.helger.pgcc.jjtree;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class NodeScope
 {

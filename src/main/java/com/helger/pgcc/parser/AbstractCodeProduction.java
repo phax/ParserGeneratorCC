@@ -33,11 +33,11 @@
  */
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes a CODE productions.
@@ -53,7 +53,7 @@ public abstract class AbstractCodeProduction extends NormalProduction
   /**
    * @return the code_tokens
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
   public final ICommonsList <Token> getCodeTokens ()
   {

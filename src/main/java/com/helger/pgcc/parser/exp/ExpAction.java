@@ -35,12 +35,12 @@ package com.helger.pgcc.parser.exp;
 
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.pgcc.parser.Token;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes actions that may occur on the right hand side of productions.
@@ -59,7 +59,7 @@ public class ExpAction extends Expansion
   /**
    * @return the action_tokens
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
   public final ICommonsList <Token> getActionTokens ()
   {

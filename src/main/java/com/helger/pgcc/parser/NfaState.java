@@ -73,12 +73,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * The state of a Non-deterministic Finite Automaton.
@@ -163,7 +163,7 @@ public class NfaState
     m_lookingFor = LexGenJava.s_curKind;
   }
 
-  @Nonnull
+  @NonNull
   private NfaState _createClone ()
   {
     final NfaState retVal = new NfaState ();
@@ -201,7 +201,7 @@ public class NfaState
     return ret;
   }
 
-  public void addMove (@Nonnull final NfaState newState)
+  public void addMove (@NonNull final NfaState newState)
   {
     if (!m_epsilonMoves.contains (newState))
       _insertInOrder (m_epsilonMoves, newState);

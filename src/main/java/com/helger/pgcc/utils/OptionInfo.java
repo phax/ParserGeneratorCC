@@ -33,12 +33,12 @@
  */
 package com.helger.pgcc.utils;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.base.compare.IComparable;
 import com.helger.base.equals.EqualsHelper;
 import com.helger.base.hashcode.HashCodeGenerator;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * @author Chris Ainsley
@@ -49,20 +49,20 @@ public class OptionInfo implements IComparable <OptionInfo>
   private final EOptionType m_type;
   private final Comparable <?> m_default;
 
-  public OptionInfo (@Nonnull final String name, @Nonnull final EOptionType type, @Nullable final Comparable <?> default1)
+  public OptionInfo (@NonNull final String name, @NonNull final EOptionType type, @Nullable final Comparable <?> default1)
   {
     m_name = name;
     m_type = type;
     m_default = default1;
   }
 
-  @Nonnull
+  @NonNull
   public String getName ()
   {
     return m_name;
   }
 
-  @Nonnull
+  @NonNull
   public EOptionType getType ()
   {
     return m_type;

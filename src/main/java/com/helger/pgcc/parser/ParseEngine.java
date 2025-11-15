@@ -77,6 +77,8 @@ import static com.helger.pgcc.parser.JavaCCGlobals.s_tokenCount;
 import java.util.HashSet;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
@@ -96,8 +98,6 @@ import com.helger.pgcc.parser.exp.ExpTryBlock;
 import com.helger.pgcc.parser.exp.ExpZeroOrMore;
 import com.helger.pgcc.parser.exp.ExpZeroOrOne;
 import com.helger.pgcc.parser.exp.Expansion;
-
-import jakarta.annotation.Nonnull;
 
 public class ParseEngine
 {
@@ -1564,7 +1564,7 @@ public class ParseEngine
     return "return " + retval + ";";
   }
 
-  private void _generate3R (@Nonnull final Expansion e, final Phase3Data inf)
+  private void _generate3R (@NonNull final Expansion e, final Phase3Data inf)
   {
     Expansion seq = e;
     if (e.hasNoInternalName ())

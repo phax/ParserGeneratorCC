@@ -69,7 +69,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public class ASTNodeDescriptor extends JJTreeNode
 {
@@ -86,13 +86,13 @@ public class ASTNodeDescriptor extends JJTreeNode
     return nd;
   }
 
-  @Nonnull
+  @NonNull
   public static List <String> getNodeIds ()
   {
     return s_aNodeIds;
   }
 
-  @Nonnull
+  @NonNull
   public static List <String> getNodeNames ()
   {
     return s_aNodeNames;

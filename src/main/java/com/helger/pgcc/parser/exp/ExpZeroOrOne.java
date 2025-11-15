@@ -35,9 +35,9 @@ package com.helger.pgcc.parser.exp;
 
 import java.util.Set;
 
-import com.helger.pgcc.parser.Token;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.pgcc.parser.Token;
 
 /**
  * Describes zero-or-one expansions (e.g., [foo], foo?).
@@ -57,7 +57,7 @@ public class ExpZeroOrOne extends Expansion
     e.setParent (this);
   }
 
-  @Nonnull
+  @NonNull
   public final Expansion getExpansion ()
   {
     return m_expansion;

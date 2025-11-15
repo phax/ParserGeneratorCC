@@ -38,6 +38,8 @@ import java.io.File;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.state.ESuccess;
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.PGPrinter;
@@ -49,8 +51,6 @@ import com.helger.pgcc.parser.MetaParseException;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.parser.ParseException;
 import com.helger.pgcc.parser.StreamProvider;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Main class.
@@ -131,7 +131,7 @@ public final class JJDocMain
    *         in case of error
    */
   @SuppressWarnings ("resource")
-  @Nonnull
+  @NonNull
   public static ESuccess mainProgram (final String [] args) throws Exception
   {
     Main.reInitAll ();

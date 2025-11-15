@@ -37,11 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.pgcc.parser.Token;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes expansions that are sequences of expansion units. (c1 c2 ...)
@@ -64,7 +64,7 @@ public class ExpSequence extends Expansion
     m_units.add (lookahead);
   }
 
-  @Nonnull
+  @NonNull
   public final Iterable <Expansion> getUnits ()
   {
     return m_units;
@@ -76,7 +76,7 @@ public class ExpSequence extends Expansion
     return m_units.size ();
   }
 
-  @Nonnull
+  @NonNull
   public final Expansion getUnitAt (final int nIndex)
   {
     return m_units.get (nIndex);

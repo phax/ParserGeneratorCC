@@ -35,10 +35,10 @@ package com.helger.pgcc.parser.exp;
 
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.base.string.StringHelper;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes expansions - entities that may occur on the right hand sides of
@@ -135,7 +135,7 @@ public class Expansion
     return sName.substring (sName.lastIndexOf (".") + 1);
   }
 
-  @Nonnull
+  @NonNull
   protected static StringBuilder dumpPrefix (final int indent)
   {
     final StringBuilder sb = new StringBuilder (indent * 2);

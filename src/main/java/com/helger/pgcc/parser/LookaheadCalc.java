@@ -39,6 +39,9 @@ import static com.helger.pgcc.parser.JavaCCGlobals.addEscapes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpChoice;
@@ -49,9 +52,6 @@ import com.helger.pgcc.parser.exp.ExpSequence;
 import com.helger.pgcc.parser.exp.ExpZeroOrMore;
 import com.helger.pgcc.parser.exp.ExpZeroOrOne;
 import com.helger.pgcc.parser.exp.Expansion;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 public final class LookaheadCalc
 {
@@ -105,7 +105,7 @@ public final class LookaheadCalc
     return false;
   }
 
-  private static String _image (@Nonnull final MatchInfo m)
+  private static String _image (@NonNull final MatchInfo m)
   {
     String ret = "";
     for (int i = 0; i < m.m_firstFreeLoc; i++)
@@ -288,7 +288,7 @@ public final class LookaheadCalc
     return ch.getChoiceCount ();
   }
 
-  @Nonnull
+  @NonNull
   private static String _image (final Expansion exp)
   {
     if (exp instanceof ExpOneOrMore)

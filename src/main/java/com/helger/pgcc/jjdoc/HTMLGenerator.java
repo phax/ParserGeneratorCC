@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
@@ -49,8 +51,6 @@ import com.helger.xml.serialize.write.EXMLCharMode;
 import com.helger.xml.serialize.write.EXMLIncorrectCharacterHandling;
 import com.helger.xml.serialize.write.EXMLSerializeVersion;
 import com.helger.xml.serialize.write.XMLMaskHelper;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Output BNF in HTML 3.2 format.
@@ -68,7 +68,7 @@ public class HTMLGenerator extends TextGenerator
     return m_aIDMap.computeIfAbsent (nt, k -> "prod" + m_nID++);
   }
 
-  private void _println (@Nonnull final String s) throws IOException
+  private void _println (@NonNull final String s) throws IOException
   {
     print (s + "\n");
   }

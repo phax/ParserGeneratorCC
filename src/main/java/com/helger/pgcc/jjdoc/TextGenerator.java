@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.string.StringHelper;
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.PGPrinter;
@@ -49,8 +51,6 @@ import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpNonTerminal;
 import com.helger.pgcc.parser.exp.Expansion;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Output BNF in text format.
@@ -163,7 +163,7 @@ public class TextGenerator implements IDocGenerator
    *
    * @return Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   protected static Writer createPrintWriter ()
   {
     String ext = ".html";
@@ -183,8 +183,8 @@ public class TextGenerator implements IDocGenerator
    *
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  protected static Writer createPrintWriter (@Nonnull final String ext)
+  @NonNull
+  protected static Writer createPrintWriter (@NonNull final String ext)
   {
     if (StringHelper.isEmpty (JJDocOptions.getOutputFile ()))
     {

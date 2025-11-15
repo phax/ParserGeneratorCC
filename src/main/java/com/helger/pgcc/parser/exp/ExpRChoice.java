@@ -36,14 +36,14 @@ package com.helger.pgcc.parser.exp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.LexGenJava;
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.NfaState;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes regular expressions which are choices from from among included
@@ -64,7 +64,7 @@ public class ExpRChoice extends AbstractExpRegularExpression
   /**
    * @return the choices
    */
-  @Nonnull
+  @NonNull
   public final List <AbstractExpRegularExpression> getChoices ()
   {
     return m_choices;
@@ -76,13 +76,13 @@ public class ExpRChoice extends AbstractExpRegularExpression
     return m_choices.size ();
   }
 
-  @Nonnull
+  @NonNull
   public final AbstractExpRegularExpression getChoiceAt (final int nIndex)
   {
     return m_choices.get (nIndex);
   }
 
-  public final void addChoice (@Nonnull final AbstractExpRegularExpression a)
+  public final void addChoice (@NonNull final AbstractExpRegularExpression a)
   {
     ValueEnforcer.notNull (a, "Expansion");
     m_choices.add (a);

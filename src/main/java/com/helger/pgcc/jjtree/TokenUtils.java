@@ -33,9 +33,9 @@
  */
 package com.helger.pgcc.jjtree;
 
-import com.helger.pgcc.parser.JavaCCErrors;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.pgcc.parser.JavaCCErrors;
 
 /**
  * Utilities for manipulating Tokens.
@@ -89,7 +89,7 @@ public final class TokenUtils
     return ret.toString ();
   }
 
-  static boolean hasTokens (@Nonnull final JJTreeNode n)
+  static boolean hasTokens (@NonNull final JJTreeNode n)
   {
     if (n.getLastToken ().next == n.getFirstToken ())
       return false;

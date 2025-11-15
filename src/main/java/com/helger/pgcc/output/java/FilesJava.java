@@ -46,6 +46,8 @@ import java.io.PrintWriter;
 import java.io.UncheckedIOException;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.WillNotClose;
 import com.helger.pgcc.EJDKVersion;
 import com.helger.pgcc.PGVersion;
@@ -53,8 +55,6 @@ import com.helger.pgcc.output.OutputFile;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.utils.OutputFileGenerator;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Generate CharStream, TokenManager and Exceptions.
@@ -110,7 +110,7 @@ public class FilesJava
     return ret;
   }
 
-  private static void _writePackageName (@Nonnull @WillNotClose final PrintWriter ostr)
+  private static void _writePackageName (@NonNull @WillNotClose final PrintWriter ostr)
   {
     if (CU_TO_INSERTION_POINT_1.isNotEmpty () && CU_TO_INSERTION_POINT_1.get (0).kind == PACKAGE)
     {

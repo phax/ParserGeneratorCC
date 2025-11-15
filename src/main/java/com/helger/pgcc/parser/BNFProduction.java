@@ -36,9 +36,9 @@ package com.helger.pgcc.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.helger.annotation.style.ReturnsMutableObject;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.annotation.style.ReturnsMutableObject;
 
 /**
  * Describes BNF productions.
@@ -60,7 +60,7 @@ public class BNFProduction extends NormalProduction
   /**
    * @return the declaration_tokens
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
   public List <Token> getDeclarationTokens ()
   {

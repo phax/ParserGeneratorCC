@@ -37,14 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.OverridingMethodsMustInvokeSuper;
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.Token;
 import com.helger.pgcc.parser.TokenProduction;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Describes regular expressions.
@@ -124,7 +124,7 @@ public abstract class AbstractExpRegularExpression extends Expansion
     m_ordinal = n;
   }
 
-  @Nonnull
+  @NonNull
   public final List <Token> getLhsTokens ()
   {
     return m_lhsTokens;
@@ -134,7 +134,7 @@ public abstract class AbstractExpRegularExpression extends Expansion
    * @param lhsTokens
    *        the lhsTokens to set
    */
-  public final void setLhsTokens (@Nonnull final List <Token> lhsTokens)
+  public final void setLhsTokens (@NonNull final List <Token> lhsTokens)
   {
     m_lhsTokens.clear ();
     m_lhsTokens.addAll (lhsTokens);

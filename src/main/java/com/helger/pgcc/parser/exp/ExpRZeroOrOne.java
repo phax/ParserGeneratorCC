@@ -33,11 +33,11 @@
  */
 package com.helger.pgcc.parser.exp;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.NfaState;
 import com.helger.pgcc.parser.Token;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes zero-or-one regular expressions (&lt;foo?&gt;).
@@ -61,7 +61,7 @@ public class ExpRZeroOrOne extends AbstractExpRegularExpression
     setColumn (t.beginColumn);
   }
 
-  @Nonnull
+  @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {
     return m_regexpr;

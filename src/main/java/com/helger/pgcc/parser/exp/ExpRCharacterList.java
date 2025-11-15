@@ -36,14 +36,14 @@ package com.helger.pgcc.parser.exp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.NfaState;
 import com.helger.pgcc.parser.Options;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes character lists.
@@ -1836,7 +1836,7 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
     return retVal;
   }
 
-  private static boolean _overlaps (@Nonnull final CharacterRange r1, @Nonnull final CharacterRange r2)
+  private static boolean _overlaps (@NonNull final CharacterRange r1, @NonNull final CharacterRange r2)
   {
     return r1.getLeft () <= r2.getRight () && r1.getRight () > r2.getRight ();
   }
@@ -2071,13 +2071,13 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
     m_negated_list = b;
   }
 
-  @Nonnull
+  @NonNull
   public final List <ICCCharacter> getDescriptors ()
   {
     return m_descriptors;
   }
 
-  public final void addDescriptor (@Nonnull final ICCCharacter a)
+  public final void addDescriptor (@NonNull final ICCCharacter a)
   {
     ValueEnforcer.notNull (a, "CCCharacter");
     m_descriptors.add (a);

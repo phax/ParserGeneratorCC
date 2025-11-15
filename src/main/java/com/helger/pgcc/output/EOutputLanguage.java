@@ -33,12 +33,12 @@
  */
 package com.helger.pgcc.output;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.id.IHasID;
 import com.helger.base.lang.EnumHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Various constants relating to possible values for certain options
@@ -89,12 +89,12 @@ public enum EOutputLanguage implements IHasID <String>
 
   private final String m_sID;
 
-  private EOutputLanguage (@Nonnull @Nonempty final String sID)
+  private EOutputLanguage (@NonNull @Nonempty final String sID)
   {
     m_sID = sID;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getID ()
   {
@@ -104,7 +104,7 @@ public enum EOutputLanguage implements IHasID <String>
   /**
    * @return The native data type for "long" values.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public abstract String getTypeLong ();
 
@@ -112,17 +112,17 @@ public enum EOutputLanguage implements IHasID <String>
    * @return The value suffix to be used for long values.
    * @see #getTypeLong()
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   protected abstract String getLongValueSuffix ();
 
-  @Nonnull
+  @NonNull
   public String getLongHex (final long n)
   {
     return "0x" + Long.toHexString (n) + getLongValueSuffix ();
   }
 
-  @Nonnull
+  @NonNull
   public String getLongPlain (final long n)
   {
     return "0x" + Long.toString (n) + getLongValueSuffix ();
@@ -131,7 +131,7 @@ public enum EOutputLanguage implements IHasID <String>
   /**
    * @return The native data type for "boolean" values.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public abstract String getTypeBoolean ();
 

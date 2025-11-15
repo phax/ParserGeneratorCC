@@ -46,14 +46,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.io.nonblocking.NonBlockingBufferedWriter;
 import com.helger.base.io.nonblocking.NonBlockingStringWriter;
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.utils.OutputFileGenerator;
-
-import jakarta.annotation.Nonnull;
 
 public class CodeGenerator
 {
@@ -68,7 +68,7 @@ public class CodeGenerator
   public CodeGenerator ()
   {}
 
-  @Nonnull
+  @NonNull
   public final EOutputLanguage getOutputLanguage ()
   {
     return Options.getOutputLanguage ();
@@ -278,12 +278,12 @@ public class CodeGenerator
     return retval;
   }
 
-  protected final void printToken (@Nonnull final Token t)
+  protected final void printToken (@NonNull final Token t)
   {
     genCode (getStringToPrint (t));
   }
 
-  protected final String getStringToPrint (@Nonnull final Token t)
+  protected final String getStringToPrint (@NonNull final Token t)
   {
     String retval = "";
     Token tt = t.specialToken;

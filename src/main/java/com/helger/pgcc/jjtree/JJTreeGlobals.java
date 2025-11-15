@@ -41,7 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public class JJTreeGlobals
 {
@@ -133,7 +133,7 @@ public class JJTreeGlobals
     initialize ();
   }
 
-  public static boolean isOptionJJTreeOnly (@Nonnull final String optionName)
+  public static boolean isOptionJJTreeOnly (@NonNull final String optionName)
   {
     return s_jjtreeOptions.contains (optionName.toUpperCase (Locale.US));
   }

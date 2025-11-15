@@ -35,9 +35,9 @@ package com.helger.pgcc.parser.exp;
 
 import java.util.Set;
 
-import com.helger.pgcc.parser.Token;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.pgcc.parser.Token;
 
 /**
  * Describes one-or-more expansions (e.g., foo+).
@@ -49,7 +49,7 @@ public class ExpOneOrMore extends Expansion
    */
   private final Expansion m_expansion;
 
-  public ExpOneOrMore (@Nonnull final Token t, @Nonnull final Expansion e)
+  public ExpOneOrMore (@NonNull final Token t, @NonNull final Expansion e)
   {
     setLine (t.beginLine);
     setColumn (t.beginColumn);
@@ -57,7 +57,7 @@ public class ExpOneOrMore extends Expansion
     e.setParent (this);
   }
 
-  @Nonnull
+  @NonNull
   public final Expansion getExpansion ()
   {
     return m_expansion;

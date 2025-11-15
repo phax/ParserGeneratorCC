@@ -36,10 +36,10 @@ package com.helger.pgcc.parser.exp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.Token;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes one-or-more regular expressions (&lt;foo+&gt;).
@@ -64,7 +64,7 @@ public class ExpRRepetitionRange extends AbstractExpRegularExpression
     m_regexpr = r;
   }
 
-  @Nonnull
+  @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {
     return m_regexpr;

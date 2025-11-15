@@ -33,10 +33,10 @@
  */
 package com.helger.pgcc.parser.exp;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.Token;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes character range descriptors in a character list.
@@ -72,7 +72,7 @@ public final class CharacterRange implements ICCCharacter
     setRight (r);
   }
 
-  public CharacterRange (@Nonnull final Token t, final char l, final char r)
+  public CharacterRange (@NonNull final Token t, final char l, final char r)
   {
     this (l, r);
     m_nLine = t.beginLine;
@@ -134,7 +134,7 @@ public final class CharacterRange implements ICCCharacter
     return c >= m_nLeft && c <= m_nRight;
   }
 
-  public boolean isSubRangeOf (@Nonnull final CharacterRange r2)
+  public boolean isSubRangeOf (@NonNull final CharacterRange r2)
   {
     return m_nLeft >= r2.getLeft () && m_nRight <= r2.getRight ();
   }

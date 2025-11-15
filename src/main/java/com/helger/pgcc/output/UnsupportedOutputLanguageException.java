@@ -33,11 +33,11 @@
  */
 package com.helger.pgcc.output;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public class UnsupportedOutputLanguageException extends RuntimeException
 {
-  public UnsupportedOutputLanguageException (@Nonnull final EOutputLanguage eOutputLanguage)
+  public UnsupportedOutputLanguageException (@NonNull final EOutputLanguage eOutputLanguage)
   {
     super ("Unsupported output language: " + eOutputLanguage);
   }

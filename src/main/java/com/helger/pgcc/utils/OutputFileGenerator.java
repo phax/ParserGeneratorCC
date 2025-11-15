@@ -43,6 +43,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.WillNotClose;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.io.nonblocking.NonBlockingBufferedReader;
@@ -54,8 +56,6 @@ import com.helger.io.file.SimpleFileIO;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Generates boiler-plate files from templates. Only very basic template
@@ -83,21 +83,21 @@ public class OutputFileGenerator
    * @param options
    *        the processing options in force, such as "STATIC=yes"
    */
-  public OutputFileGenerator (final String templateName, @Nonnull final Map <String, Object> options)
+  public OutputFileGenerator (final String templateName, @NonNull final Map <String, Object> options)
   {
     m_sTemplateName = templateName;
     m_aOptions = options;
   }
 
-  @Nonnull
-  public OutputFileGenerator setNewLineMode (@Nonnull final ENewLineMode eNewLineMode)
+  @NonNull
+  public OutputFileGenerator setNewLineMode (@NonNull final ENewLineMode eNewLineMode)
   {
     ValueEnforcer.notNull (eNewLineMode, "NewLineMode");
     m_eNewLineMode = eNewLineMode;
     return this;
   }
 
-  @Nonnull
+  @NonNull
   public OutputFileGenerator setReadFromClasspath (final boolean bReadFromClasspath)
   {
     m_bReadFromClasspath = bReadFromClasspath;
@@ -145,7 +145,7 @@ public class OutputFileGenerator
     return line;
   }
 
-  private boolean _evaluate (@Nonnull final String condition)
+  private boolean _evaluate (@NonNull final String condition)
   {
     try
     {
@@ -348,7 +348,7 @@ public class OutputFileGenerator
   public static void generateFromTemplate (final String templateFile,
                                            final Map <String, Object> options,
                                            final String outputFileName,
-                                           @Nonnull final Charset aOutputCharset) throws IOException
+                                           @NonNull final Charset aOutputCharset) throws IOException
   {
     final OutputFileGenerator aOutputGenerator = new OutputFileGenerator (templateFile, options);
     try (final NonBlockingStringWriter sw = new NonBlockingStringWriter ())

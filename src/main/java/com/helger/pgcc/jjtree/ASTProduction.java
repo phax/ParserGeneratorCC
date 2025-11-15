@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public class ASTProduction extends JJTreeNode
 {
@@ -52,7 +52,7 @@ public class ASTProduction extends JJTreeNode
     super (nID);
   }
 
-  int getNodeScopeNumber (@Nonnull final NodeScope s)
+  int getNodeScopeNumber (@NonNull final NodeScope s)
   {
     final Integer ret = m_aScopes.computeIfAbsent (s, k -> Integer.valueOf (m_nNextNodeScopeNumber++));
     return ret.intValue ();

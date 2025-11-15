@@ -77,6 +77,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.ReturnsImmutableObject;
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -89,9 +92,6 @@ import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.utils.EOptionType;
 import com.helger.pgcc.utils.OptionInfo;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A class with static state that stores all option information.
@@ -312,7 +312,7 @@ public class Options
     return (String) objectValue (option);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public static Map <String, Object> getAllOptions ()
   {
@@ -341,7 +341,7 @@ public class Options
    *        Options.USEROPTION__CACHE_TOKENS}
    * @return the string representation of the options, eg "STATIC=true,CACHE_TOKENS=false"
    */
-  @Nonnull
+  @NonNull
   public static String getOptionsString (final String [] interestingOptions)
   {
     final StringBuilder sb = new StringBuilder ();
@@ -357,7 +357,7 @@ public class Options
     return sb.toString ();
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public static String getTokenMgrErrorClass ()
   {
@@ -395,8 +395,8 @@ public class Options
    *        The option's value.
    * @return The upgraded value.
    */
-  @Nonnull
-  private static Object _upgradeValue (@Nonnull final String name, @Nonnull final Object value)
+  @NonNull
+  private static Object _upgradeValue (@NonNull final String name, @NonNull final Object value)
   {
     if (name.equalsIgnoreCase ("NODE_FACTORY") && value.getClass () == Boolean.class)
     {
@@ -422,8 +422,8 @@ public class Options
 
   public static void setInputFileOption (final Object nameloc,
                                          final Object valueloc,
-                                         @Nonnull final String name,
-                                         @Nonnull final Object aSrcValue)
+                                         @NonNull final String name,
+                                         @NonNull final Object aSrcValue)
   {
     final String sNameUC = name.toUpperCase (Locale.US);
     if (!s_optionValues.containsKey (sNameUC))
@@ -530,7 +530,7 @@ public class Options
    * @param sArg
    *        argument string to set. May not be <code>null</code>.
    */
-  public static void setCmdLineOption (@Nonnull final String sArg)
+  public static void setCmdLineOption (@NonNull final String sArg)
   {
     final String sRealArg;
     if (sArg.charAt (0) == '-')
@@ -943,7 +943,7 @@ public class Options
    *
    * @return The file encoding (e.g., UTF-8, ISO_8859-1, MacRoman)
    */
-  @Nonnull
+  @NonNull
   public static Charset getGrammarEncoding ()
   {
     final String sValue = stringValue (USEROPTION__GRAMMAR_ENCODING);
@@ -966,7 +966,7 @@ public class Options
    *
    * @return The output encoding
    */
-  @Nonnull
+  @NonNull
   public static Charset getOutputEncoding ()
   {
     final String sValue = stringValue (USEROPTION__OUTPUT_ENCODING);
@@ -1005,7 +1005,7 @@ public class Options
     return sType == null ? false : s_aSupportedJavaTemplateTypes.contains (sType.toLowerCase (Locale.US));
   }
 
-  @Nonnull
+  @NonNull
   public static EOutputLanguage getOutputLanguage ()
   {
     return s_language;
@@ -1088,7 +1088,7 @@ public class Options
    *
    * @return all user options
    */
-  @Nonnull
+  @NonNull
   @ReturnsImmutableObject
   public static Set <OptionInfo> getUserOptions ()
   {

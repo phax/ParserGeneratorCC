@@ -37,11 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.pgcc.parser.Token;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes expansions where one of many choices is taken (c1|c2|...).
@@ -73,7 +73,7 @@ public class ExpChoice extends Expansion
   /**
    * @return the choices
    */
-  @Nonnull
+  @NonNull
   public final Iterable <Expansion> getChoices ()
   {
     return m_choices;
@@ -85,13 +85,13 @@ public class ExpChoice extends Expansion
     return m_choices.size ();
   }
 
-  @Nonnull
+  @NonNull
   public final Expansion getChoiceAt (final int nIndex)
   {
     return m_choices.get (nIndex);
   }
 
-  public final void addChoice (@Nonnull final Expansion a)
+  public final void addChoice (@NonNull final Expansion a)
   {
     ValueEnforcer.notNull (a, "Expansion");
     m_choices.add (a);

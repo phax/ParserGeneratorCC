@@ -75,6 +75,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.PGVersion;
@@ -85,8 +87,6 @@ import com.helger.pgcc.output.OutputFile;
 import com.helger.pgcc.output.cpp.OtherFilesGenCPP;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.utils.OutputFileGenerator;
-
-import jakarta.annotation.Nonnull;
 
 @Immutable
 public final class NodeFilesCpp
@@ -103,7 +103,7 @@ public final class NodeFilesCpp
 
   private static final Set <String> s_nodesToGenerate = new HashSet <> ();
 
-  public static void addType (@Nonnull final String type)
+  public static void addType (@NonNull final String type)
   {
     if (!type.equals ("Node") && !type.equals ("SimpleNode"))
     {

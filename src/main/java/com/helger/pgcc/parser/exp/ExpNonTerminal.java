@@ -36,13 +36,13 @@ package com.helger.pgcc.parser.exp;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.pgcc.parser.NormalProduction;
 import com.helger.pgcc.parser.Token;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Describes non terminals.
@@ -82,7 +82,7 @@ public class ExpNonTerminal extends Expansion
   /**
    * @return the lhsTokens
    */
-  @Nonnull
+  @NonNull
   public final Iterable <Token> getLhsTokens ()
   {
     return m_lhsTokens;
@@ -94,7 +94,7 @@ public class ExpNonTerminal extends Expansion
     return m_lhsTokens.size ();
   }
 
-  @Nonnull
+  @NonNull
   public final Token getLhsTokenAt (final int nIndex)
   {
     return m_lhsTokens.get (nIndex);
@@ -104,7 +104,7 @@ public class ExpNonTerminal extends Expansion
    * @param lhsTokens
    *        the lhsTokens to set
    */
-  public final void setLhsTokens (@Nonnull final List <Token> lhsTokens)
+  public final void setLhsTokens (@NonNull final List <Token> lhsTokens)
   {
     m_lhsTokens.setAll (lhsTokens);
   }
@@ -126,7 +126,7 @@ public class ExpNonTerminal extends Expansion
     m_name = name;
   }
 
-  @Nonnull
+  @NonNull
   public final List <Token> getMutableArgumentTokens ()
   {
     return m_argumentTokens;
@@ -135,7 +135,7 @@ public class ExpNonTerminal extends Expansion
   /**
    * @return the argument_tokens
    */
-  @Nonnull
+  @NonNull
   public final Iterable <Token> getArgumentTokens ()
   {
     return m_argumentTokens;
@@ -147,13 +147,13 @@ public class ExpNonTerminal extends Expansion
     return m_argumentTokens.size ();
   }
 
-  @Nonnull
+  @NonNull
   public final Token getArgumentTokenAt (final int n)
   {
     return m_argumentTokens.get (n);
   }
 
-  @Nonnull
+  @NonNull
   public final List <Token> getMutableParametrizedTypeTokens ()
   {
     return m_parametrizedTypeTokens;
@@ -162,7 +162,7 @@ public class ExpNonTerminal extends Expansion
   /**
    * @return the argument_tokens
    */
-  @Nonnull
+  @NonNull
   public final Iterable <Token> getParametrizedTypeTokens ()
   {
     return m_parametrizedTypeTokens;
