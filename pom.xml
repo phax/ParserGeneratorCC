@@ -206,7 +206,7 @@
           <instructions>
             <Automatic-Module-Name>com.helger.pgcc</Automatic-Module-Name>
             <Export-Package>com.helger.pgcc.*</Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
