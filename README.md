@@ -1,7 +1,9 @@
 # ParserGeneratorCC
 
+<!-- ph-badge-start -->
+[![Maven Central](https://img.shields.io/maven-central/v/com.helger/parser-generator-cc)](https://img.shields.io/maven-central/v/com.helger/parser-generator-cc)
 [![javadoc](https://javadoc.io/badge2/com.helger/parser-generator-cc/javadoc.svg)](https://javadoc.io/doc/com.helger/parser-generator-cc)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger/parser-generator-cc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger/parser-generator-cc) 
+<!-- ph-badge-end -->
 
 Fork of JavaCC 7.0.3 because the original code base has poor quality and PRs were not really merged.
 The overall goal is to maintain compatibility to JavaCC but
