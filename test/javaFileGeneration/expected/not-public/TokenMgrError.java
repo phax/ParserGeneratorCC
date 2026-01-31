@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2025 Philip Helger, pgcc@helger.com
+ * Copyright 2017-2026 Philip Helger, pgcc@helger.com
  *
  * Copyright 2011 Google Inc. All Rights Reserved.
  * Author: sreeni@google.com (Sreeni Viswanadha)
@@ -31,7 +31,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-/** Token Manager Error. */
 class TokenMgrError extends Error
 {
 
