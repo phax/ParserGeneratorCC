@@ -3,6 +3,8 @@
 <!-- ph-badge-start -->
 [![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.helger/parser-generator-cc/badge.svg)](https://maven-badges.sml.io/sonatype-central/com.helger/parser-generator-cc/)
 [![javadoc](https://javadoc.io/badge2/com.helger/parser-generator-cc/javadoc.svg)](https://javadoc.io/doc/com.helger/parser-generator-cc)
+
+> If this project saved you some time or made your day a little easier, a star would mean a lot — it helps others find it too.
 <!-- ph-badge-end -->
 
 Fork of JavaCC 7.0.3 because the original code base has poor quality and PRs were not really merged.
