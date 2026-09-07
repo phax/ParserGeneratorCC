@@ -113,8 +113,9 @@ public class ParseException extends Exception {
       sb.append("\"");
       tok = tok.next;
     }
+    sb.append ('"');
 #if KEEP_LINE_COLUMN
-    sb.append ("\" at line ")
+    sb.append (" at line ")
       .append (currentToken.next.beginLine)
       .append (", column ")
       .append (currentToken.next.beginColumn);
