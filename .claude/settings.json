@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_response.filePath // .tool_input.file_path // empty' | { read -r f; case \"$f\" in */src/*.java) grep -q 'pgcc@helger.com' \"$f\" || jq -n --arg f \"$f\" '{systemMessage:(\"Missing BSD license header: \"+$f), hookSpecificOutput:{hookEventName:\"PostToolUse\", additionalContext:($f+\" is missing the BSD license header. Copy it from src/etc/license-template.txt (Philip Helger 2017-2026 + Google 2011 + Sun Microsystems 2006), or run: mvn license:format\")}}' ;; esac; } 2>/dev/null || true",
+            "timeout": 10,
+            "statusMessage": "Checking BSD license header"
+          }
+        ]
+      }
+    ]
+  }
+}

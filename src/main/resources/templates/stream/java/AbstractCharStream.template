@@ -79,6 +79,7 @@ implements CharStream
 
   /** Characters in the backup/pushBack buffer */
   protected int inBuf;
+  /** Limit of valid input in buffer (used by SimpleCharStream). */
   protected int maxNextCharInd;
 
 #if KEEP_LINE_COLUMN
@@ -214,6 +215,9 @@ implements CharStream
 
       bufpos -= tokenBegin;
     }
+
+    // The input in the token buffer moved with bufpos (SimpleCharStream).
+    maxNextCharInd = bufpos;
 
     // Increase buffer size
     bufsize = nNewBufSize;

@@ -35,6 +35,8 @@ Add the following to your pom.xml to use this artifact (replacing `x.y.z` with t
 
 v2.0.2 - work in progress
 * Removed OSGI bundling
+* Fixed `JavaCharStream` reusing the inherited `maxNextCharInd` field for its raw input buffer, leading to `ArrayIndexOutOfBoundsException` or silently altered characters with `JAVA_UNICODE_ESCAPE=true` - thanks to @wilx
+* Fixed `AbstractCharStream.expandBuff` not updating `maxNextCharInd` when relocating token data, leading to NUL gaps in `SimpleCharStream` for nonzero token starts - thanks to @wilx
 
 v2.0.1 - 2025-11-16
 * Updated to ph-commons 12.1.0
