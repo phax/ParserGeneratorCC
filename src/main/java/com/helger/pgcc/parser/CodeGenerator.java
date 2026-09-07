@@ -519,7 +519,11 @@ public class CodeGenerator
       // User interface name
       return "CharStream";
     }
-    return Options.isJavaUnicodeEscape () ? "JavaCharStream" : "SimpleCharStream";
+    if (Options.isJavaUnicodeEscape ())
+      return "JavaCharStream";
+    if (Options.isCharSequenceCharStream ())
+      return "CharSequenceCharStream";
+    return "SimpleCharStream";
   }
 
   public void writeTemplate (final String name, final Map <String, Object> options) throws IOException

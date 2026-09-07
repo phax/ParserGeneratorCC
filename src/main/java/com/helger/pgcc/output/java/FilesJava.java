@@ -242,6 +242,34 @@ public class FilesJava
     }
   }
 
+  public static void gen_CharSequenceCharStream (final IJavaResourceTemplateLocations locations)
+  {
+    final File file = new File (Options.getOutputDirectory (), "CharSequenceCharStream.java");
+    try (final OutputFile outputFile = new OutputFile (file,
+                                                       charStreamVersion,
+                                                       new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC }))
+    {
+      if (!outputFile.needToWrite ())
+        return;
+
+      try (final PrintWriter ostr = outputFile.getPrintWriter ())
+      {
+        _writePackageName (ostr);
+
+        final Map <String, Object> options = _getDefaultOptions ();
+        final OutputFileGenerator generator = new OutputFileGenerator (locations.getCharSequenceCharStreamTemplateResourceUrl (),
+                                                                       options);
+        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.generate (ostr);
+      }
+    }
+    catch (final IOException e)
+    {
+      JavaCCErrors.semantic_error ("Could not open file CharSequenceCharStream.java for writing.", e);
+      throw new UncheckedIOException (e);
+    }
+  }
+
   public static void gen_JavaModernFiles ()
   {
     // Abstraction for char reader

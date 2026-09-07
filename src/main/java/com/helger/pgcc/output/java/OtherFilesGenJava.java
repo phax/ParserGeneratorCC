@@ -140,11 +140,19 @@ public class OtherFilesGenJava
 
         if (!Options.isJavaUserCharStream ())
         {
-          FilesJava.gen_AbstractCharStream (templateLoc);
-          if (Options.isJavaUnicodeEscape ())
-            FilesJava.gen_JavaCharStream (templateLoc);
+          if (Options.isCharSequenceCharStream ())
+          {
+            // Does not use the buffering of AbstractCharStream
+            FilesJava.gen_CharSequenceCharStream (templateLoc);
+          }
           else
-            FilesJava.gen_SimpleCharStream (templateLoc);
+          {
+            FilesJava.gen_AbstractCharStream (templateLoc);
+            if (Options.isJavaUnicodeEscape ())
+              FilesJava.gen_JavaCharStream (templateLoc);
+            else
+              FilesJava.gen_SimpleCharStream (templateLoc);
+          }
         }
       }
 

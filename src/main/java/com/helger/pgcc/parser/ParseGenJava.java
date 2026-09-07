@@ -89,6 +89,105 @@ import com.helger.pgcc.output.EOutputLanguage;
  */
 public class ParseGenJava extends CodeGenerator
 {
+  /**
+   * Generate everything of a parser constructor that comes after the assignment of the
+   * <code>jj_input_stream</code> field.
+   */
+  private void _genCtorTail ()
+  {
+    if (Options.isTokenManagerUsesParser ())
+    {
+      genCodeLine ("	 token_source = new " + s_cu_name + "TokenManager(this, jj_input_stream);");
+    }
+    else
+    {
+      genCodeLine ("	 token_source = new " + s_cu_name + "TokenManager(jj_input_stream);");
+    }
+    genCodeLine ("	 token = new Token();");
+    if (Options.isCacheTokens ())
+    {
+      genCodeLine ("	 token.next = jj_nt = token_source.getNextToken();");
+    }
+    else
+    {
+      genCodeLine ("	 jj_ntk = -1;");
+    }
+    if (Options.hasDepthLimit ())
+    {
+      genCodeLine ("    jj_depth = -1;");
+    }
+    if (Options.isErrorReporting ())
+    {
+      genCodeLine ("	 jj_gen = 0;");
+      if (s_maskindex > 0)
+      {
+        genCodeLine ("   for (int i = 0; i < " + s_maskindex + "; i++)");
+        genCodeLine ("     jj_la1[i] = -1;");
+      }
+      if (s_jj2index != 0)
+      {
+        genCodeLine ("   for (int i = 0; i < jj_2_rtns.length; i++)");
+        genCodeLine ("     jj_2_rtns[i] = new JJCalls();");
+      }
+    }
+  }
+
+  /**
+   * Generate everything of a parser <code>ReInit</code> method that comes after the assignment of
+   * the <code>jj_input_stream</code> field.
+   */
+  private void _genReInitTail ()
+  {
+    genCodeLine ("	if (token_source == null) {");
+    if (Options.isTokenManagerUsesParser ())
+      genCodeLine (" token_source = new " + s_cu_name + "TokenManager(this, jj_input_stream);");
+    else
+      genCodeLine (" token_source = new " + s_cu_name + "TokenManager(jj_input_stream);");
+    genCodeLine ("	}");
+    genCodeNewLine ();
+
+    if (Options.isTokenManagerRequiresParserAccess ())
+    {
+      genCodeLine ("	 token_source.ReInit(this,jj_input_stream);");
+    }
+    else
+    {
+      genCodeLine ("	 token_source.ReInit(jj_input_stream);");
+    }
+
+    genCodeLine ("	 token = new Token();");
+    if (Options.isCacheTokens ())
+    {
+      genCodeLine ("	 token.next = jj_nt = token_source.getNextToken();");
+    }
+    else
+    {
+      genCodeLine ("	 jj_ntk = -1;");
+    }
+    if (Options.hasDepthLimit ())
+    {
+      genCodeLine ("    jj_depth = -1;");
+    }
+    if (s_jjtreeGenerated)
+    {
+      genCodeLine ("	 jjtree.reset();");
+    }
+    if (Options.isErrorReporting ())
+    {
+      genCodeLine ("	 jj_gen = 0;");
+      if (s_maskindex > 0)
+      {
+        genCodeLine ("   for (int i = 0; i < " + s_maskindex + "; i++)");
+        genCodeLine ("     jj_la1[i] = -1;");
+      }
+      if (s_jj2index != 0)
+      {
+        genCodeLine ("   for (int i = 0; i < jj_2_rtns.length; i++)");
+        genCodeLine ("     jj_2_rtns[i] = new JJCalls();");
+      }
+    }
+  }
+
   public void start (final boolean bIsJavaModernMode) throws MetaParseException
   {
     if (JavaCCErrors.getErrorCount () != 0)
@@ -168,14 +267,7 @@ public class ParseGenJava extends CodeGenerator
       genCodeLine ("  public " + s_cu_name + "TokenManager token_source;");
       if (!Options.isJavaUserCharStream ())
       {
-        if (Options.isJavaUnicodeEscape ())
-        {
-          genCodeLine ("  JavaCharStream jj_input_stream;");
-        }
-        else
-        {
-          genCodeLine ("  SimpleCharStream jj_input_stream;");
-        }
+        genCodeLine ("  " + getCharStreamName () + " jj_input_stream;");
       }
     }
     genCodeLine ("  /** Current token. */");
@@ -355,17 +447,13 @@ public class ParseGenJava extends CodeGenerator
             genCodeLine ("  public " +
                          s_cu_name +
                          "(final java.io.InputStream stream, final java.nio.charset.Charset encoding) {");
-            genCodeLine ("   jj_input_stream = new " +
-                         (Options.isJavaUnicodeEscape () ? "JavaCharStream" : "SimpleCharStream") +
-                         "(stream, encoding, 1, 1);");
+            genCodeLine ("   jj_input_stream = new " + getCharStreamName () + "(stream, encoding, 1, 1);");
           }
           else
           {
             genCodeLine ("  public " + s_cu_name + "(final java.io.InputStream stream, final String encoding) {");
             genCodeLine ("   try {");
-            genCodeLine ("     jj_input_stream = new " +
-                         (Options.isJavaUnicodeEscape () ? "JavaCharStream" : "SimpleCharStream") +
-                         "(stream, encoding, 1, 1);");
+            genCodeLine ("     jj_input_stream = new " + getCharStreamName () + "(stream, encoding, 1, 1);");
             genCodeLine ("   } catch(final java.io.UnsupportedEncodingException e) {");
             genCodeLine ("     throw new IllegalStateException(e);");
             genCodeLine ("   }");
@@ -485,51 +573,38 @@ public class ParseGenJava extends CodeGenerator
         genCodeLine ("   * @param stream char stream");
         genCodeLine ("   */");
         genCodeLine ("  public " + s_cu_name + "(final " + readerInterfaceName + " stream) {");
-        if (Options.isJavaUnicodeEscape ())
-        {
-          genCodeLine ("	 jj_input_stream = new JavaCharStream(stream, 1, 1);");
-        }
-        else
-        {
-          genCodeLine ("	 jj_input_stream = new SimpleCharStream(stream, 1, 1);");
-        }
-        if (Options.isTokenManagerUsesParser ())
-        {
-          genCodeLine ("	 token_source = new " + s_cu_name + "TokenManager(this, jj_input_stream);");
-        }
-        else
-        {
-          genCodeLine ("	 token_source = new " + s_cu_name + "TokenManager(jj_input_stream);");
-        }
-        genCodeLine ("	 token = new Token();");
-        if (Options.isCacheTokens ())
-        {
-          genCodeLine ("	 token.next = jj_nt = token_source.getNextToken();");
-        }
-        else
-        {
-          genCodeLine ("	 jj_ntk = -1;");
-        }
-        if (Options.hasDepthLimit ())
-        {
-          genCodeLine ("    jj_depth = -1;");
-        }
-        if (Options.isErrorReporting ())
-        {
-          genCodeLine ("	 jj_gen = 0;");
-          if (s_maskindex > 0)
-          {
-            genCodeLine ("   for (int i = 0; i < " + s_maskindex + "; i++)");
-            genCodeLine ("     jj_la1[i] = -1;");
-          }
-          if (s_jj2index != 0)
-          {
-            genCodeLine ("   for (int i = 0; i < jj_2_rtns.length; i++)");
-            genCodeLine ("     jj_2_rtns[i] = new JJCalls();");
-          }
-        }
+        genCodeLine ("	 jj_input_stream = new " + getCharStreamName () + "(stream, 1, 1);");
+        _genCtorTail ();
         genCodeLine ("  }");
         genCodeNewLine ();
+
+        // The CharSequence based char stream can take the input as it is
+        if (Options.isCharSequenceCharStream ())
+        {
+          genCodeLine ("  /**");
+          genCodeLine ("   * Constructor with CharSequence.");
+          genCodeLine ("   * @param aInput the whole content to be parsed");
+          genCodeLine ("   */");
+          genCodeLine ("  public " + s_cu_name + "(final CharSequence aInput) {");
+          genCodeLine ("	 jj_input_stream = new " + getCharStreamName () + "(aInput, 1, 1);");
+          _genCtorTail ();
+          genCodeLine ("  }");
+          genCodeNewLine ();
+
+          genCodeLine ("  /**");
+          genCodeLine ("   * Reinitialise");
+          genCodeLine ("   * @param aInput the whole content to be parsed");
+          genCodeLine ("   */");
+          genCodeLine ("  public void ReInit(final CharSequence aInput) {");
+          genCodeLine ("	if (jj_input_stream == null) {");
+          genCodeLine ("	  jj_input_stream = new " + getCharStreamName () + "(aInput, 1, 1);");
+          genCodeLine ("	} else {");
+          genCodeLine ("	  jj_input_stream.reInit(aInput, 1, 1);");
+          genCodeLine ("  }");
+          _genReInitTail ();
+          genCodeLine ("  }");
+          genCodeNewLine ();
+        }
 
         // Add-in a string based constructor because its convenient (modern
         // only to prevent regressions)
@@ -559,71 +634,13 @@ public class ParseGenJava extends CodeGenerator
         genCodeLine ("   * @param stream char stream");
         genCodeLine ("   */");
         genCodeLine ("  public void ReInit(final " + readerInterfaceName + " stream) {");
-        if (Options.isJavaUnicodeEscape ())
-        {
-          genCodeLine ("	if (jj_input_stream == null) {");
-          genCodeLine ("	  jj_input_stream = new JavaCharStream(stream, 1, 1);");
-          genCodeLine ("	} else {");
-          genCodeLine ("	  jj_input_stream.reInit(stream, 1, 1);");
-          genCodeLine ("  }");
-        }
-        else
-        {
-          genCodeLine ("	if (jj_input_stream == null) {");
-          genCodeLine ("	  jj_input_stream = new SimpleCharStream(stream, 1, 1);");
-          genCodeLine ("	} else {");
-          genCodeLine ("	  jj_input_stream.reInit(stream, 1, 1);");
-          genCodeLine ("  }");
-        }
+        genCodeLine ("	if (jj_input_stream == null) {");
+        genCodeLine ("	  jj_input_stream = new " + getCharStreamName () + "(stream, 1, 1);");
+        genCodeLine ("	} else {");
+        genCodeLine ("	  jj_input_stream.reInit(stream, 1, 1);");
+        genCodeLine ("  }");
 
-        genCodeLine ("	if (token_source == null) {");
-        if (Options.isTokenManagerUsesParser ())
-          genCodeLine (" token_source = new " + s_cu_name + "TokenManager(this, jj_input_stream);");
-        else
-          genCodeLine (" token_source = new " + s_cu_name + "TokenManager(jj_input_stream);");
-        genCodeLine ("	}");
-        genCodeNewLine ();
-
-        if (Options.isTokenManagerRequiresParserAccess ())
-        {
-          genCodeLine ("	 token_source.ReInit(this,jj_input_stream);");
-        }
-        else
-        {
-          genCodeLine ("	 token_source.ReInit(jj_input_stream);");
-        }
-
-        genCodeLine ("	 token = new Token();");
-        if (Options.isCacheTokens ())
-        {
-          genCodeLine ("	 token.next = jj_nt = token_source.getNextToken();");
-        }
-        else
-        {
-          genCodeLine ("	 jj_ntk = -1;");
-        }
-        if (Options.hasDepthLimit ())
-        {
-          genCodeLine ("    jj_depth = -1;");
-        }
-        if (s_jjtreeGenerated)
-        {
-          genCodeLine ("	 jjtree.reset();");
-        }
-        if (Options.isErrorReporting ())
-        {
-          genCodeLine ("	 jj_gen = 0;");
-          if (s_maskindex > 0)
-          {
-            genCodeLine ("   for (int i = 0; i < " + s_maskindex + "; i++)");
-            genCodeLine ("     jj_la1[i] = -1;");
-          }
-          if (s_jj2index != 0)
-          {
-            genCodeLine ("   for (int i = 0; i < jj_2_rtns.length; i++)");
-            genCodeLine ("     jj_2_rtns[i] = new JJCalls();");
-          }
-        }
+        _genReInitTail ();
         genCodeLine ("  }");
 
       }

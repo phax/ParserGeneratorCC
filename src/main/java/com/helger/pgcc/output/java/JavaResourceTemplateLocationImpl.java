@@ -76,6 +76,11 @@ public class JavaResourceTemplateLocationImpl implements IJavaResourceTemplateLo
     return "/templates/stream/java/SimpleCharStream.template";
   }
 
+  public String getCharSequenceCharStreamTemplateResourceUrl ()
+  {
+    return "/templates/stream/java/CharSequenceCharStream.template";
+  }
+
   public String getParseExceptionTemplateResourceUrl ()
   {
     return "/templates/ParseException.template";

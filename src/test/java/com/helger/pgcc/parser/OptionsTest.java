@@ -63,7 +63,7 @@ public final class OptionsTest
   @Test
   public void testDefaults ()
   {
-    assertEquals (44, Options.s_optionValues.size ());
+    assertEquals (45, Options.s_optionValues.size ());
 
     assertTrue (Options.isBuildParser ());
     assertTrue (Options.isBuildTokenManager ());

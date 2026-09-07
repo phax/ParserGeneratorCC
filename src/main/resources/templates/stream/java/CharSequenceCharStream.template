@@ -1,0 +1,495 @@
+/**
+ * An implementation of interface CharStream that keeps the whole input in memory
+ * and reads directly from it. Contrary to SimpleCharStream no internal buffer is
+ * used, so that the token length is not limited by a buffer size and no buffer
+ * relocation ever takes place.
+ * Note: line and column numbers are calculated on demand and not while reading.
+ */
+#if SUPPORT_CLASS_VISIBILITY_PUBLIC
+public
+#fi
+class CharSequenceCharStream
+implements CharStream
+{
+  /**
+   * Only present for source compatibility with SimpleCharStream - this class does
+   * not use an internal buffer.
+   */
+  public static final int DEFAULT_BUF_SIZE = 4096;
+
+  /** Tab size for formatting. Usually in the range 1 to 8. */
+  private int m_nTabSize = 1;
+
+  /** The complete input. */
+  private CharSequence m_aInput;
+
+  /** Number of chars in `m_aInput` */
+  private int m_nLen;
+
+  /** Index of the char returned by the last `readChar` call. -1 before the first one. */
+  private int m_nPos;
+
+  /** Index of the first char of the current token. */
+  private int m_nTokenBegin;
+#if KEEP_LINE_COLUMN
+
+  /** Line number of the first line of the input */
+  private int m_nStartLine;
+
+  /** Column number of the first char of the input */
+  private int m_nStartColumn;
+
+  /** Offset at which each line starts. Lazily filled by `_ensureLineStarts`. */
+  private int[] m_aLineStarts;
+
+  /** Number of used entries in `m_aLineStarts` */
+  private int m_nLineStartCount;
+
+  /** Offset for which the column number is already known. -1 if none. */
+  private int m_nColAnchorOfs;
+
+  /** The column number at offset `m_nColAnchorOfs` */
+  private int m_nColAnchorCol;
+
+  /** Is line/column tracking enabled? */
+  private boolean m_bTrackLineColumn = true;
+#fi
+
+  /**
+   * Read the whole content of a Reader and close it afterwards.
+   * @param aReader The Reader to read from. May not be null.
+   * @return The whole content. Never null.
+   */
+  private static CharSequence _readAll (final java.io.Reader aReader)
+  {
+    try
+    {
+      final StringBuilder aSB = new StringBuilder ();
+      final char[] aBuf = new char[8192];
+      int nRead;
+      while ((nRead = aReader.read (aBuf, 0, aBuf.length)) != -1)
+        aSB.append (aBuf, 0, nRead);
+      aReader.close ();
+      return aSB;
+    }
+    catch (final java.io.IOException ex)
+    {
+      throw new IllegalStateException ("Failed to read the whole input", ex);
+    }
+  }
+
+  /** Constructor. */
+  public CharSequenceCharStream(final CharSequence input,
+                                final int startline,
+                                final int startcolumn)
+  {
+    reInit (input, startline, startcolumn);
+  }
+
+  /** Constructor. */
+  public CharSequenceCharStream(final CharSequence input)
+  {
+    this(input, 1, 1);
+  }
+
+  /** Constructor. */
+  public CharSequenceCharStream(final java.io.Reader dstream,
+                                final int startline,
+                                final int startcolumn,
+                                final int buffersize)
+  {
+    this(_readAll (dstream), startline, startcolumn);
+  }
+
+  /** Constructor. */
+  public CharSequenceCharStream(final java.io.Reader dstream,
+                                final int startline,
+                                final int startcolumn)
+  {
+    this(_readAll (dstream), startline, startcolumn);
+  }
+
+  /** Constructor. */
+  public CharSequenceCharStream(final java.io.Reader dstream)
+  {
+    this(_readAll (dstream), 1, 1);
+  }
+
+  /** Constructor. */
+#if AT_LEAST_JDK6
+  public CharSequenceCharStream(final java.io.InputStream dstream,
+                                final java.nio.charset.Charset encoding,
+                                final int startline,
+                                final int startcolumn,
+                                final int buffersize)
+#else
+  public CharSequenceCharStream(final java.io.InputStream dstream,
+                                final String encoding,
+                                final int startline,
+                                final int startcolumn,
+                                final int buffersize) throws java.io.UnsupportedEncodingException
+#fi
+  {
+    this(new java.io.InputStreamReader(dstream, encoding), startline, startcolumn);
+  }
+
+  /** Constructor. */
+#if AT_LEAST_JDK6
+  public CharSequenceCharStream(final java.io.InputStream dstream,
+                                final java.nio.charset.Charset encoding,
+                                final int startline,
+                                final int startcolumn)
+#else
+  public CharSequenceCharStream(final java.io.InputStream dstream,
+                                final String encoding,
+                                final int startline,
+                                final int startcolumn) throws java.io.UnsupportedEncodingException
+#fi
+  {
+    this(new java.io.InputStreamReader(dstream, encoding), startline, startcolumn);
+  }
+
+  /** Constructor. */
+#if AT_LEAST_JDK6
+  public CharSequenceCharStream(final java.io.InputStream dstream,
+                                final java.nio.charset.Charset encoding)
+#else
+  public CharSequenceCharStream(final java.io.InputStream dstream,
+                                final String encoding) throws java.io.UnsupportedEncodingException
+#fi
+  {
+    this(new java.io.InputStreamReader(dstream, encoding), 1, 1);
+  }
+
+  /** Reinitialise. */
+  public void reInit(final CharSequence input,
+                     final int startline,
+                     final int startcolumn)
+  {
+    m_aInput = input;
+    m_nLen = input.length ();
+    m_nPos = -1;
+    m_nTokenBegin = 0;
+#if KEEP_LINE_COLUMN
+    m_nStartLine = startline;
+    m_nStartColumn = startcolumn;
+    m_aLineStarts = null;
+    m_nLineStartCount = 0;
+    m_nColAnchorOfs = -1;
+    m_nColAnchorCol = 0;
+#fi
+  }
+
+  /** Reinitialise. */
+  public void reInit(final CharSequence input)
+  {
+    reInit(input, 1, 1);
+  }
+
+  /** Reinitialise. */
+  public void reInit(final java.io.Reader dstream,
+                     final int startline,
+                     final int startcolumn,
+                     final int buffersize)
+  {
+    reInit(_readAll (dstream), startline, startcolumn);
+  }
+
+  /** Reinitialise. */
+  public void reInit(final java.io.Reader dstream,
+                     final int startline,
+                     final int startcolumn)
+  {
+    reInit(_readAll (dstream), startline, startcolumn);
+  }
+
+  /** Reinitialise. */
+  public void reInit(final java.io.Reader dstream)
+  {
+    reInit(_readAll (dstream), 1, 1);
+  }
+
+  /** Reinitialise. */
+#if AT_LEAST_JDK6
+  public void reInit(final java.io.InputStream dstream,
+                     final java.nio.charset.Charset encoding)
+#else
+  public void reInit(final java.io.InputStream dstream,
+                     final String encoding) throws java.io.UnsupportedEncodingException
+#fi
+  {
+    reInit(new java.io.InputStreamReader(dstream, encoding), 1, 1);
+  }
+
+  /** Reinitialise. */
+#if AT_LEAST_JDK6
+  public void reInit(final java.io.InputStream dstream,
+                     final java.nio.charset.Charset encoding,
+                     final int startline,
+                     final int startcolumn)
+#else
+  public void reInit(final java.io.InputStream dstream,
+                     final String encoding,
+                     final int startline,
+                     final int startcolumn) throws java.io.UnsupportedEncodingException
+#fi
+  {
+    reInit(new java.io.InputStreamReader(dstream, encoding), startline, startcolumn);
+  }
+
+  /** Reinitialise. */
+#if AT_LEAST_JDK6
+  public void reInit(final java.io.InputStream dstream,
+                     final java.nio.charset.Charset encoding,
+                     final int startline,
+                     final int startcolumn,
+                     final int buffersize)
+#else
+  public void reInit(final java.io.InputStream dstream,
+                     final String encoding,
+                     final int startline,
+                     final int startcolumn,
+                     final int buffersize) throws java.io.UnsupportedEncodingException
+#fi
+  {
+    reInit(new java.io.InputStreamReader(dstream, encoding), startline, startcolumn);
+  }
+
+  public char readChar() throws java.io.IOException
+  {
+    if (m_nPos + 1 >= m_nLen)
+    {
+      // We reached the end of the input
+      if (m_nTokenBegin == -1)
+      {
+        // Error occurred in "beginToken()"
+        m_nTokenBegin = m_nPos;
+      }
+      throw new java.io.IOException("PGCC end of stream");
+    }
+
+    return m_aInput.charAt (++m_nPos);
+  }
+
+  public char beginToken() throws java.io.IOException
+  {
+    m_nTokenBegin = -1;
+    final char c = readChar();
+    m_nTokenBegin = m_nPos;
+    return c;
+  }
+
+  public void backup (final int nAmount)
+  {
+    if (m_nPos - nAmount < -1)
+      throw new IllegalStateException ("Cannot back " + nAmount + " chars from position " + m_nPos);
+
+    m_nPos -= nAmount;
+  }
+
+  public String getImage()
+  {
+    if (m_nTokenBegin < 0 || m_nPos < m_nTokenBegin)
+      return "";
+
+    return m_aInput.subSequence (m_nTokenBegin, m_nPos + 1).toString ();
+  }
+
+  public char[] getSuffix (final int len)
+  {
+    final char[] ret = new char[len];
+    final int nStart = m_nPos - len + 1;
+    for (int i = 0; i < len; ++i)
+      ret[i] = m_aInput.charAt (nStart + i);
+    return ret;
+  }
+
+  public void done()
+  {
+    m_aInput = null;
+#if KEEP_LINE_COLUMN
+    m_aLineStarts = null;
+#fi
+  }
+
+  public final int getTabSize()
+  {
+    return m_nTabSize;
+  }
+
+  public final void setTabSize (final int nTabSize)
+  {
+    m_nTabSize = nTabSize;
+#if KEEP_LINE_COLUMN
+    // Previously calculated columns are no longer valid
+    m_nColAnchorOfs = -1;
+#fi
+  }
+#if KEEP_LINE_COLUMN
+
+  /**
+   * Determine the offset at which each line starts. A "\r\n" sequence is a single
+   * line terminator.
+   */
+  private void _ensureLineStarts ()
+  {
+    if (m_aLineStarts != null)
+      return;
+
+    int[] aStarts = new int[32];
+    int nCount = 0;
+    // The first line always starts at offset 0
+    aStarts[nCount++] = 0;
+    for (int i = 0; i < m_nLen; ++i)
+    {
+      final char c = m_aInput.charAt (i);
+      if (c == '\n' || (c == '\r' && (i + 1 >= m_nLen || m_aInput.charAt (i + 1) != '\n')))
+      {
+        if (nCount == aStarts.length)
+        {
+          // Double the size for scaling
+          final int[] aNew = new int[aStarts.length * 2];
+          System.arraycopy (aStarts, 0, aNew, 0, aStarts.length);
+          aStarts = aNew;
+        }
+        aStarts[nCount++] = i + 1;
+      }
+    }
+    m_aLineStarts = aStarts;
+    m_nLineStartCount = nCount;
+  }
+
+  /**
+   * @param nOfs Offset into the input. Must be &ge; 0 and &lt; the input length.
+   * @return The 0-based index of the line containing the provided offset.
+   */
+  private int _getLineIndex (final int nOfs)
+  {
+    _ensureLineStarts ();
+
+    // Find the last line that starts at or before nOfs
+    int nLow = 0;
+    int nHigh = m_nLineStartCount - 1;
+    while (nLow < nHigh)
+    {
+      final int nMid = (nLow + nHigh + 1) >>> 1;
+      if (m_aLineStarts[nMid] <= nOfs)
+        nLow = nMid;
+      else
+        nHigh = nMid - 1;
+    }
+    return nLow;
+  }
+
+  private int _advanceColumn (final int nCol, final char c)
+  {
+    int ret = nCol + 1;
+    if (c == '\t')
+    {
+      ret--;
+      ret += (m_nTabSize - (ret % m_nTabSize));
+    }
+    return ret;
+  }
+
+  /**
+   * @param nOfs Offset into the input. Must be &ge; 0 and &lt; the input length.
+   * @return The column number of the char at the provided offset.
+   */
+  private int _getColumn (final int nOfs)
+  {
+    final int nLineStart = m_aLineStarts[_getLineIndex (nOfs)];
+
+    int nCur;
+    int nCol;
+    if (m_nColAnchorOfs >= nLineStart && m_nColAnchorOfs <= nOfs)
+    {
+      // Continue at the previously calculated offset of the same line
+      nCur = m_nColAnchorOfs;
+      nCol = m_nColAnchorCol;
+    }
+    else
+    {
+      // Start over at the beginning of the line
+      nCur = nLineStart;
+      nCol = _advanceColumn (nLineStart == 0 ? m_nStartColumn - 1 : 0, m_aInput.charAt (nLineStart));
+    }
+
+    while (nCur < nOfs)
+    {
+      ++nCur;
+      nCol = _advanceColumn (nCol, m_aInput.charAt (nCur));
+    }
+
+    // Tokens are read in ascending order, so this is the anchor for the next call
+    m_nColAnchorOfs = nOfs;
+    m_nColAnchorCol = nCol;
+    return nCol;
+  }
+
+  private int _clampOfs (final int nOfs)
+  {
+    if (nOfs < 0)
+      return 0;
+    if (nOfs >= m_nLen)
+      return m_nLen - 1;
+    return nOfs;
+  }
+#fi
+
+  public int getBeginColumn ()
+  {
+#if KEEP_LINE_COLUMN
+    if (m_nLen == 0)
+      return m_nStartColumn;
+    return _getColumn (_clampOfs (m_nTokenBegin));
+#else
+    return -1;
+#fi
+  }
+
+  public int getBeginLine ()
+  {
+#if KEEP_LINE_COLUMN
+    if (m_nLen == 0)
+      return m_nStartLine;
+    return m_nStartLine + _getLineIndex (_clampOfs (m_nTokenBegin));
+#else
+    return -1;
+#fi
+  }
+
+  public int getEndColumn ()
+  {
+#if KEEP_LINE_COLUMN
+    if (m_nLen == 0)
+      return m_nStartColumn;
+    return _getColumn (_clampOfs (m_nPos));
+#else
+    return -1;
+#fi
+  }
+
+  public int getEndLine ()
+  {
+#if KEEP_LINE_COLUMN
+    if (m_nLen == 0)
+      return m_nStartLine;
+    return m_nStartLine + _getLineIndex (_clampOfs (m_nPos));
+#else
+    return -1;
+#fi
+  }
+#if KEEP_LINE_COLUMN
+
+  public final boolean isTrackLineColumn ()
+  {
+    return m_bTrackLineColumn;
+  }
+
+  public final void setTrackLineColumn (final boolean bTrackLineColumn)
+  {
+    m_bTrackLineColumn = bTrackLineColumn;
+  }
+#fi
+}

@@ -119,6 +119,7 @@ public class Options
 
   public static final String USEROPTION__PARSER_SUPER_CLASS = "PARSER_SUPER_CLASS";
   public static final String USEROPTION__JAVA_TEMPLATE_TYPE = "JAVA_TEMPLATE_TYPE";
+  public static final String USEROPTION__JAVA_CHAR_STREAM_TYPE = "JAVA_CHAR_STREAM_TYPE";
   public static final String USEROPTION__GENERATE_BOILERPLATE = "GENERATE_BOILERPLATE";
   public static final String USEROPTION__OUTPUT_LANGUAGE = "OUTPUT_LANGUAGE";
   public static final String USEROPTION__PARSER_CODE_GENERATOR = "PARSER_CODE_GENERATOR";
@@ -181,6 +182,18 @@ public class Options
    */
   public static final String JAVA_TEMPLATE_TYPE_CLASSIC = "classic";
 
+  /**
+   * The classic char stream that reads the input into an internal buffer that needs to be relocated
+   * and expanded for tokens that are larger than the buffer.
+   */
+  public static final String JAVA_CHAR_STREAM_TYPE_SIMPLE = "simple";
+
+  /**
+   * A char stream that keeps the whole input in memory and reads directly from it. Token length is
+   * therefore not limited by a buffer size. Not available with JAVA_UNICODE_ESCAPE.
+   */
+  public static final String JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE = "charsequence";
+
   private static final Set <OptionInfo> s_userOptions;
 
   static
@@ -231,6 +244,7 @@ public class Options
     temp.add (new OptionInfo (USEROPTION__OUTPUT_LANGUAGE, EOptionType.STRING, s_language.getID ()));
 
     temp.add (new OptionInfo (USEROPTION__JAVA_TEMPLATE_TYPE, EOptionType.STRING, JAVA_TEMPLATE_TYPE_CLASSIC));
+    temp.add (new OptionInfo (USEROPTION__JAVA_CHAR_STREAM_TYPE, EOptionType.STRING, JAVA_CHAR_STREAM_TYPE_SIMPLE));
     temp.add (new OptionInfo (USEROPTION__CPP_NAMESPACE, EOptionType.STRING, ""));
     temp.add (new OptionInfo (USEROPTION__CPP_TOKEN_INCLUDES, EOptionType.STRING, ""));
     temp.add (new OptionInfo (USEROPTION__CPP_PARSER_INCLUDES, EOptionType.STRING, ""));
@@ -497,11 +511,10 @@ public class Options
       }
     }
     else
-      if (sNameUC.equalsIgnoreCase (USEROPTION__OUTPUT_LANGUAGE))
+      if (sNameUC.equalsIgnoreCase (USEROPTION__JAVA_CHAR_STREAM_TYPE))
       {
-        final String outputLanguage = (String) aRealSrc;
-        final EOutputLanguage eOutLanguage = EOutputLanguage.getFromIDCaseInsensitiveOrNull (outputLanguage);
-        if (eOutLanguage == null)
+        final String sCharStreamType = (String) aRealSrc;
+        if (!_isValidJavaCharStreamType (sCharStreamType))
         {
           JavaCCErrors.warning (valueloc,
                                 "Bad option value \"" +
@@ -510,18 +523,37 @@ public class Options
                                           name +
                                           "\".  Option setting will be ignored. Valid options are: " +
                                           StringImplode.imploder ()
-                                                       .source (EOutputLanguage.values (), EOutputLanguage::getID)
+                                                       .source (s_aSupportedJavaCharStreamTypes)
                                                        .separator (", ")
                                                        .build ());
-          return;
         }
-        s_language = eOutLanguage;
       }
       else
-        if (sNameUC.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))
+        if (sNameUC.equalsIgnoreCase (USEROPTION__OUTPUT_LANGUAGE))
         {
-          processCPPNamespaceOption ((String) aRealSrc);
+          final String outputLanguage = (String) aRealSrc;
+          final EOutputLanguage eOutLanguage = EOutputLanguage.getFromIDCaseInsensitiveOrNull (outputLanguage);
+          if (eOutLanguage == null)
+          {
+            JavaCCErrors.warning (valueloc,
+                                  "Bad option value \"" +
+                                            aRealSrc +
+                                            "\" for \"" +
+                                            name +
+                                            "\".  Option setting will be ignored. Valid options are: " +
+                                            StringImplode.imploder ()
+                                                         .source (EOutputLanguage.values (), EOutputLanguage::getID)
+                                                         .separator (", ")
+                                                         .build ());
+            return;
+          }
+          s_language = eOutLanguage;
         }
+        else
+          if (sNameUC.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))
+          {
+            processCPPNamespaceOption ((String) aRealSrc);
+          }
   }
 
   /**
@@ -664,6 +696,17 @@ public class Options
                               "false setting of option DEBUG_PARSER.");
       }
       s_optionValues.put (USEROPTION__DEBUG_PARSER, Boolean.TRUE);
+    }
+
+    if (JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE.equalsIgnoreCase (getJavaCharStreamType ()) && isJavaUnicodeEscape ())
+    {
+      JavaCCErrors.warning ("True setting of option " +
+                            USEROPTION__JAVA_UNICODE_ESCAPE +
+                            " overrides the \"" +
+                            JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE +
+                            "\" setting of option " +
+                            USEROPTION__JAVA_CHAR_STREAM_TYPE +
+                            ".");
     }
   }
 
@@ -1014,6 +1057,33 @@ public class Options
   public static String getJavaTemplateType ()
   {
     return stringValue (USEROPTION__JAVA_TEMPLATE_TYPE);
+  }
+
+  private static final Set <String> s_aSupportedJavaCharStreamTypes = new HashSet <> ();
+  static
+  {
+    s_aSupportedJavaCharStreamTypes.add (JAVA_CHAR_STREAM_TYPE_SIMPLE);
+    s_aSupportedJavaCharStreamTypes.add (JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE);
+  }
+
+  private static boolean _isValidJavaCharStreamType (@Nullable final String sType)
+  {
+    return sType == null ? false : s_aSupportedJavaCharStreamTypes.contains (sType.toLowerCase (Locale.US));
+  }
+
+  public static String getJavaCharStreamType ()
+  {
+    return stringValue (USEROPTION__JAVA_CHAR_STREAM_TYPE);
+  }
+
+  /**
+   * @return <code>true</code> if the <code>CharSequenceCharStream</code> should be generated
+   *         instead of the <code>SimpleCharStream</code>. This is not possible in combination with
+   *         <code>JAVA_UNICODE_ESCAPE</code>.
+   */
+  public static boolean isCharSequenceCharStream ()
+  {
+    return JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE.equalsIgnoreCase (getJavaCharStreamType ()) && !isJavaUnicodeEscape ();
   }
 
   public static void setStringOption (final String optionName, final String optionValue)

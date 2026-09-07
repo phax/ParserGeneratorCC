@@ -49,5 +49,7 @@ public interface IJavaResourceTemplateLocations
 
   String getSimpleCharStreamTemplateResourceUrl ();
 
+  String getCharSequenceCharStreamTemplateResourceUrl ();
+
   String getParseExceptionTemplateResourceUrl ();
 }
