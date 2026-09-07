@@ -349,14 +349,16 @@ public final class JavaCCGlobals
 
     int i = 0, j = 0;
 
+    // Note: the tool names are surrounded by blanks in the ID string (see
+    // getIdString) and must therefore be trimmed here
     while (j < tmp.length () && (i = tmp.indexOf ('&', j)) != -1)
     {
-      retVal.add (tmp.substring (j, i));
+      retVal.add (tmp.substring (j, i).trim ());
       j = i + 1;
     }
 
     if (j < tmp.length ())
-      retVal.add (tmp.substring (j));
+      retVal.add (tmp.substring (j).trim ());
 
     return retVal;
   }
