@@ -36,6 +36,7 @@ package com.helger.pgcc;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+// TODO replace with EJavaVersion
 public enum EJDKVersion
 {
   JDK_1_1 (1),
@@ -55,9 +56,9 @@ public enum EJDKVersion
 
   public static final EJDKVersion DEFAULT = JDK_1_5;
 
-  private int m_nMajor;
+  private final int m_nMajor;
 
-  private EJDKVersion (final int nMajor)
+  EJDKVersion (final int nMajor)
   {
     m_nMajor = nMajor;
   }

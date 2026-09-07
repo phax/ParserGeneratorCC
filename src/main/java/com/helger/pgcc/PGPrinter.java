@@ -33,6 +33,7 @@
  */
 package com.helger.pgcc;
 
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
@@ -48,7 +49,7 @@ import com.helger.base.string.StringHelper;
 
 public final class PGPrinter
 {
-  public static interface IPrinter extends AutoCloseable
+  public interface IPrinter extends AutoCloseable, Flushable
   {
     void println (@NonNull String s);
 
