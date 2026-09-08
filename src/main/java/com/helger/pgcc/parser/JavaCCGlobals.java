@@ -571,7 +571,11 @@ public final class JavaCCGlobals
 
   @NonNull
   @Nonempty
-  static String getFileExtension ()
+  /**
+   * @return The file extension of the generated source files for the configured output language.
+   *         Never <code>null</code>. Public since the emitters moved into their own packages.
+   */
+  public static String getFileExtension ()
   {
     return switch (Options.getOutputLanguage ())
     {

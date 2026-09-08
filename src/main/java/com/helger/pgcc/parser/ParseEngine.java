@@ -2057,7 +2057,7 @@ public class ParseEngine
     }
   }
 
-  void build (final CodeGenerator codeGenerator)
+  public void build (final CodeGenerator codeGenerator)
   {
     m_codeGenerator = codeGenerator;
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();

@@ -63,6 +63,8 @@
  */
 package com.helger.pgcc.output.java;
 
+import com.helger.pgcc.output.java.LexGenJava;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.addEscapes;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
@@ -82,7 +84,6 @@ import com.helger.io.file.FileHelper;
 import com.helger.pgcc.CPG;
 import com.helger.pgcc.parser.ETokenKind;
 import com.helger.pgcc.parser.JavaCCErrors;
-import com.helger.pgcc.parser.LexGenJava;
 import com.helger.pgcc.parser.MetaParseException;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.parser.RegExprSpec;

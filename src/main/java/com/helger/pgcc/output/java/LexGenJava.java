@@ -62,9 +62,26 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.helger.pgcc.parser;
+package com.helger.pgcc.output.java;
+
+import com.helger.pgcc.parser.JavaCCParserConstants;
+
+import com.helger.pgcc.parser.Nfa;
+import com.helger.pgcc.parser.RegExprSpec;
+
+import com.helger.pgcc.parser.CodeGenerator;
+import com.helger.pgcc.parser.ETokenKind;
+import com.helger.pgcc.parser.MetaParseException;
+import com.helger.pgcc.parser.NfaState;
+import com.helger.pgcc.parser.Token;
+import com.helger.pgcc.parser.TokenProduction;
+import com.helger.pgcc.parser.TokenizerData;
+import com.helger.pgcc.parser.Options;
+import com.helger.pgcc.parser.JavaCCErrors;
+import com.helger.pgcc.parser.JavaCCGlobals;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
+import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.io.File;
@@ -75,8 +92,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.CPG;
+import com.helger.pgcc.context.LexerState;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.OutputHelper;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
@@ -87,100 +108,126 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
 /**
  * Generate lexer.
  */
-public class LexGenCpp extends LexGenJava
+public class LexGenJava extends CodeGenerator
 {
+  /**
+   * @return The token manager generation state of the current run. Never <code>null</code>. This
+   *         replaces the 43 static fields this class used to keep.
+   */
+  @NonNull
+  public static LexerState lexer ()
+  {
+    return PGCCContext.current ().lexer ();
+  }
+
+  private static final String DUMP_STATIC_VAR_DECLARATIONS_TEMPLATE_RESOURCE_URL = "/templates/java/DumpStaticVarDeclarations.template";
+  private static final String DUMP_DEBUG_METHODS_TEMPLATE_RESOURCE_URL = "/templates/java/DumpDebugMethods.template";
+  private static final String BOILERPLATER_METHOD_RESOURCE_URL = "/templates/java/TokenManagerBoilerPlateMethods.template";
+
+  // Order is important!
+  // Order is important!
+
   private void _printClassHead ()
   {
     final List <String> tn = new ArrayList <> (grammar ().getToolNameList ());
     tn.add (CPG.APP_NAME);
+    // TODO :: CBA -- Require Unification of output language specific processing
+    // into a single Enum class
+    genCodeLine ("/* " + getIdString (tn, lexer ().getTokenMgrClassName () + getFileExtension ()) + " */");
 
-    switchToStaticsFile ();
-
-    // standard includes
-    switchToIncludeFile ();
-    genCodeLine ("#include \"stdio.h\"");
-    genCodeLine ("#include \"JavaCC.h\"");
-    genCodeLine ("#include \"CharStream.h\"");
-    genCodeLine ("#include \"Token.h\"");
-    genCodeLine ("#include \"ErrorHandler.h\"");
-    genCodeLine ("#include \"TokenManager.h\"");
-    genCodeLine ("#include \"" + grammar ().getParserName () + "Constants.h\"");
-
-    if (Options.stringValue (Options.USEROPTION__CPP_TOKEN_MANAGER_INCLUDES).length () > 0)
+    boolean bHasImport = false;
+    int nIndex = 0;
+    int i = 1;
+    for (;;)
     {
-      genCodeLine ("#include \"" + Options.stringValue (Options.USEROPTION__CPP_TOKEN_MANAGER_INCLUDES) + "\"\n");
+      if (grammar ().cuToInsertionPoint1 ().size () <= nIndex)
+        break;
+
+      int nKind = grammar ().cuToInsertionPoint1 ().get (nIndex).kind;
+      if (nKind == JavaCCParserConstants.PACKAGE || nKind == JavaCCParserConstants.IMPORT)
+      {
+        if (nKind == JavaCCParserConstants.IMPORT)
+          bHasImport = true;
+
+        for (; i < grammar ().cuToInsertionPoint1 ().size (); i++)
+        {
+          nKind = grammar ().cuToInsertionPoint1 ().get (i).kind;
+          if (nKind == JavaCCParserConstants.SEMICOLON ||
+              nKind == JavaCCParserConstants.ABSTRACT ||
+              nKind == JavaCCParserConstants.FINAL ||
+              nKind == JavaCCParserConstants.PRIVATE ||
+              nKind == JavaCCParserConstants.PROTECTED ||
+              nKind == JavaCCParserConstants.PUBLIC ||
+              nKind == JavaCCParserConstants.CLASS ||
+              nKind == JavaCCParserConstants.INTERFACE ||
+              nKind == JavaCCParserConstants.ENUM)
+          {
+            setLineAndCol (grammar ().cuToInsertionPoint1 ().get (nIndex).beginLine,
+                           grammar ().cuToInsertionPoint1 ().get (nIndex).beginColumn);
+            int j = nIndex;
+            for (; j < i; j++)
+            {
+              printToken (grammar ().cuToInsertionPoint1 ().get (j));
+            }
+            if (nKind == JavaCCParserConstants.SEMICOLON)
+              printToken (grammar ().cuToInsertionPoint1 ().get (j));
+            genCodeNewLine ();
+            break;
+          }
+        }
+        ++i;
+        nIndex = i;
+      }
+      else
+        break;
     }
-
-    genCodeNewLine ();
-
-    if (Options.stringValue (Options.USEROPTION__CPP_NAMESPACE).length () > 0)
-    {
-      genCodeLine ("namespace " + Options.stringValue ("NAMESPACE_OPEN"));
-    }
-
-    genCodeLine ("class " + grammar ().getParserName () + ";");
-
-    /*
-     * final int l = 0, kind; i = 1; namespace? for (;;) { if
-     * (cu_to_insertion_point_1.size() <= l) break; kind =
-     * ((Token)cu_to_insertion_point_1.get(l)).kind; if(kind == PACKAGE || kind
-     * == IMPORT) { for (; i < cu_to_insertion_point_1.size(); i++) { kind =
-     * ((Token)cu_to_insertion_point_1.get(i)).kind; if (kind == CLASS) { cline
-     * = ((Token)(cu_to_insertion_point_1.get(l))).beginLine; ccol =
-     * ((Token)(cu_to_insertion_point_1.get(l))).beginColumn; for (j = l; j < i;
-     * j++) { printToken((Token)(cu_to_insertion_point_1.get(j))); } if (kind ==
-     * SEMICOLON) printToken((Token)(cu_to_insertion_point_1.get(j)));
-     * genCodeLine(""); break; } } l = ++i; } else break; }
-     */
 
     genCodeNewLine ();
     genCodeLine ("/** Token Manager. */");
-    final String superClass = Options.stringValue (Options.USEROPTION__TOKEN_MANAGER_SUPER_CLASS);
-    genClassStart (null,
-                   lexer ().getTokenMgrClassName (),
-                   new String [] {},
-                   new String [] { "public TokenManager" + (superClass == null ? "" : ", public " + superClass) });
+
+    // Emit only if an import is present
+    if (bHasImport)
+    {
+      // For issue #14
+      genCodeLine ("@SuppressWarnings (\"unused\")");
+    }
+
+    if (Options.isJavaSupportClassVisibilityPublic ())
+    {
+      genModifier ("public ");
+    }
+    // genCodeLine("class " + tokMgrClassName + " implements " +
+    // cu_name + "Constants");
+    // String superClass =
+    // Options.stringValue(Options.USEROPTION__TOKEN_MANAGER_SUPER_CLASS);
+    genClassStart (null, lexer ().getTokenMgrClassName (), new String [] {}, new String [] { grammar ().getParserName () + "Constants" });
+    // genCodeLine("{"); // }
 
     if (grammar ().getTokenMgrDecls () != null && grammar ().getTokenMgrDecls ().isNotEmpty ())
     {
-      Token t = grammar ().getTokenMgrDecls ().get (0);
       boolean bCommonTokenActionSeen = false;
       final boolean bCommonTokenActionNeeded = Options.isCommonTokenAction ();
+      Token t = grammar ().getTokenMgrDecls ().getFirstOrNull ();
 
-      printTokenSetup (grammar ().getTokenMgrDecls ().get (0));
+      printTokenSetup (t);
       setColToStart ();
 
-      switchToMainFile ();
       for (final Token s_token_mgr_decl : grammar ().getTokenMgrDecls ())
       {
         t = s_token_mgr_decl;
         if (t.kind == JavaCCParserConstants.IDENTIFIER && bCommonTokenActionNeeded && !bCommonTokenActionSeen)
-        {
           bCommonTokenActionSeen = t.image.equals ("CommonTokenAction");
-          if (bCommonTokenActionSeen)
-            t.image = grammar ().getParserName () + "TokenManager::" + t.image;
-        }
 
         printToken (t);
       }
 
-      switchToIncludeFile ();
-      genCodeLine ("  void CommonTokenAction(Token* token);");
-
-      if (Options.isTokenManagerUsesParser ())
-      {
-        genCodeLine ("  void setParser(void* parser) {");
-        genCodeLine ("      this->parser = (" + grammar ().getParserName () + "*) parser;");
-        genCodeLine ("  }");
-      }
       genCodeNewLine ();
-
       if (bCommonTokenActionNeeded && !bCommonTokenActionSeen)
       {
         JavaCCErrors.warning ("You have the COMMON_TOKEN_ACTION option set. " +
                               "But it appears you have not defined the method :\n" +
                               "      " +
-                              "void CommonTokenAction(Token *t)\n" +
+                              "void CommonTokenAction(Token t)\n" +
                               "in your TOKEN_MGR_DECLS. The generated token manager will not compile.");
       }
     }
@@ -190,32 +237,71 @@ public class LexGenCpp extends LexGenJava
         JavaCCErrors.warning ("You have the COMMON_TOKEN_ACTION option set. " +
                               "But you have not defined the method :\n" +
                               "      " +
-                              "void CommonTokenAction(Token *t)\n" +
+                              "void CommonTokenAction(Token t)\n" +
                               "in your TOKEN_MGR_DECLS. The generated token manager will not compile.");
       }
 
-    genCodeNewLine ();
-    genCodeLine ("  FILE *debugStream;");
+    if (Options.isDebugTokenManager ())
+    {
+      genCodeNewLine ();
+      genCodeLine ("  /** Debug output. */");
+      genCodeLine ("  private java.io.PrintStream debugStream = System.out;");
+      genCodeNewLine ();
+      genCodeLine ("  /**");
+      genCodeLine ("   * @return debug output");
+      genCodeLine ("   */");
+      genCodeLine ("  public java.io.PrintStream getDebugStream() {");
+      genCodeLine ("    return debugStream;");
+      genCodeLine ("  }");
+      genCodeNewLine ();
+      genCodeLine ("  /**");
+      genCodeLine ("   * Set debug output");
+      genCodeLine ("   * @param ds debug PrintStream. May not be <code>null</code>");
+      genCodeLine ("   */");
+      genCodeLine ("  public void setDebugStream(final java.io.PrintStream ds) {");
+      genCodeLine ("    debugStream = ds;");
+      genCodeLine ("  }");
+    }
 
-    generateMethodDefHeader ("  void ", lexer ().getTokenMgrClassName (), "setDebugStream(FILE *ds)");
-    genCodeLine ("{ debugStream = ds; }");
-
-    switchToIncludeFile ();
     if (Options.isTokenManagerUsesParser ())
     {
       genCodeNewLine ();
-      genCodeLine ("private:");
-      genCodeLine ("  " + grammar ().getParserName () + "* parser = nullptr;");
+      genCodeLine ("  public " + grammar ().getParserName () + " parser = null;");
     }
-    switchToMainFile ();
+  }
+
+  @Override
+  public void writeTemplate (final String name, final Map <String, Object> additionalOptions) throws IOException
+  {
+    final Map <String, Object> options = Options.getAllOptions ();
+    options.put ("maxOrdinal", Integer.valueOf (lexer ().getMaxOrdinal ()));
+    options.put ("maxLexStates", Integer.valueOf (lexer ().getMaxLexStates ()));
+    options.put ("hasEmptyMatch", Boolean.valueOf (lexer ().isHasEmptyMatch ()));
+    options.put ("hasSkip", Boolean.valueOf (lexer ().isHasSkip ()));
+    options.put ("hasMore", Boolean.valueOf (lexer ().isHasMore ()));
+    options.put ("hasSpecial", Boolean.valueOf (lexer ().isHasSpecial ()));
+    options.put ("hasMoreActions", Boolean.valueOf (lexer ().isHasMoreActions ()));
+    options.put ("hasSkipActions", Boolean.valueOf (lexer ().isHasSkipActions ()));
+    options.put ("hasTokenActions", Boolean.valueOf (lexer ().isHasTokenActions ()));
+    options.put ("stateSetSize", Integer.valueOf (lexer ().getStateSetSize ()));
+    options.put ("hasActions", Boolean.valueOf (lexer ().isHasMoreActions () || lexer ().isHasSkipActions () || lexer ().isHasTokenActions ()));
+    options.put ("tokMgrClassName", lexer ().getTokenMgrClassName ());
+    int x = 0;
+    for (final int l : lexer ().getMaxLongsReqd ())
+      x = Math.max (x, l);
+    options.put ("maxLongs", Integer.valueOf (x));
+    options.put ("cu_name", grammar ().getParserName ());
+
+    // options.put("", .valueOf(maxOrdinal));
+    if (additionalOptions != null)
+      options.putAll (additionalOptions);
+
+    super.writeTemplate (name, options);
   }
 
   private void _dumpDebugMethods () throws IOException
   {
-    final Map <String, Object> aOpts = new HashMap <> ();
-    aOpts.put ("maxOrdinal", Integer.toString (lexer ().getMaxOrdinal ()));
-    aOpts.put ("stateSetSize", Integer.toString (lexer ().getStateSetSize ()));
-    writeTemplate ("/templates/cpp/DumpDebugMethods.template", aOpts);
+    writeTemplate (DUMP_DEBUG_METHODS_TEMPLATE_RESOURCE_URL, null);
   }
 
   private static void _buildLexStatesTable ()
@@ -245,15 +331,13 @@ public class LexGenCpp extends LexGenJava
         tps.add (tp);
       }
 
-      if (respecs == null || respecs.size () == 0)
+      if (respecs == null || respecs.isEmpty ())
         continue;
 
+      AbstractExpRegularExpression re;
       for (i = 0; i < respecs.size (); i++)
-      {
-        final AbstractExpRegularExpression re = respecs.get (i).rexp;
-        if (lexer ().getMaxOrdinal () <= re.getOrdinal ())
+        if (lexer ().getMaxOrdinal () <= (re = respecs.get (i).rexp).getOrdinal ())
           lexer ().setMaxOrdinal (re.getOrdinal () + 1);
-      }
     }
 
     lexer ().setKinds (new ETokenKind [lexer ().getMaxOrdinal ()]);
@@ -299,24 +383,32 @@ public class LexGenCpp extends LexGenJava
     throw new IllegalStateException ("Should never come here");
   }
 
-  @Override
+  public static void addCharToSkip (final char c, final int kind)
+  {
+    lexer ().getSinglesToSkip ()[lexer ().getLexStateIndex ()].addChar (c);
+    lexer ().getSinglesToSkip ()[lexer ().getLexStateIndex ()].m_kind = kind;
+  }
+
   public void start () throws IOException
   {
     if (!Options.isBuildTokenManager () || Options.isUserTokenManager () || JavaCCErrors.getErrorCount () > 0)
       return;
 
     lexer ().setKeepLineCol (Options.isKeepLineColumn ());
+    lexer ().setErrorHandlingClass (Options.getTokenMgrErrorClass ());
     final List <ExpRChoice> choices = new ArrayList <> ();
 
     lexer ().setTokenMgrClassName (grammar ().getParserName () + "TokenManager");
 
-    _printClassHead ();
+    if (!lexer ().isGenerateDataOnly ())
+      _printClassHead ();
     _buildLexStatesTable ();
 
     boolean ignoring = false;
 
     for (final Map.Entry <String, List <TokenProduction>> aEntry : lexer ().allTpsForState ().entrySet ())
     {
+      int startState = -1;
       NfaState.reInitStatic ();
       ExpRStringLiteral.reInitStatic ();
 
@@ -360,16 +452,21 @@ public class LexGenCpp extends LexGenJava
             continue;
           }
 
-          if (lexer ().getCurRE () instanceof ExpRStringLiteral && StringHelper.isNotEmpty (((ExpRStringLiteral) lexer ().getCurRE ()).m_image))
+          if (!Options.isNoDfa () &&
+              lexer ().getCurRE () instanceof ExpRStringLiteral &&
+              StringHelper.isNotEmpty (((ExpRStringLiteral) lexer ().getCurRE ()).m_image))
           {
             ((ExpRStringLiteral) lexer ().getCurRE ()).generateDfa ();
             if (i != 0 && !lexer ().getMixed ()[lexer ().getLexStateIndex ()] && ignoring != ignore)
+            {
               lexer ().getMixed ()[lexer ().getLexStateIndex ()] = true;
+            }
           }
           else
             if (lexer ().getCurRE ().canMatchAnyChar ())
             {
-              if (lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()] == -1 || lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()] > lexer ().getCurRE ().getOrdinal ())
+              if (lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()] == -1 ||
+                  lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()] > lexer ().getCurRE ().getOrdinal ())
                 lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()] = lexer ().getCurRE ().getOrdinal ();
             }
             else
@@ -399,13 +496,14 @@ public class LexGenCpp extends LexGenJava
           if (respec.nextState != null && !respec.nextState.equals (lexer ().getLexStateName ()[lexer ().getLexStateIndex ()]))
             lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] = respec.nextState;
 
-          if (respec.act != null && respec.act.getActionTokens () != null && respec.act.getActionTokens ().size () > 0)
+          if (respec.act != null && respec.act.getActionTokens ().isNotEmpty ())
             lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] = respec.act;
 
           switch (kind)
           {
             case SPECIAL:
-              lexer ().setHasSkipActions (lexer ().isHasSkipActions () | (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null) || (lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] != null));
+              lexer ().setHasSkipActions (lexer ().isHasSkipActions () | (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null) ||
+                                  (lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] != null));
               lexer ().setHasSpecial (true);
               lexer ().getToSpecial ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L << (lexer ().getCurRE ().getOrdinal () % 64);
               lexer ().getToSkip ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L << (lexer ().getCurRE ().getOrdinal () % 64);
@@ -424,7 +522,6 @@ public class LexGenCpp extends LexGenJava
                 lexer ().getCanReachOnMore ()[_getIndex (lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()])] = true;
               else
                 lexer ().getCanReachOnMore ()[lexer ().getLexStateIndex ()] = true;
-
               break;
             case TOKEN:
               lexer ().setHasTokenActions (lexer ().isHasTokenActions () | (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null));
@@ -446,7 +543,7 @@ public class LexGenCpp extends LexGenJava
       if (lexer ().getHasNfa ()[lexer ().getLexStateIndex ()])
       {
         lexer ().getInitialState ().generateCode ();
-        lexer ().getInitialState ().generateInitMoves ();
+        startState = lexer ().getInitialState ().generateInitMoves ();
       }
 
       if (lexer ().getInitialState ().m_kind != Integer.MAX_VALUE && lexer ().getInitialState ().m_kind != 0)
@@ -475,11 +572,20 @@ public class LexGenCpp extends LexGenJava
       if (lexer ().getHasNfa ()[lexer ().getLexStateIndex ()] && !lexer ().getMixed ()[lexer ().getLexStateIndex ()])
         ExpRStringLiteral.generateNfaStartStates (this, lexer ().getInitialState ());
 
-      ExpRStringLiteral.dumpDfaCode (this);
-
-      if (lexer ().getHasNfa ()[lexer ().getLexStateIndex ()])
-        NfaState.dumpMoveNfa (this);
-
+      if (lexer ().isGenerateDataOnly ())
+      {
+        ExpRStringLiteral.updateStringLiteralData (lexer ().getLexStateIndex ());
+        NfaState.updateNfaData (lexer ().getTotalNumStates (), startState, lexer ().getLexStateIndex (), lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()]);
+      }
+      else
+      {
+        ExpRStringLiteral.dumpDfaCode (this);
+        if (lexer ().getHasNfa ()[lexer ().getLexStateIndex ()])
+        {
+          NfaState.dumpMoveNfa (this);
+        }
+      }
+      lexer ().setTotalNumStates (lexer ().getTotalNumStates () + NfaState.nfa ().getGeneratedStates ());
       if (lexer ().getStateSetSize () < NfaState.nfa ().getGeneratedStates ())
         lexer ().setStateSetSize (NfaState.nfa ().getGeneratedStates ());
     }
@@ -487,11 +593,55 @@ public class LexGenCpp extends LexGenJava
     for (final ExpRChoice aItem : choices)
       aItem.checkUnmatchability ();
 
-    NfaState.dumpStateSets (this);
     checkEmptyStringMatch ();
-    NfaState.dumpNonAsciiMoveMethods (this);
+
+    if (lexer ().isGenerateDataOnly ())
+    {
+      lexer ().getTokenizerData ().setParserName (grammar ().getParserName ());
+      NfaState.buildTokenizerData (lexer ().getTokenizerData ());
+      ExpRStringLiteral.BuildTokenizerData (lexer ().getTokenizerData ());
+      final int [] newLexStateIndices = new int [lexer ().getMaxOrdinal ()];
+
+      final StringBuilder tokenMgrDecls = new StringBuilder ();
+      if (grammar ().getTokenMgrDecls () != null)
+        for (final Token t : grammar ().getTokenMgrDecls ())
+          tokenMgrDecls.append (t.image).append (' ');
+      lexer ().getTokenizerData ().setDecls (tokenMgrDecls.toString ());
+
+      final Map <Integer, String> actionStrings = new HashMap <> ();
+      for (int i = 0; i < lexer ().getMaxOrdinal (); i++)
+      {
+        if (lexer ().getNewLexState ()[i] == null)
+        {
+          newLexStateIndices[i] = -1;
+        }
+        else
+        {
+          newLexStateIndices[i] = _getIndex (lexer ().getNewLexState ()[i]);
+        }
+        // For java, we have this but for other languages, eventually we will
+        // simply have a string.
+        final ExpAction act = lexer ().getActions ()[i];
+        if (act == null)
+          continue;
+
+        final StringBuilder sb = new StringBuilder ();
+        for (final Token t : act.getActionTokens ())
+          sb.append (t.image).append (' ');
+        actionStrings.put (Integer.valueOf (i), sb.toString ());
+      }
+      lexer ().getTokenizerData ().setDefaultLexState (lexer ().getDefaultLexState ());
+      lexer ().getTokenizerData ().setLexStateNames (lexer ().getLexStateName ());
+      lexer ().getTokenizerData ().updateMatchInfo (actionStrings, newLexStateIndices, lexer ().getToSkip (), lexer ().getToSpecial (), lexer ().getToMore (), lexer ().getToToken ());
+      return;
+    }
+
+    final EOutputLanguage eOutputLanguage = getOutputLanguage ();
+
     ExpRStringLiteral.dumpStrLiteralImages (this);
     _dumpFillToken ();
+    NfaState.dumpStateSets (this);
+    NfaState.dumpNonAsciiMoveMethods (this);
     _dumpGetNextToken ();
 
     if (Options.isDebugTokenManager ())
@@ -502,95 +652,136 @@ public class LexGenCpp extends LexGenJava
 
     if (lexer ().isHasLoop ())
     {
-      switchToStaticsFile ();
-      genCodeLine ("static int  jjemptyLineNo[" + lexer ().getMaxLexStates () + "];");
-      genCodeLine ("static int  jjemptyColNo[" + lexer ().getMaxLexStates () + "];");
-      genCodeLine ("static bool jjbeenHere[" + lexer ().getMaxLexStates () + "];");
-      switchToMainFile ();
+      genCodeLine ("int[] jjemptyLineNo = new int[" + lexer ().getMaxLexStates () + "];");
+      genCodeLine ("int[] jjemptyColNo = new int[" + lexer ().getMaxLexStates () + "];");
+      genCodeLine (eOutputLanguage.getTypeBoolean () +
+                   "[] jjbeenHere = new " +
+                   eOutputLanguage.getTypeBoolean () +
+                   "[" +
+                   lexer ().getMaxLexStates () +
+                   "];");
     }
 
-    if (lexer ().isHasSkipActions ())
-      _dumpSkipActions ();
-    if (lexer ().isHasMoreActions ())
-      _dumpMoreActions ();
-    if (lexer ().isHasTokenActions ())
-      _dumpTokenActions ();
+    _dumpSkipActions ();
+    _dumpMoreActions ();
+    _dumpTokenActions ();
 
-    NfaState.printBoilerPlateCPP (this);
+    NfaState.printBoilerPlateJava (this);
 
-    {
-      final Map <String, Object> aOpts = new HashMap <> ();
-      aOpts.put ("charStreamName", "CharStream");
-      aOpts.put ("parserClassName", grammar ().getParserName ());
-      aOpts.put ("defaultLexState", "defaultLexState");
-      aOpts.put ("lexStateNameLength", Integer.toString (lexer ().getLexStateName ().length));
-      writeTemplate ("/templates/cpp/TokenManagerBoilerPlateMethods.template", aOpts);
-    }
+    final String charStreamName = CodeGenerator.getCharStreamName ();
 
-    _dumpBoilerPlateInHeader ();
+    final Map <String, Object> aOpts = new HashMap <> ();
+    aOpts.put ("charStreamName", charStreamName);
+    aOpts.put ("lexStateNameLength", Integer.toString (lexer ().getLexStateName ().length));
+    aOpts.put ("defaultLexState", Integer.toString (lexer ().getDefaultLexState ()));
+    aOpts.put ("noDfa", Boolean.toString (Options.isNoDfa ()));
+    aOpts.put ("generatedStates", Integer.toString (lexer ().getTotalNumStates ()));
+    writeTemplate (BOILERPLATER_METHOD_RESOURCE_URL, aOpts);
 
-    // in the include file close the class signature´
-    // static vars actually inst
-    _dumpStaticVarDeclarations ();
+    _dumpStaticVarDeclarations (charStreamName);
+    genCodeLine (/* { */ "}");
 
-    // remaining variables
-    switchToIncludeFile ();
-    {
-      final Map <String, Object> aOpts = new HashMap <> ();
-      aOpts.put ("charStreamName", "CharStream");
-      aOpts.put ("lexStateNameLength", Integer.toString (lexer ().getLexStateName ().length));
-      writeTemplate ("/templates/cpp/DumpVarDeclarations.template", aOpts);
-    }
-    genCodeLine (/* { */ "};");
-
-    switchToStaticsFile ();
     // TODO :: CBA -- Require Unification of output language specific processing
     // into a single Enum class
     final String fileName = Options.getOutputDirectory () + File.separator + lexer ().getTokenMgrClassName () + getFileExtension ();
-    saveOutput (fileName);
+
+    if (Options.isBuildParser ())
+    {
+      saveOutput (fileName);
+    }
   }
 
-  private void _dumpBoilerPlateInHeader ()
+  protected static void checkEmptyStringMatch ()
+  {
+    final boolean [] seen = new boolean [lexer ().getMaxLexStates ()];
+    final boolean [] done = new boolean [lexer ().getMaxLexStates ()];
+
+    Outer: for (int i = 0; i < lexer ().getMaxLexStates (); i++)
+    {
+      if (done[i] || lexer ().getInitMatch ()[i] == 0 || lexer ().getInitMatch ()[i] == Integer.MAX_VALUE || lexer ().getCanMatchAnyChar ()[i] != -1)
+        continue;
+
+      done[i] = true;
+      int len = 0;
+      String cycle = "";
+      String reList = "";
+
+      for (int k = 0; k < lexer ().getMaxLexStates (); k++)
+        seen[k] = false;
+
+      int j = i;
+      seen[i] = true;
+      cycle += lexer ().getLexStateName ()[j] + "-->";
+      while (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]] != null)
+      {
+        cycle += lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]];
+        if (seen[j = _getIndex (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]])])
+          break;
+
+        cycle += "-->";
+        done[j] = true;
+        seen[j] = true;
+        if (lexer ().getInitMatch ()[j] == 0 || lexer ().getInitMatch ()[j] == Integer.MAX_VALUE || lexer ().getCanMatchAnyChar ()[j] != -1)
+          continue Outer;
+        if (len != 0)
+          reList += "; ";
+        reList += "line " + lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getLine () + ", column " + lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getColumn ();
+        len++;
+      }
+
+      if (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]] == null)
+        cycle += lexer ().getLexStateName ()[lexer ().getLexStates ()[lexer ().getInitMatch ()[j]]];
+
+      for (int k = 0; k < lexer ().getMaxLexStates (); k++)
+        lexer ().getCanLoop ()[k] |= seen[k];
+
+      lexer ().setHasLoop (true);
+      final String sLabel = lexer ().getRexprs ()[lexer ().getInitMatch ()[i]].getLabel ();
+      if (len == 0)
+      {
+        JavaCCErrors.warning (lexer ().getRexprs ()[lexer ().getInitMatch ()[i]],
+                              "Regular expression" +
+                                                        (StringHelper.isEmpty (sLabel) ? "" : " for " + sLabel) +
+                                                        " can be matched by the empty string (\"\") in lexical state " +
+                                                        lexer ().getLexStateName ()[i] +
+                                                        ". This can result in an endless loop of " +
+                                                        "empty string matches.");
+      }
+      else
+      {
+        JavaCCErrors.warning (lexer ().getRexprs ()[lexer ().getInitMatch ()[i]],
+                              "Regular expression" +
+                                                        (StringHelper.isEmpty (sLabel) ? "" : " for " + sLabel) +
+                                                        " can be matched by the empty string (\"\") in lexical state " +
+                                                        lexer ().getLexStateName ()[i] +
+                                                        ". This regular expression along with the " +
+                                                        "regular expressions at " +
+                                                        reList +
+                                                        " forms the cycle \n   " +
+                                                        cycle +
+                                                        "\ncontaining regular expressions with empty matches." +
+                                                        " This can result in an endless loop of empty string matches.");
+      }
+    }
+  }
+
+  private void _dumpStaticVarDeclarations (final String charStreamName) throws IOException
   {
     final EOutputLanguage eOutputLanguage = getOutputLanguage ();
 
-    switchToIncludeFile ();
-    genCodeLine ("#ifndef JAVACC_CHARSTREAM");
-    genCodeLine ("#define JAVACC_CHARSTREAM CharStream");
-    genCodeLine ("#endif");
-    genCodeNewLine ();
-
-    genCodeLine ("private:");
-    genCodeLine ("  void ReInitRounds();");
-    genCodeNewLine ();
-    genCodeLine ("public:");
-    genCodeLine ("  " + lexer ().getTokenMgrClassName () + "(JAVACC_CHARSTREAM *stream, int lexState = " + lexer ().getDefaultLexState () + ");");
-    genCodeLine ("  virtual ~" + lexer ().getTokenMgrClassName () + "();");
-    genCodeLine ("  void ReInit(JAVACC_CHARSTREAM *stream, int lexState = " + lexer ().getDefaultLexState () + ");");
-    genCodeLine ("  void SwitchTo(int lexState);");
-    genCodeLine ("  void clear();");
-    genCodeLine ("  const JJSimpleString jjKindsForBitVector(int i, " + eOutputLanguage.getTypeLong () + " vec);");
-    genCodeLine ("  const JJSimpleString jjKindsForStateVector(int lexState, int vec[], int start, int end);");
-    genCodeNewLine ();
-  }
-
-  private void _dumpStaticVarDeclarations ()
-  {
-    int i;
-
-    final EOutputLanguage eOutputLanguage = getOutputLanguage ();
-    switchToStaticsFile (); // remaining variables
     genCodeNewLine ();
     genCodeLine ("/** Lexer state names. */");
-    genStringLiteralArrayCPP ("lexStateNames", lexer ().getLexStateName ());
+    genCodeLine ("public static final String[] lexStateNames = {");
+    for (int i = 0; i < lexer ().getMaxLexStates (); i++)
+      genCodeLine ("   \"" + lexer ().getLexStateName ()[i] + "\",");
+    genCodeLine ("};");
 
-    if (lexer ().getMaxLexStates () > 1)
     {
       genCodeNewLine ();
       genCodeLine ("/** Lex State array. */");
-      genCode ("static const int jjnewLexState[] = {");
+      genCode ("public static final int[] jjnewLexState = {");
 
-      for (i = 0; i < lexer ().getMaxOrdinal (); i++)
+      for (int i = 0; i < lexer ().getMaxOrdinal (); i++)
       {
         if (i % 25 == 0)
           genCode ("\n   ");
@@ -603,11 +794,10 @@ public class LexGenCpp extends LexGenJava
       genCodeLine ("\n};");
     }
 
-    if (lexer ().isHasSkip () || lexer ().isHasMore () || lexer ().isHasSpecial ())
     {
       // Bit vector for TOKEN
-      genCode ("static const " + eOutputLanguage.getTypeLong () + " jjtoToken[] = {");
-      for (i = 0; i < lexer ().getMaxOrdinal () / 64 + 1; i++)
+      genCode ("static final long[] jjtoToken = {");
+      for (int i = 0; i < lexer ().getMaxOrdinal () / 64 + 1; i++)
       {
         if (i % 4 == 0)
           genCode ("\n   ");
@@ -616,11 +806,10 @@ public class LexGenCpp extends LexGenJava
       genCodeLine ("\n};");
     }
 
-    if (lexer ().isHasSkip () || lexer ().isHasSpecial ())
     {
       // Bit vector for SKIP
-      genCode ("static const " + eOutputLanguage.getTypeLong () + " jjtoSkip[] = {");
-      for (i = 0; i < lexer ().getMaxOrdinal () / 64 + 1; i++)
+      genCode ("static final long[] jjtoSkip = {");
+      for (int i = 0; i < lexer ().getMaxOrdinal () / 64 + 1; i++)
       {
         if (i % 4 == 0)
           genCode ("\n   ");
@@ -629,11 +818,10 @@ public class LexGenCpp extends LexGenJava
       genCodeLine ("\n};");
     }
 
-    if (lexer ().isHasSpecial ())
     {
       // Bit vector for SPECIAL
-      genCode ("static const " + eOutputLanguage.getTypeLong () + " jjtoSpecial[] = {");
-      for (i = 0; i < lexer ().getMaxOrdinal () / 64 + 1; i++)
+      genCode ("static final long[] jjtoSpecial = {");
+      for (int i = 0; i < lexer ().getMaxOrdinal () / 64 + 1; i++)
       {
         if (i % 4 == 0)
           genCode ("\n   ");
@@ -642,19 +830,35 @@ public class LexGenCpp extends LexGenJava
       genCodeLine ("\n};");
     }
 
-    if (false)
-      if (lexer ().isHasMore ()) // Not needed as we just use else
+    {
+      // Bit vector for MORE
+      genCode ("static final long[] jjtoMore = {");
+      for (int i = 0; i < lexer ().getMaxOrdinal () / 64 + 1; i++)
       {
-        // Bit vector for MORE
-        genCode ("static const " + eOutputLanguage.getTypeLong () + " jjtoMore[] = {");
-        for (i = 0; i < lexer ().getMaxOrdinal () / 64 + 1; i++)
-        {
-          if (i % 4 == 0)
-            genCode ("\n   ");
-          genCode (eOutputLanguage.getLongHex (lexer ().getToMore ()[i]) + ", ");
-        }
-        genCodeLine ("\n};");
+        if (i % 4 == 0)
+          genCode ("\n   ");
+        genCode (eOutputLanguage.getLongHex (lexer ().getToMore ()[i]) + ", ");
       }
+      genCodeLine ("\n};");
+    }
+
+    final Map <String, Object> aOpts = new HashMap <> ();
+    aOpts.put ("charStreamName", charStreamName);
+    aOpts.put ("protected", "protected");
+    aOpts.put ("private", "private");
+    aOpts.put ("final", "final");
+    aOpts.put ("lexStateNameLength", Integer.toString (lexer ().getLexStateName ().length));
+    writeTemplate (DUMP_STATIC_VAR_DECLARATIONS_TEMPLATE_RESOURCE_URL, aOpts);
+  }
+
+  // Assumes l != 0L
+  protected static char maxChar (final long l)
+  {
+    for (int i = 64; i-- > 0;)
+      if ((l & (1L << i)) != 0L)
+        return (char) i;
+
+    return 0xffff;
   }
 
   private void _dumpFillToken ()
@@ -662,92 +866,85 @@ public class LexGenCpp extends LexGenJava
     final double tokenVersion = OutputHelper.getVersionDashStar ("Token.java");
     final boolean hasBinaryNewToken = tokenVersion > 4.09;
 
-    generateMethodDefHeader ("Token *", lexer ().getTokenMgrClassName (), "jjFillToken()");
+    genCodeLine ("protected Token jjFillToken()");
     genCodeLine ("{");
-    genCodeLine ("   Token *t;");
-    genCodeLine ("   JJString curTokenImage;");
+    genCodeLine ("   final Token t;");
+    genCodeLine ("   final String curTokenImage;");
     if (lexer ().isKeepLineCol ())
     {
-      genCodeLine ("   int beginLine   = -1;");
-      genCodeLine ("   int endLine     = -1;");
-      genCodeLine ("   int beginColumn = -1;");
-      genCodeLine ("   int endColumn   = -1;");
+      genCodeLine ("   final int beginLine;");
+      genCodeLine ("   final int endLine;");
+      genCodeLine ("   final int beginColumn;");
+      genCodeLine ("   final int endColumn;");
     }
 
     if (lexer ().isHasEmptyMatch ())
     {
       genCodeLine ("   if (jjmatchedPos < 0)");
       genCodeLine ("   {");
-      genCodeLine ("       curTokenImage = image.c_str();");
+      genCodeLine ("      if (image == null)");
+      genCodeLine ("         curTokenImage = \"\";");
+      genCodeLine ("      else");
+      genCodeLine ("         curTokenImage = image.toString();");
 
       if (lexer ().isKeepLineCol ())
       {
-        genCodeLine ("   if (input_stream->getTrackLineColumn()) {");
-        genCodeLine ("      beginLine = endLine = input_stream->getEndLine();");
-        genCodeLine ("      beginColumn = endColumn = input_stream->getEndColumn();");
-        genCodeLine ("   }");
+        genCodeLine ("      beginLine = endLine = input_stream.getEndLine();");
+        genCodeLine ("      beginColumn = endColumn = input_stream.getEndColumn();");
       }
 
       genCodeLine ("   }");
       genCodeLine ("   else");
       genCodeLine ("   {");
-      genCodeLine ("      JJString im = jjstrLiteralImages[jjmatchedKind];");
-      genCodeLine ("      curTokenImage = (im.length() == 0) ? input_stream->GetImage() : im;");
+      genCodeLine ("      String im = jjstrLiteralImages[jjmatchedKind];");
+      genCodeLine ("      curTokenImage = im == null ? input_stream.getImage() : im;");
 
       if (lexer ().isKeepLineCol ())
       {
-        genCodeLine ("   if (input_stream->getTrackLineColumn()) {");
-        genCodeLine ("      beginLine = input_stream->getBeginLine();");
-        genCodeLine ("      beginColumn = input_stream->getBeginColumn();");
-        genCodeLine ("      endLine = input_stream->getEndLine();");
-        genCodeLine ("      endColumn = input_stream->getEndColumn();");
-        genCodeLine ("   }");
+        genCodeLine ("      beginLine = input_stream.getBeginLine();");
+        genCodeLine ("      beginColumn = input_stream.getBeginColumn();");
+        genCodeLine ("      endLine = input_stream.getEndLine();");
+        genCodeLine ("      endColumn = input_stream.getEndColumn();");
       }
 
       genCodeLine ("   }");
     }
     else
     {
-      genCodeLine ("   JJString im = jjstrLiteralImages[jjmatchedKind];");
-      genCodeLine ("   curTokenImage = (im.length() == 0) ? input_stream->GetImage() : im;");
+      genCodeLine ("   String im = jjstrLiteralImages[jjmatchedKind];");
+      genCodeLine ("   curTokenImage = im == null ? input_stream.getImage() : im;");
       if (lexer ().isKeepLineCol ())
       {
-        genCodeLine ("   if (input_stream->getTrackLineColumn()) {");
-        genCodeLine ("     beginLine = input_stream->getBeginLine();");
-        genCodeLine ("     beginColumn = input_stream->getBeginColumn();");
-        genCodeLine ("     endLine = input_stream->getEndLine();");
-        genCodeLine ("     endColumn = input_stream->getEndColumn();");
-        genCodeLine ("   }");
+        genCodeLine ("   beginLine = input_stream.getBeginLine();");
+        genCodeLine ("   beginColumn = input_stream.getBeginColumn();");
+        genCodeLine ("   endLine = input_stream.getEndLine();");
+        genCodeLine ("   endColumn = input_stream.getEndColumn();");
       }
     }
 
     if (Options.getTokenFactory ().length () > 0)
     {
-      genCodeLine ("   t = " + getClassQualifier (Options.getTokenFactory ()) + "newToken(jjmatchedKind, curTokenImage);");
+      genCodeLine ("   t = " + Options.getTokenFactory () + ".newToken(jjmatchedKind, curTokenImage);");
     }
     else
       if (hasBinaryNewToken)
       {
-        genCodeLine ("   t = " + getClassQualifier ("Token") + "newToken(jjmatchedKind, curTokenImage);");
+        genCodeLine ("   t = Token.newToken(jjmatchedKind, curTokenImage);");
       }
       else
       {
-        genCodeLine ("   t = " + getClassQualifier ("Token") + "newToken(jjmatchedKind);");
-        genCodeLine ("   t->kind = jjmatchedKind;");
-        genCodeLine ("   t->image = curTokenImage;");
+        genCodeLine ("   t = Token.newToken(jjmatchedKind);");
+        genCodeLine ("   t.kind = jjmatchedKind;");
+        genCodeLine ("   t.image = curTokenImage;");
       }
-    genCodeLine ("   t->specialToken = nullptr;");
-    genCodeLine ("   t->next = nullptr;");
 
     if (lexer ().isKeepLineCol ())
     {
       genCodeNewLine ();
-      genCodeLine ("   if (input_stream->getTrackLineColumn()) {");
-      genCodeLine ("   t->beginLine = beginLine;");
-      genCodeLine ("   t->endLine = endLine;");
-      genCodeLine ("   t->beginColumn = beginColumn;");
-      genCodeLine ("   t->endColumn = endColumn;");
-      genCodeLine ("   }");
+      genCodeLine ("   t.beginLine = beginLine;");
+      genCodeLine ("   t.endLine = endLine;");
+      genCodeLine ("   t.beginColumn = beginColumn;");
+      genCodeLine ("   t.endColumn = endColumn;");
     }
 
     genCodeNewLine ();
@@ -759,46 +956,43 @@ public class LexGenCpp extends LexGenJava
   {
     final EOutputLanguage eOutputLanguage = getOutputLanguage ();
 
-    switchToIncludeFile ();
     genCodeNewLine ();
-    genCodeLine ("public:");
-    genCodeLine ("    int curLexState;");
-    genCodeLine ("    int jjnewStateCnt;");
-    genCodeLine ("    int jjround;");
-    genCodeLine ("    int jjmatchedPos;");
-    genCodeLine ("    int jjmatchedKind;");
+    genCodeLine ("int curLexState = " + lexer ().getDefaultLexState () + ";");
+    genCodeLine ("int defaultLexState = " + lexer ().getDefaultLexState () + ";");
+    genCodeLine ("int jjnewStateCnt;");
+    genCodeLine ("int jjround;");
+    genCodeLine ("int jjmatchedPos;");
+    genCodeLine ("int jjmatchedKind;");
     genCodeNewLine ();
-    switchToMainFile ();
-    genCodeLine ("const int defaultLexState = " + lexer ().getDefaultLexState () + ";");
     genCodeLine ("/** Get the next Token. */");
-    generateMethodDefHeader ("Token *", lexer ().getTokenMgrClassName (), "getNextToken()");
+    genCodeLine ("public " + "Token getNextToken()" + " ");
     genCodeLine ("{");
     if (lexer ().isHasSpecial ())
     {
-      genCodeLine ("  Token *specialToken = nullptr;");
+      genCodeLine ("  Token specialToken = null;");
     }
-    genCodeLine ("  Token *matchedToken = nullptr;");
+    genCodeLine ("  Token matchedToken;");
     genCodeLine ("  int curPos = 0;");
     genCodeNewLine ();
+    genCodeLine ("  EOFLoop:");
     genCodeLine ("  for (;;)");
     genCodeLine ("  {");
-    genCodeLine ("   EOFLoop: ");
-    // genCodeLine(" {");
-    // genCodeLine(" curChar = input_stream->BeginToken();");
-    // genCodeLine(" }");
-    genCodeLine ("   if (input_stream->endOfInput())");
+    genCodeLine ("   try");
     genCodeLine ("   {");
-    // genCodeLine(" input_stream->backup(1);");
+    genCodeLine ("      curChar = input_stream.beginToken();");
+    genCodeLine ("   }");
+    genCodeLine ("   catch(final Exception e)");
+    genCodeLine ("   {");
 
     if (Options.isDebugTokenManager ())
-      genCodeLine ("      fprintf(debugStream, \"Returning the <EOF> token.\\n\");");
+      genCodeLine ("      debugStream.println(\"Returning the <EOF> token.\\n\");");
 
     genCodeLine ("      jjmatchedKind = 0;");
     genCodeLine ("      jjmatchedPos = -1;");
     genCodeLine ("      matchedToken = jjFillToken();");
 
     if (lexer ().isHasSpecial ())
-      genCodeLine ("      matchedToken->specialToken = specialToken;");
+      genCodeLine ("      matchedToken.specialToken = specialToken;");
 
     if (grammar ().getNextStateForEof () != null || grammar ().getActionForEof () != null)
       genCodeLine ("      TokenLexicalActions(matchedToken);");
@@ -808,12 +1002,11 @@ public class LexGenCpp extends LexGenJava
 
     genCodeLine ("      return matchedToken;");
     genCodeLine ("   }");
-    genCodeLine ("   curChar = input_stream->BeginToken();");
 
     if (lexer ().isHasMoreActions () || lexer ().isHasSkipActions () || lexer ().isHasTokenActions ())
     {
       genCodeLine ("   image = jjimage;");
-      genCodeLine ("   image.clear();");
+      genCodeLine ("   image.setLength(0);");
       genCodeLine ("   jjimageLen = 0;");
     }
 
@@ -848,7 +1041,8 @@ public class LexGenCpp extends LexGenJava
       if (lexer ().getSinglesToSkip ()[i].hasTransitions ())
       {
         // added the backup(0) to make JIT happy
-        genCodeLine (prefix + "{ input_stream->backup(0);");
+        genCodeLine (prefix + "try {");
+        genCodeLine (prefix + "  input_stream.backup(0);");
         if (lexer ().getSinglesToSkip ()[i].m_asciiMoves[0] != 0L && lexer ().getSinglesToSkip ()[i].m_asciiMoves[1] != 0L)
         {
           genCodeLine (prefix +
@@ -889,29 +1083,32 @@ public class LexGenCpp extends LexGenJava
                            ")");
             }
 
-        genCodeLine (prefix + "{");
         if (Options.isDebugTokenManager ())
         {
-          if (lexer ().getMaxLexStates () > 1)
-          {
-            genCodeLine ("      fprintf(debugStream, \"<%s>\" , addUnicodeEscapes(lexStateNames[curLexState]).c_str());");
-          }
-
-          genCodeLine ("      fprintf(debugStream, \"Skipping character : %c(%d)\\n\", curChar, (int)curChar);");
+          genCodeLine (prefix + "{");
+          genCodeLine ("      debugStream.println(" +
+                       (lexer ().getMaxLexStates () > 1 ? "\"<\" + lexStateNames[curLexState] + \">\" + " : "") +
+                       "\"Skipping character : \" + " +
+                       lexer ().getErrorHandlingClass () +
+                       ".addEscapes(String.valueOf(curChar)) + \" (\" + curChar + \")\");");
         }
+        genCodeLine (prefix + "      curChar = input_stream.beginToken();");
 
-        genCodeLine (prefix + "if (input_stream->endOfInput()) { goto EOFLoop; }");
-        genCodeLine (prefix + "curChar = input_stream->BeginToken();");
+        if (Options.isDebugTokenManager ())
+          genCodeLine (prefix + "}");
+
         genCodeLine (prefix + "}");
+        genCodeLine (prefix + "catch (final java.io.IOException e1) {");
+        genCodeLine (prefix + "  continue EOFLoop;");
         genCodeLine (prefix + "}");
       }
 
       if (lexer ().getInitMatch ()[i] != Integer.MAX_VALUE && lexer ().getInitMatch ()[i] != 0)
       {
         if (Options.isDebugTokenManager ())
-          genCodeLine ("      fprintf(debugStream, \"   Matched the empty string as %s token.\\n\", addUnicodeEscapes(tokenImage[" +
+          genCodeLine ("      debugStream.println(\"   Matched the empty string as \" + tokenImage[" +
                        lexer ().getInitMatch ()[i] +
-                       "]).c_str());");
+                       "] + \" token.\");");
 
         genCodeLine (prefix + "jjmatchedKind = " + lexer ().getInitMatch ()[i] + ";");
         genCodeLine (prefix + "jjmatchedPos = -1;");
@@ -925,27 +1122,33 @@ public class LexGenCpp extends LexGenJava
 
       if (Options.isDebugTokenManager ())
       {
-        genCodeLine ("   fprintf(debugStream, " +
-                     "\"<%s>Current character : %c(%d) at line %d column %d\\n\"," +
-                     "addUnicodeEscapes(lexStateNames[curLexState]).c_str(), curChar, (int)curChar, " +
-                     "input_stream->getEndLine(), input_stream->getEndColumn());");
+        genCodeLine ("      debugStream.println(" +
+                     (lexer ().getMaxLexStates () > 1 ? "\"<\" + lexStateNames[curLexState] + \">\" + " : "") +
+                     "\"Current character : \" + " +
+                     lexer ().getErrorHandlingClass () +
+                     ".addEscapes(String.valueOf(curChar)) + \" (\" + curChar + \") " +
+                     "at line \" + input_stream.getEndLine() + \" column \" + input_stream.getEndColumn());");
       }
 
       genCodeLine (prefix + "curPos = jjMoveStringLiteralDfa0_" + i + "();");
-
       if (lexer ().getCanMatchAnyChar ()[i] != -1)
       {
         if (lexer ().getInitMatch ()[i] != Integer.MAX_VALUE && lexer ().getInitMatch ()[i] != 0)
-          genCodeLine (prefix + "if (jjmatchedPos < 0 || (jjmatchedPos == 0 && jjmatchedKind > " + lexer ().getCanMatchAnyChar ()[i] + "))");
+        {
+          genCodeLine (prefix +
+                       "if (jjmatchedPos < 0 || (jjmatchedPos == 0 && jjmatchedKind > " +
+                       lexer ().getCanMatchAnyChar ()[i] +
+                       "))");
+        }
         else
           genCodeLine (prefix + "if (jjmatchedPos == 0 && jjmatchedKind > " + lexer ().getCanMatchAnyChar ()[i] + ")");
         genCodeLine (prefix + "{");
 
         if (Options.isDebugTokenManager ())
         {
-          genCodeLine ("           fprintf(debugStream, \"   Current character matched as a %s token.\\n\", addUnicodeEscapes(tokenImage[" +
+          genCodeLine ("           debugStream.println(\"   Current character matched as a \" + tokenImage[" +
                        lexer ().getCanMatchAnyChar ()[i] +
-                       "]).c_str());");
+                       "] + \" token.\");");
         }
         genCodeLine (prefix + "   jjmatchedKind = " + lexer ().getCanMatchAnyChar ()[i] + ";");
 
@@ -980,21 +1183,35 @@ public class LexGenCpp extends LexGenJava
       {
         genCodeLine (prefix + "      {");
         genCodeLine (prefix +
-                     "         fprintf(debugStream, " +
-                     "\"   Putting back %d characters into the input stream.\\n\", (curPos - jjmatchedPos - 1));");
+                     "         debugStream.println(" +
+                     "\"   Putting back \" + (curPos - jjmatchedPos - 1) + \" characters into the input stream.\");");
       }
 
-      genCodeLine (prefix + "         input_stream->backup(curPos - jjmatchedPos - 1);");
+      genCodeLine (prefix + "         input_stream.backup(curPos - jjmatchedPos - 1);");
 
       if (Options.isDebugTokenManager ())
-      {
         genCodeLine (prefix + "      }");
-      }
 
       if (Options.isDebugTokenManager ())
       {
-        genCodeLine ("    fprintf(debugStream, " +
-                     "\"****** FOUND A %d(%s) MATCH (%s) ******\\n\", jjmatchedKind, addUnicodeEscapes(tokenImage[jjmatchedKind]).c_str(), addUnicodeEscapes(input_stream->GetSuffix(jjmatchedPos + 1)).c_str());");
+        if (Options.isJavaUnicodeEscape () || Options.isJavaUserCharStream ())
+        {
+          genCodeLine ("    debugStream.println(" +
+                       "\"****** FOUND A \" + tokenImage[jjmatchedKind] + \" MATCH " +
+                       "(\" + " +
+                       lexer ().getErrorHandlingClass () +
+                       ".addEscapes(new String(input_stream.getSuffix(jjmatchedPos + 1))) + " +
+                       "\") ******\\n\");");
+        }
+        else
+        {
+          genCodeLine ("    debugStream.println(" +
+                       "\"****** FOUND A \" + tokenImage[jjmatchedKind] + \" MATCH " +
+                       "(\" + " +
+                       lexer ().getErrorHandlingClass () +
+                       ".addEscapes(new String(input_stream.getSuffix(jjmatchedPos + 1))) + " +
+                       "\") ******\\n\");");
+        }
       }
 
       if (lexer ().isHasSkip () || lexer ().isHasMore () || lexer ().isHasSpecial ())
@@ -1006,7 +1223,7 @@ public class LexGenCpp extends LexGenJava
       genCodeLine (prefix + "         matchedToken = jjFillToken();");
 
       if (lexer ().isHasSpecial ())
-        genCodeLine (prefix + "         matchedToken->specialToken = specialToken;");
+        genCodeLine (prefix + "         matchedToken.specialToken = specialToken;");
 
       if (lexer ().isHasTokenActions ())
         genCodeLine (prefix + "         TokenLexicalActions(matchedToken);");
@@ -1030,7 +1247,9 @@ public class LexGenCpp extends LexGenJava
         {
           if (lexer ().isHasMore ())
           {
-            genCodeLine (prefix + "      else if ((jjtoSkip[jjmatchedKind >> 6] & " + "(1L << (jjmatchedKind & 077))) != 0L)");
+            genCodeLine (prefix +
+                         "      else if ((jjtoSkip[jjmatchedKind >> 6] & " +
+                         "(1L << (jjmatchedKind & 077))) != 0L)");
           }
           else
             genCodeLine (prefix + "      else");
@@ -1039,17 +1258,19 @@ public class LexGenCpp extends LexGenJava
 
           if (lexer ().isHasSpecial ())
           {
-            genCodeLine (prefix + "         if ((jjtoSpecial[jjmatchedKind >> 6] & " + "(1L << (jjmatchedKind & 077))) != 0L)");
+            genCodeLine (prefix +
+                         "         if ((jjtoSpecial[jjmatchedKind >> 6] & " +
+                         "(1L << (jjmatchedKind & 077))) != 0L)");
             genCodeLine (prefix + "         {");
 
             genCodeLine (prefix + "            matchedToken = jjFillToken();");
 
-            genCodeLine (prefix + "            if (specialToken == nullptr)");
+            genCodeLine (prefix + "            if (specialToken == null)");
             genCodeLine (prefix + "               specialToken = matchedToken;");
             genCodeLine (prefix + "            else");
             genCodeLine (prefix + "            {");
-            genCodeLine (prefix + "               matchedToken->specialToken = specialToken;");
-            genCodeLine (prefix + "               specialToken = (specialToken->next = matchedToken);");
+            genCodeLine (prefix + "               matchedToken.specialToken = specialToken;");
+            genCodeLine (prefix + "               specialToken = (specialToken.next = matchedToken);");
             genCodeLine (prefix + "            }");
 
             if (lexer ().isHasSkipActions ())
@@ -1060,12 +1281,12 @@ public class LexGenCpp extends LexGenJava
             if (lexer ().isHasSkipActions ())
             {
               genCodeLine (prefix + "         else");
-              genCodeLine (prefix + "            SkipLexicalActions(nullptr);");
+              genCodeLine (prefix + "            SkipLexicalActions(null);");
             }
           }
           else
             if (lexer ().isHasSkipActions ())
-              genCodeLine (prefix + "         SkipLexicalActions(nullptr);");
+              genCodeLine (prefix + "         SkipLexicalActions(null);");
 
           if (lexer ().getMaxLexStates () > 1)
           {
@@ -1073,7 +1294,7 @@ public class LexGenCpp extends LexGenJava
             genCodeLine (prefix + "         curLexState = jjnewLexState[jjmatchedKind];");
           }
 
-          genCodeLine (prefix + "         goto EOFLoop;");
+          genCodeLine (prefix + "         continue EOFLoop;");
           genCodeLine (prefix + "      }");
         }
 
@@ -1093,29 +1314,34 @@ public class LexGenCpp extends LexGenJava
           genCodeLine (prefix + "      curPos = 0;");
           genCodeLine (prefix + "      jjmatchedKind = 0x" + Integer.toHexString (Integer.MAX_VALUE) + ";");
 
-          genCodeLine (prefix + "   if (!input_stream->endOfInput()) {");
-          genCodeLine (prefix + "         curChar = input_stream->readChar();");
+          genCodeLine (prefix + "      try {");
+          genCodeLine (prefix + "         curChar = input_stream.readChar();");
 
           if (Options.isDebugTokenManager ())
-          {
-            genCodeLine ("   fprintf(debugStream, " +
-                         "\"<%s>Current character : %c(%d) at line %d column %d\\n\"," +
-                         "addUnicodeEscapes(lexStateNames[curLexState]).c_str(), curChar, (int)curChar, " +
-                         "input_stream->getEndLine(), input_stream->getEndColumn());");
-          }
-          genCodeLine (prefix + "   continue;");
-          genCodeLine (prefix + " }");
+            genCodeLine ("   debugStream.println(" +
+                         (lexer ().getMaxLexStates () > 1 ? "\"<\" + lexStateNames[curLexState] + \">\" + " : "") +
+                         "\"Current character : \" + " +
+                         lexer ().getErrorHandlingClass () +
+                         ".addEscapes(String.valueOf(curChar)) + \" (\" + curChar + \") " +
+                         "at line \" + input_stream.getEndLine() + \" column \" + input_stream.getEndColumn());");
+          genCodeLine (prefix + "         continue;");
+          genCodeLine (prefix + "      }");
+          genCodeLine (prefix + "      catch (final java.io.IOException e1) { }");
         }
       }
 
       genCodeLine (prefix + "   }");
-      genCodeLine (prefix + "   int error_line = input_stream->getEndLine();");
-      genCodeLine (prefix + "   int error_column = input_stream->getEndColumn();");
-      genCodeLine (prefix + "   JJString error_after;");
-      genCodeLine (prefix + "   bool EOFSeen = false;");
-      genCodeLine (prefix + "   if (input_stream->endOfInput()) {");
+      genCodeLine (prefix + "   int error_line = input_stream.getEndLine();");
+      genCodeLine (prefix + "   int error_column = input_stream.getEndColumn();");
+      genCodeLine (prefix + "   String error_after = null;");
+      genCodeLine (prefix + "   " + eOutputLanguage.getTypeBoolean () + " EOFSeen = false;");
+      genCodeLine (prefix + "   try {");
+      genCodeLine (prefix + "     input_stream.readChar();");
+      genCodeLine (prefix + "     input_stream.backup(1);");
+      genCodeLine (prefix + "   }");
+      genCodeLine (prefix + "   catch (final java.io.IOException e1) {");
       genCodeLine (prefix + "      EOFSeen = true;");
-      genCodeLine (prefix + "      error_after = curPos <= 1 ? EMPTY : input_stream->GetImage();");
+      genCodeLine (prefix + "      error_after = curPos <= 1 ? \"\" : input_stream.getImage();");
       genCodeLine (prefix + "      if (curChar == '\\n' || curChar == '\\r') {");
       genCodeLine (prefix + "         error_line++;");
       genCodeLine (prefix + "         error_column = 0;");
@@ -1124,9 +1350,16 @@ public class LexGenCpp extends LexGenJava
       genCodeLine (prefix + "         error_column++;");
       genCodeLine (prefix + "   }");
       genCodeLine (prefix + "   if (!EOFSeen) {");
-      genCodeLine (prefix + "      error_after = curPos <= 1 ? EMPTY : input_stream->GetImage();");
+      genCodeLine (prefix + "      input_stream.backup(1);");
+      genCodeLine (prefix + "      error_after = curPos <= 1 ? \"\" : input_stream.getImage();");
       genCodeLine (prefix + "   }");
-      genCodeLine (prefix + "   errorHandler->lexicalError(EOFSeen, curLexState, error_line, error_column, error_after, curChar, this);");
+      genCodeLine (prefix +
+                   "   throw new " +
+                   lexer ().getErrorHandlingClass () +
+                   "(" +
+                   "EOFSeen, curLexState, error_line, error_column, error_after, curChar, " +
+                   lexer ().getErrorHandlingClass () +
+                   ".LEXICAL_ERROR);");
     }
 
     if (lexer ().isHasMore ())
@@ -1141,7 +1374,7 @@ public class LexGenCpp extends LexGenJava
   {
     ExpAction act;
 
-    generateMethodDefHeader ("void ", lexer ().getTokenMgrClassName (), "SkipLexicalActions(Token *matchedToken)");
+    genCodeLine ("void SkipLexicalActions(Token matchedToken)");
     genCodeLine ("{");
     genCodeLine ("   switch(jjmatchedKind)");
     genCodeLine ("   {");
@@ -1153,27 +1386,35 @@ public class LexGenCpp extends LexGenJava
 
       for (;;)
       {
-        if (((act = lexer ().getActions ()[i]) == null || act.getActionTokens () == null || act.getActionTokens ().size () == 0) &&
-            !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
+        act = lexer ().getActions ()[i];
+        if ((act == null || act.getActionTokens ().isEmpty ()) && !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
           continue Outer;
 
-        genCodeLine ("      case " + i + " : {");
+        genCodeLine ("      case " + i + " :");
 
         if (lexer ().getInitMatch ()[lexer ().getLexStates ()[i]] == i && lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
         {
           genCodeLine ("         if (jjmatchedPos == -1)");
           genCodeLine ("         {");
           genCodeLine ("            if (jjbeenHere[" + lexer ().getLexStates ()[i] + "] &&");
-          genCodeLine ("                jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] == input_stream->getBeginLine() &&");
-          genCodeLine ("                jjemptyColNo[" + lexer ().getLexStates ()[i] + "] == input_stream->getBeginColumn())");
-          genCodeLine ("               errorHandler->lexicalError(JJString(\"(\"Error: Bailing out of infinite loop caused by repeated empty string matches \" + \"at line \" + input_stream->getBeginLine() + \", \" + \"column \" + input_stream->getBeginColumn() + \".\")), this);");
-          genCodeLine ("            jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] = input_stream->getBeginLine();");
-          genCodeLine ("            jjemptyColNo[" + lexer ().getLexStates ()[i] + "] = input_stream->getBeginColumn();");
+          genCodeLine ("                jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginLine() &&");
+          genCodeLine ("                jjemptyColNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginColumn())");
+          genCodeLine ("               throw new " +
+                       lexer ().getErrorHandlingClass () +
+                       "(" +
+                       "(\"Error: Bailing out of infinite loop caused by repeated empty string matches " +
+                       "at line \" + input_stream.getBeginLine() + \", " +
+                       "column \" + input_stream.getBeginColumn() + \".\"), " +
+                       lexer ().getErrorHandlingClass () +
+                       ".LOOP_DETECTED);");
+          genCodeLine ("            jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginLine();");
+          genCodeLine ("            jjemptyColNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginColumn();");
           genCodeLine ("            jjbeenHere[" + lexer ().getLexStates ()[i] + "] = true;");
           genCodeLine ("         }");
         }
 
-        if ((act = lexer ().getActions ()[i]) == null || act.getActionTokens ().size () == 0)
+        act = lexer ().getActions ()[i];
+        if (act == null || act.getActionTokens ().isEmpty ())
           break;
 
         genCode ("         image.append");
@@ -1184,7 +1425,7 @@ public class LexGenCpp extends LexGenJava
         }
         else
         {
-          genCodeLine ("(input_stream->GetSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1)));");
+          genCodeLine ("(input_stream.getSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1)));");
         }
 
         printTokenSetup (act.getActionTokens ().get (0));
@@ -1198,7 +1439,6 @@ public class LexGenCpp extends LexGenJava
       }
 
       genCodeLine ("         break;");
-      genCodeLine ("       }");
     }
 
     genCodeLine ("      default :");
@@ -1211,7 +1451,7 @@ public class LexGenCpp extends LexGenJava
   {
     ExpAction act;
 
-    generateMethodDefHeader ("void ", lexer ().getTokenMgrClassName (), "MoreLexicalActions()");
+    genCodeLine ("void MoreLexicalActions()");
     genCodeLine ("{");
     genCodeLine ("   jjimageLen += (lengthOfMatch = jjmatchedPos + 1);");
     genCodeLine ("   switch(jjmatchedKind)");
@@ -1224,27 +1464,35 @@ public class LexGenCpp extends LexGenJava
 
       for (;;)
       {
-        if (((act = lexer ().getActions ()[i]) == null || act.getActionTokens () == null || act.getActionTokens ().size () == 0) &&
-            !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
+        act = lexer ().getActions ()[i];
+        if ((act == null || act.getActionTokens ().isEmpty ()) && !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
           continue Outer;
 
-        genCodeLine ("      case " + i + " : {");
+        genCodeLine ("      case " + i + " :");
 
         if (lexer ().getInitMatch ()[lexer ().getLexStates ()[i]] == i && lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
         {
           genCodeLine ("         if (jjmatchedPos == -1)");
           genCodeLine ("         {");
           genCodeLine ("            if (jjbeenHere[" + lexer ().getLexStates ()[i] + "] &&");
-          genCodeLine ("                jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] == input_stream->getBeginLine() &&");
-          genCodeLine ("                jjemptyColNo[" + lexer ().getLexStates ()[i] + "] == input_stream->getBeginColumn())");
-          genCodeLine ("               errorHandler->lexicalError(JJString(\"(\"Error: Bailing out of infinite loop caused by repeated empty string matches \" + \"at line \" + input_stream->getBeginLine() + \", \" + \"column \" + input_stream->getBeginColumn() + \".\")), this);");
-          genCodeLine ("            jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] = input_stream->getBeginLine();");
-          genCodeLine ("            jjemptyColNo[" + lexer ().getLexStates ()[i] + "] = input_stream->getBeginColumn();");
+          genCodeLine ("                jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginLine() &&");
+          genCodeLine ("                jjemptyColNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginColumn())");
+          genCodeLine ("               throw new " +
+                       lexer ().getErrorHandlingClass () +
+                       "(" +
+                       "(\"Error: Bailing out of infinite loop caused by repeated empty string matches " +
+                       "at line \" + input_stream.getBeginLine() + \", " +
+                       "column \" + input_stream.getBeginColumn() + \".\"), " +
+                       lexer ().getErrorHandlingClass () +
+                       ".LOOP_DETECTED);");
+          genCodeLine ("            jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginLine();");
+          genCodeLine ("            jjemptyColNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginColumn();");
           genCodeLine ("            jjbeenHere[" + lexer ().getLexStates ()[i] + "] = true;");
           genCodeLine ("         }");
         }
 
-        if ((act = lexer ().getActions ()[i]) == null || act.getActionTokens ().size () == 0)
+        act = lexer ().getActions ()[i];
+        if (act == null || act.getActionTokens ().isEmpty ())
         {
           break;
         }
@@ -1254,7 +1502,7 @@ public class LexGenCpp extends LexGenJava
         if (ExpRStringLiteral.strLit ().getAllImages ()[i] != null)
           genCodeLine ("(jjstrLiteralImages[" + i + "]);");
         else
-          genCodeLine ("(input_stream->GetSuffix(jjimageLen));");
+          genCodeLine ("(input_stream.getSuffix(jjimageLen));");
 
         genCodeLine ("         jjimageLen = 0;");
         printTokenSetup (act.getActionTokens ().get (0));
@@ -1268,7 +1516,6 @@ public class LexGenCpp extends LexGenJava
       }
 
       genCodeLine ("         break;");
-      genCodeLine ("       }");
     }
 
     genCodeLine ("      default :");
@@ -1283,7 +1530,7 @@ public class LexGenCpp extends LexGenJava
     ExpAction act;
     int i;
 
-    generateMethodDefHeader ("void ", lexer ().getTokenMgrClassName (), "TokenLexicalActions(Token *matchedToken)");
+    genCodeLine ("void TokenLexicalActions(Token matchedToken)");
     genCodeLine ("{");
     genCodeLine ("   switch(jjmatchedKind)");
     genCodeLine ("   {");
@@ -1295,35 +1542,41 @@ public class LexGenCpp extends LexGenJava
 
       for (;;)
       {
-        if (((act = lexer ().getActions ()[i]) == null || act.getActionTokens () == null || act.getActionTokens ().size () == 0) &&
-            !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
+        act = lexer ().getActions ()[i];
+        if ((act == null || act.getActionTokens ().isEmpty ()) && !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
           continue Outer;
 
-        genCodeLine ("      case " + i + " : {");
+        genCodeLine ("      case " + i + " :");
 
         if (lexer ().getInitMatch ()[lexer ().getLexStates ()[i]] == i && lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
         {
           genCodeLine ("         if (jjmatchedPos == -1)");
           genCodeLine ("         {");
           genCodeLine ("            if (jjbeenHere[" + lexer ().getLexStates ()[i] + "] &&");
-          genCodeLine ("                jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] == input_stream->getBeginLine() &&");
-          genCodeLine ("                jjemptyColNo[" + lexer ().getLexStates ()[i] + "] == input_stream->getBeginColumn())");
-          genCodeLine ("               errorHandler->lexicalError(JJString(\"Error: Bailing out of infinite loop caused by repeated empty string matches " +
-                       "at line \" + input_stream->getBeginLine() + \", " +
-                       "column \" + input_stream->getBeginColumn() + \".\"), this);");
-          genCodeLine ("            jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] = input_stream->getBeginLine();");
-          genCodeLine ("            jjemptyColNo[" + lexer ().getLexStates ()[i] + "] = input_stream->getBeginColumn();");
+          genCodeLine ("                jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginLine() &&");
+          genCodeLine ("                jjemptyColNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginColumn())");
+          genCodeLine ("               throw new " +
+                       lexer ().getErrorHandlingClass () +
+                       "(" +
+                       "(\"Error: Bailing out of infinite loop caused by repeated empty string matches " +
+                       "at line \" + input_stream.getBeginLine() + \", " +
+                       "column \" + input_stream.getBeginColumn() + \".\"), " +
+                       lexer ().getErrorHandlingClass () +
+                       ".LOOP_DETECTED);");
+          genCodeLine ("            jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginLine();");
+          genCodeLine ("            jjemptyColNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginColumn();");
           genCodeLine ("            jjbeenHere[" + lexer ().getLexStates ()[i] + "] = true;");
           genCodeLine ("         }");
         }
 
-        if ((act = lexer ().getActions ()[i]) == null || act.getActionTokens ().size () == 0)
+        act = lexer ().getActions ()[i];
+        if (act == null || act.getActionTokens ().isEmpty ())
           break;
 
         if (i == 0)
         {
-          genCodeLine ("      image.setLength(0);"); // For EOF no image is
-                                                     // there
+          // For EOF no image is there
+          genCodeLine ("      image.setLength(0);");
         }
         else
         {
@@ -1336,7 +1589,7 @@ public class LexGenCpp extends LexGenJava
           }
           else
           {
-            genCodeLine ("(input_stream->GetSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1)));");
+            genCodeLine ("(input_stream.getSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1)));");
           }
         }
 
@@ -1351,7 +1604,6 @@ public class LexGenCpp extends LexGenJava
       }
 
       genCodeLine ("         break;");
-      genCodeLine ("       }");
     }
 
     genCodeLine ("      default :");
@@ -1359,4 +1611,5 @@ public class LexGenCpp extends LexGenJava
     genCodeLine ("   }");
     genCodeLine ("}");
   }
+
 }

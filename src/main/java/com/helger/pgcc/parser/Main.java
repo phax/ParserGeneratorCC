@@ -63,6 +63,11 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.output.cpp.LexGenCpp;
+import com.helger.pgcc.output.cpp.ParseGenCPP;
+import com.helger.pgcc.output.java.LexGenJava;
+import com.helger.pgcc.output.java.ParseGenJava;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.io.File;

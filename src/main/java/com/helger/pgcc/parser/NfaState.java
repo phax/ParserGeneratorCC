@@ -63,6 +63,8 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.output.java.LexGenJava;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -101,7 +103,12 @@ public class NfaState
     nfa ().resetForLexicalState ();
   }
 
-  long [] m_asciiMoves = new long [2];
+  /**
+   * The state's own data. Package private for the NFA construction, but read and written by the
+   * lexer emitters in com.helger.pgcc.output.*, which is why they are public rather than package
+   * private.
+   */
+  public long [] m_asciiMoves = new long [2];
   public char [] m_charMoves = null;
   private char [] m_rangeMoves = null;
   public NfaState m_next = null;
@@ -111,17 +118,17 @@ public class NfaState
 
   private final int m_id;
   public int m_stateName = -1;
-  int m_kind = Integer.MAX_VALUE;
+  public int m_kind = Integer.MAX_VALUE;
   private int m_lookingFor;
   private int m_usefulEpsilonMoves = 0;
   public int m_inNextOf;
   private int m_lexState;
   private int m_nonAsciiMethod = -1;
   private int m_kindToPrint = Integer.MAX_VALUE;
-  boolean m_dummy = false;
+  public boolean m_dummy = false;
   private boolean m_isComposite = false;
   private int [] m_compositeStates = null;
-  boolean m_isFinal = false;
+  public boolean m_isFinal = false;
   private List <Integer> m_loByteVec;
   private int [] m_nonAsciiMoveIndices;
   private int m_round = 0;
@@ -476,7 +483,7 @@ public class NfaState
   }
 
   // generates code (without outputting it) and returns the name used.
-  void generateCode ()
+  public void generateCode ()
   {
     if (m_stateName != -1)
       return;
@@ -2690,7 +2697,7 @@ public class NfaState
   }
 
   // private static boolean boilerPlateDumped = false;
-  static void printBoilerPlateJava (final CodeGenerator codeGenerator)
+  public static void printBoilerPlateJava (final CodeGenerator codeGenerator)
   {
     codeGenerator.genCodeLine ("private void jjCheckNAdd(int state)");
     codeGenerator.genCodeLine ("{");
@@ -2738,7 +2745,7 @@ public class NfaState
   }
 
   // private static boolean boilerPlateDumped = false;
-  static void printBoilerPlateCPP (final CodeGenerator codeGenerator)
+  public static void printBoilerPlateCPP (final CodeGenerator codeGenerator)
   {
     codeGenerator.switchToIncludeFile ();
     codeGenerator.genCodeLine ("#define jjCheckNAdd(state)\\");
@@ -3422,7 +3429,7 @@ public class NfaState
   private static final Map <Integer, Integer> s_nfaStateOffset = new HashMap <> ();
   private static final Map <Integer, Integer> s_matchAnyChar = new HashMap <> ();
 
-  static void updateNfaData (final int maxState, final int startStateName, final int lexicalStateIndex, final int matchAnyCharKind)
+  public static void updateNfaData (final int maxState, final int startStateName, final int lexicalStateIndex, final int matchAnyCharKind)
   {
     // Cleanup the state set.
     final Set <Integer> done = new HashSet <> ();

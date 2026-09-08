@@ -49,7 +49,7 @@ import com.helger.pgcc.AbstractJavaCCTestCase;
 import com.helger.pgcc.parser.CodeGenerator;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.JavaCCParser;
-import com.helger.pgcc.parser.LexGenJava;
+import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.parser.Main;
 import com.helger.pgcc.parser.NfaState;
 import com.helger.pgcc.parser.Options;

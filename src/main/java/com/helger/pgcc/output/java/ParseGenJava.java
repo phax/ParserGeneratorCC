@@ -61,7 +61,18 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.helger.pgcc.parser;
+package com.helger.pgcc.output.java;
+
+import com.helger.pgcc.parser.JavaCCParserConstants;
+
+import com.helger.pgcc.parser.CodeGenerator;
+import com.helger.pgcc.parser.MetaParseException;
+import com.helger.pgcc.parser.Options;
+import com.helger.pgcc.parser.JavaCCErrors;
+import com.helger.pgcc.parser.JavaCCGlobals;
+import com.helger.pgcc.parser.ParseEngine;
+import com.helger.pgcc.parser.Token;
+import com.helger.pgcc.parser.NormalProduction;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;

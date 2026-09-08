@@ -108,3 +108,23 @@ Which char stream that is:
 | false | `charsequence` | `CharSequenceCharStream`, no buffer at all |
 
 `USER_CHAR_STREAM=true` skips all of them and generates only the interface.
+
+## Where the code lives
+
+```
+com.helger.pgcc.parser        the language neutral core: the grammar model, Semanticize,
+                              ParseEngine, the lookahead computation, NfaState
+com.helger.pgcc.parser.exp    the expansion tree and the regular expression classes
+com.helger.pgcc.context       the state of one run, see state.md
+com.helger.pgcc.output.java   everything that writes Java: LexGenJava, ParseGenJava, FilesJava,
+                              OtherFilesGenJava and the template locations
+com.helger.pgcc.output.cpp    the same for C++
+com.helger.pgcc.jjtree        JJTree, its parser and its node file generation
+com.helger.pgcc.jjdoc         JJDoc and its four output formats
+com.helger.pgcc.utils         the template engine
+```
+
+`parser` no longer contains anything that writes a file. What is left there that still branches on
+the output language - `ParseEngine` (11 sites), `NfaState` (8) and `ExpRStringLiteral` (7) - is the
+remaining Phase 2 work: those decisions belong in the backends, reached through an interface rather
+than an `if`.

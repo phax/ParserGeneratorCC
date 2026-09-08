@@ -34,7 +34,18 @@
 // Copyright 2011 Google Inc. All Rights Reserved.
 // Author: sreeni@google.com (Sreeni Viswanadha)
 
-package com.helger.pgcc.parser;
+package com.helger.pgcc.output.cpp;
+
+import com.helger.pgcc.output.java.ParseGenJava;
+
+import com.helger.pgcc.parser.CodeGenerator;
+import com.helger.pgcc.parser.MetaParseException;
+import com.helger.pgcc.parser.Options;
+import com.helger.pgcc.parser.JavaCCErrors;
+import com.helger.pgcc.parser.JavaCCGlobals;
+import com.helger.pgcc.parser.ParseEngine;
+import com.helger.pgcc.parser.Token;
+import com.helger.pgcc.parser.NormalProduction;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;

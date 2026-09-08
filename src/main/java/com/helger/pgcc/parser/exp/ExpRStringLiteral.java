@@ -64,6 +64,8 @@
 
 package com.helger.pgcc.parser.exp;
 
+import com.helger.pgcc.output.java.LexGenJava;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -82,7 +84,6 @@ import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.parser.CodeGenerator;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCGlobals;
-import com.helger.pgcc.parser.LexGenJava;
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.NfaState;
 import com.helger.pgcc.parser.Options;
