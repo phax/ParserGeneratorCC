@@ -72,9 +72,9 @@ public final class JJTreeStateCpp
     OutputFile aOutputFile = new OutputFile (new File (sFilePrefix + ".h"),
                                              JJTStateVersion,
                                              CGlobal.EMPTY_STRING_ARRAY);
-    NodeFilesCpp.generateFile (aOutputFile, "/templates/jjtree/cpp/JJTTreeState.h.template", aOptions, true);
+    NodeFilesCpp.generateFile (aOutputFile, "/templates/cpp/jjtree/JJTTreeState.h.template", aOptions, true);
 
     aOutputFile = new OutputFile (new File (sFilePrefix + ".cc"), JJTStateVersion, CGlobal.EMPTY_STRING_ARRAY);
-    NodeFilesCpp.generateFile (aOutputFile, "/templates/jjtree/cpp/JJTTreeState.cc.template", aOptions, true);
+    NodeFilesCpp.generateFile (aOutputFile, "/templates/cpp/jjtree/JJTTreeState.cc.template", aOptions, true);
   }
 }

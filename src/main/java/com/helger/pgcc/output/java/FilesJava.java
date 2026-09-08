@@ -273,9 +273,9 @@ public class FilesJava
   public static void gen_JavaModernFiles ()
   {
     // Abstraction for char reader
-    _genMiscFile ("Provider.java", "/templates/stream/java/modern/Provider.template");
-    _genMiscFile ("StringProvider.java", "/templates/stream/java/modern/StringProvider.template");
-    _genMiscFile ("StreamProvider.java", "/templates/stream/java/modern/StreamProvider.template");
+    _genMiscFile ("Provider.java", "/templates/java/stream/modern/Provider.template");
+    _genMiscFile ("StringProvider.java", "/templates/java/stream/modern/StringProvider.template");
+    _genMiscFile ("StreamProvider.java", "/templates/java/stream/modern/StreamProvider.template");
   }
 
   private static void _genMiscFile (final String fileName, final String templatePath) throws Error

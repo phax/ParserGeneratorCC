@@ -38,24 +38,24 @@ public class JavaModernResourceTemplateLocationImpl extends JavaResourceTemplate
   @Override
   public String getSimpleCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/modern/SimpleCharStream.template";
+    return "/templates/java/stream/modern/SimpleCharStream.template";
   }
 
   @Override
   public String getJavaCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/modern/JavaCharStream.template";
+    return "/templates/java/stream/modern/JavaCharStream.template";
   }
 
   @Override
   public String getCharSequenceCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/modern/CharSequenceCharStream.template";
+    return "/templates/java/stream/modern/CharSequenceCharStream.template";
   }
 
   @Override
   public String getParseExceptionTemplateResourceUrl ()
   {
-    return "/templates/gwt/ParseException.template";
+    return "/templates/java/modern/ParseException.template";
   }
 }

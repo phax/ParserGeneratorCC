@@ -109,15 +109,25 @@ Re-blessing without reading the diff defeats the entire point of the harness.
 
 ## Templates
 
-`src/main/resources/templates/` holds the emitted output. Parallel variants exist and drift apart
-easily — when changing one, check the others:
+`src/main/resources/templates/` holds the emitted output, split by target language:
 
-- `stream/java/` (classic) and `stream/java/modern/` — near-identical; a fix in one almost always
+```
+templates/java/          parser, token manager, Token, ParseException, TokenMgrError
+templates/java/modern/   the Provider based variant (called "modern" by JAVA_TEMPLATE_TYPE)
+templates/java/stream/   CharStream and its implementations
+templates/java/jjtree/   Node, SimpleNode, MultiNode
+templates/cpp/...        the same four groups for C++
+```
+
+Parallel variants drift apart easily — when changing one, check the others:
+
+- `java/stream/` (classic) and `java/stream/modern/` — near-identical; a fix in one almost always
   belongs in the other.
-- `stream/cpp/` — derived from the same JavaCC ancestor; useful as a cross-check when the Java side
+- `cpp/stream/` — derived from the same JavaCC ancestor; useful as a cross-check when the Java side
   looks wrong.
 - `*.template` files are excluded from the license header check and use `#if`/`#fi` preprocessor
-  directives, not Java syntax.
+  directives, not Java syntax. `OutputFileGeneratorLanguageTest` documents what those directives
+  and `${...}` substitutions mean.
 
 Tests that must read the checkout's templates rather than an older `parser-generator-cc` jar on the
 classpath call `FilesJava.setReadFromClassPath (false)` and restore it afterwards — it is a static

@@ -79,8 +79,8 @@ public class FilesCpp
   public static void gen_CharStream ()
   {
     final String [] parameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
-    genFile ("stream/cpp", "CharStream.h", PGVersion.MAJOR_DOT_MINOR, parameters);
-    genFile ("stream/cpp", "CharStream.cc", PGVersion.MAJOR_DOT_MINOR, parameters);
+    genFile ("cpp/stream", "CharStream.h", PGVersion.MAJOR_DOT_MINOR, parameters);
+    genFile ("cpp/stream", "CharStream.cc", PGVersion.MAJOR_DOT_MINOR, parameters);
   }
 
   public static void gen_ParseException ()

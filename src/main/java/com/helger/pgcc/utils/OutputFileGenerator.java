@@ -79,7 +79,7 @@ public class OutputFileGenerator
 
   /**
    * @param templateName
-   *        the name of the template. E.g. "/templates/Token.template".
+   *        the name of the template. E.g. "/templates/java/Token.template".
    * @param options
    *        the processing options in force, such as "STATIC=yes"
    */

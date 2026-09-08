@@ -202,7 +202,7 @@ public final class NodeFilesCpp
       aOptionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
       aOptionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
 
-      generateFile (aOutputFile, "/templates/jjtree/cpp/Node.h.template", aOptionMap, false);
+      generateFile (aOutputFile, "/templates/cpp/jjtree/Node.h.template", aOptionMap, false);
     }
     catch (final IOException ex)
     {
@@ -236,7 +236,7 @@ public final class NodeFilesCpp
       aOptionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
       aOptionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
 
-      generateFile (aOutputFile, "/templates/jjtree/cpp/SimpleNode.h.template", aOptionMap, false);
+      generateFile (aOutputFile, "/templates/cpp/jjtree/SimpleNode.h.template", aOptionMap, false);
     }
     catch (final IOException ex)
     {
@@ -270,7 +270,7 @@ public final class NodeFilesCpp
       aOptionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
       aOptionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
 
-      generateFile (aOutputFile, "/templates/jjtree/cpp/SimpleNode.cc.template", aOptionMap, false);
+      generateFile (aOutputFile, "/templates/cpp/jjtree/SimpleNode.cc.template", aOptionMap, false);
     }
     catch (final IOException ex)
     {
@@ -307,7 +307,7 @@ public final class NodeFilesCpp
           optionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
           optionMap.put ("NODE_TYPE", sNode);
 
-          generateFile (aOutputFile, "/templates/jjtree/cpp/MultiNodeInterface.template", optionMap, false);
+          generateFile (aOutputFile, "/templates/cpp/jjtree/MultiNodeInterface.template", optionMap, false);
         }
       }
     }
@@ -348,7 +348,7 @@ public final class NodeFilesCpp
           optionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
           optionMap.put ("NODE_TYPE", node);
 
-          generateFile (outputFile, "/templates/jjtree/cpp/MultiNodeImpl.template", optionMap, false);
+          generateFile (outputFile, "/templates/cpp/jjtree/MultiNodeImpl.template", optionMap, false);
         }
       }
     }
@@ -431,7 +431,7 @@ public final class NodeFilesCpp
       optionMap.put ("VISITOR_RETURN_TYPE", _getVisitorReturnType ());
       optionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
       optionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
-      generateFile (outputFile, "/templates/jjtree/cpp/_unused_TreeImplHeader.template", optionMap, false);
+      generateFile (outputFile, "/templates/cpp/jjtree/_unused_TreeImplHeader.template", optionMap, false);
 
       final boolean hasNamespace = Options.stringValue (Options.USEROPTION__CPP_NAMESPACE).length () > 0;
       if (hasNamespace)
@@ -443,7 +443,7 @@ public final class NodeFilesCpp
       {
         final String s = aString;
         optionMap.put ("NODE_TYPE", s);
-        generateFile (outputFile, "/templates/jjtree/cpp/MultiNodeImpl.template", optionMap, false);
+        generateFile (outputFile, "/templates/cpp/jjtree/MultiNodeImpl.template", optionMap, false);
       }
 
       if (hasNamespace)

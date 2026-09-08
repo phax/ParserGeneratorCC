@@ -398,7 +398,7 @@ public final class NodeFilesJava
       final Map <String, Object> options = Options.getAllOptions ();
       options.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
 
-      final OutputFileGenerator generator = new OutputFileGenerator ("/templates/jjtree/java/Node.template", options);
+      final OutputFileGenerator generator = new OutputFileGenerator ("/templates/java/jjtree/Node.template", options);
 
       generator.generate (ostr);
     }
@@ -414,7 +414,7 @@ public final class NodeFilesJava
       options.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
       options.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (JJTreeOptions.getVisitorReturnType ().equals ("void")));
 
-      final OutputFileGenerator generator = new OutputFileGenerator ("/templates/jjtree/java/SimpleNode.template", options);
+      final OutputFileGenerator generator = new OutputFileGenerator ("/templates/java/jjtree/SimpleNode.template", options);
 
       generator.generate (ostr);
     }
@@ -431,7 +431,7 @@ public final class NodeFilesJava
       options.put ("NODE_TYPE", nodeType);
       options.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (JJTreeOptions.getVisitorReturnType ().equals ("void")));
 
-      final OutputFileGenerator generator = new OutputFileGenerator ("/templates/jjtree/java/MultiNode.template", options);
+      final OutputFileGenerator generator = new OutputFileGenerator ("/templates/java/jjtree/MultiNode.template", options);
 
       generator.generate (ostr);
     }
