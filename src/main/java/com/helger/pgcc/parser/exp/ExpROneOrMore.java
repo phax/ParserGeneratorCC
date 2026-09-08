@@ -49,11 +49,25 @@ public final class ExpROneOrMore extends AbstractExpRegularExpression
    */
   private final AbstractExpRegularExpression m_aRegexpr;
 
+  /**
+   * Create a one-or-more repetition without a position in the grammar.
+   *
+   * @param aRe
+   *        The expression being repeated. May not be <code>null</code>.
+   */
   public ExpROneOrMore (final AbstractExpRegularExpression aRe)
   {
     m_aRegexpr = aRe;
   }
 
+  /**
+   * Create a one-or-more repetition at the position of a token.
+   *
+   * @param t
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param aRe
+   *        The expression being repeated. May not be <code>null</code>.
+   */
   public ExpROneOrMore (@NonNull final Token t, final AbstractExpRegularExpression aRe)
   {
     this (aRe);
@@ -61,6 +75,9 @@ public final class ExpROneOrMore extends AbstractExpRegularExpression
     setColumnNumber (t.beginColumn);
   }
 
+  /**
+   * {@return the expression this one repeats}
+   */
   @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {

@@ -49,6 +49,14 @@ public final class ExpZeroOrMore extends Expansion
    */
   private final Expansion m_aExpansion;
 
+  /**
+   * Create a zero-or-more repetition.
+   *
+   * @param aToken
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param e
+   *        The expansion being repeated. May not be <code>null</code>.
+   */
   public ExpZeroOrMore (@NonNull final Token aToken, @NonNull final Expansion e)
   {
     setLineNumber (aToken.beginLine);
@@ -57,6 +65,9 @@ public final class ExpZeroOrMore extends Expansion
     e.setParent (this);
   }
 
+  /**
+   * {@return the expansion this one wraps}
+   */
   @NonNull
   public final Expansion getExpansion ()
   {

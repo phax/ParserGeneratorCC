@@ -45,6 +45,9 @@ import com.helger.pgcc.jjtree.output.NodeFilesCpp;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.Options;
 
+  /**
+   * The C++ form of {@link CodeGeneratorJava}.
+   */
 public class CodeGeneratorCpp extends DefaultJJTreeVisitor
 {
   /** Default constructor. */
@@ -234,6 +237,16 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
     return null;
   }
 
+  /**
+   * Copy an assignment, remembering the variable it assigns to so that the node building code can
+   * use it.
+   *
+   * @param aNode
+   *        The node being visited. May not be <code>null</code>.
+   * @param aData
+   *        The value handed down by whoever started the traversal. May be <code>null</code>.
+   * @return The value handed back. May be <code>null</code>.
+   */
   public Object visit (@NonNull final ASTLHS aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
@@ -259,6 +272,15 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
    * stuff not in the input.
    */
 
+  /**
+   * Copy the tokens this node covers into the output, then visit its children.
+   *
+   * @param aNode
+   *        The node being visited. May not be <code>null</code>.
+   * @param aData
+   *        The value handed down by whoever started the traversal. May be <code>null</code>.
+   * @return The value handed back. May be <code>null</code>.
+   */
   public Object visit (@NonNull final JJTreeNode aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;

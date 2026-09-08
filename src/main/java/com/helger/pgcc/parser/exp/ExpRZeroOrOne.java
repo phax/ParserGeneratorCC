@@ -49,6 +49,12 @@ public final class ExpRZeroOrOne extends AbstractExpRegularExpression
    */
   private final AbstractExpRegularExpression m_aRegexpr;
 
+  /**
+   * Create an optional expression without a position in the grammar.
+   *
+   * @param r
+   *        The expression that may or may not be there. May not be <code>null</code>.
+   */
   public ExpRZeroOrOne (final AbstractExpRegularExpression r)
   {
     m_aRegexpr = r;
@@ -61,6 +67,9 @@ public final class ExpRZeroOrOne extends AbstractExpRegularExpression
     setColumnNumber (t.beginColumn);
   }
 
+  /**
+   * {@return the expression this one repeats}
+   */
   @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {

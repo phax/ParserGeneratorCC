@@ -54,6 +54,20 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
   private int m_nMax = -1;
   private final boolean m_bHasMax;
 
+  /**
+   * Create a repetition range.
+   *
+   * @param t
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param aRe
+   *        The expression being repeated. May not be <code>null</code>.
+   * @param nMin
+   *        The smallest number of repetitions.
+   * @param nMax
+   *        The largest number, ignored unless bHasMax is set.
+   * @param bHasMax
+   *        <code>false</code> if the range has no upper bound.
+   */
   public ExpRRepetitionRange (@NonNull final Token t,
                               final int nR1,
                               final int nR2,
@@ -68,22 +82,34 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
     m_aRegexpr = r;
   }
 
+  /**
+   * {@return the expression this one repeats}
+   */
   @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {
     return m_aRegexpr;
   }
 
+  /**
+   * {@return the smallest number of repetitions}
+   */
   public final int getMin ()
   {
     return m_nMin;
   }
 
+  /**
+   * {@return <code>true</code> if the range has an upper bound}
+   */
   public final boolean hasMax ()
   {
     return m_bHasMax;
   }
 
+  /**
+   * {@return the largest number of repetitions, meaningless unless {@link #hasMax()}}
+   */
   public final int getMax ()
   {
     return m_nMax;

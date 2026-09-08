@@ -35,8 +35,15 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
+  /**
+   * The node scope an expansion inside a production opens, as opposed to the one the production
+   * itself opens.
+   */
 public class ASTExpansionNodeScope extends JJTreeNode
 {
+  /**
+   * The scope this node opens.
+   */
   private NodeScope m_aNodeScope;
 
   /**
@@ -60,6 +67,9 @@ public class ASTExpansionNodeScope extends JJTreeNode
     m_aNodeScope = aValue;
   }
 
+  /**
+   * The expansion the scope covers.
+   */
   private JJTreeNode m_aExpansionUnit;
 
   /**

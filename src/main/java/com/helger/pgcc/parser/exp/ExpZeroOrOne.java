@@ -49,6 +49,14 @@ public final class ExpZeroOrOne extends Expansion
    */
   private final Expansion m_aExpansion;
 
+  /**
+   * Create an optional expansion.
+   *
+   * @param t
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param e
+   *        The expansion that may or may not be there. May not be <code>null</code>.
+   */
   public ExpZeroOrOne (@NonNull final Token t, @NonNull final Expansion e)
   {
     setLineNumber (t.beginLine);
@@ -57,6 +65,9 @@ public final class ExpZeroOrOne extends Expansion
     e.setParent (this);
   }
 
+  /**
+   * {@return the expansion this one wraps}
+   */
   @NonNull
   public final Expansion getExpansion ()
   {

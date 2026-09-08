@@ -77,6 +77,15 @@ public final class ExpRJustName extends AbstractExpRegularExpression
     return m_aRegexpr.generateNfa (bIgnoreCase);
   }
 
+  /**
+   * Create a reference to a token declared elsewhere, which is resolved once the whole grammar
+   * has been read.
+   *
+   * @param aToken
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param sImage
+   *        The token label being referred to. May not be <code>null</code>.
+   */
   public ExpRJustName (@NonNull final Token aToken, final String sImage)
   {
     setLineNumber (aToken.beginLine);

@@ -35,12 +35,27 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
+  /**
+   * A visitor that walks the whole tree and does nothing, for a caller that only cares about a
+   * few node types.
+   */
 public class DefaultJJTreeVisitor implements JJTreeParserVisitor
 {
   /** Default constructor. */
   public DefaultJJTreeVisitor ()
   {}
 
+  /**
+   * Visit the children of a node. Every visit method funnels into this one, so overriding it
+   * changes the behaviour for every node type at once.
+   *
+   * @param aNode
+   *        The node being visited. May not be <code>null</code>.
+   * @param aData
+   *        The value handed down by whoever started the traversal. May be <code>null</code>.
+   * @return The value handed back, which is aData unless a subclass says otherwise. May be
+   *          <code>null</code>.
+   */
   public Object defaultVisit (@NonNull final SimpleNode aNode, final Object aData)
   {
     return aNode.childrenAccept (this, aData);

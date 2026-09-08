@@ -35,6 +35,9 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
+  /**
+   * The Java the grammar writes outside the productions, which JJTree copies through unchanged.
+   */
 public class ASTCompilationUnit extends JJTreeNode
 {
   ASTCompilationUnit (final int nID)

@@ -2040,6 +2040,9 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
     }
   }
 
+  /**
+   * Create an empty character list.
+   */
   public ExpRCharacterList ()
   {}
 
@@ -2058,22 +2061,42 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
     return m_bNegatedList && (m_aDescriptors == null || m_aDescriptors.isEmpty ());
   }
 
+  /**
+   * {@return <code>true</code> if this list was written as <code>~[...]</code> and matches
+   * everything it does not contain}
+   */
   public final boolean isNegatedList ()
   {
     return m_bNegatedList;
   }
 
+  /**
+   * Record that this list was written with a leading tilde.
+   *
+   * @param b
+   *        <code>true</code> for a negated list.
+   */
   public final void setNegatedList (final boolean b)
   {
     m_bNegatedList = b;
   }
 
+  /**
+   * {@return the single characters and ranges this list is made of, as a list the caller may add
+   * to}
+   */
   @NonNull
   public final List <ICCCharacter> getDescriptors ()
   {
     return m_aDescriptors;
   }
 
+  /**
+   * Append a single character or a range to this list.
+   *
+   * @param a
+   *        The descriptor. May not be <code>null</code>.
+   */
   public final void addDescriptor (@NonNull final ICCCharacter a)
   {
     ValueEnforcer.notNull (a, "CCCharacter");

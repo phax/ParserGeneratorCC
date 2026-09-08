@@ -57,6 +57,9 @@ public final class ExpRChoice extends AbstractExpRegularExpression
    */
   private final List <AbstractExpRegularExpression> m_aChoices = new ArrayList <> ();
 
+  /**
+   * Create an empty choice of regular expressions.
+   */
   public ExpRChoice ()
   {}
 
@@ -69,18 +72,34 @@ public final class ExpRChoice extends AbstractExpRegularExpression
     return m_aChoices;
   }
 
+  /**
+   * {@return how many alternatives this choice has}
+   */
   @Nonnegative
   public final int getChoiceCount ()
   {
     return m_aChoices.size ();
   }
 
+  /**
+   * One alternative of this choice.
+   *
+   * @param nIndex
+   *        The position, from 0.
+   * @return The alternative. Never <code>null</code>.
+   */
   @NonNull
   public final AbstractExpRegularExpression getChoiceAt (final int nIndex)
   {
     return m_aChoices.get (nIndex);
   }
 
+  /**
+   * Append an alternative to this choice.
+   *
+   * @param a
+   *        The alternative. May not be <code>null</code>.
+   */
   public final void addChoice (@NonNull final AbstractExpRegularExpression a)
   {
     ValueEnforcer.notNull (a, "Expansion");
@@ -171,6 +190,12 @@ public final class ExpRChoice extends AbstractExpRegularExpression
     }
   }
 
+  /**
+   * Warn about alternatives that an earlier token in the same lexical state already matches, and
+   * are therefore dead.
+   *
+   * @return How many of the alternatives are plain string literals.
+   */
   public int checkUnmatchability ()
   {
     int nNumStrings = 0;

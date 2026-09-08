@@ -49,6 +49,9 @@ import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.Options;
 
+  /**
+   * The input and output of one JJTree run: the grammar being read and the .jj being written.
+   */
 public final class JJTreeIO
 {
   private String m_sInputFilename = "<uninitialized input>";
@@ -84,11 +87,20 @@ public final class JJTreeIO
     m_aOut.print (s);
   }
 
+  /**
+   * Write a line.
+   *
+   * @param s
+   *        The line, without a line break. May not be <code>null</code>.
+   */
   public void println (final String s)
   {
     m_aOut.println (s);
   }
 
+  /**
+   * Write a line break.
+   */
   public void println ()
   {
     m_aOut.println ();

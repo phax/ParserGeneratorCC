@@ -35,6 +35,10 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
+  /**
+   * The expression in brackets after a node name, which decides at run time whether the node is
+   * built.
+   */
 public class ASTNodeDescriptorExpression extends JJTreeNode
 {
   ASTNodeDescriptorExpression (final int nID)

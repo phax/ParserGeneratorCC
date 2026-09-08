@@ -54,11 +54,25 @@ public final class SingleCharacter implements ICCCharacter
    */
   private final char m_cCh;
 
+  /**
+   * Create a single character without a position in the grammar.
+   *
+   * @param c
+   *        The character.
+   */
   public SingleCharacter (final char c)
   {
     m_cCh = c;
   }
 
+  /**
+   * Create a single character at the position of a token.
+   *
+   * @param t
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param c
+   *        The character.
+   */
   public SingleCharacter (@NonNull final Token t, final char c)
   {
     this (c);
@@ -82,6 +96,9 @@ public final class SingleCharacter implements ICCCharacter
     return m_nColumn;
   }
 
+  /**
+   * {@return the character this descriptor matches}
+   */
   public char getChar ()
   {
     return m_cCh;

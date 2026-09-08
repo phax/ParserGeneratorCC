@@ -35,6 +35,10 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
+  /**
+   * The assignment in front of a non-terminal or a token, the <code>x =</code> that says where
+   * the match goes.
+   */
 public class ASTLHS extends JJTreeNode
 {
   ASTLHS (final int nID)

@@ -35,8 +35,17 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
+  /**
+   * The options block of the grammar.
+   */
 public class ASTOptions extends JJTreeNode
 {
+  /**
+   * Create the node.
+   *
+   * @param nID
+   *        The node kind, one of the constants JJTree generates.
+   */
   public ASTOptions (final int nID)
   {
     super (nID);

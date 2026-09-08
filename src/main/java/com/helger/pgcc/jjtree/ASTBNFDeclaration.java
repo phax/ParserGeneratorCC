@@ -41,6 +41,9 @@ import org.jspecify.annotations.NonNull;
  */
 public class ASTBNFDeclaration extends JJTreeNode
 {
+  /**
+   * The scope this node opens.
+   */
   private NodeScope m_aNodeScope;
 
   /**

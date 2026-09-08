@@ -40,6 +40,9 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.pgcc.context.PGCCContext;
 
+  /**
+   * The static facade over the JJTree part of the run state.
+   */
 public class JJTreeGlobals
 {
   /** Default constructor. */
@@ -83,6 +86,14 @@ public class JJTreeGlobals
     PGCCContext.current ().jjtree ().reset ();
   }
 
+  /**
+   * Whether an option is one JJTree handles itself rather than passing on to the parser
+   * generator.
+   *
+   * @param sOptionName
+   *        The option name. May not be <code>null</code>.
+   * @return <code>true</code> if JJTree keeps it.
+   */
   public static boolean isOptionJJTreeOnly (@NonNull final String sOptionName)
   {
     return JJTREE_OPTIONS.contains (sOptionName.toUpperCase (Locale.US));

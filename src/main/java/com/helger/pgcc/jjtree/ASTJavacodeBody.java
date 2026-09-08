@@ -35,8 +35,14 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
+  /**
+   * The Java body of a JAVACODE production.
+   */
 public class ASTJavacodeBody extends JJTreeNode
 {
+  /**
+   * The scope this node opens.
+   */
   private NodeScope m_aNodeScope;
 
   /**

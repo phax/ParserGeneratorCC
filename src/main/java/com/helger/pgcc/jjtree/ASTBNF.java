@@ -47,6 +47,9 @@ public class ASTBNF extends ASTProduction
     getThrowsList ().add ("RuntimeException");
   }
 
+  /**
+   * Where the declaration of the production begins.
+   */
   private Token m_aDeclBeginLoc;
 
   /**

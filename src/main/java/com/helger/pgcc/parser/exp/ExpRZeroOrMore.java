@@ -49,6 +49,12 @@ public final class ExpRZeroOrMore extends AbstractExpRegularExpression
    */
   private final AbstractExpRegularExpression m_aRegexpr;
 
+  /**
+   * Create a zero-or-more repetition without a position in the grammar.
+   *
+   * @param r
+   *        The expression being repeated. May not be <code>null</code>.
+   */
   public ExpRZeroOrMore (final AbstractExpRegularExpression r)
   {
     m_aRegexpr = r;
@@ -61,6 +67,9 @@ public final class ExpRZeroOrMore extends AbstractExpRegularExpression
     setColumnNumber (t.beginColumn);
   }
 
+  /**
+   * {@return the expression this one repeats}
+   */
   @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {

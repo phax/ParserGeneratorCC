@@ -55,6 +55,9 @@ public final class ExpRSequence extends AbstractExpRegularExpression
    */
   private final List <AbstractExpRegularExpression> m_aUnits;
 
+  /**
+   * Create an empty sequence of regular expressions.
+   */
   public ExpRSequence ()
   {
     m_aUnits = new ArrayList <> ();
@@ -66,12 +69,21 @@ public final class ExpRSequence extends AbstractExpRegularExpression
     m_aUnits = aSeq;
   }
 
+  /**
+   * {@return the regular expressions this sequence is made of, as a list the caller may add to}
+   */
   @NonNull
   public final List <AbstractExpRegularExpression> getUnits ()
   {
     return m_aUnits;
   }
 
+  /**
+   * Append a regular expression to this sequence.
+   *
+   * @param aEx
+   *        The expression to append. May not be <code>null</code>.
+   */
   public final void addUnit (@NonNull final AbstractExpRegularExpression aEx)
   {
     ValueEnforcer.notNull (aEx, "RegEx");

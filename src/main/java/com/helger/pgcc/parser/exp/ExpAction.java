@@ -53,6 +53,9 @@ public final class ExpAction extends Expansion
    */
   private final ICommonsList <Token> m_aActionTokens = new CommonsArrayList <> ();
 
+  /**
+   * Create an empty action.
+   */
   public ExpAction ()
   {}
 

@@ -40,10 +40,23 @@ import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
 
+  /**
+   * A production of the grammar, and the node scopes opened inside it.
+   */
 public class ASTProduction extends JJTreeNode
 {
+  /**
+   * Every node scope opened inside this production, and the number that makes its generated
+   * variables unique.
+   */
   private final Map <NodeScope, Integer> m_aScopes = new HashMap <> ();
+  /**
+   * The number the next node scope of this production gets.
+   */
   private int m_nNextNodeScopeNumber = 0;
+  /**
+   * The option name.
+   */
   private String m_sName;
 
   /**
@@ -67,6 +80,9 @@ public class ASTProduction extends JJTreeNode
     m_sName = aValue;
   }
 
+  /**
+   * The exceptions the production declares, which the generated code has to declare as well.
+   */
   private List <String> m_aThrowsList = new ArrayList <> ();
 
   /**
