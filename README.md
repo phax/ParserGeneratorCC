@@ -85,6 +85,7 @@ v3.0.0 - work in progress
 * **Breaking API change** `JavaCCErrors.parse_error`, `semantic_error` and `warning` take a `com.helger.pgcc.parser.IGrammarLocation` instead of an `Object`. The new interface extends `com.helger.base.location.ILocation` and is implemented by `NormalProduction`, `TokenProduction`, `Expansion`, `ICCCharacter` and both `Token` classes - the six types the old `instanceof` cascade tested for. `Options.setInputFileOption` takes it too
 * **Breaking API change** The grammar model spells its position the ph-commons way: `getLineNumber ()` / `getColumnNumber ()` and `setLineNumber ()` / `setColumnNumber ()` on `NormalProduction`, `TokenProduction`, `Expansion`, `ICCCharacter` and both `Token` classes. `IGrammarLocation` is now `ILocation` plus the resource id
 * **Breaking API change** Renamed the two abstract classes that did not say so: `NormalProduction` is `AbstractNormalProduction` and `JavaCCParserInternals` is `AbstractJavaCCParserInternals`
+* **Breaking API change** `Nfa` and the two carriers inside `TokenizerData` are records. `TokenizerData.NfaState.m_aCharacters` and friends are accessors now, so they read `characters ()`
 * **Breaking API change** Removed `JavaCCErrors.reInit ()`, deprecated since the error counters moved into `PGCCContext`
 
 v2.0.3 - 2026-09-08

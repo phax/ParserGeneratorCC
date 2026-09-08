@@ -184,7 +184,7 @@ public class JavaCCInterpreter
         // We need to add the composite states first.
         int nKind = Integer.MAX_VALUE;
         aCurStates.add (Integer.valueOf (nNfaStartState));
-        aCurStates.addAll (aTd.m_aNfa.get (Integer.valueOf (nNfaStartState)).m_aCompositeStates);
+        aCurStates.addAll (aTd.m_aNfa.get (Integer.valueOf (nNfaStartState)).compositeStates ());
         do
         {
           c = sInput.charAt (nCurPos);
@@ -193,11 +193,11 @@ public class JavaCCInterpreter
           for (final int state : aCurStates)
           {
             final TokenizerData.NfaState aNfaState = aTd.m_aNfa.get (Integer.valueOf (state));
-            if (aNfaState.m_aCharacters.contains (Character.valueOf (c)))
+            if (aNfaState.characters ().contains (Character.valueOf (c)))
             {
-              if (nKind > aNfaState.m_nKind)
-                nKind = aNfaState.m_nKind;
-              aNewStates.addAll (aNfaState.m_aNextStates);
+              if (nKind > aNfaState.kind ())
+                nKind = aNfaState.kind ();
+              aNewStates.addAll (aNfaState.nextStates ());
             }
           }
           final Set <Integer> aTmp = aNewStates;
@@ -219,23 +219,23 @@ public class JavaCCInterpreter
       if (nMatchedKind != Integer.MAX_VALUE)
       {
         final TokenizerData.MatchInfo aMatchInfo = aTd.m_aAllMatches.get (Integer.valueOf (nMatchedKind));
-        if (aMatchInfo.m_sAction != null)
+        if (aMatchInfo.action () != null)
         {
           PGPrinter.error ("Actions not implemented (yet) in intererpreted mode");
         }
-        if (aMatchInfo.m_eMatchType == TokenizerData.EMatchType.TOKEN)
+        if (aMatchInfo.matchType () == TokenizerData.EMatchType.TOKEN)
         {
           PGPrinter.error ("Token: " + nMatchedKind + "; image: \"" + sInput.substring (nTokenBeg, nMatchedPos + 1) + "\"");
         }
-        if (aMatchInfo.m_eMatchType != TokenizerData.EMatchType.MORE)
+        if (aMatchInfo.matchType () != TokenizerData.EMatchType.MORE)
         {
           // Anything that is not MORE finishes the token, whether it produced one or threw the
           // accumulated text away
           nTokenBeg = -1;
         }
-        if (aMatchInfo.m_nNewLexState != -1)
+        if (aMatchInfo.newLexState () != -1)
         {
-          nCurLexState = aMatchInfo.m_nNewLexState;
+          nCurLexState = aMatchInfo.newLexState ();
         }
         nCurPos = nMatchedPos + 1;
       }

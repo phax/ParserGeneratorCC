@@ -38,32 +38,22 @@ import org.jspecify.annotations.NonNull;
 /**
  * A Non-deterministic Finite Automaton.
  */
-public final class Nfa
+/**
+ * The two ends of a partially built NFA: everything that constructs one hands back a start state
+ * and an end state and nothing else.
+ *
+ * @param start
+ *        The state the fragment is entered in. May not be <code>null</code>.
+ * @param end
+ *        The state the fragment leaves from. May not be <code>null</code>.
+ */
+public record Nfa (@NonNull NfaState start, @NonNull NfaState end)
 {
-  private final NfaState m_aStart;
-  private final NfaState m_aEnd;
-
+  /**
+   * A fresh fragment with two new states.
+   */
   public Nfa ()
   {
-    m_aStart = new NfaState ();
-    m_aEnd = new NfaState ();
-  }
-
-  public Nfa (@NonNull final NfaState aStartGiven, @NonNull final NfaState aFinalGiven)
-  {
-    m_aStart = aStartGiven;
-    m_aEnd = aFinalGiven;
-  }
-
-  @NonNull
-  public NfaState start ()
-  {
-    return m_aStart;
-  }
-
-  @NonNull
-  public NfaState end ()
-  {
-    return m_aEnd;
+    this (new NfaState (), new NfaState ());
   }
 }

@@ -68,38 +68,33 @@ public class TokenizerData
   public Map <Integer, Integer> m_aKindToNfaStartState;
 
   // Class representing NFA state.
-  public static class NfaState
-  {
-    // Index of the state.
-    public final int m_nIndex;
-    // Set of allowed characters.
-    public final Set <Character> m_aCharacters;
-    // Next state indices.
-    public final Set <Integer> m_aNextStates;
-    // Initial state needs to transition to multiple states so the NFA will try
-    // all possibilities.
-    // TODO(sreeni) : Try and get rid of it at some point.
-    public final Set <Integer> m_aCompositeStates;
-    // match kind if any. Integer.MAX_VALUE if this is not a final state.
-    public final int m_nKind;
+  /**
+   * One state of the NFA the interpreter walks.
+   *
+   * @param index
+   *        Index of the state.
+   * @param characters
+   *        The characters this state can move on. May not be <code>null</code>.
+   * @param nextStates
+   *        The states reachable from here. May not be <code>null</code>.
+   * @param compositeStates
+   *        The states this one stands for, if it is a composite one. The initial state has to
+   *        transition to several states at once so that the NFA tries every possibility. May not
+   *        be <code>null</code>.
+   * @param kind
+   *        The token kind matched here, or {@link Integer#MAX_VALUE} if this is not a final state.
+   */
+  public record NfaState (int index,
+                          Set <Character> characters,
+                          Set <Integer> nextStates,
+                          Set <Integer> compositeStates,
+                          int kind)
+  {}
 
-    NfaState (final int nIndex,
-              final Set <Character> characters,
-              final Set <Integer> nextStates,
-              final Set <Integer> aCompositeStates,
-              final int nKind)
-    {
-      this.m_nIndex = nIndex;
-      this.m_aCharacters = characters;
-      this.m_aNextStates = nextStates;
-      this.m_nKind = nKind;
-      this.m_aCompositeStates = aCompositeStates;
-    }
-  }
-
-  // The main nfa.
+  /** The main NFA, by state index. */
   public final Map <Integer, NfaState> m_aNfa = new HashMap <> ();
 
+  /** What a matched kind does with the input. */
   public static enum EMatchType
   {
     SKIP,
@@ -108,33 +103,23 @@ public class TokenizerData
     TOKEN,
   }
 
-  // Match info.
-  public static class MatchInfo
-  {
-    // String literal image in case this string literal token, null otherwise.
-    public final String m_sImage;
-    // Kind index.
-    public final int m_nKind;
-    // Type of match.
-    public final EMatchType m_eMatchType;
-    // Any lexical state transition specified.
-    public final int m_nNewLexState;
-    // Any lexical state transition specified.
-    public final String m_sAction;
-
-    public MatchInfo (final String sImage,
-                      final int nKind,
-                      final EMatchType eMatchType,
-                      final int nNewLexState,
-                      final String sAction)
-    {
-      this.m_sImage = sImage;
-      this.m_nKind = nKind;
-      this.m_eMatchType = eMatchType;
-      this.m_nNewLexState = nNewLexState;
-      this.m_sAction = sAction;
-    }
-  }
+  /**
+   * What matching a kind means: which token it is and what it does to the lexical state.
+   *
+   * @param image
+   *        The string literal image if this is a string literal token, <code>null</code>
+   *        otherwise.
+   * @param kind
+   *        The token kind.
+   * @param matchType
+   *        Whether this produces a token, a skip, a special token or more input.
+   * @param newLexState
+   *        The lexical state to switch to, or -1 to stay.
+   * @param action
+   *        The action to run, or <code>null</code> if there is none.
+   */
+  public record MatchInfo (String image, int kind, EMatchType matchType, int newLexState, String action)
+  {}
 
   // On match info indexed by the match kind.
   public final Map <Integer, MatchInfo> m_aAllMatches = new HashMap <> ();
