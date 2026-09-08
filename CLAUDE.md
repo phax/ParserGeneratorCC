@@ -55,6 +55,23 @@ is never modified. The `selfhost` profile pins `ph-javacc-maven-plugin.version` 
 current SNAPSHOT. The default profile must always stay on a released plugin - a release build has to
 work with what is on Maven Central.
 
+## Generator state
+
+The generator historically kept everything in static fields. That state is moving into
+`com.helger.pgcc.context.PGCCContext`, one piece at a time:
+
+- already migrated: the error/warning counters (`ErrorCollector`) and every option value
+  (`OptionState`, which includes the output language)
+- still static: `JavaCCGlobals`, `NfaState`, `LexGenJava`, `ExpRStringLiteral`, `Semanticize`,
+  `MatchInfo`, `LookaheadWalk`, `JJTreeGlobals`, `JJDocGlobals`
+
+The context is a `ThreadLocal`, so migrated state is already isolated per thread. `Main.reInitAll`
+calls `PGCCContext.reset ()` first and then the `reInit` methods of whatever has not moved yet; a
+class that has been migrated loses its `reInit` method.
+
+Two guard rails protect the migration: `StateIsolationTest` (generate, generate something else,
+generate again, byte-identical) and the golden files below.
+
 ## The C++ backend
 
 C++ output is **frozen but supported**: it must keep working, but it gets no new features.

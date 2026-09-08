@@ -31,91 +31,66 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.helger.pgcc.jjdoc;
+package com.helger.pgcc.context;
 
-import com.helger.pgcc.parser.Options;
+import org.jspecify.annotations.NonNull;
 
 /**
- * The options, specific to JJDoc.
+ * The state of one generator run.
+ * <p>
+ * Historically the generator kept everything in static fields, which made two runs in the same JVM
+ * depend on each other and ruled out running two of them at once. This class is where that state is
+ * moving to, one piece at a time: whatever has already been migrated lives here, the old static
+ * classes delegate to {@link #current()}, and the static shims disappear once nothing references
+ * them any more.
+ * <p>
+ * The context is per thread, so two threads can generate independently. Within a thread,
+ * {@link #reset()} starts a fresh run - that is what <code>Main.reInitAll</code> does.
+ * <p>
+ * <code>StateIsolationTest</code> is the guard rail for this migration: it generates a grammar,
+ * generates something else, generates the first grammar again, and requires the results to be
+ * identical.
  *
- * @author Kees Jan Koster &lt;kjkoster@kjkoster.org&gt;
+ * @author Philip Helger
  */
-public class JJDocOptions extends Options
+public final class PGCCContext
 {
-  /**
-   * Limit subclassing to derived classes.
-   */
-  protected JJDocOptions ()
+  private static final ThreadLocal <PGCCContext> CURRENT = ThreadLocal.withInitial (PGCCContext::new);
+
+  private final ErrorCollector m_aErrors = new ErrorCollector ();
+  private final OptionState m_aOptions = new OptionState ();
+
+  private PGCCContext ()
   {}
 
   /**
-   * Initialize the options.
+   * @return The context of the current thread, creating it on first access. Never
+   *         <code>null</code>.
    */
-  public static void init ()
+  @NonNull
+  public static PGCCContext current ()
   {
-    Options.init ();
-
-    optionValues ().put ("ONE_TABLE", Boolean.TRUE);
-    optionValues ().put ("TEXT", Boolean.FALSE);
-    optionValues ().put ("XTEXT", Boolean.FALSE);
-    optionValues ().put ("BNF", Boolean.FALSE);
-
-    optionValues ().put ("OUTPUT_FILE", "");
-    optionValues ().put ("CSS", "");
+    return CURRENT.get ();
   }
 
   /**
-   * Find the one table value.
-   *
-   * @return The requested one table value.
+   * Start a fresh run on the current thread. Everything that has been migrated into the context is
+   * reset by this single call.
    */
-  public static boolean isOneTable ()
+  public static void reset ()
   {
-    return booleanValue ("ONE_TABLE");
+    CURRENT.remove ();
   }
 
-  /**
-   * Find the CSS value.
-   *
-   * @return The requested CSS value.
-   */
-  public static String getCSS ()
+  @NonNull
+  public ErrorCollector errors ()
   {
-    return stringValue ("CSS");
+    return m_aErrors;
   }
 
-  /**
-   * Find the text value.
-   *
-   * @return The requested text value.
-   */
-  public static boolean isText ()
+  @NonNull
+  public OptionState options ()
   {
-    return booleanValue ("TEXT");
-  }
-
-  public static boolean isXText ()
-  {
-    return booleanValue ("XTEXT");
-  }
-
-  /**
-   * Find the BNF value.
-   *
-   * @return The requested text value.
-   */
-  public static boolean isBNF ()
-  {
-    return booleanValue ("BNF");
-  }
-
-  /**
-   * Find the output file value.
-   *
-   * @return The requested output value.
-   */
-  public static String getOutputFile ()
-  {
-    return stringValue ("OUTPUT_FILE");
+    return m_aOptions;
   }
 }

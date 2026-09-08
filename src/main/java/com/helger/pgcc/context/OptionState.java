@@ -31,91 +31,76 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.helger.pgcc.jjdoc;
+package com.helger.pgcc.context;
 
-import com.helger.pgcc.parser.Options;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.jspecify.annotations.NonNull;
+
+import com.helger.pgcc.output.EOutputLanguage;
 
 /**
- * The options, specific to JJDoc.
+ * The option values of a single generator run: what the defaults are, what the grammar file set,
+ * what the command line set, and the output language derived from them.
+ * <p>
+ * This is the instance state behind the static {@link com.helger.pgcc.parser.Options} facade. Every
+ * caller goes through that facade's static methods, so moving the data here changed no call site.
  *
- * @author Kees Jan Koster &lt;kjkoster@kjkoster.org&gt;
+ * @author Philip Helger
  */
-public class JJDocOptions extends Options
+public final class OptionState
 {
-  /**
-   * Limit subclassing to derived classes.
-   */
-  protected JJDocOptions ()
-  {}
+  private final Map <String, Object> m_aValues = new HashMap <> ();
+  private final Set <String> m_aCmdLineSet = new HashSet <> ();
+  private final Set <String> m_aInputFileSet = new HashSet <> ();
+  private EOutputLanguage m_eLanguage = EOutputLanguage.JAVA;
 
   /**
-   * Initialize the options.
+   * @return The mutable map of option name to value. Never <code>null</code>.
    */
-  public static void init ()
+  @NonNull
+  public Map <String, Object> values ()
   {
-    Options.init ();
-
-    optionValues ().put ("ONE_TABLE", Boolean.TRUE);
-    optionValues ().put ("TEXT", Boolean.FALSE);
-    optionValues ().put ("XTEXT", Boolean.FALSE);
-    optionValues ().put ("BNF", Boolean.FALSE);
-
-    optionValues ().put ("OUTPUT_FILE", "");
-    optionValues ().put ("CSS", "");
+    return m_aValues;
   }
 
   /**
-   * Find the one table value.
-   *
-   * @return The requested one table value.
+   * @return The names of the options that were set on the command line. Never <code>null</code>.
    */
-  public static boolean isOneTable ()
+  @NonNull
+  public Set <String> cmdLineSet ()
   {
-    return booleanValue ("ONE_TABLE");
+    return m_aCmdLineSet;
   }
 
   /**
-   * Find the CSS value.
-   *
-   * @return The requested CSS value.
+   * @return The names of the options that were set in the grammar file. Never <code>null</code>.
    */
-  public static String getCSS ()
+  @NonNull
+  public Set <String> inputFileSet ()
   {
-    return stringValue ("CSS");
+    return m_aInputFileSet;
   }
 
-  /**
-   * Find the text value.
-   *
-   * @return The requested text value.
-   */
-  public static boolean isText ()
+  @NonNull
+  public EOutputLanguage getLanguage ()
   {
-    return booleanValue ("TEXT");
+    return m_eLanguage;
   }
 
-  public static boolean isXText ()
+  public void setLanguage (@NonNull final EOutputLanguage eLanguage)
   {
-    return booleanValue ("XTEXT");
+    m_eLanguage = eLanguage;
   }
 
-  /**
-   * Find the BNF value.
-   *
-   * @return The requested text value.
-   */
-  public static boolean isBNF ()
+  public void reset ()
   {
-    return booleanValue ("BNF");
-  }
-
-  /**
-   * Find the output file value.
-   *
-   * @return The requested output value.
-   */
-  public static String getOutputFile ()
-  {
-    return stringValue ("OUTPUT_FILE");
+    m_aValues.clear ();
+    m_aCmdLineSet.clear ();
+    m_aInputFileSet.clear ();
+    m_eLanguage = EOutputLanguage.JAVA;
   }
 }

@@ -391,8 +391,10 @@ public class Main
 
   public static void reInitAll ()
   {
+    // Everything that has already been migrated out of a static field
+    com.helger.pgcc.context.PGCCContext.reset ();
+
     com.helger.pgcc.parser.exp.Expansion.reInit ();
-    com.helger.pgcc.parser.JavaCCErrors.reInit ();
     com.helger.pgcc.parser.JavaCCGlobals.reInitStatic ();
     com.helger.pgcc.parser.Options.init ();
     com.helger.pgcc.parser.JavaCCParserInternals.reInit ();

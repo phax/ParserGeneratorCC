@@ -37,6 +37,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.pgcc.PGPrinter;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.exp.CharacterRange;
 import com.helger.pgcc.parser.exp.Expansion;
 import com.helger.pgcc.parser.exp.SingleCharacter;
@@ -92,63 +93,63 @@ public final class JavaCCErrors
   public static void parse_error (final Object node, final String mess)
   {
     PGPrinter.error ("Error: " + _getLocationInfo (node) + mess);
-    s_parse_error_count++;
+    PGCCContext.current ().errors ().onParseError ();
   }
 
   public static void parse_error (final String mess)
   {
     PGPrinter.error ("Error: " + mess);
-    s_parse_error_count++;
+    PGCCContext.current ().errors ().onParseError ();
   }
 
   public static int getParseErrorCount ()
   {
-    return s_parse_error_count;
+    return PGCCContext.current ().errors ().getParseErrorCount ();
   }
 
   public static void semantic_error (final Object node, final String mess)
   {
     PGPrinter.error ("Error: " + _getLocationInfo (node) + mess);
-    s_semantic_error_count++;
+    PGCCContext.current ().errors ().onSemanticError ();
   }
 
   public static void semantic_error (final String mess)
   {
     PGPrinter.error ("Error: " + mess);
-    s_semantic_error_count++;
+    PGCCContext.current ().errors ().onSemanticError ();
   }
 
   public static void semantic_error (final String mess, final Throwable t)
   {
     PGPrinter.error ("Error: " + mess, t);
-    s_semantic_error_count++;
+    PGCCContext.current ().errors ().onSemanticError ();
   }
 
   public static int getSemanticErrorCount ()
   {
-    return s_semantic_error_count;
+    return PGCCContext.current ().errors ().getSemanticErrorCount ();
   }
 
   public static void warning (final Object node, final String mess)
   {
     PGPrinter.warn ("Warning: " + _getLocationInfo (node) + mess);
-    s_warning_count++;
+    PGCCContext.current ().errors ().onWarning ();
   }
 
   public static void warning (final String mess)
   {
     PGPrinter.warn ("Warning: " + mess);
-    s_warning_count++;
+    PGCCContext.current ().errors ().onWarning ();
   }
 
   public static int getWarningCount ()
   {
-    return s_warning_count;
+    return PGCCContext.current ().errors ().getWarningCount ();
   }
 
   public static int getErrorCount ()
   {
-    return s_parse_error_count + s_semantic_error_count;
+    return PGCCContext.current ().errors ().getErrorCount ();
   }
 
   public static void fatal (final String message) throws IllegalStateException
@@ -167,10 +168,12 @@ public final class JavaCCErrors
     PGPrinter.info ("Note: " + mess);
   }
 
+  /**
+   * @deprecated Use {@link PGCCContext#reset()} instead - the counters live in the context now.
+   */
+  @Deprecated (forRemoval = true)
   public static void reInit ()
   {
-    s_parse_error_count = 0;
-    s_semantic_error_count = 0;
-    s_warning_count = 0;
+    PGCCContext.current ().errors ().reset ();
   }
 }

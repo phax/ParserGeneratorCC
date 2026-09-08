@@ -88,6 +88,7 @@ import com.helger.base.string.StringImplode;
 import com.helger.base.system.SystemHelper;
 import com.helger.base.system.EJavaVersion;
 import com.helger.pgcc.JavaVersionHelper;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
@@ -166,7 +167,6 @@ public class Options
   public static final String USEROPTION__CPP_TOKEN_INCLUDE = "TOKEN_INCLUDE";
   public static final String USEROPTION__CPP_PARSER_INCLUDE = "PARSER_INCLUDE";
 
-  private static EOutputLanguage s_language = EOutputLanguage.JAVA;
 
   /**
    * 2013/07/22 -- GWT Compliant Output -- no external dependencies on GWT, but generated code adds
@@ -243,8 +243,8 @@ public class Options
     temp.add (new OptionInfo (USEROPTION__TOKEN_FACTORY, EOptionType.STRING, ""));
     temp.add (new OptionInfo (USEROPTION__GRAMMAR_ENCODING, EOptionType.STRING, ""));
     temp.add (new OptionInfo (USEROPTION__OUTPUT_ENCODING, EOptionType.STRING, StandardCharsets.UTF_8.name ()));
-    s_language = EOutputLanguage.JAVA;
-    temp.add (new OptionInfo (USEROPTION__OUTPUT_LANGUAGE, EOptionType.STRING, s_language.getID ()));
+    PGCCContext.current ().options ().setLanguage (EOutputLanguage.JAVA);
+    temp.add (new OptionInfo (USEROPTION__OUTPUT_LANGUAGE, EOptionType.STRING, PGCCContext.current ().options ().getLanguage ().getID ()));
 
     temp.add (new OptionInfo (USEROPTION__JAVA_TEMPLATE_TYPE, EOptionType.STRING, JAVA_TEMPLATE_TYPE_CLASSIC));
     temp.add (new OptionInfo (USEROPTION__JAVA_CHAR_STREAM_TYPE, EOptionType.STRING, JAVA_CHAR_STREAM_TYPE_SIMPLE));
@@ -269,27 +269,34 @@ public class Options
    * values define the default option values, and the option types can be determined from these
    * values too.
    */
-  protected static final Map <String, Object> s_optionValues = new HashMap <> ();
+  /**
+   * @return The option values of the current run. Never <code>null</code>.
+   */
+  @NonNull
+  protected static Map <String, Object> optionValues ()
+  {
+    return PGCCContext.current ().options ().values ();
+  }
 
   /**
    * Initialize for JavaCC
    */
   public static void init ()
   {
-    s_optionValues.clear ();
-    s_cmdLineSetting.clear ();
-    s_inputFileSetting.clear ();
+    optionValues ().clear ();
+    cmdLineSetting ().clear ();
+    inputFileSetting ().clear ();
 
     for (final OptionInfo t : s_userOptions)
-      s_optionValues.put (t.getName (), t.getDefault ());
+      optionValues ().put (t.getName (), t.getDefault ());
 
-    s_language = EOutputLanguage.JAVA;
+    PGCCContext.current ().options ().setLanguage (EOutputLanguage.JAVA);
   }
 
   @Nullable
   public static Object objectValue (final String option)
   {
-    return s_optionValues.get (option);
+    return optionValues ().get (option);
   }
 
   /**
@@ -333,20 +340,28 @@ public class Options
   @ReturnsMutableCopy
   public static Map <String, Object> getAllOptions ()
   {
-    return new HashMap <> (s_optionValues);
+    return new HashMap <> (optionValues ());
   }
 
   /**
    * Keep track of what options were set as a command line argument. We use this to see if the
    * options set from the command line and the ones set in the input files clash in any way.
    */
-  private static final Set <String> s_cmdLineSetting = new HashSet <> ();
+  @NonNull
+  private static Set <String> cmdLineSetting ()
+  {
+    return PGCCContext.current ().options ().cmdLineSet ();
+  }
 
   /**
    * Keep track of what options were set from the grammar file. We use this to see if the options
    * set from the command line and the ones set in the input files clash in any way.
    */
-  private static final Set <String> s_inputFileSetting = new HashSet <> ();
+  @NonNull
+  private static Set <String> inputFileSetting ()
+  {
+    return PGCCContext.current ().options ().inputFileSet ();
+  }
 
   /**
    * Returns a string representation of the specified options of interest. Used when, for example,
@@ -368,7 +383,7 @@ public class Options
       if (sb.length () > 0)
         sb.append (',');
 
-      sb.append (key).append ('=').append (s_optionValues.get (key));
+      sb.append (key).append ('=').append (optionValues ().get (key));
     }
 
     return sb.toString ();
@@ -378,14 +393,14 @@ public class Options
   @Nonempty
   public static String getTokenMgrErrorClass ()
   {
-    switch (s_language)
+    switch (PGCCContext.current ().options ().getLanguage ())
     {
       case JAVA:
         return "TokenMgrException";
       case CPP:
         return "TokenMgrError";
       default:
-        throw new UnsupportedOutputLanguageException (s_language);
+        throw new UnsupportedOutputLanguageException (PGCCContext.current ().options ().getLanguage ());
     }
   }
 
@@ -443,12 +458,12 @@ public class Options
                                          @NonNull final Object aSrcValue)
   {
     final String sNameUC = name.toUpperCase (Locale.US);
-    if (!s_optionValues.containsKey (sNameUC))
+    if (!optionValues ().containsKey (sNameUC))
     {
       JavaCCErrors.warning (nameloc, "Bad option name \"" + name + "\".  Option setting will be ignored.");
       return;
     }
-    final Object aExistingValue = s_optionValues.get (sNameUC);
+    final Object aExistingValue = optionValues ().get (sNameUC);
 
     final Object aRealSrc = _upgradeValue (name, aSrcValue);
 
@@ -475,13 +490,13 @@ public class Options
         return;
       }
 
-      if (s_inputFileSetting.contains (sNameUC))
+      if (inputFileSetting ().contains (sNameUC))
       {
         JavaCCErrors.warning (nameloc, "Duplicate option setting for \"" + name + "\" will be ignored.");
         return;
       }
 
-      if (s_cmdLineSetting.contains (sNameUC))
+      if (cmdLineSetting ().contains (sNameUC))
       {
         if (!aExistingValue.equals (aRealSrc))
         {
@@ -491,8 +506,8 @@ public class Options
       }
     }
 
-    s_optionValues.put (sNameUC, aRealSrc);
-    s_inputFileSetting.add (sNameUC);
+    optionValues ().put (sNameUC, aRealSrc);
+    inputFileSetting ().add (sNameUC);
 
     // Options that are not fully described by their map entry need extra handling
     _applyIndirectOptionFlags (valueloc, sNameUC, name, aRealSrc);
@@ -573,7 +588,7 @@ public class Options
                                                          .build ());
             return;
           }
-          s_language = eOutLanguage;
+          PGCCContext.current ().options ().setLanguage (eOutLanguage);
         }
         else
           if (sNameUC.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))
@@ -617,7 +632,7 @@ public class Options
     {
       // No separator char (like in "DO_THIS_AND_THAT")
       sNameUC = sRealArg.toUpperCase (Locale.US);
-      if (s_optionValues.containsKey (sNameUC))
+      if (optionValues ().containsKey (sNameUC))
       {
         val = Boolean.TRUE;
       }
@@ -625,7 +640,7 @@ public class Options
         if (sNameUC.length () > 2 &&
             sNameUC.charAt (0) == 'N' &&
             sNameUC.charAt (1) == 'O' &&
-            s_optionValues.containsKey (sNameUC.substring (2)))
+            optionValues ().containsKey (sNameUC.substring (2)))
         {
           val = Boolean.FALSE;
           sNameUC = sNameUC.substring (2);
@@ -683,7 +698,7 @@ public class Options
         }
     }
 
-    if (!s_optionValues.containsKey (sNameUC))
+    if (!optionValues ().containsKey (sNameUC))
     {
       PGPrinter.warn ("Warning: Bad option \"" + sArg + "\" will be ignored.");
       return;
@@ -691,20 +706,20 @@ public class Options
 
     val = _upgradeValue (sNameUC, val);
 
-    final Object valOrig = s_optionValues.get (sNameUC);
+    final Object valOrig = optionValues ().get (sNameUC);
     if (val.getClass () != valOrig.getClass ())
     {
       PGPrinter.warn ("Warning: Bad option value in \"" + sArg + "\" will be ignored.");
       return;
     }
-    if (s_cmdLineSetting.contains (sNameUC))
+    if (cmdLineSetting ().contains (sNameUC))
     {
       PGPrinter.warn ("Warning: Duplicate option setting \"" + sArg + "\" will be ignored.");
       return;
     }
 
-    s_optionValues.put (sNameUC, val);
-    s_cmdLineSetting.add (sNameUC);
+    optionValues ().put (sNameUC, val);
+    cmdLineSetting ().add (sNameUC);
 
     // Options that are not fully described by their map entry need extra handling
     _applyIndirectOptionFlags (null, sNameUC, sNameUC, val);
@@ -714,13 +729,13 @@ public class Options
   {
     if (isDebugLookahead () && !isDebugParser ())
     {
-      if (s_cmdLineSetting.contains (USEROPTION__DEBUG_PARSER) ||
-          s_inputFileSetting.contains (USEROPTION__DEBUG_PARSER))
+      if (cmdLineSetting ().contains (USEROPTION__DEBUG_PARSER) ||
+          inputFileSetting ().contains (USEROPTION__DEBUG_PARSER))
       {
         JavaCCErrors.warning ("True setting of option DEBUG_LOOKAHEAD overrides " +
                               "false setting of option DEBUG_PARSER.");
       }
-      s_optionValues.put (USEROPTION__DEBUG_PARSER, Boolean.TRUE);
+      optionValues ().put (USEROPTION__DEBUG_PARSER, Boolean.TRUE);
     }
 
     if (JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE.equalsIgnoreCase (getJavaCharStreamType ()) && isJavaUnicodeEscape ())
@@ -1062,7 +1077,7 @@ public class Options
   @NonNull
   public static EOutputLanguage getOutputLanguage ()
   {
-    return s_language;
+    return PGCCContext.current ().options ().getLanguage ();
   }
 
   public static String getJavaTemplateType ()
@@ -1099,7 +1114,7 @@ public class Options
 
   public static void setStringOption (final String optionName, final String optionValue)
   {
-    s_optionValues.put (optionName, optionValue);
+    optionValues ().put (optionName, optionValue);
     if (optionName.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))
     {
       processCPPNamespaceOption (optionValue);
@@ -1120,9 +1135,9 @@ public class Options
         expanded_ns = expanded_ns + "\nnamespace " + st.nextToken () + " {";
         ns_close = ns_close + "\n}";
       }
-      s_optionValues.put (NONUSER_OPTION__NAMESPACE_OPEN, expanded_ns);
-      s_optionValues.put (NONUSER_OPTION__HAS_NAMESPACE, Boolean.TRUE);
-      s_optionValues.put (NONUSER_OPTION__NAMESPACE_CLOSE, ns_close);
+      optionValues ().put (NONUSER_OPTION__NAMESPACE_OPEN, expanded_ns);
+      optionValues ().put (NONUSER_OPTION__HAS_NAMESPACE, Boolean.TRUE);
+      optionValues ().put (NONUSER_OPTION__NAMESPACE_CLOSE, ns_close);
     }
   }
 

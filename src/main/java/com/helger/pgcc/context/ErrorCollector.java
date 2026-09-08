@@ -31,91 +31,68 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.helger.pgcc.jjdoc;
-
-import com.helger.pgcc.parser.Options;
+package com.helger.pgcc.context;
 
 /**
- * The options, specific to JJDoc.
+ * Counts the errors and warnings of a single generator run.
+ * <p>
+ * This is the instance state behind the static
+ * {@link com.helger.pgcc.parser.JavaCCErrors} facade. It is the first piece of the generator state
+ * that was moved out of a static field, and the pattern the remaining ones follow: the mutable data
+ * lives here, {@link PGCCContext} owns one instance per run, and the old static class stays as a
+ * thin delegate so that grammar action code keeps compiling.
  *
- * @author Kees Jan Koster &lt;kjkoster@kjkoster.org&gt;
+ * @author Philip Helger
  */
-public class JJDocOptions extends Options
+public final class ErrorCollector
 {
-  /**
-   * Limit subclassing to derived classes.
-   */
-  protected JJDocOptions ()
-  {}
+  private int m_nParseErrors;
+  private int m_nSemanticErrors;
+  private int m_nWarnings;
 
-  /**
-   * Initialize the options.
-   */
-  public static void init ()
+  public void onParseError ()
   {
-    Options.init ();
+    m_nParseErrors++;
+  }
 
-    optionValues ().put ("ONE_TABLE", Boolean.TRUE);
-    optionValues ().put ("TEXT", Boolean.FALSE);
-    optionValues ().put ("XTEXT", Boolean.FALSE);
-    optionValues ().put ("BNF", Boolean.FALSE);
+  public void onSemanticError ()
+  {
+    m_nSemanticErrors++;
+  }
 
-    optionValues ().put ("OUTPUT_FILE", "");
-    optionValues ().put ("CSS", "");
+  public void onWarning ()
+  {
+    m_nWarnings++;
+  }
+
+  public int getParseErrorCount ()
+  {
+    return m_nParseErrors;
+  }
+
+  public int getSemanticErrorCount ()
+  {
+    return m_nSemanticErrors;
+  }
+
+  public int getWarningCount ()
+  {
+    return m_nWarnings;
   }
 
   /**
-   * Find the one table value.
-   *
-   * @return The requested one table value.
+   * @return The number of errors, which is the sum of the parse errors and the semantic errors.
+   *         Warnings are not errors.
    */
-  public static boolean isOneTable ()
+  public int getErrorCount ()
   {
-    return booleanValue ("ONE_TABLE");
+    return m_nParseErrors + m_nSemanticErrors;
   }
 
-  /**
-   * Find the CSS value.
-   *
-   * @return The requested CSS value.
-   */
-  public static String getCSS ()
+  public void reset ()
   {
-    return stringValue ("CSS");
-  }
-
-  /**
-   * Find the text value.
-   *
-   * @return The requested text value.
-   */
-  public static boolean isText ()
-  {
-    return booleanValue ("TEXT");
-  }
-
-  public static boolean isXText ()
-  {
-    return booleanValue ("XTEXT");
-  }
-
-  /**
-   * Find the BNF value.
-   *
-   * @return The requested text value.
-   */
-  public static boolean isBNF ()
-  {
-    return booleanValue ("BNF");
-  }
-
-  /**
-   * Find the output file value.
-   *
-   * @return The requested output value.
-   */
-  public static String getOutputFile ()
-  {
-    return stringValue ("OUTPUT_FILE");
+    m_nParseErrors = 0;
+    m_nSemanticErrors = 0;
+    m_nWarnings = 0;
   }
 }
