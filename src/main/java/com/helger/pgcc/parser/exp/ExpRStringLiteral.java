@@ -113,8 +113,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
   public ExpRStringLiteral (final Token t, final String sImage)
   {
-    setLine (t.beginLine);
-    setColumn (t.beginColumn);
+    setLineNumber (t.beginLine);
+    setColumnNumber (t.beginColumn);
     m_sImage = sImage;
   }
 
@@ -519,14 +519,14 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return " <token of kind " + nKind + ">";
   }
 
-  static int getLine (final int nKind)
+  static int getLineNumber (final int nKind)
   {
-    return LexGenJava.lexer ().getRexprs ()[nKind].getLine ();
+    return LexGenJava.lexer ().getRexprs ()[nKind].getLineNumber ();
   }
 
-  static int getColumn (final int nKind)
+  static int getColumnNumber (final int nKind)
   {
-    return LexGenJava.lexer ().getRexprs ()[nKind].getColumn ();
+    return LexGenJava.lexer ().getRexprs ()[nKind].getColumnNumber ();
   }
 
   /**
@@ -1250,9 +1250,9 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
                                       JavaCCGlobals.addEscapes (strLit ().getAllImages ()[j * 64 + k]) +
                                       "\" cannot be matched as a string literal token " +
                                       "at line " +
-                                      getLine (j * 64 + k) +
+                                      getLineNumber (j * 64 + k) +
                                       ", column " +
-                                      getColumn (j * 64 + k) +
+                                      getColumnNumber (j * 64 + k) +
                                       ". It will be matched as " +
                                       getLabel (strLit ().getIntermediateKinds ()[(j * 64 + k)][i]) +
                                       ".");
@@ -1267,9 +1267,9 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
                                         JavaCCGlobals.addEscapes (strLit ().getAllImages ()[j * 64 + k]) +
                                         "\" cannot be matched as a string literal token " +
                                         "at line " +
-                                        getLine (j * 64 + k) +
+                                        getLineNumber (j * 64 + k) +
                                         ", column " +
-                                        getColumn (j * 64 + k) +
+                                        getColumnNumber (j * 64 + k) +
                                         ". It will be matched as " +
                                         getLabel (LexGenJava.lexer ().getCanMatchAnyChar ()[LexGenJava.lexer ()
                                                                                                       .getLexStateIndex ()]) +

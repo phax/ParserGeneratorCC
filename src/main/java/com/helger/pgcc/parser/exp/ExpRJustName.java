@@ -56,8 +56,8 @@ public final class ExpRJustName extends AbstractExpRegularExpression
 
   public ExpRJustName (final Token aToken, final String sImage)
   {
-    setLine (aToken.beginLine);
-    setColumn (aToken.beginColumn);
+    setLineNumber (aToken.beginLine);
+    setColumnNumber (aToken.beginColumn);
     setLabel (sImage);
   }
 }

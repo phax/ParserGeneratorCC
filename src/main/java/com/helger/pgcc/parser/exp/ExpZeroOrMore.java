@@ -51,8 +51,8 @@ public final class ExpZeroOrMore extends Expansion
 
   public ExpZeroOrMore (@NonNull final Token aToken, @NonNull final Expansion e)
   {
-    setLine (aToken.beginLine);
-    setColumn (aToken.beginColumn);
+    setLineNumber (aToken.beginLine);
+    setColumnNumber (aToken.beginColumn);
     m_aExpansion = e;
     e.setParent (this);
   }

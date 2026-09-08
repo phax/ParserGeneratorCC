@@ -45,35 +45,13 @@ import com.helger.pgcc.context.PGCCContext;
  * This exists so that {@link JavaCCErrors} can take a location instead of an {@link Object} and an
  * <code>instanceof</code> cascade over the six types that happen to have a line and a column.
  * <p>
- * It extends {@link ILocation} from ph-commons rather than starting from nothing, so that the
- * usual helpers - <code>getAsString ()</code>, <code>hasLineNumber ()</code> - come along. The two
- * abstract methods keep the names the grammar model has always used; the ph-commons spellings are
- * defaults on top of them.
+ * Everything it needs beyond {@link ILocation} is the resource, because the line and the column
+ * are spelled the ph-commons way throughout the grammar model.
  *
  * @author Philip Helger
  */
 public interface IGrammarLocation extends ILocation
 {
-  /**
-   * @return The line this was written on, or 0 if it is not known.
-   */
-  int getLine ();
-
-  /**
-   * @return The column this was written at, or 0 if it is not known.
-   */
-  int getColumn ();
-
-  default int getLineNumber ()
-  {
-    return getLine ();
-  }
-
-  default int getColumnNumber ()
-  {
-    return getColumn ();
-  }
-
   /**
    * @return The grammar file currently being read, because that is what every location in the
    *         model refers to. May be <code>null</code> before a file has been opened.

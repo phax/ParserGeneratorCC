@@ -52,20 +52,20 @@ public final class ExpChoiceTest
     m_aToken.beginColumn = 2;
     m_aToken.beginLine = 3;
     m_aExp = new Expansion ();
-    m_aExp.setColumn (5);
-    m_aExp.setLine (6);
+    m_aExp.setColumnNumber (5);
+    m_aExp.setLineNumber (6);
   }
 
   @Test
   public void testChoiceConstructor ()
   {
     ExpChoice c = new ExpChoice (m_aToken);
-    assertEquals (m_aToken.beginColumn, c.getColumn ());
-    assertEquals (m_aToken.beginLine, c.getLine ());
+    assertEquals (m_aToken.beginColumn, c.getColumnNumber ());
+    assertEquals (m_aToken.beginLine, c.getLineNumber ());
     assertEquals (0, c.getChoiceCount ());
     c = new ExpChoice (m_aExp);
-    assertEquals (m_aExp.getColumn (), c.getColumn ());
-    assertEquals (m_aExp.getLine (), c.getLine ());
+    assertEquals (m_aExp.getColumnNumber (), c.getColumnNumber ());
+    assertEquals (m_aExp.getLineNumber (), c.getLineNumber ());
     assertEquals (m_aExp, c.getChoiceAt (0));
   }
 }

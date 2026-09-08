@@ -228,13 +228,13 @@ public final class LookaheadCalc
       {
         JavaCCErrors.warning ("Choice conflict involving two expansions at");
         PGPrinter.error ("         line " +
-                         aExp.getLine () +
+                         aExp.getLineNumber () +
                          ", column " +
-                         aExp.getColumn () +
+                         aExp.getColumnNumber () +
                          " and line " +
-                         aCh.getChoiceAt (aOther[i]).getLine () +
+                         aCh.getChoiceAt (aOther[i]).getLineNumber () +
                          ", column " +
-                         aCh.getChoiceAt (aOther[i]).getColumn () +
+                         aCh.getChoiceAt (aOther[i]).getColumnNumber () +
                          " respectively.");
         PGPrinter.error ("         A common prefix is: " + _image (aOverlapInfo[i]));
         PGPrinter.error ("         Consider using a lookahead of " + aMinLA[i] + " or more for earlier expansion.");
@@ -244,13 +244,13 @@ public final class LookaheadCalc
         {
           JavaCCErrors.warning ("Choice conflict involving two expansions at");
           PGPrinter.error ("         line " +
-                           aExp.getLine () +
+                           aExp.getLineNumber () +
                            ", column " +
-                           aExp.getColumn () +
+                           aExp.getColumnNumber () +
                            " and line " +
-                           aCh.getChoiceAt (aOther[i]).getLine () +
+                           aCh.getChoiceAt (aOther[i]).getLineNumber () +
                            ", column " +
-                           aCh.getChoiceAt (aOther[i]).getColumn () +
+                           aCh.getChoiceAt (aOther[i]).getColumnNumber () +
                            " respectively.");
           PGPrinter.error ("         A common prefix is: " + _image (aOverlapInfo[i]));
           PGPrinter.error ("         Consider using a lookahead of " + aMinLA[i] + " for earlier expansion.");
@@ -345,9 +345,9 @@ public final class LookaheadCalc
                             _image (aExp) +
                             " construct " +
                             "at line " +
-                            aExp.getLine () +
+                            aExp.getLineNumber () +
                             ", column " +
-                            aExp.getColumn () +
+                            aExp.getColumnNumber () +
                             ".");
       PGPrinter.error ("         Expansion nested within construct and expansion following construct");
       PGPrinter.error ("         have common prefixes, one of which is: " + _image (m1));
@@ -360,9 +360,9 @@ public final class LookaheadCalc
                               _image (aExp) +
                               " construct " +
                               "at line " +
-                              aExp.getLine () +
+                              aExp.getLineNumber () +
                               ", column " +
-                              aExp.getColumn () +
+                              aExp.getColumnNumber () +
                               ".");
         PGPrinter.error ("         Expansion nested within construct and expansion following construct");
         PGPrinter.error ("         have common prefixes, one of which is: " + _image (m1));

@@ -133,12 +133,12 @@ public class Token implements IGrammarLocation
    * Returns the image.
    */
   @Override
-  public int getLine ()
+  public int getLineNumber ()
   {
     return beginLine;
   }
 
-  public int getColumn ()
+  public int getColumnNumber ()
   {
     return beginColumn;
   }

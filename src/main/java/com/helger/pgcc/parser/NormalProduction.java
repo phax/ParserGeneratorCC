@@ -157,7 +157,7 @@ public abstract class NormalProduction implements IGrammarLocation
    * @param line
    *        the line to set
    */
-  public void setLine (final int nLine)
+  public void setLineNumber (final int nLine)
   {
     this.m_nLine = nLine;
   }
@@ -165,7 +165,7 @@ public abstract class NormalProduction implements IGrammarLocation
   /**
    * @return the line
    */
-  public int getLine ()
+  public int getLineNumber ()
   {
     return m_nLine;
   }
@@ -174,7 +174,7 @@ public abstract class NormalProduction implements IGrammarLocation
    * @param column
    *        the column to set
    */
-  public void setColumn (final int nColumn)
+  public void setColumnNumber (final int nColumn)
   {
     this.m_nColumn = nColumn;
   }
@@ -182,7 +182,7 @@ public abstract class NormalProduction implements IGrammarLocation
   /**
    * @return the column
    */
-  public int getColumn ()
+  public int getColumnNumber ()
   {
     return m_nColumn;
   }

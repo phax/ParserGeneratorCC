@@ -486,8 +486,8 @@ public abstract class JavaCCParserInternals
       return;
     }
     final ExpTryBlock aTblk = new ExpTryBlock ();
-    aTblk.setLine (aTryLoc.beginLine);
-    aTblk.setColumn (aTryLoc.beginColumn);
+    aTblk.setLineNumber (aTryLoc.beginLine);
+    aTblk.setColumnNumber (aTryLoc.beginColumn);
     aTblk.m_aExp = (Expansion) aNestedExp.m_aMember;
     aTblk.m_aExp.setParent (aTblk);
     aTblk.m_aExp.setOrdinalBase (0);

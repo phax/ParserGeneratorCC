@@ -44,7 +44,7 @@
   <artifactId>parser-generator-cc</artifactId>
   <packaging>jar</packaging>
   <name>parser-generator-cc</name>
-  <version>2.1.0-SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
   <description>ParserGenerator is a parser/scanner generator for java (fork of JavaCC 7.0.3)</description>
   <url>https://github.com/phax/ParserGeneratorCC</url>
   <inceptionYear>2017</inceptionYear>

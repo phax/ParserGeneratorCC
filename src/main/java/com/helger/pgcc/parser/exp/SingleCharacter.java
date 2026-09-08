@@ -67,7 +67,7 @@ public final class SingleCharacter implements ICCCharacter
   /**
    * @return the line
    */
-  public int getLine ()
+  public int getLineNumber ()
   {
     return m_nLine;
   }
@@ -75,7 +75,7 @@ public final class SingleCharacter implements ICCCharacter
   /**
    * @return the column
    */
-  public int getColumn ()
+  public int getColumnNumber ()
   {
     return m_nColumn;
   }

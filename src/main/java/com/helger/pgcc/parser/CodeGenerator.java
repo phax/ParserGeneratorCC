@@ -96,7 +96,7 @@ public class CodeGenerator
     return m_nCol;
   }
 
-  protected final int getLine ()
+  protected final int getLineNumber ()
   {
     return m_nLine;
   }

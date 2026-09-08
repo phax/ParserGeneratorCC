@@ -161,7 +161,7 @@ public sealed class Expansion implements IGrammarLocation permits
   /**
    * @return the column
    */
-  public final int getColumn ()
+  public final int getColumnNumber ()
   {
     return m_nColumn;
   }
@@ -170,7 +170,7 @@ public sealed class Expansion implements IGrammarLocation permits
    * @param column
    *        the column to set
    */
-  public final void setColumn (final int nColumn)
+  public final void setColumnNumber (final int nColumn)
   {
     m_nColumn = nColumn;
   }
@@ -178,7 +178,7 @@ public sealed class Expansion implements IGrammarLocation permits
   /**
    * @return the line
    */
-  public final int getLine ()
+  public final int getLineNumber ()
   {
     return m_nLine;
   }
@@ -187,7 +187,7 @@ public sealed class Expansion implements IGrammarLocation permits
    * @param line
    *        the line to set
    */
-  public final void setLine (final int nLine)
+  public final void setLineNumber (final int nLine)
   {
     m_nLine = nLine;
   }
@@ -240,12 +240,12 @@ public sealed class Expansion implements IGrammarLocation permits
   @Override
   public int hashCode ()
   {
-    return getLine () + getColumn ();
+    return getLineNumber () + getColumnNumber ();
   }
 
   @Override
   public String toString ()
   {
-    return "[" + getLine () + "," + getColumn () + " " + System.identityHashCode (this) + " " + _getSimpleName () + "]";
+    return "[" + getLineNumber () + "," + getColumnNumber () + " " + System.identityHashCode (this) + " " + _getSimpleName () + "]";
   }
 }

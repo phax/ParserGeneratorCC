@@ -60,8 +60,8 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
                               final boolean bHasMax,
                               final AbstractExpRegularExpression r)
   {
-    setLine (t.beginLine);
-    setColumn (t.beginColumn);
+    setLineNumber (t.beginLine);
+    setColumnNumber (t.beginColumn);
     m_nMin = nR1;
     m_nMax = nR2;
     m_bHasMax = bHasMax;

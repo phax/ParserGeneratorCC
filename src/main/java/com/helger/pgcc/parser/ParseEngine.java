@@ -1670,9 +1670,9 @@ public class ParseEngine
               // Test Code
               if (false)
                 PGPrinter.info ("minimumSize: line: " +
-                                aEseq.getLine () +
+                                aEseq.getLineNumber () +
                                 ", column: " +
-                                aEseq.getColumn () +
+                                aEseq.getColumnNumber () +
                                 ": " +
                                 minimumSize (aEseq));
 

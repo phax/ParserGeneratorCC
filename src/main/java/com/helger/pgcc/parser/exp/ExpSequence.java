@@ -58,8 +58,8 @@ public final class ExpSequence extends Expansion
 
   public ExpSequence (final Token aToken, final ExpLookahead aLookahead)
   {
-    setLine (aToken.beginLine);
-    setColumn (aToken.beginColumn);
+    setLineNumber (aToken.beginLine);
+    setColumnNumber (aToken.beginColumn);
     m_aUnits.add (aLookahead);
   }
 

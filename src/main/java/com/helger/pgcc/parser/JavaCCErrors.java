@@ -51,7 +51,7 @@ public final class JavaCCErrors
   @NonNull
   private static String _getLocationInfo (@Nullable final IGrammarLocation aNode)
   {
-    return aNode == null ? "" : "Line " + aNode.getLine () + ", Column " + aNode.getColumn () + ": ";
+    return aNode == null ? "" : "Line " + aNode.getLineNumber () + ", Column " + aNode.getColumnNumber () + ": ";
   }
 
   public static void parse_error (@Nullable final IGrammarLocation aNode, final String sMess)

@@ -53,16 +53,16 @@ public final class ExpansionTest
     m_aToken.beginColumn = 2;
     m_aToken.beginLine = 3;
     m_aExp = new Expansion ();
-    m_aExp.setColumn (5);
-    m_aExp.setLine (6);
+    m_aExp.setColumnNumber (5);
+    m_aExp.setLineNumber (6);
   }
 
   @Test
   public void testZeroOrOneConstructor ()
   {
     final ExpZeroOrOne aZoo = new ExpZeroOrOne (m_aToken, m_aExp);
-    assertEquals (m_aToken.beginColumn, aZoo.getColumn ());
-    assertEquals (m_aToken.beginLine, aZoo.getLine ());
+    assertEquals (m_aToken.beginColumn, aZoo.getColumnNumber ());
+    assertEquals (m_aToken.beginLine, aZoo.getLineNumber ());
     assertEquals (m_aExp, aZoo.getExpansion ());
     assertSame (m_aExp.getParent (), aZoo);
   }
@@ -71,8 +71,8 @@ public final class ExpansionTest
   public void testZeroOrMoreConstructor ()
   {
     final ExpZeroOrMore aZom = new ExpZeroOrMore (m_aToken, m_aExp);
-    assertEquals (m_aToken.beginColumn, aZom.getColumn ());
-    assertEquals (m_aToken.beginLine, aZom.getLine ());
+    assertEquals (m_aToken.beginColumn, aZom.getColumnNumber ());
+    assertEquals (m_aToken.beginLine, aZom.getLineNumber ());
     assertEquals (m_aExp, aZom.getExpansion ());
     assertEquals (m_aExp.getParent (), aZom);
   }
@@ -82,8 +82,8 @@ public final class ExpansionTest
   {
     final AbstractExpRegularExpression r = new ExpRChoice ();
     final ExpRZeroOrMore aRzom = new ExpRZeroOrMore (m_aToken, r);
-    assertEquals (m_aToken.beginColumn, aRzom.getColumn ());
-    assertEquals (m_aToken.beginLine, aRzom.getLine ());
+    assertEquals (m_aToken.beginColumn, aRzom.getColumnNumber ());
+    assertEquals (m_aToken.beginLine, aRzom.getLineNumber ());
     assertEquals (r, aRzom.getRegExpr ());
   }
 
@@ -92,8 +92,8 @@ public final class ExpansionTest
   {
     final AbstractExpRegularExpression r = new ExpRChoice ();
     final ExpROneOrMore aRoom = new ExpROneOrMore (m_aToken, r);
-    assertEquals (m_aToken.beginColumn, aRoom.getColumn ());
-    assertEquals (m_aToken.beginLine, aRoom.getLine ());
+    assertEquals (m_aToken.beginColumn, aRoom.getColumnNumber ());
+    assertEquals (m_aToken.beginLine, aRoom.getLineNumber ());
     assertEquals (r, aRoom.getRegExpr ());
   }
 
@@ -102,8 +102,8 @@ public final class ExpansionTest
   {
     final Expansion aRce = new ExpRChoice ();
     final ExpOneOrMore aOom = new ExpOneOrMore (m_aToken, aRce);
-    assertEquals (m_aToken.beginColumn, aOom.getColumn ());
-    assertEquals (m_aToken.beginLine, aOom.getLine ());
+    assertEquals (m_aToken.beginColumn, aOom.getColumnNumber ());
+    assertEquals (m_aToken.beginLine, aOom.getLineNumber ());
     assertEquals (aRce, aOom.getExpansion ());
     assertEquals (aRce.getParent (), aOom);
   }
@@ -112,8 +112,8 @@ public final class ExpansionTest
   public void testRStringLiteralConstructor ()
   {
     final ExpRStringLiteral r = new ExpRStringLiteral (m_aToken, "hey");
-    assertEquals (m_aToken.beginColumn, r.getColumn ());
-    assertEquals (m_aToken.beginLine, r.getLine ());
+    assertEquals (m_aToken.beginColumn, r.getColumnNumber ());
+    assertEquals (m_aToken.beginLine, r.getLineNumber ());
     assertEquals ("hey", r.m_sImage);
   }
 
@@ -121,8 +121,8 @@ public final class ExpansionTest
   public void testRJustNameConstructor ()
   {
     final ExpRJustName r = new ExpRJustName (m_aToken, "hey");
-    assertEquals (m_aToken.beginColumn, r.getColumn ());
-    assertEquals (m_aToken.beginLine, r.getLine ());
+    assertEquals (m_aToken.beginColumn, r.getColumnNumber ());
+    assertEquals (m_aToken.beginLine, r.getLineNumber ());
     assertEquals ("hey", r.getLabel ());
   }
 
@@ -131,8 +131,8 @@ public final class ExpansionTest
   {
     final ExpLookahead aLa = new ExpLookahead ();
     final ExpSequence s = new ExpSequence (m_aToken, aLa);
-    assertEquals (m_aToken.beginColumn, s.getColumn ());
-    assertEquals (m_aToken.beginLine, s.getLine ());
+    assertEquals (m_aToken.beginColumn, s.getColumnNumber ());
+    assertEquals (m_aToken.beginLine, s.getLineNumber ());
     assertSame (aLa, s.getUnitAt (0));
   }
 }

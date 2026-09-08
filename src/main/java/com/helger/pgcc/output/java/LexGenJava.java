@@ -730,9 +730,9 @@ public class LexGenJava extends CodeGenerator
         if (nLen != 0)
           sReList += "; ";
         sReList += "line " +
-                  lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getLine () +
+                  lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getLineNumber () +
                   ", column " +
-                  lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getColumn ();
+                  lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getColumnNumber ();
         nLen++;
       }
 

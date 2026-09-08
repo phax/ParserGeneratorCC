@@ -60,7 +60,7 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 
 # News and noteworthy
 
-v2.1.0 - work in progress
+v3.0.0 - work in progress
 * **Breaking API change** Replaced the internal `EJDKVersion` enum with `EJavaVersion` from ph-commons, so that `JDK_VERSION` values above 14 are supported. `Options.getJdkVersion ()` returns `com.helger.base.system.EJavaVersion` now
 * **Potentially breaking** The default value of `JDK_VERSION` moved from `1.5` to `1.8`, so that generated code uses the `Charset` based constructors and the diamond operator unless configured otherwise
 * **Breaking API change** `LexGenJava`, `ParseGenJava`, `LexGenCpp` and `ParseGenCPP` moved from `com.helger.pgcc.parser` to `com.helger.pgcc.output.java` and `com.helger.pgcc.output.cpp`, so that the package says which target language a class writes. `com.helger.pgcc.parser` no longer contains anything that writes a file
@@ -83,6 +83,7 @@ v2.1.0 - work in progress
 * Removed a leftover debug line that made `jjtree` print `opt:java` on every run
 * Local variables and parameters throughout the code base now use the project's Hungarian notation. The public fields of `Token` keep their names - generated parsers and grammar action code read `token.kind` and `t.image`
 * **Breaking API change** `JavaCCErrors.parse_error`, `semantic_error` and `warning` take a `com.helger.pgcc.parser.IGrammarLocation` instead of an `Object`. The new interface extends `com.helger.base.location.ILocation` and is implemented by `NormalProduction`, `TokenProduction`, `Expansion`, `ICCCharacter` and both `Token` classes - the six types the old `instanceof` cascade tested for. `Options.setInputFileOption` takes it too
+* **Breaking API change** The grammar model spells its position the ph-commons way: `getLineNumber ()` / `getColumnNumber ()` and `setLineNumber ()` / `setColumnNumber ()` on `NormalProduction`, `TokenProduction`, `Expansion`, `ICCCharacter` and both `Token` classes. `IGrammarLocation` is now `ILocation` plus the resource id
 * **Breaking API change** Removed `JavaCCErrors.reInit ()`, deprecated since the error counters moved into `PGCCContext`
 
 v2.0.3 - 2026-09-08

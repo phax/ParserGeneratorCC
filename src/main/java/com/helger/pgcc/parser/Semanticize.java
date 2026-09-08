@@ -265,9 +265,9 @@ public class Semanticize
                                                    "\" can never be matched " +
                                                    "due to presence of more general (IGNORE_CASE) regular expression " +
                                                    "at line " +
-                                                   aOther.getLine () +
+                                                   aOther.getLineNumber () +
                                                    ", column " +
-                                                   aOther.getColumn () +
+                                                   aOther.getColumnNumber () +
                                                    ".");
                 }
                 else
@@ -292,7 +292,7 @@ public class Semanticize
                   {
                     if (nCount != 0)
                       aPos.append (",");
-                    aPos.append (" line ").append (rexp.getLine ());
+                    aPos.append (" line ").append (rexp.getLineNumber ());
                     nCount++;
                   }
                   if (nCount == 1)
@@ -968,20 +968,20 @@ public class Semanticize
 
         // Create a singleton choice with an empty action.
         final ExpChoice aCh = new ExpChoice ();
-        aCh.setLine (aLa.getLine ());
-        aCh.setColumn (aLa.getColumn ());
+        aCh.setLineNumber (aLa.getLineNumber ());
+        aCh.setColumnNumber (aLa.getColumnNumber ());
         aCh.setParent (seq);
 
         final ExpSequence aSeq1 = new ExpSequence ();
-        aSeq1.setLine (aLa.getLine ());
-        aSeq1.setColumn (aLa.getColumn ());
+        aSeq1.setLineNumber (aLa.getLineNumber ());
+        aSeq1.setColumnNumber (aLa.getColumnNumber ());
         aSeq1.setParent (aCh);
         aSeq1.addUnit (aLa);
         aLa.setParent (aSeq1);
 
         final ExpAction aAct = new ExpAction ();
-        aAct.setLine (aLa.getLine ());
-        aAct.setColumn (aLa.getColumn ());
+        aAct.setLineNumber (aLa.getLineNumber ());
+        aAct.setColumnNumber (aLa.getColumnNumber ());
         aAct.setParent (aSeq1);
 
         aSeq1.addUnit (aAct);
@@ -1004,8 +1004,8 @@ public class Semanticize
         // location.
         final ExpLookahead aLa1 = new ExpLookahead ();
         aLa1.setExplicit (false);
-        aLa1.setLine (aLa.getLine ());
-        aLa1.setColumn (aLa.getColumn ());
+        aLa1.setLineNumber (aLa.getLineNumber ());
+        aLa1.setColumnNumber (aLa.getColumnNumber ());
         aLa1.setParent (seq);
 
         // Now set the la_expansion field of la and la1 with a dummy expansion

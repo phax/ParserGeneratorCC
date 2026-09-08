@@ -58,14 +58,14 @@ public final class ExpChoice extends Expansion
 
   public ExpChoice (final Token aToken)
   {
-    setLine (aToken.beginLine);
-    setColumn (aToken.beginColumn);
+    setLineNumber (aToken.beginLine);
+    setColumnNumber (aToken.beginColumn);
   }
 
   public ExpChoice (final Expansion aExpansion)
   {
-    setLine (aExpansion.getLine ());
-    setColumn (aExpansion.getColumn ());
+    setLineNumber (aExpansion.getLineNumber ());
+    setColumnNumber (aExpansion.getColumnNumber ());
     m_aChoices.add (aExpansion);
   }
 

@@ -57,8 +57,8 @@ public final class ExpROneOrMore extends AbstractExpRegularExpression
   public ExpROneOrMore (final Token t, final AbstractExpRegularExpression aRe)
   {
     this (aRe);
-    setLine (t.beginLine);
-    setColumn (t.beginColumn);
+    setLineNumber (t.beginLine);
+    setColumnNumber (t.beginColumn);
   }
 
   @NonNull
