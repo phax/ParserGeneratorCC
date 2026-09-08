@@ -62,6 +62,9 @@ public sealed class Expansion implements IGrammarLocation permits
   public Expansion ()
   {}
 
+  /**
+   * The line separator the dump methods use.
+   */
   protected static final String EOL = System.getProperty ("line.separator", "\n");
 
   /**
@@ -101,32 +104,59 @@ public sealed class Expansion implements IGrammarLocation permits
    */
   private boolean m_bInMinimumSize = false;
 
+  /**
+   * {@return a generation number that has not been used before in this run, for a follow set walk
+   * to mark the expansions it has already visited}
+   */
   public static long getNextGenerationIndex ()
   {
     return PGCCContext.current ().grammar ().getAndIncNextExpansionGeneration ();
   }
 
+  /**
+   * Give this expansion the name the generated parser routine will carry.
+   *
+   * @param sPrefix
+   *        The name prefix, which says what kind of routine it is. May not be <code>null</code>.
+   * @param nIndex
+   *        The number that makes the name unique.
+   */
   public final void setInternalName (final String sPrefix, final int nIndex)
   {
     m_sInternalName = sPrefix + nIndex;
     m_nInternalIndex = nIndex;
   }
 
+  /**
+   * Give this expansion a name without a number behind it, for the cases that do not need one.
+   *
+   * @param sName
+   *        The name. May not be <code>null</code>.
+   */
   public final void setInternalNameOnly (final String sName)
   {
     m_sInternalName = sName;
   }
 
+  /**
+   * {@return <code>true</code> if this expansion has not been named yet}
+   */
   public final boolean hasNoInternalName ()
   {
     return StringHelper.isEmpty (m_sInternalName);
   }
 
+  /**
+   * {@return the name of the parser routine generated for this expansion, empty if it has none}
+   */
   public final String getInternalName ()
   {
     return m_sInternalName;
   }
 
+  /**
+   * {@return the number behind the internal name, or -1 if the name carries none}
+   */
   public final int getInternalIndex ()
   {
     return m_nInternalIndex;
@@ -139,6 +169,13 @@ public sealed class Expansion implements IGrammarLocation permits
     return sName.substring (sName.lastIndexOf (".") + 1);
   }
 
+  /**
+   * Build the indentation the dump methods put in front of a line.
+   *
+   * @param nIndent
+   *        The nesting depth.
+   * @return A builder holding two spaces per level. Never <code>null</code>.
+   */
   @NonNull
   protected static StringBuilder dumpPrefix (final int nIndent)
   {
@@ -205,41 +242,80 @@ public sealed class Expansion implements IGrammarLocation permits
     m_nLine = nLine;
   }
 
+  /**
+   * {@return the expansion this one sits inside, the production if this is its top level, or
+   * <code>null</code> if this is the top level of a lookahead}
+   */
   public final Object getParent ()
   {
     return m_aParent;
   }
 
+  /**
+   * Record where this expansion sits.
+   *
+   * @param o
+   *        The enclosing expansion or production. May be <code>null</code>.
+   */
   public final void setParent (final Object o)
   {
     m_aParent = o;
   }
 
+  /**
+   * {@return the position of this expansion among its parent's children}
+   */
   public final int getOrdinalBase ()
   {
     return m_nOrdinalBase;
   }
 
+  /**
+   * Record the position of this expansion among its parent's children.
+   *
+   * @param n
+   *        The position.
+   */
   public final void setOrdinalBase (final int n)
   {
     m_nOrdinalBase = n;
   }
 
+  /**
+   * {@return the generation this expansion was last visited in by a follow set walk}
+   */
   public final long getMyGeneration ()
   {
     return m_nMyGeneration;
   }
 
+  /**
+   * Mark this expansion as visited in a generation, so that a right recursive grammar does not
+   * send the follow set walk round forever.
+   *
+   * @param n
+   *        The current generation, from {@link #getNextGenerationIndex()}.
+   */
   public final void setMyGeneration (final long n)
   {
     m_nMyGeneration = n;
   }
 
+  /**
+   * {@return <code>true</code> while the minimum size computation in ParseEngine is inside this
+   * expansion, which is how it recognises a cycle}
+   */
   public final boolean isInMinimumSize ()
   {
     return m_bInMinimumSize;
   }
 
+  /**
+   * Mark that the minimum size computation has entered or left this expansion.
+   *
+   * @param b
+   *        <code>true</code> on the way in, <code>false</code> on the way out.
+   */
   public final void setInMinimumSize (final boolean b)
   {
     m_bInMinimumSize = b;

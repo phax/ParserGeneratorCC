@@ -48,6 +48,7 @@ import com.helger.base.lang.EnumHelper;
 
 public enum EOutputLanguage implements IHasID <String>
 {
+  /** Generate Java. */
   JAVA ("java")
   {
     @Override
@@ -138,6 +139,7 @@ public enum EOutputLanguage implements IHasID <String>
       return aSB.toString ();
     }
   },
+  /** Generate C++. This backend is frozen but supported. */
   CPP ("c++")
   {
     @Override
@@ -248,6 +250,8 @@ public enum EOutputLanguage implements IHasID <String>
   public abstract String getTypeLong ();
 
   /**
+   * The suffix a long literal carries in this language.
+   *
    * @return The value suffix to be used for long values.
    * @see #getTypeLong()
    */
@@ -255,12 +259,26 @@ public enum EOutputLanguage implements IHasID <String>
   @Nonempty
   protected abstract String getLongValueSuffix ();
 
+  /**
+   * A long constant in hexadecimal, with whatever suffix this language wants.
+   *
+   * @param n
+   *        The value.
+   * @return The literal. Never <code>null</code>.
+   */
   @NonNull
   public String getLongHex (final long n)
   {
     return "0x" + Long.toHexString (n) + getLongValueSuffix ();
   }
 
+  /**
+   * A long constant in decimal, with whatever suffix this language wants.
+   *
+   * @param n
+   *        The value.
+   * @return The literal. Never <code>null</code>.
+   */
   @NonNull
   public String getLongPlain (final long n)
   {
@@ -298,6 +316,8 @@ public enum EOutputLanguage implements IHasID <String>
   public abstract String addUnicodeEscapes (@NonNull String sStr);
 
   /**
+   * How this language spells an annotation. Java has them; C++ makes do with a comment.
+   *
    * @param sAnnotation
    *        The annotation name, without the marker. May not be <code>null</code>.
    * @return How this language writes that annotation. Never <code>null</code>.
@@ -306,6 +326,9 @@ public enum EOutputLanguage implements IHasID <String>
   public abstract String getAnnotation (@NonNull String sAnnotation);
 
   /**
+   * How this language spells a member modifier. In Java it is a prefix on the member; in C++ an
+   * access modifier is a section label and everything else has no equivalent.
+   *
    * @param sModifier
    *        The modifier as written in the grammar. May not be <code>null</code>.
    * @return How this language writes it, empty if it has no equivalent. Never <code>null</code>.
@@ -338,6 +361,8 @@ public enum EOutputLanguage implements IHasID <String>
   public abstract String getDebugStreamPrintLine (@NonNull String sMessage);
 
   /**
+   * How this language declares an array constant.
+   *
    * @param sType
    *        The element type. May not be <code>null</code>.
    * @param sName
@@ -349,6 +374,8 @@ public enum EOutputLanguage implements IHasID <String>
   public abstract String getStaticArrayDeclaration (@NonNull String sType, @NonNull String sName);
 
   /**
+   * How this language opens a class declaration.
+   *
    * @param sModifier
    *        The access modifier, or <code>null</code> for none.
    * @param sName
@@ -376,12 +403,17 @@ public enum EOutputLanguage implements IHasID <String>
     }
   }
 
+  /**
+   * {@return <code>true</code> if this is the Java backend}
+   */
   public boolean isJava ()
   {
     return this == JAVA;
   }
 
   /**
+   * How this language asks for the larger of two values.
+   *
    * @param sA
    *        First expression. May not be <code>null</code>.
    * @param sB
@@ -397,6 +429,8 @@ public enum EOutputLanguage implements IHasID <String>
   }
 
   /**
+   * How this language asks for the smaller of two values.
+   *
    * @param sA
    *        First expression. May not be <code>null</code>.
    * @param sB
@@ -411,16 +445,31 @@ public enum EOutputLanguage implements IHasID <String>
     return (this == JAVA ? "Math.min(" : "MIN(") + sA + ", " + sB + ")";
   }
 
+  /**
+   * {@return <code>true</code> if this language keeps its constants in a file of its own, so that
+   * switchToStaticsFile does something}
+   */
   public boolean hasStaticsFile ()
   {
     return this == CPP;
   }
 
+  /**
+   * {@return <code>true</code> if this language declares in a header file separate from the
+   * definitions, so that switchToIncludeFile does something}
+   */
   public boolean hasIncludeFile ()
   {
     return this == CPP;
   }
 
+  /**
+   * Look a language up by the name a grammar uses in its OUTPUT_LANGUAGE option.
+   *
+   * @param sID
+   *        The name, in any casing. May be <code>null</code>.
+   * @return <code>null</code> if no language has that name.
+   */
   @Nullable
   public static EOutputLanguage getFromIDCaseInsensitiveOrNull (@Nullable final String sID)
   {
