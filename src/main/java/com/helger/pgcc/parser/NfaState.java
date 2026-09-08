@@ -85,175 +85,32 @@ public class NfaState
    * private.
    */
   private long [] m_aAsciiMoves = new long [2];
-
-  /**
-   * @return The value of m_aAsciiMoves.
-   */
-  public long [] getAsciiMoves ()
-  {
-    return m_aAsciiMoves;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_aAsciiMoves.
-   */
-  public void setAsciiMoves (final long [] aValue)
-  {
-    m_aAsciiMoves = aValue;
-  }
   private char [] m_aCharMoves = null;
-
-  /**
-   * @return The value of m_aCharMoves.
-   */
-  public char [] getCharMoves ()
-  {
-    return m_aCharMoves;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_aCharMoves.
-   */
-  public void setCharMoves (final char [] aValue)
-  {
-    m_aCharMoves = aValue;
-  }
   private char [] m_aRangeMoves = null;
   private NfaState m_aNext = null;
-
-  /**
-   * @return The value of m_aNext.
-   */
-  public NfaState getNext ()
-  {
-    return m_aNext;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_aNext.
-   */
-  public void setNext (final NfaState aValue)
-  {
-    m_aNext = aValue;
-  }
   private NfaState m_aStateForCase;
   private final List <NfaState> m_aEpsilonMoves = new ArrayList <> ();
-
-  /**
-   * @return The value of m_aEpsilonMoves.
-   */
-  public List <NfaState> getEpsilonMoves ()
-  {
-    return m_aEpsilonMoves;
-  }
   private String m_sEpsilonMovesString;
-
   private final int m_nId;
   private int m_nStateName = -1;
-
-  /**
-   * @return The value of m_nStateName.
-   */
-  public int getStateName ()
-  {
-    return m_nStateName;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_nStateName.
-   */
-  public void setStateName (final int aValue)
-  {
-    m_nStateName = aValue;
-  }
   private int m_nKind = Integer.MAX_VALUE;
-
-  /**
-   * @return The value of m_nKind.
-   */
-  public int getKind ()
-  {
-    return m_nKind;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_nKind.
-   */
-  public void setKind (final int aValue)
-  {
-    m_nKind = aValue;
-  }
   private int m_nLookingFor;
   private int m_nUsefulEpsilonMoves = 0;
   private int m_nInNextOf;
-
-  /**
-   * @return The value of m_nInNextOf.
-   */
-  public int getInNextOf ()
-  {
-    return m_nInNextOf;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_nInNextOf.
-   */
-  public void setInNextOf (final int aValue)
-  {
-    m_nInNextOf = aValue;
-  }
   private int m_nLexState;
   private int m_nNonAsciiMethod = -1;
   private int m_nKindToPrint = Integer.MAX_VALUE;
   private boolean m_bDummy = false;
-
-  /**
-   * @return The value of m_bDummy.
-   */
-  public boolean isDummy ()
-  {
-    return m_bDummy;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_bDummy.
-   */
-  public void setDummy (final boolean aValue)
-  {
-    m_bDummy = aValue;
-  }
   private boolean m_bIsComposite = false;
   private int [] m_aCompositeStates = null;
   private boolean m_bIsFinal = false;
-
-  /**
-   * @return The value of m_bIsFinal.
-   */
-  public boolean isFinal ()
-  {
-    return m_bIsFinal;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_bIsFinal.
-   */
-  public void setFinal (final boolean aValue)
-  {
-    m_bIsFinal = aValue;
-  }
   private List <Integer> m_aLoByteVec;
   private int [] m_aNonAsciiMoveIndices;
   private int m_nRound = 0;
   private int m_nOnlyChar = 0;
   private char m_cMatchSingleChar;
+  private boolean m_bClosureDone = false;
+
 
   public NfaState ()
   {
@@ -454,8 +311,151 @@ public class NfaState
 
   // From hereon down all the functions are used for code generation
 
-  private boolean m_bClosureDone = false;
 
+
+  /**
+   * @return The value of m_aAsciiMoves.
+   */
+  public long [] getAsciiMoves ()
+  {
+    return m_aAsciiMoves;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aAsciiMoves.
+   */
+  public void setAsciiMoves (final long [] aValue)
+  {
+    m_aAsciiMoves = aValue;
+  }
+
+  /**
+   * @return The value of m_aCharMoves.
+   */
+  public char [] getCharMoves ()
+  {
+    return m_aCharMoves;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aCharMoves.
+   */
+  public void setCharMoves (final char [] aValue)
+  {
+    m_aCharMoves = aValue;
+  }
+
+  /**
+   * @return The value of m_aNext.
+   */
+  public NfaState getNext ()
+  {
+    return m_aNext;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aNext.
+   */
+  public void setNext (final NfaState aValue)
+  {
+    m_aNext = aValue;
+  }
+
+  /**
+   * @return The value of m_aEpsilonMoves.
+   */
+  public List <NfaState> getEpsilonMoves ()
+  {
+    return m_aEpsilonMoves;
+  }
+
+  /**
+   * @return The value of m_nStateName.
+   */
+  public int getStateName ()
+  {
+    return m_nStateName;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_nStateName.
+   */
+  public void setStateName (final int aValue)
+  {
+    m_nStateName = aValue;
+  }
+
+  /**
+   * @return The value of m_nKind.
+   */
+  public int getKind ()
+  {
+    return m_nKind;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_nKind.
+   */
+  public void setKind (final int aValue)
+  {
+    m_nKind = aValue;
+  }
+
+  /**
+   * @return The value of m_nInNextOf.
+   */
+  public int getInNextOf ()
+  {
+    return m_nInNextOf;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_nInNextOf.
+   */
+  public void setInNextOf (final int aValue)
+  {
+    m_nInNextOf = aValue;
+  }
+
+  /**
+   * @return The value of m_bDummy.
+   */
+  public boolean isDummy ()
+  {
+    return m_bDummy;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_bDummy.
+   */
+  public void setDummy (final boolean aValue)
+  {
+    m_bDummy = aValue;
+  }
+
+  /**
+   * @return The value of m_bIsFinal.
+   */
+  public boolean isFinal ()
+  {
+    return m_bIsFinal;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_bIsFinal.
+   */
+  public void setFinal (final boolean aValue)
+  {
+    m_bIsFinal = aValue;
+  }
   /**
    * This function computes the closure and also updates the kind so that any time there is a move
    * to this state, it can go on epsilon to a new state in the epsilon moves that might have a lower

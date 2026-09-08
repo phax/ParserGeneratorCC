@@ -46,24 +46,8 @@ public class TokenizerData
 {
   // Name of the parser as specified in the PARSER_BEGIN/PARSER_END block.
   private String m_sParserName;
-
-  /**
-   * @return The value of m_sParserName.
-   */
-  public String getParserName ()
-  {
-    return m_sParserName;
-  }
   // Decls coming from TOKEN_MGR_DECLS
   private String m_sDecls;
-
-  /**
-   * @return The value of m_sDecls.
-   */
-  public String getDecls ()
-  {
-    return m_sDecls;
-  }
   // A map of <LexState, first char> to a sequence of literals indexed by:
   // ((int0LexicalState << 16 | (int)c)
   // The literals in the list are all guaranteed to start with the char and re
@@ -72,7 +56,47 @@ public class TokenizerData
   // Since they are all literals, there is no duplication (JavaCC checks that)
   // and hence if a longer match is matched, no need to check the shorter match.
   private Map <Integer, List <String>> m_aLiteralSequence;
+  // A map of list of kind values indexed by ((int0LexicalState << 16 | (int)c)
+  // same key as before.
+  private Map <Integer, List <Integer>> m_aLiteralKinds;
+  // The NFA start state for a given string literal match. We use this to start
+  // the NFA if needed after a literal match is completed.
+  private Map <Integer, Integer> m_aKindToNfaStartState;
+  /** The main NFA, by state index. */
+  private final Map <Integer, NfaState> m_aNfa = new HashMap <> ();
+  // On match info indexed by the match kind.
+  private final Map <Integer, MatchInfo> m_aAllMatches = new HashMap <> ();
+  // Initial nfa states indexed by lexical state.
+  private Map <Integer, Integer> m_aInitialStates;
+  // Kind of the wildcard match (~[]) indexed by lexical state.
+  private Map <Integer, Integer> m_aWildcardKind;
+  // Name of lexical state - for debugging.
+  private String [] m_aLexStateNames;
+  // DEFAULT lexical state index.
+  private int m_nDefaultLexState;
 
+  /**
+   * @return The value of m_sParserName.
+   */
+  public String getParserName ()
+  {
+    return m_sParserName;
+  }
+  public void setParserName (final String sParserName)
+  {
+    this.m_sParserName = sParserName;
+  }
+  /**
+   * @return The value of m_sDecls.
+   */
+  public String getDecls ()
+  {
+    return m_sDecls;
+  }
+  public void setDecls (final String sDecls)
+  {
+    this.m_sDecls = sDecls;
+  }
   /**
    * @return The value of m_aLiteralSequence.
    */
@@ -80,10 +104,10 @@ public class TokenizerData
   {
     return m_aLiteralSequence;
   }
-  // A map of list of kind values indexed by ((int0LexicalState << 16 | (int)c)
-  // same key as before.
-  private Map <Integer, List <Integer>> m_aLiteralKinds;
-
+  public void setLiteralSequence (final Map <Integer, List <String>> aLiteralSequence)
+  {
+    this.m_aLiteralSequence = aLiteralSequence;
+  }
   /**
    * @return The value of m_aLiteralKinds.
    */
@@ -91,10 +115,10 @@ public class TokenizerData
   {
     return m_aLiteralKinds;
   }
-  // The NFA start state for a given string literal match. We use this to start
-  // the NFA if needed after a literal match is completed.
-  private Map <Integer, Integer> m_aKindToNfaStartState;
-
+  public void setLiteralKinds (final Map <Integer, List <Integer>> aLiteralKinds)
+  {
+    this.m_aLiteralKinds = aLiteralKinds;
+  }
   /**
    * @return The value of m_aKindToNfaStartState.
    */
@@ -102,33 +126,10 @@ public class TokenizerData
   {
     return m_aKindToNfaStartState;
   }
-  // Class representing NFA state.
-  /**
-   * One state of the NFA the interpreter walks.
-   *
-   * @param index
-   *        Index of the state.
-   * @param characters
-   *        The characters this state can move on. May not be <code>null</code>.
-   * @param nextStates
-   *        The states reachable from here. May not be <code>null</code>.
-   * @param compositeStates
-   *        The states this one stands for, if it is a composite one. The initial state has to
-   *        transition to several states at once so that the NFA tries every possibility. May not
-   *        be <code>null</code>.
-   * @param kind
-   *        The token kind matched here, or {@link Integer#MAX_VALUE} if this is not a final state.
-   */
-  public record NfaState (int index,
-                          Set <Character> characters,
-                          Set <Integer> nextStates,
-                          Set <Integer> compositeStates,
-                          int kind)
-  {}
-
-  /** The main NFA, by state index. */
-  private final Map <Integer, NfaState> m_aNfa = new HashMap <> ();
-
+  public void setKindToNfaStartState (final Map <Integer, Integer> aKindToNfaStartState)
+  {
+    this.m_aKindToNfaStartState = aKindToNfaStartState;
+  }
   /**
    * @return The value of m_aNfa.
    */
@@ -136,108 +137,6 @@ public class TokenizerData
   {
     return m_aNfa;
   }
-  /** What a matched kind does with the input. */
-  public static enum EMatchType
-  {
-    SKIP,
-    SPECIAL_TOKEN,
-    MORE,
-    TOKEN,
-  }
-
-  /**
-   * What matching a kind means: which token it is and what it does to the lexical state.
-   *
-   * @param image
-   *        The string literal image if this is a string literal token, <code>null</code>
-   *        otherwise.
-   * @param kind
-   *        The token kind.
-   * @param matchType
-   *        Whether this produces a token, a skip, a special token or more input.
-   * @param newLexState
-   *        The lexical state to switch to, or -1 to stay.
-   * @param action
-   *        The action to run, or <code>null</code> if there is none.
-   */
-  public record MatchInfo (String image, int kind, EMatchType matchType, int newLexState, String action)
-  {}
-
-  // On match info indexed by the match kind.
-  private final Map <Integer, MatchInfo> m_aAllMatches = new HashMap <> ();
-
-  /**
-   * @return The value of m_aAllMatches.
-   */
-  public Map <Integer, MatchInfo> getAllMatches ()
-  {
-    return m_aAllMatches;
-  }
-  // Initial nfa states indexed by lexical state.
-  private Map <Integer, Integer> m_aInitialStates;
-
-  /**
-   * @return The value of m_aInitialStates.
-   */
-  public Map <Integer, Integer> getInitialStates ()
-  {
-    return m_aInitialStates;
-  }
-  // Kind of the wildcard match (~[]) indexed by lexical state.
-  private Map <Integer, Integer> m_aWildcardKind;
-
-  /**
-   * @return The value of m_aWildcardKind.
-   */
-  public Map <Integer, Integer> getWildcardKind ()
-  {
-    return m_aWildcardKind;
-  }
-  // Name of lexical state - for debugging.
-  private String [] m_aLexStateNames;
-
-  /**
-   * @return The value of m_aLexStateNames.
-   */
-  public String [] getLexStateNames ()
-  {
-    return m_aLexStateNames;
-  }
-  // DEFAULT lexical state index.
-  private int m_nDefaultLexState;
-
-  /**
-   * @return The value of m_nDefaultLexState.
-   */
-  public int getDefaultLexState ()
-  {
-    return m_nDefaultLexState;
-  }
-  public void setParserName (final String sParserName)
-  {
-    this.m_sParserName = sParserName;
-  }
-
-  public void setDecls (final String sDecls)
-  {
-    this.m_sDecls = sDecls;
-  }
-
-  public void setLiteralSequence (final Map <Integer, List <String>> aLiteralSequence)
-  {
-    this.m_aLiteralSequence = aLiteralSequence;
-  }
-
-  public void setLiteralKinds (final Map <Integer, List <Integer>> aLiteralKinds)
-  {
-    this.m_aLiteralKinds = aLiteralKinds;
-  }
-
-  public void setKindToNfaStartState (final Map <Integer, Integer> aKindToNfaStartState)
-  {
-    this.m_aKindToNfaStartState = aKindToNfaStartState;
-  }
-
   public void addNfaState (final int nIndex,
                            final Set <Character> characters,
                            final Set <Integer> nextStates,
@@ -247,27 +146,13 @@ public class TokenizerData
     final NfaState aNfaState = new NfaState (nIndex, characters, nextStates, aCompositeStates, nKind);
     m_aNfa.put (Integer.valueOf (nIndex), aNfaState);
   }
-
-  public void setInitialStates (final Map <Integer, Integer> aInitialStates)
+  /**
+   * @return The value of m_aAllMatches.
+   */
+  public Map <Integer, MatchInfo> getAllMatches ()
   {
-    this.m_aInitialStates = aInitialStates;
+    return m_aAllMatches;
   }
-
-  public void setWildcardKind (final Map <Integer, Integer> aWildcardKind)
-  {
-    this.m_aWildcardKind = aWildcardKind;
-  }
-
-  public void setLexStateNames (final String [] aLexStateNames)
-  {
-    this.m_aLexStateNames = aLexStateNames;
-  }
-
-  public void setDefaultLexState (final int nDefaultLexState)
-  {
-    this.m_nDefaultLexState = nDefaultLexState;
-  }
-
   public void updateMatchInfo (final Map <Integer, String> aActions,
                                final int [] aNewLexStateIndices,
                                final long [] aToSkip,
@@ -309,4 +194,96 @@ public class TokenizerData
       m_aAllMatches.put (Integer.valueOf (i), aMatchInfo);
     }
   }
+  /**
+   * @return The value of m_aInitialStates.
+   */
+  public Map <Integer, Integer> getInitialStates ()
+  {
+    return m_aInitialStates;
+  }
+  public void setInitialStates (final Map <Integer, Integer> aInitialStates)
+  {
+    this.m_aInitialStates = aInitialStates;
+  }
+  /**
+   * @return The value of m_aWildcardKind.
+   */
+  public Map <Integer, Integer> getWildcardKind ()
+  {
+    return m_aWildcardKind;
+  }
+  public void setWildcardKind (final Map <Integer, Integer> aWildcardKind)
+  {
+    this.m_aWildcardKind = aWildcardKind;
+  }
+  /**
+   * @return The value of m_aLexStateNames.
+   */
+  public String [] getLexStateNames ()
+  {
+    return m_aLexStateNames;
+  }
+  public void setLexStateNames (final String [] aLexStateNames)
+  {
+    this.m_aLexStateNames = aLexStateNames;
+  }
+  /**
+   * @return The value of m_nDefaultLexState.
+   */
+  public int getDefaultLexState ()
+  {
+    return m_nDefaultLexState;
+  }
+  public void setDefaultLexState (final int nDefaultLexState)
+  {
+    this.m_nDefaultLexState = nDefaultLexState;
+  }
+  // Class representing NFA state.
+  /**
+   * One state of the NFA the interpreter walks.
+   *
+   * @param index
+   *        Index of the state.
+   * @param characters
+   *        The characters this state can move on. May not be <code>null</code>.
+   * @param nextStates
+   *        The states reachable from here. May not be <code>null</code>.
+   * @param compositeStates
+   *        The states this one stands for, if it is a composite one. The initial state has to
+   *        transition to several states at once so that the NFA tries every possibility. May not
+   *        be <code>null</code>.
+   * @param kind
+   *        The token kind matched here, or {@link Integer#MAX_VALUE} if this is not a final state.
+   */
+  public record NfaState (int index,
+                          Set <Character> characters,
+                          Set <Integer> nextStates,
+                          Set <Integer> compositeStates,
+                          int kind)
+  {}
+  /** What a matched kind does with the input. */
+  public static enum EMatchType
+  {
+    SKIP,
+    SPECIAL_TOKEN,
+    MORE,
+    TOKEN,
+  }
+  /**
+   * What matching a kind means: which token it is and what it does to the lexical state.
+   *
+   * @param image
+   *        The string literal image if this is a string literal token, <code>null</code>
+   *        otherwise.
+   * @param kind
+   *        The token kind.
+   * @param matchType
+   *        Whether this produces a token, a skip, a special token or more input.
+   * @param newLexState
+   *        The lexical state to switch to, or -1 to stay.
+   * @param action
+   *        The action to run, or <code>null</code> if there is none.
+   */
+  public record MatchInfo (String image, int kind, EMatchType matchType, int newLexState, String action)
+  {}
 }

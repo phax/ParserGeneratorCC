@@ -64,6 +64,11 @@ import com.helger.pgcc.parser.TokenizerData;
 public final class ExpRStringLiteral extends AbstractExpRegularExpression
 {
   /**
+   * The string image of the literal.
+   */
+  private String m_sImage;
+
+  /**
    * @return The build state of the lexical state that is currently being generated. Never
    *         <code>null</code>.
    */
@@ -71,7 +76,6 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   {
     return LexGenJava.lexer ().stringLiterals ();
   }
-
   /**
    * Which kinds can still match at one character position of the string literal trie. Public
    * because {@link com.helger.pgcc.context.StringLiteralBuildState} holds a list of them.
@@ -105,12 +109,6 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       m_aFinalKindSet.add (Integer.valueOf (nKind));
     }
   }
-
-  /**
-   * The string image of the literal.
-   */
-  private String m_sImage;
-
   /**
    * @return The value of m_sImage.
    */
@@ -118,7 +116,6 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   {
     return m_sImage;
   }
-
   /**
    * @param aValue
    *        The new value of m_sImage.
@@ -133,7 +130,6 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     setColumnNumber (t.beginColumn);
     m_sImage = sImage;
   }
-
   // with single char keys;
 
   /**
@@ -144,7 +140,6 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   {
     strLit ().resetForLexicalState ();
   }
-
   public static void dumpStrLiteralImages (final CodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
@@ -240,7 +235,6 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
   }
-
   public static void dumpStrLiteralImagesForJava (final CodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
@@ -339,7 +333,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     }
 
     aCodeGenerator.genCodeLine ("};");
-  }
+  
+}
 
   /**
    * Used for top level string literals.

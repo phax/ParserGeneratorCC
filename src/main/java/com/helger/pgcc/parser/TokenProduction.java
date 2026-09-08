@@ -45,9 +45,7 @@ public class TokenProduction implements IGrammarLocation
    * The starting line and column of this token production.
    */
   private int m_nColumn;
-
   private int m_nLine;
-
   /**
    * The states in which this regular expression production exists. If this array is null, then
    * "&lt;*&gt;" has been specified and this regular expression exists in all states. However, this
@@ -55,7 +53,61 @@ public class TokenProduction implements IGrammarLocation
    * semanticization phase.
    */
   private String [] m_aLexStates;
+  /**
+   * The kind of this token production - TOKEN, SKIP, MORE, or SPECIAL.
+   */
+  private ETokenKind m_eKind;
+  /**
+   * The list of regular expression specifications that comprise this production. Each entry is a
+   * "RegExprSpec".
+   */
+  private List <RegExprSpec> m_aRespecs = new ArrayList <> ();
+  /**
+   * This is true if this corresponds to a production that actually appears in the input grammar.
+   * Otherwise (if this is created to describe a regular expression that is part of the BNF) this is
+   * set to false.
+   */
+  private boolean m_bIsExplicit = true;
+  /**
+   * This is true if case is to be ignored within the regular expressions of this token production.
+   */
+  private boolean m_bIgnoreCase = false;
+  /**
+   * The first and last tokens from the input stream that represent this production.
+   */
+  private Token m_aFirstToken;
+  private Token m_aLastToken;
 
+  /**
+   * @return the column
+   */
+  public final int getColumnNumber ()
+  {
+    return m_nColumn;
+  }
+  /**
+   * @param nColumn
+   *        the column to set
+   */
+  public final void setColumnNumber (final int nColumn)
+  {
+    m_nColumn = nColumn;
+  }
+  /**
+   * @return the line
+   */
+  public final int getLineNumber ()
+  {
+    return m_nLine;
+  }
+  /**
+   * @param nLine
+   *        the line to set
+   */
+  public final void setLineNumber (final int nLine)
+  {
+    m_nLine = nLine;
+  }
   /**
    * @return The value of m_aLexStates.
    */
@@ -63,7 +115,6 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_aLexStates;
   }
-
   /**
    * @param aValue
    *        The new value of m_aLexStates.
@@ -73,18 +124,12 @@ public class TokenProduction implements IGrammarLocation
     m_aLexStates = aValue;
   }
   /**
-   * The kind of this token production - TOKEN, SKIP, MORE, or SPECIAL.
-   */
-  private ETokenKind m_eKind;
-
-  /**
    * @return The value of m_eKind.
    */
   public ETokenKind getKind ()
   {
     return m_eKind;
   }
-
   /**
    * @param aValue
    *        The new value of m_eKind.
@@ -94,19 +139,12 @@ public class TokenProduction implements IGrammarLocation
     m_eKind = aValue;
   }
   /**
-   * The list of regular expression specifications that comprise this production. Each entry is a
-   * "RegExprSpec".
-   */
-  private List <RegExprSpec> m_aRespecs = new ArrayList <> ();
-
-  /**
    * @return The value of m_aRespecs.
    */
   public List <RegExprSpec> getRespecs ()
   {
     return m_aRespecs;
   }
-
   /**
    * @param aValue
    *        The new value of m_aRespecs.
@@ -116,20 +154,12 @@ public class TokenProduction implements IGrammarLocation
     m_aRespecs = aValue;
   }
   /**
-   * This is true if this corresponds to a production that actually appears in the input grammar.
-   * Otherwise (if this is created to describe a regular expression that is part of the BNF) this is
-   * set to false.
-   */
-  private boolean m_bIsExplicit = true;
-
-  /**
    * @return The value of m_bIsExplicit.
    */
   public boolean isExplicit ()
   {
     return m_bIsExplicit;
   }
-
   /**
    * @param aValue
    *        The new value of m_bIsExplicit.
@@ -139,18 +169,12 @@ public class TokenProduction implements IGrammarLocation
     m_bIsExplicit = aValue;
   }
   /**
-   * This is true if case is to be ignored within the regular expressions of this token production.
-   */
-  private boolean m_bIgnoreCase = false;
-
-  /**
    * @return The value of m_bIgnoreCase.
    */
   public boolean isIgnoreCase ()
   {
     return m_bIgnoreCase;
   }
-
   /**
    * @param aValue
    *        The new value of m_bIgnoreCase.
@@ -160,18 +184,12 @@ public class TokenProduction implements IGrammarLocation
     m_bIgnoreCase = aValue;
   }
   /**
-   * The first and last tokens from the input stream that represent this production.
-   */
-  private Token m_aFirstToken;
-
-  /**
    * @return The value of m_aFirstToken.
    */
   public Token getFirstToken ()
   {
     return m_aFirstToken;
   }
-
   /**
    * @param aValue
    *        The new value of m_aFirstToken.
@@ -180,8 +198,6 @@ public class TokenProduction implements IGrammarLocation
   {
     m_aFirstToken = aValue;
   }
-  private Token m_aLastToken;
-
   /**
    * @return The value of m_aLastToken.
    */
@@ -189,7 +205,6 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_aLastToken;
   }
-
   /**
    * @param aValue
    *        The new value of m_aLastToken.
@@ -197,38 +212,5 @@ public class TokenProduction implements IGrammarLocation
   public void setLastToken (final Token aValue)
   {
     m_aLastToken = aValue;
-  }
-  /**
-   * @return the column
-   */
-  public final int getColumnNumber ()
-  {
-    return m_nColumn;
-  }
-
-  /**
-   * @param nColumn
-   *        the column to set
-   */
-  public final void setColumnNumber (final int nColumn)
-  {
-    m_nColumn = nColumn;
-  }
-
-  /**
-   * @return the line
-   */
-  public final int getLineNumber ()
-  {
-    return m_nLine;
-  }
-
-  /**
-   * @param nLine
-   *        the line to set
-   */
-  public final void setLineNumber (final int nLine)
-  {
-    m_nLine = nLine;
   }
 }

@@ -42,11 +42,25 @@ import com.helger.pgcc.parser.exp.ExpAction;
 
 public class RegExprSpec
 {
-
   /**
    * The regular expression of this specification.
    */
   private AbstractExpRegularExpression m_aRexp;
+  /**
+   * The action corresponding to this specification.
+   */
+  private ExpAction m_aAct;
+  /**
+   * The next state corresponding to this specification. If no next state has been specified, this
+   * field is set to "null".
+   */
+  private String m_sNextState;
+  /**
+   * If the next state specification was explicit in the previous case, then this token is that of
+   * the identifier denoting the next state. This is used for location information, etc. in error
+   * reporting.
+   */
+  private Token m_aNsTok;
 
   /**
    * @return The value of m_aRexp.
@@ -55,7 +69,6 @@ public class RegExprSpec
   {
     return m_aRexp;
   }
-
   /**
    * @param aValue
    *        The new value of m_aRexp.
@@ -65,18 +78,12 @@ public class RegExprSpec
     m_aRexp = aValue;
   }
   /**
-   * The action corresponding to this specification.
-   */
-  private ExpAction m_aAct;
-
-  /**
    * @return The value of m_aAct.
    */
   public ExpAction getAct ()
   {
     return m_aAct;
   }
-
   /**
    * @param aValue
    *        The new value of m_aAct.
@@ -86,19 +93,12 @@ public class RegExprSpec
     m_aAct = aValue;
   }
   /**
-   * The next state corresponding to this specification. If no next state has been specified, this
-   * field is set to "null".
-   */
-  private String m_sNextState;
-
-  /**
    * @return The value of m_sNextState.
    */
   public String getNextState ()
   {
     return m_sNextState;
   }
-
   /**
    * @param aValue
    *        The new value of m_sNextState.
@@ -108,20 +108,12 @@ public class RegExprSpec
     m_sNextState = aValue;
   }
   /**
-   * If the next state specification was explicit in the previous case, then this token is that of
-   * the identifier denoting the next state. This is used for location information, etc. in error
-   * reporting.
-   */
-  private Token m_aNsTok;
-
-  /**
    * @return The value of m_aNsTok.
    */
   public Token getNsTok ()
   {
     return m_aNsTok;
   }
-
   /**
    * @param aValue
    *        The new value of m_aNsTok.

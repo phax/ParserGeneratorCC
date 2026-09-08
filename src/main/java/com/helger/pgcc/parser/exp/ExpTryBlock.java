@@ -44,11 +44,29 @@ import com.helger.pgcc.parser.Token;
 
 public final class ExpTryBlock extends Expansion
 {
-
   /**
    * The expansion contained within the try block.
    */
   private Expansion m_aExp;
+  /**
+   * The types of each catch block. Each list entry is itself a list which in turn contains tokens
+   * as entries.
+   */
+  private List <List <Token>> m_aTypes;
+  /**
+   * The exception identifiers of each catch block. Each list entry is a token.
+   */
+  private List <Token> m_aIds;
+  /**
+   * The block part of each catch block. Each list entry is itself a list which in turn contains
+   * tokens as entries.
+   */
+  private List <List <Token>> m_aCatchblks;
+  /**
+   * The block part of the finally block. Each list entry is a token. If there is no finally block,
+   * this is null.
+   */
+  private List <Token> m_aFinallyblk;
 
   /**
    * @return The value of m_aExp.
@@ -57,7 +75,6 @@ public final class ExpTryBlock extends Expansion
   {
     return m_aExp;
   }
-
   /**
    * @param aValue
    *        The new value of m_aExp.
@@ -65,93 +82,6 @@ public final class ExpTryBlock extends Expansion
   public void setExp (final Expansion aValue)
   {
     m_aExp = aValue;
-  }
-  /**
-   * The types of each catch block. Each list entry is itself a list which in turn contains tokens
-   * as entries.
-   */
-  private List <List <Token>> m_aTypes;
-
-  /**
-   * @return The value of m_aTypes.
-   */
-  public List <List <Token>> getTypes ()
-  {
-    return m_aTypes;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_aTypes.
-   */
-  public void setTypes (final List <List <Token>> aValue)
-  {
-    m_aTypes = aValue;
-  }
-  /**
-   * The exception identifiers of each catch block. Each list entry is a token.
-   */
-  private List <Token> m_aIds;
-
-  /**
-   * @return The value of m_aIds.
-   */
-  public List <Token> getIds ()
-  {
-    return m_aIds;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_aIds.
-   */
-  public void setIds (final List <Token> aValue)
-  {
-    m_aIds = aValue;
-  }
-  /**
-   * The block part of each catch block. Each list entry is itself a list which in turn contains
-   * tokens as entries.
-   */
-  private List <List <Token>> m_aCatchblks;
-
-  /**
-   * @return The value of m_aCatchblks.
-   */
-  public List <List <Token>> getCatchblks ()
-  {
-    return m_aCatchblks;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_aCatchblks.
-   */
-  public void setCatchblks (final List <List <Token>> aValue)
-  {
-    m_aCatchblks = aValue;
-  }
-  /**
-   * The block part of the finally block. Each list entry is a token. If there is no finally block,
-   * this is null.
-   */
-  private List <Token> m_aFinallyblk;
-
-  /**
-   * @return The value of m_aFinallyblk.
-   */
-  public List <Token> getFinallyblk ()
-  {
-    return m_aFinallyblk;
-  }
-
-  /**
-   * @param aValue
-   *        The new value of m_aFinallyblk.
-   */
-  public void setFinallyblk (final List <Token> aValue)
-  {
-    m_aFinallyblk = aValue;
   }
   @Override
   public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
@@ -162,5 +92,65 @@ public final class ExpTryBlock extends Expansion
       aSB.append (EOL).append (m_aExp.dump (nIndent + 1, aAlreadyDumped));
     }
     return aSB;
+  }
+  /**
+   * @return The value of m_aTypes.
+   */
+  public List <List <Token>> getTypes ()
+  {
+    return m_aTypes;
+  }
+  /**
+   * @param aValue
+   *        The new value of m_aTypes.
+   */
+  public void setTypes (final List <List <Token>> aValue)
+  {
+    m_aTypes = aValue;
+  }
+  /**
+   * @return The value of m_aIds.
+   */
+  public List <Token> getIds ()
+  {
+    return m_aIds;
+  }
+  /**
+   * @param aValue
+   *        The new value of m_aIds.
+   */
+  public void setIds (final List <Token> aValue)
+  {
+    m_aIds = aValue;
+  }
+  /**
+   * @return The value of m_aCatchblks.
+   */
+  public List <List <Token>> getCatchblks ()
+  {
+    return m_aCatchblks;
+  }
+  /**
+   * @param aValue
+   *        The new value of m_aCatchblks.
+   */
+  public void setCatchblks (final List <List <Token>> aValue)
+  {
+    m_aCatchblks = aValue;
+  }
+  /**
+   * @return The value of m_aFinallyblk.
+   */
+  public List <Token> getFinallyblk ()
+  {
+    return m_aFinallyblk;
+  }
+  /**
+   * @param aValue
+   *        The new value of m_aFinallyblk.
+   */
+  public void setFinallyblk (final List <Token> aValue)
+  {
+    m_aFinallyblk = aValue;
   }
 }
