@@ -139,17 +139,17 @@ public class NfaState
 
   private static void _insertInOrder (@NonNull final List <NfaState> v, @NonNull final NfaState s)
   {
-    int j = 0;
-    for (; j < v.size (); j++)
+    int nPos = 0;
+    for (; nPos < v.size (); nPos++)
     {
-      final NfaState aTmp = v.get (j);
+      final NfaState aTmp = v.get (nPos);
       if (aTmp.m_nId > s.m_nId)
         break;
       if (aTmp.m_nId == s.m_nId)
         return;
     }
 
-    v.add (j, s);
+    v.add (nPos, s);
   }
 
   private static char [] _expandCharArr (@NonNull final char [] aOldArr, final int nIncr)
@@ -1226,7 +1226,6 @@ public class NfaState
   {
     return aVec1 != null && aVec2 != null && aVec1.equals (aVec2);
   }
-
 
   static boolean allBitsSet (@NonNull final String sBitVec)
   {
@@ -3098,14 +3097,13 @@ public class NfaState
       {
         aKindsForStates = new int [aNfa.getGeneratedStates ()];
         aNfa.getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()] = new int [Math.max (aNfa
-                                                                                                        .getGeneratedStates (),
-                                                                                                  aNfa.getDummyStateIndex () +
-                                                                                                                                1)] [];
+                                                                                                    .getGeneratedStates (),
+                                                                                                aNfa.getDummyStateIndex () +
+                                                                                                                            1)] [];
       }
 
       aKindsForStates[aTemp.m_nStateName] = aTemp.m_nLookingFor;
-      aNfa.getStatesForState ()[LexGenJava.lexer ()
-                                            .getLexStateIndex ()][aTemp.m_nStateName] = aTemp.m_aCompositeStates;
+      aNfa.getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()][aTemp.m_nStateName] = aTemp.m_aCompositeStates;
 
       aTemp._generateNonAsciiMoves (aCodeGenerator);
     }

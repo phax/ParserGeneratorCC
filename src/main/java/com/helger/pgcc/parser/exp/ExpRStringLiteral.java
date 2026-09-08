@@ -48,6 +48,7 @@ import com.helger.base.string.StringHelper;
 import com.helger.pgcc.context.StringLiteralBuildState;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
+import com.helger.pgcc.context.LexerState;
 import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.parser.CodeGenerator;
 import com.helger.pgcc.parser.JavaCCErrors;
@@ -1524,12 +1525,20 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
   static final int getStrKind (final String sStr)
   {
-    for (int i = 0; i < strLit ().getMaxStrKind (); i++)
+    // Both of these walk a ThreadLocal, so resolve them once instead of four times per literal
+    final StringLiteralBuildState aStrLit = strLit ();
+    final LexerState aLexer = LexGenJava.lexer ();
+    final int nMaxStrKind = aStrLit.getMaxStrKind ();
+    final int [] aLexStates = aLexer.getLexStates ();
+    final int nLexStateIndex = aLexer.getLexStateIndex ();
+    final String [] aAllImages = aStrLit.getAllImages ();
+
+    for (int i = 0; i < nMaxStrKind; i++)
     {
-      if (LexGenJava.lexer ().getLexStates ()[i] != LexGenJava.lexer ().getLexStateIndex ())
+      if (aLexStates[i] != nLexStateIndex)
         continue;
 
-      final String sImage = strLit ().getAllImages ()[i];
+      final String sImage = aAllImages[i];
       if (sImage != null && sImage.equals (sStr))
         return i;
     }
