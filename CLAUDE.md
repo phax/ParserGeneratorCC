@@ -55,6 +55,22 @@ is never modified. The `selfhost` profile pins `ph-javacc-maven-plugin.version` 
 current SNAPSHOT. The default profile must always stay on a released plugin - a release build has to
 work with what is on Maven Central.
 
+## Golden files - the specification for the generated output
+
+`GeneratedOutputGoldenTest` generates from 38 cases (the template/option matrix plus every grammar
+in `grammars/`) and compares a SHA-256 of every emitted file against a manifest checked in below
+`src/test/resources/golden/`. 386 generated files are under byte level watch, so **any** change to
+the code generation fails the build until it is looked at.
+
+After a deliberate codegen change:
+
+```
+mvn test -Dtest=GeneratedOutputGoldenTest -Dpgcc.golden.update=true
+git diff src/test/resources/golden      # review WHICH files changed before committing
+```
+
+Re-blessing without reading the diff defeats the entire point of the harness.
+
 ## Templates
 
 `src/main/resources/templates/` holds the emitted output. Parallel variants exist and drift apart
