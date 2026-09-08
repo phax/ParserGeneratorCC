@@ -242,10 +242,8 @@
           <excludes>
             <exclude>**/*.txt</exclude>
             <exclude>**/*.template</exclude>
-            <exclude>docs/*</exclude>
             <exclude>examples/*</exclude>
             <exclude>grammars/*</exclude>
-            <exclude>www/doc/JavaCC.html</exclude>
           </excludes>
         </configuration>
       </plugin>

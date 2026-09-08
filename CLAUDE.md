@@ -91,7 +91,8 @@ Test naming: `*FuncTest` for slow generate-compile-run functional tests, `*Test`
   `../ParserGeneratorCC.wiki` checkout. The current entry is `v2.0.2 - work in progress`; append a
   bullet to it in the existing style.
 
-## Ignore these directories
+## Grammar corpus
 
-`test/` (dead Ant `build.xml` from upstream), `examples/`, and `grammars/` are legacy. Do not read
-or modify them unless explicitly asked.
+`grammars/` and `examples/` are **live test fixtures**, not legacy - `GrammarsParsingFuncTest`
+generates from every `.jj` / `.jjt` below them and parses the result. Adding a grammar there widens
+the corpus; removing one narrows it.
