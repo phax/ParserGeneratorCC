@@ -66,6 +66,9 @@ import com.helger.io.resource.IReadableResource;
  */
 public class OutputFileGenerator
 {
+  /**
+   * The encoding every template file is read in.
+   */
   public static final Charset TEMPLATE_FILE_CHARSET = StandardCharsets.UTF_8;
 
   private final String m_sTemplateName;
@@ -77,6 +80,8 @@ public class OutputFileGenerator
   private String m_sCurrentLine;
 
   /**
+   * Create a generator for one template.
+   *
    * @param sTemplateName
    *        the name of the template. E.g. "/templates/java/Token.template".
    * @param aOptions
@@ -88,6 +93,13 @@ public class OutputFileGenerator
     m_aOptions = aOptions;
   }
 
+  /**
+   * Choose the line separator the generated file carries.
+   *
+   * @param eNewLineMode
+   *        The mode. May not be <code>null</code>.
+   * @return this for chaining. Never <code>null</code>.
+   */
   @NonNull
   public OutputFileGenerator setNewLineMode (@NonNull final ENewLineMode eNewLineMode)
   {
@@ -96,6 +108,15 @@ public class OutputFileGenerator
     return this;
   }
 
+  /**
+   * Choose where the template comes from. Reading from the classpath is what a released jar
+   * needs; a test that has to see the template in the checkout reads from the file system
+   * instead.
+   *
+   * @param bReadFromClasspath
+   *        <code>true</code> to read from the classpath.
+   * @return this for chaining. Never <code>null</code>.
+   */
   @NonNull
   public OutputFileGenerator setReadFromClasspath (final boolean bReadFromClasspath)
   {
@@ -345,6 +366,14 @@ public class OutputFileGenerator
       throw new IOException ("Expected \"#fi\", got: " + sLine);
   }
 
+  /**
+   * Expand one template from the command line, with a fixed set of substitutions, for looking at
+   * what a template produces without running the generator.
+   *
+   * @param aArgs
+   *        The template file and the output file. May not be <code>null</code>. @throws Exception
+   *         if the template cannot be read or the output cannot be written
+   */
   public static void main (@NonNull final String [] aArgs) throws Exception
   {
     final Map <String, Object> aMap = new HashMap <> ();
@@ -358,6 +387,19 @@ public class OutputFileGenerator
     }
   }
 
+  /**
+   * Expand one template straight into a file.
+   *
+   * @param sTemplateFile
+   *        The template resource path. May not be <code>null</code>.
+   * @param aOptions
+   *        The values the template substitutes. May not be <code>null</code>.
+   * @param sOutputFileName
+   *        The file to write. May not be <code>null</code>.
+   * @param aOutputCharset
+   *        The encoding to write it in. May not be <code>null</code>. @throws IOException if the
+   *         template cannot be read or the file cannot be written
+   */
   public static void generateFromTemplate (final String sTemplateFile,
                                            final Map <String, Object> aOptions,
                                            final String sOutputFileName,

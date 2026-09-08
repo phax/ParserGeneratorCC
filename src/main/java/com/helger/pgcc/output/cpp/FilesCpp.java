@@ -83,6 +83,9 @@ public class FilesCpp
     }
   }
 
+  /**
+   * Write CharStream.h and CharStream.cc, what the generated token manager reads through.
+   */
   public static void genCharStream ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
@@ -90,6 +93,9 @@ public class FilesCpp
     genFile ("cpp/stream", "CharStream.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
+  /**
+   * Write ParseException.h and ParseException.cc, the exception the generated parser throws.
+   */
   public static void genParseException ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
@@ -97,6 +103,9 @@ public class FilesCpp
     genFile ("cpp", "ParseException.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
+  /**
+   * Write the exception the generated token manager throws when it cannot match.
+   */
   public static void genTokenMgrError ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
@@ -104,6 +113,9 @@ public class FilesCpp
     genFile ("cpp", "TokenMgrError.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
+  /**
+   * Write Token.h and Token.cc, the token the generated parser works with.
+   */
   public static void genToken ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC,
@@ -113,18 +125,27 @@ public class FilesCpp
     genFile ("cpp", "Token.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
+  /**
+   * Write TokenManager.h, the interface the generated parser pulls tokens through.
+   */
   public static void genTokenManager ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     genFile ("cpp", "TokenManager.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
+  /**
+   * Write JavaCC.h, the typedefs and macros the rest of the generated C++ is written against.
+   */
   public static void genJavaCCDefs ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     genFile ("cpp", "JavaCC.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
+  /**
+   * Write ErrorHandler.h, which the generated parser calls instead of throwing.
+   */
   public static void genErrorHandler ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC,

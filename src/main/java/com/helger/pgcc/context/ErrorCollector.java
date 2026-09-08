@@ -54,31 +54,49 @@ public final class ErrorCollector
   private int m_nSemanticErrors;
   private int m_nWarnings;
 
+  /**
+   * Count one parse error.
+   */
   public void onParseError ()
   {
     m_nParseErrors++;
   }
 
+  /**
+   * Count one semantic error.
+   */
   public void onSemanticError ()
   {
     m_nSemanticErrors++;
   }
 
+  /**
+   * Count one warning.
+   */
   public void onWarning ()
   {
     m_nWarnings++;
   }
 
+  /**
+   * {@return how many parse errors this run has reported}
+   */
   public int getParseErrorCount ()
   {
     return m_nParseErrors;
   }
 
+  /**
+   * {@return how many semantic errors this run has reported}
+   */
   public int getSemanticErrorCount ()
   {
     return m_nSemanticErrors;
   }
 
+  /**
+   * {@return how many warnings this run has reported}
+   */
   public int getWarningCount ()
   {
     return m_nWarnings;
@@ -93,6 +111,9 @@ public final class ErrorCollector
     return m_nParseErrors + m_nSemanticErrors;
   }
 
+  /**
+   * Forget everything counted so far, for a caller that runs the generator more than once.
+   */
   public void reset ()
   {
     m_nParseErrors = 0;

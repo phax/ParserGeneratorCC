@@ -53,6 +53,10 @@ import com.helger.pgcc.output.OutputFile;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.utils.OutputFileGenerator;
 
+  /**
+   * The Java half of the JJTree output: Node, SimpleNode, one class per node type, the tree
+   * constants and the visitor interfaces.
+   */
 @Immutable
 public final class NodeFilesJava
 {
@@ -64,6 +68,14 @@ public final class NodeFilesJava
    */
   private static final String NODE_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
+  /**
+   * Make sure the class for one node type exists, generating it if the user has not written one.
+   *
+   * @param aIo
+   *        Where the generated files go. May not be <code>null</code>.
+   * @param sNodeType
+   *        The node class name. May not be <code>null</code>.
+   */
   public static void ensure (final JJTreeIO aIo, @NonNull final String sNodeType)
   {
     final File aFile = new File (JJTreeOptions.getJJTreeOutputDirectory (), sNodeType + ".java");
@@ -157,11 +169,17 @@ public final class NodeFilesJava
     }
   }
 
+  /**
+   * {@return the name of the generated interface that holds the node kind constants}
+   */
   public static String nodeConstants ()
   {
     return PGCCContext.current ().jjtree ().getParserName () + "TreeConstants";
   }
 
+  /**
+   * Write the interface that names every node type and holds the array of their names.
+   */
   public static void generateTreeConstantsJava ()
   {
     final String sName = nodeConstants ();
@@ -205,6 +223,9 @@ public final class NodeFilesJava
     return PGCCContext.current ().jjtree ().getParserName () + "Visitor";
   }
 
+  /**
+   * Write the visitor interface, unless the grammar turned it off.
+   */
   public static void generateVisitorJava ()
   {
     if (!JJTreeOptions.isVisitor ())
@@ -284,6 +305,10 @@ public final class NodeFilesJava
     return aSB.toString ();
   }
 
+  /**
+   * Write the default visitor, which walks the whole tree and does nothing, unless the grammar
+   * turned it off.
+   */
   public static void generateDefaultVisitorJava ()
   {
     if (!JJTreeOptions.isVisitor ())

@@ -53,15 +53,30 @@ public final class ExpChoice extends Expansion
    */
   private final List <Expansion> m_aChoices = new ArrayList <> ();
 
+  /**
+   * Create an empty choice.
+   */
   public ExpChoice ()
   {}
 
+  /**
+   * Create an empty choice at the position of a token.
+   *
+   * @param aToken
+   *        The token the choice starts at, for error messages. May not be <code>null</code>.
+   */
   public ExpChoice (@NonNull final Token aToken)
   {
     setLineNumber (aToken.beginLine);
     setColumnNumber (aToken.beginColumn);
   }
 
+  /**
+   * Create a choice with one alternative, at the same position as that alternative.
+   *
+   * @param aExpansion
+   *        The only alternative. May not be <code>null</code>.
+   */
   public ExpChoice (@NonNull final Expansion aExpansion)
   {
     setLineNumber (aExpansion.getLineNumber ());
@@ -78,18 +93,34 @@ public final class ExpChoice extends Expansion
     return m_aChoices;
   }
 
+  /**
+   * {@return how many alternatives this choice has}
+   */
   @Nonnegative
   public final int getChoiceCount ()
   {
     return m_aChoices.size ();
   }
 
+  /**
+   * One alternative of this choice.
+   *
+   * @param nIndex
+   *        The position, from 0.
+   * @return The alternative. Never <code>null</code>.
+   */
   @NonNull
   public final Expansion getChoiceAt (final int nIndex)
   {
     return m_aChoices.get (nIndex);
   }
 
+  /**
+   * Append an alternative to this choice.
+   *
+   * @param a
+   *        The alternative. May not be <code>null</code>.
+   */
   public final void addChoice (@NonNull final Expansion a)
   {
     ValueEnforcer.notNull (a, "Expansion");

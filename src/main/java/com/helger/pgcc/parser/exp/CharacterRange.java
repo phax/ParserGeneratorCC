@@ -57,6 +57,14 @@ public final class CharacterRange implements ICCCharacter
 
   private char m_nLeft;
 
+  /**
+   * Create a range without a position in the grammar.
+   *
+   * @param l
+   *        The first character of the range.
+   * @param r
+   *        The last character of the range.
+   */
   public CharacterRange (final char l, final char r)
   {
     if (l > r)
@@ -71,6 +79,16 @@ public final class CharacterRange implements ICCCharacter
     setRight (r);
   }
 
+  /**
+   * Create a range at the position of a token.
+   *
+   * @param t
+   *        The token the range was written at, for error messages. May not be <code>null</code>.
+   * @param l
+   *        The first character of the range.
+   * @param r
+   *        The last character of the range.
+   */
   public CharacterRange (@NonNull final Token t, final char l, final char r)
   {
     this (l, r);
@@ -128,11 +146,25 @@ public final class CharacterRange implements ICCCharacter
     m_nRight = cRight;
   }
 
+  /**
+   * Whether a character falls inside this range.
+   *
+   * @param c
+   *        The character to test.
+   * @return <code>true</code> if it does.
+   */
   public boolean isInRange (final char c)
   {
     return c >= m_nLeft && c <= m_nRight;
   }
 
+  /**
+   * Whether this range is wholly contained in another one.
+   *
+   * @param aR2
+   *        The range to test against. May not be <code>null</code>.
+   * @return <code>true</code> if it is.
+   */
   public boolean isSubRangeOf (@NonNull final CharacterRange aR2)
   {
     return m_nLeft >= aR2.getLeft () && m_nRight <= aR2.getRight ();

@@ -40,6 +40,10 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.pgcc.context.PGCCContext;
 
+  /**
+   * A node descriptor - the <code>#Name</code> or <code>#Name(expr)</code> that says which node a
+   * production builds and when.
+   */
 public class ASTNodeDescriptor extends JJTreeNode
 {
   static ASTNodeDescriptor indefinite (final String s)
@@ -51,19 +55,32 @@ public class ASTNodeDescriptor extends JJTreeNode
     return aNd;
   }
 
+  /**
+   * {@return the constant name of every node type seen so far, in declaration order}
+   */
   @NonNull
   public static List <String> getNodeIds ()
   {
     return PGCCContext.current ().jjtree ().nodeIds ();
   }
 
+  /**
+   * {@return the class name of every node type seen so far, in declaration order}
+   */
   @NonNull
   public static List <String> getNodeNames ()
   {
     return PGCCContext.current ().jjtree ().nodeNames ();
   }
 
+  /**
+   * Whether this descriptor was invented rather than written by the user, which happens when a
+   * production builds a node without saying so.
+   */
   private boolean m_bFaked = false;
+  /**
+   * The node type this descriptor names.
+   */
   private String m_sName;
 
   /**
@@ -87,6 +104,10 @@ public class ASTNodeDescriptor extends JJTreeNode
     m_sName = aValue;
   }
 
+  /**
+   * Whether the descriptor was written as <code>#Name(&gt;expr)</code>, which means the
+   * expression counts children rather than deciding whether to build the node at all.
+   */
   private boolean m_bIsGT;
 
   /**
@@ -110,6 +131,9 @@ public class ASTNodeDescriptor extends JJTreeNode
     m_bIsGT = aValue;
   }
 
+  /**
+   * The expression in brackets after the node name, or <code>null</code> if there is none.
+   */
   private ASTNodeDescriptorExpression m_aExpression;
 
   /**

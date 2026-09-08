@@ -161,12 +161,22 @@ public final class JJTreeState
     return m_aProductions;
   }
 
+  /**
+   * {@return the name of the parser JJTree is generating for, from the PARSER_BEGIN of the
+   * grammar}
+   */
   @Nullable
   public String getParserName ()
   {
     return m_sParserName;
   }
 
+  /**
+   * Record the name of the parser JJTree is generating for.
+   *
+   * @param sParserName
+   *        The parser name. May be <code>null</code>.
+   */
   public void setParserName (@Nullable final String sParserName)
   {
     m_sParserName = sParserName;
@@ -179,6 +189,12 @@ public final class JJTreeState
     return m_sPackageName;
   }
 
+  /**
+   * Record the package the generated parser goes into.
+   *
+   * @param sPackageName
+   *        The package name, empty for the default package. May not be <code>null</code>.
+   */
   public void setPackageName (@NonNull final String sPackageName)
   {
     m_sPackageName = sPackageName;
@@ -194,6 +210,12 @@ public final class JJTreeState
     return m_sNodePackageName;
   }
 
+  /**
+   * Record the package the generated node classes go into, which need not be the parser's.
+   *
+   * @param sNodePackageName
+   *        The package name, empty for the default package. May not be <code>null</code>.
+   */
   public void setNodePackageName (@NonNull final String sNodePackageName)
   {
     m_sNodePackageName = sNodePackageName;
@@ -206,6 +228,13 @@ public final class JJTreeState
     return m_aParserImplements;
   }
 
+  /**
+   * Record where the implements clause of the parser class begins, so that the generated parser
+   * can be made to implement the visitor interface as well.
+   *
+   * @param aToken
+   *        The token the clause starts at. May be <code>null</code> if there is no clause.
+   */
   public void setParserImplements (@Nullable final Token aToken)
   {
     m_aParserImplements = aToken;
@@ -218,6 +247,13 @@ public final class JJTreeState
     return m_aParserClassBodyStart;
   }
 
+  /**
+   * Record where the body of the parser class begins, which is where JJTree inserts what it
+   * generates.
+   *
+   * @param aToken
+   *        The opening brace. May be <code>null</code>.
+   */
   public void setParserClassBodyStart (@Nullable final Token aToken)
   {
     m_aParserClassBodyStart = aToken;
@@ -230,6 +266,13 @@ public final class JJTreeState
     return m_aParserImports;
   }
 
+  /**
+   * Record where the import section of the grammar ends, so that JJTree can add the imports its
+   * own output needs.
+   *
+   * @param aToken
+   *        The token after the last import. May be <code>null</code>.
+   */
   public void setParserImports (@Nullable final Token aToken)
   {
     m_aParserImports = aToken;

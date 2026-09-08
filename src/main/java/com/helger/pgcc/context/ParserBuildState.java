@@ -90,32 +90,60 @@ public final class ParserBuildState
     m_aAddTokenHere = m_aGrammar.cuFromInsertionPoint2 ();
   }
 
+  /**
+   * {@return the token the compilation unit currently being collected starts at}
+   */
   @Nullable
   public Token getFirstToken ()
   {
     return m_aFirstToken;
   }
 
+  /**
+   * Record where the compilation unit currently being collected starts.
+   *
+   * @param aToken
+   *        The first token. May be <code>null</code>.
+   */
   public void setFirstToken (@Nullable final Token aToken)
   {
     m_aFirstToken = aToken;
   }
 
+  /**
+   * {@return <code>true</code> once the parser class declaration has been seen, which is what
+   * makes a second one an error}
+   */
   public boolean isInsertionPoint1Set ()
   {
     return m_bInsertionPoint1Set;
   }
 
+  /**
+   * Record that the parser class declaration has been seen.
+   *
+   * @param b
+   *        <code>true</code> once it has.
+   */
   public void setInsertionPoint1Set (final boolean b)
   {
     m_bInsertionPoint1Set = b;
   }
 
+  /**
+   * {@return <code>true</code> once the end of the parser class body has been seen}
+   */
   public boolean isInsertionPoint2Set ()
   {
     return m_bInsertionPoint2Set;
   }
 
+  /**
+   * Record that the end of the parser class body has been seen.
+   *
+   * @param b
+   *        <code>true</code> once it has.
+   */
   public void setInsertionPoint2Set (final boolean b)
   {
     m_bInsertionPoint2Set = b;

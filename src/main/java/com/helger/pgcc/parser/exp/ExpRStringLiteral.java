@@ -99,6 +99,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       m_aFinalKinds = new long [nMaxKind / 64 + 1];
     }
 
+  /**
+   * Record that a kind can still match at this position of the trie.
+   *
+   * @param nKind
+   *        The token ordinal.
+   */
     public void insertValidKind (final int nKind)
     {
       m_aValidKinds[nKind / 64] |= (1L << (nKind % 64));
@@ -106,6 +112,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       m_aValidKindSet.add (Integer.valueOf (nKind));
     }
 
+  /**
+   * Record that a kind is complete at this position of the trie, so a match can be accepted here.
+   *
+   * @param nKind
+   *        The token ordinal.
+   */
     public void insertFinalKind (final int nKind)
     {
       m_aFinalKinds[nKind / 64] |= (1L << (nKind % 64));
@@ -135,6 +147,15 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     m_sImage = aValue;
   }
 
+  /**
+   * Create a string literal expansion.
+   *
+   * @param t
+   *        The token it was declared at, for error messages. May not be <code>null</code>.
+   * @param sImage
+   *        The literal, with the quotes and escapes already resolved. May not be
+   *         <code>null</code>.
+   */
   public ExpRStringLiteral (@NonNull final Token t, final String sImage)
   {
     setLineNumber (t.beginLine);
@@ -152,6 +173,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     strLit ().resetForLexicalState ();
   }
 
+  /**
+   * Write the table of token images the generated token manager reports in its error messages.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void dumpStrLiteralImages (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
@@ -249,6 +276,13 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     }
   }
 
+  /**
+   * The Java half of {@link #dumpStrLiteralImages(AbstractCodeGenerator)}, which writes an array
+   * of string literals where C++ writes arrays of character codes.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void dumpStrLiteralImagesForJava (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
@@ -567,6 +601,10 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return true;
   }
 
+  /**
+   * Work out which string literals are prefixes of longer ones, which is what decides whether a
+   * match can be accepted the moment it is complete.
+   */
   public static void fillSubString ()
   {
     strLit ().setSubString (new boolean [strLit ().getMaxStrKind () + 1]);
@@ -731,6 +769,14 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return "'" + c + "'";
   }
 
+  /**
+   * Write the jjMoveStringLiteralDfa chain of the current lexical state, one method per character
+   * position, which is the fast path that matches keywords and operators without touching the
+   * NFA.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void dumpDfaCode (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     Map <String, KindInfo> aTab;
@@ -1424,6 +1470,15 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return Integer.MAX_VALUE;
   }
 
+  /**
+   * Work out, for each position in the literals, which NFA states a match can continue into, and
+   * write the jjStopStringLiteralDfa methods that hand them over.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   * @param aInitialState
+   *        The state a match starts in. May not be <code>null</code>.
+   */
   public static void generateNfaStartStates (final AbstractCodeGenerator aCodeGenerator, @NonNull final NfaState aInitialState)
   {
     final boolean [] aSeen = new boolean [NfaState.nfa ().getGeneratedStates ()];
@@ -1776,6 +1831,13 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
    * codeGenerator.genCodeLine("};"); }
    */
 
+  /**
+   * Hand the string literals of one lexical state over to the TokenizerData that
+   * JavaCCInterpreter runs.
+   *
+   * @param nLexStateIndex
+   *        The lexical state.
+   */
   public static void updateStringLiteralData (final int nLexStateIndex)
   {
     for (int nKind = 0; nKind < strLit ().getAllImages ().length; nKind++)
@@ -1834,6 +1896,13 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     }
   }
 
+  /**
+   * Copy the collected literals into the tokenizer description, keyed the way the interpreter
+   * looks them up.
+   *
+   * @param aTokenizerData
+   *        Where to put them. May not be <code>null</code>.
+   */
   public static void BuildTokenizerData (@NonNull final TokenizerData aTokenizerData)
   {
     final Map <Integer, Integer> aNfaStateIndices = new HashMap <> ();
