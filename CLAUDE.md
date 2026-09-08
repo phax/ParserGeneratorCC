@@ -150,6 +150,10 @@ before `(`, `LOGGER` with string concatenation, `final` parameters), **with one 
 - Null annotations are **JSpecify** (`org.jspecify.annotations.NonNull` / `Nullable`).
 - Upstream JavaCC code that has not been reworked does not follow the house style. Match the
   surrounding file rather than reformatting it.
+- **A rename must also cover `src/main/javacc/*.jj` and `src/main/jjtree/*.jjt`.** The Java inside
+  their `{ ... }` action blocks is ordinary source that references the same classes, but an IDE
+  rename will not reach it. The build catches it - as a compile error in
+  `target/generated-sources/`, which only appears after `mvn clean`.
 
 Test naming: `*FuncTest` for slow generate-compile-run functional tests, `*Test` for the rest.
 
