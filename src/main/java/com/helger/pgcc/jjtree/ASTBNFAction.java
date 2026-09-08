@@ -44,17 +44,17 @@ public class ASTBNFAction extends JJTreeNode
   {
     for (Node n = this.jjtGetParent (); n != null; n = n.jjtGetParent ())
     {
-      if (n instanceof ASTBNFNodeScope)
+      if (n instanceof final ASTBNFNodeScope aASTBNFNodeScope)
       {
-        if (((ASTBNFNodeScope) n).m_node_scope == ns)
+        if (aASTBNFNodeScope.m_node_scope == ns)
         {
           return n;
         }
       }
       else
-        if (n instanceof ASTExpansionNodeScope)
+        if (n instanceof final ASTExpansionNodeScope aASTExpansionNodeScope)
         {
-          if (((ASTExpansionNodeScope) n).m_node_scope == ns)
+          if (aASTExpansionNodeScope.m_node_scope == ns)
           {
             return n;
           }

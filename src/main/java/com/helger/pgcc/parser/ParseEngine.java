@@ -124,9 +124,9 @@ public class ParseEngine
       return false;
     }
 
-    if (exp instanceof ExpNonTerminal)
+    if (exp instanceof final ExpNonTerminal aNonTerminal)
     {
-      final NormalProduction prod = ((ExpNonTerminal) exp).getProd ();
+      final NormalProduction prod = aNonTerminal.getProd ();
       if (prod instanceof AbstractCodeProduction)
         return true;
       return _javaCodeCheck (prod.getExpansion ());
@@ -196,16 +196,16 @@ public class ParseEngine
    */
   private void _genFirstSet (final Expansion exp)
   {
-    if (exp instanceof AbstractExpRegularExpression)
+    if (exp instanceof final AbstractExpRegularExpression aRegularExpression)
     {
-      m_firstSet[((AbstractExpRegularExpression) exp).getOrdinal ()] = true;
+      m_firstSet[aRegularExpression.getOrdinal ()] = true;
     }
     else
-      if (exp instanceof ExpNonTerminal)
+      if (exp instanceof final ExpNonTerminal aExpNonTerminal)
       {
-        if (!(((ExpNonTerminal) exp).getProd () instanceof AbstractCodeProduction))
+        if (!(aExpNonTerminal.getProd () instanceof AbstractCodeProduction))
         {
-          _genFirstSet ((((ExpNonTerminal) exp).getProd ()).getExpansion ());
+          _genFirstSet ((aExpNonTerminal.getProd ()).getExpansion ());
         }
       }
       else
@@ -1154,9 +1154,9 @@ public class ParseEngine
               {
                 final Expansion nested_e = e_nrw.getExpansion ();
                 ExpLookahead la;
-                if (nested_e instanceof ExpSequence)
+                if (nested_e instanceof final ExpSequence aSequence)
                 {
-                  la = (ExpLookahead) (((ExpSequence) nested_e).getUnitAt (0));
+                  la = (ExpLookahead) (aSequence.getUnitAt (0));
                 }
                 else
                 {
@@ -1186,9 +1186,9 @@ public class ParseEngine
                 {
                   final Expansion nested_e = e_nrw.getExpansion ();
                   ExpLookahead la;
-                  if (nested_e instanceof ExpSequence)
+                  if (nested_e instanceof final ExpSequence aExpSequence)
                   {
-                    la = (ExpLookahead) (((ExpSequence) nested_e).getUnitAt (0));
+                    la = (ExpLookahead) (aExpSequence.getUnitAt (0));
                   }
                   else
                   {
@@ -1401,9 +1401,9 @@ public class ParseEngine
             break;
       }
 
-      if (seq instanceof AbstractExpRegularExpression)
+      if (seq instanceof final AbstractExpRegularExpression aAbstractExpRegularExpression)
       {
-        e.setInternalNameOnly ("jj_scan_token(" + ((AbstractExpRegularExpression) seq).getOrdinal () + ")");
+        e.setInternalNameOnly ("jj_scan_token(" + aAbstractExpRegularExpression.getOrdinal () + ")");
         return;
       }
 
@@ -1427,13 +1427,12 @@ public class ParseEngine
       // nothing to here
     }
     else
-      if (e instanceof ExpNonTerminal)
+      if (e instanceof final ExpNonTerminal e_nrw)
       {
         // All expansions of non-terminals have the "name" fields set. So
         // there's no need to check it below for "e_nrw" and "ntexp". In
         // fact, we rely here on the fact that the "name" fields of both these
         // variables are the same.
-        final ExpNonTerminal e_nrw = (ExpNonTerminal) e;
         final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (ntprod instanceof AbstractCodeProduction)
         {
@@ -1574,13 +1573,12 @@ public class ParseEngine
       // " + genReturn(false));
     }
     else
-      if (e instanceof ExpNonTerminal)
+      if (e instanceof final ExpNonTerminal e_nrw)
       {
         // All expansions of non-terminals have the "name" fields set. So
         // there's no need to check it below for "e_nrw" and "ntexp". In
         // fact, we rely here on the fact that the "name" fields of both these
         // variables are the same.
-        final ExpNonTerminal e_nrw = (ExpNonTerminal) e;
         final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (ntprod instanceof AbstractCodeProduction)
         {
@@ -1599,10 +1597,9 @@ public class ParseEngine
         }
       }
       else
-        if (e instanceof ExpChoice)
+        if (e instanceof final ExpChoice e_nrw)
         {
           ExpSequence nested_seq;
-          final ExpChoice e_nrw = (ExpChoice) e;
           if (e_nrw.getChoiceCount () != 1)
           {
             if (!m_xsp_declared)
@@ -1691,14 +1688,13 @@ public class ParseEngine
               buildPhase3Routine (new Phase3Data (e_nrw.m_exp, inf.m_count), true);
             }
             else
-              if (e instanceof ExpOneOrMore)
+              if (e instanceof final ExpOneOrMore e_nrw)
               {
                 if (!m_xsp_declared)
                 {
                   m_xsp_declared = true;
                   m_codeGenerator.genCodeLine ("    " + _getTypeForToken () + " xsp;");
                 }
-                final ExpOneOrMore e_nrw = (ExpOneOrMore) e;
                 final Expansion nested_e = e_nrw.getExpansion ();
                 // codeGenerator.genCodeLine(" if (jj_3" +
                 // nested_e.internal_name + "()) " + genReturn(true));
@@ -1715,14 +1711,13 @@ public class ParseEngine
                 m_codeGenerator.genCodeLine ("    }");
               }
               else
-                if (e instanceof ExpZeroOrMore)
+                if (e instanceof final ExpZeroOrMore e_nrw)
                 {
                   if (!m_xsp_declared)
                   {
                     m_xsp_declared = true;
                     m_codeGenerator.genCodeLine ("    " + _getTypeForToken () + " xsp;");
                   }
-                  final ExpZeroOrMore e_nrw = (ExpZeroOrMore) e;
                   final Expansion nested_e = e_nrw.getExpansion ();
                   m_codeGenerator.genCodeLine ("    while (true) {");
                   m_codeGenerator.genCodeLine ("      xsp = jj_scanpos;");
@@ -1737,14 +1732,13 @@ public class ParseEngine
                   m_codeGenerator.genCodeLine ("    }");
                 }
                 else
-                  if (e instanceof ExpZeroOrOne)
+                  if (e instanceof final ExpZeroOrOne e_nrw)
                   {
                     if (!m_xsp_declared)
                     {
                       m_xsp_declared = true;
                       m_codeGenerator.genCodeLine ("    " + _getTypeForToken () + " xsp;");
                     }
-                    final ExpZeroOrOne e_nrw = (ExpZeroOrOne) e;
                     final Expansion nested_e = e_nrw.getExpansion ();
                     m_codeGenerator.genCodeLine ("    xsp = jj_scanpos;");
                     // codeGenerator.genCodeLine(" if (jj_3" +
@@ -1811,11 +1805,10 @@ public class ParseEngine
         return minimumSize (ntexp);
       }
 
-      if (e instanceof ExpChoice)
+      if (e instanceof final ExpChoice e_nrw)
       {
         int min = oldMin;
         Expansion nested_e;
-        final ExpChoice e_nrw = (ExpChoice) e;
         for (int i = 0; min > 1 && i < e_nrw.getChoiceCount (); i++)
         {
           nested_e = (e_nrw.getChoiceAt (i));
@@ -1826,10 +1819,9 @@ public class ParseEngine
         return min;
       }
 
-      if (e instanceof ExpSequence)
+      if (e instanceof final ExpSequence e_nrw)
       {
         int min = 0;
-        final ExpSequence e_nrw = (ExpSequence) e;
         // We skip the first element in the following iteration since it
         // is
         // the
@@ -1891,15 +1883,13 @@ public class ParseEngine
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
     for (final NormalProduction p : grammar ().bnfProductions ())
     {
-      if (p instanceof CodeProductionCpp)
+      if (p instanceof final CodeProductionCpp cp)
       {
         if (!eOutputLanguage.isJava ())
         {
           JavaCCErrors.semantic_error ("Cannot use JAVACODE productions with non-Java output.");
           continue;
         }
-
-        final CodeProductionCpp cp = (CodeProductionCpp) p;
 
         _generateCPPMethodheader (cp);
 
@@ -1967,14 +1957,13 @@ public class ParseEngine
         codeGenerator.genCodeNewLine ();
       }
       else
-        if (p instanceof CodeProductionJava)
+        if (p instanceof final CodeProductionJava jp)
         {
           if (!eOutputLanguage.isJava ())
           {
             JavaCCErrors.semantic_error ("Cannot use JAVACODE productions with non-Java output.");
             continue;
           }
-          final CodeProductionJava jp = (CodeProductionJava) p;
           Token t = jp.getReturnTypeTokens ().get (0);
           codeGenerator.printTokenSetup (t);
           grammar ().setCurrentColumn (1);

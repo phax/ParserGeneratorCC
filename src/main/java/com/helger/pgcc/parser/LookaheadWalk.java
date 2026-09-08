@@ -55,7 +55,7 @@ public final class LookaheadWalk
 
   public static List <MatchInfo> genFirstSet (final List <MatchInfo> partialMatches, final Expansion exp)
   {
-    if (exp instanceof AbstractExpRegularExpression)
+    if (exp instanceof final AbstractExpRegularExpression aRegularExpression)
     {
       final List <MatchInfo> retval = new ArrayList <> ();
       for (int i = 0; i < partialMatches.size (); i++)
@@ -67,7 +67,7 @@ public final class LookaheadWalk
           mnew.m_match[j] = m.m_match[j];
         }
         mnew.m_firstFreeLoc = m.m_firstFreeLoc;
-        mnew.m_match[mnew.m_firstFreeLoc++] = ((AbstractExpRegularExpression) exp).getOrdinal ();
+        mnew.m_match[mnew.m_firstFreeLoc++] = aRegularExpression.getOrdinal ();
         if (mnew.m_firstFreeLoc == LookaheadState.current ().getLimit ())
         {
           LookaheadState.current ().getSizeLimitedMatches ().add (mnew);
@@ -80,9 +80,9 @@ public final class LookaheadWalk
       return retval;
     }
 
-    if (exp instanceof ExpNonTerminal)
+    if (exp instanceof final ExpNonTerminal aNonTerminal)
     {
-      final NormalProduction prod = ((ExpNonTerminal) exp).getProd ();
+      final NormalProduction prod = aNonTerminal.getProd ();
       if (prod instanceof AbstractCodeProduction)
       {
         return new ArrayList <> ();
@@ -90,10 +90,9 @@ public final class LookaheadWalk
       return genFirstSet (partialMatches, prod.getExpansion ());
     }
 
-    if (exp instanceof ExpChoice)
+    if (exp instanceof final ExpChoice ch)
     {
       final List <MatchInfo> retval = new ArrayList <> ();
-      final ExpChoice ch = (ExpChoice) exp;
       for (final Expansion element : ch.getChoices ())
       {
         final List <MatchInfo> v = genFirstSet (partialMatches, element);
@@ -102,10 +101,9 @@ public final class LookaheadWalk
       return retval;
     }
 
-    if (exp instanceof ExpSequence)
+    if (exp instanceof final ExpSequence seq)
     {
       List <MatchInfo> v = partialMatches;
-      final ExpSequence seq = (ExpSequence) exp;
       for (final Expansion element : seq.getUnits ())
       {
         v = genFirstSet (v, element);
@@ -115,11 +113,10 @@ public final class LookaheadWalk
       return v;
     }
 
-    if (exp instanceof ExpOneOrMore)
+    if (exp instanceof final ExpOneOrMore om)
     {
       final List <MatchInfo> retval = new ArrayList <> ();
       List <MatchInfo> v = partialMatches;
-      final ExpOneOrMore om = (ExpOneOrMore) exp;
       while (true)
       {
         v = genFirstSet (v, om.getExpansion ());
@@ -130,11 +127,10 @@ public final class LookaheadWalk
       return retval;
     }
 
-    if (exp instanceof ExpZeroOrMore)
+    if (exp instanceof final ExpZeroOrMore zm)
     {
       final List <MatchInfo> retval = new ArrayList <> (partialMatches);
       List <MatchInfo> v = partialMatches;
-      final ExpZeroOrMore zm = (ExpZeroOrMore) exp;
       while (true)
       {
         v = genFirstSet (v, zm.getExpansion ());
@@ -145,17 +141,17 @@ public final class LookaheadWalk
       return retval;
     }
 
-    if (exp instanceof ExpZeroOrOne)
+    if (exp instanceof final ExpZeroOrOne aZeroOrOne)
     {
       final List <MatchInfo> retval = new ArrayList <> ();
       retval.addAll (partialMatches);
-      retval.addAll (genFirstSet (partialMatches, ((ExpZeroOrOne) exp).getExpansion ()));
+      retval.addAll (genFirstSet (partialMatches, aZeroOrOne.getExpansion ()));
       return retval;
     }
 
-    if (exp instanceof ExpTryBlock)
+    if (exp instanceof final ExpTryBlock aTryBlock)
     {
-      return genFirstSet (partialMatches, ((ExpTryBlock) exp).m_exp);
+      return genFirstSet (partialMatches, aTryBlock.m_exp);
     }
 
     if (LookaheadState.current ().isConsiderSemanticLA () &&

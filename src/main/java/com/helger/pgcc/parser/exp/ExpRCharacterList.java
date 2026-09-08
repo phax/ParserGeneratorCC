@@ -242,9 +242,9 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
     for (int i = 0; i < cnt; i++)
     {
       final ICCCharacter desc = m_descriptors.get (i);
-      if (desc instanceof SingleCharacter)
+      if (desc instanceof final SingleCharacter aSingleCharacter)
       {
-        final char ch = ((SingleCharacter) desc).getChar ();
+        final char ch = aSingleCharacter.getChar ();
 
         final char cLow = Character.toLowerCase (ch);
         if (ch != cLow)

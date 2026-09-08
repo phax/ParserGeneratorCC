@@ -129,12 +129,12 @@ public final class ExpRChoice extends AbstractExpRegularExpression
         getChoices ().set (i, curRE);
       }
 
-      if (curRE instanceof ExpRCharacterList)
+      if (curRE instanceof final ExpRCharacterList aRCharacterList)
       {
-        if (((ExpRCharacterList) curRE).isNegatedList ())
-          ((ExpRCharacterList) curRE).removeNegation ();
+        if (aRCharacterList.isNegatedList ())
+          aRCharacterList.removeNegation ();
 
-        final List <ICCCharacter> tmp = ((ExpRCharacterList) curRE).getDescriptors ();
+        final List <ICCCharacter> tmp = aRCharacterList.getDescriptors ();
 
         if (curCharList == null)
         {
@@ -161,11 +161,11 @@ public final class ExpRChoice extends AbstractExpRegularExpression
       while (curRE instanceof ExpRJustName)
         curRE = ((ExpRJustName) curRE).m_regexpr;
 
-      if (curRE instanceof ExpRChoice)
+      if (curRE instanceof final ExpRChoice aRChoice)
       {
         getChoices ().remove (i--);
-        for (int j = ((ExpRChoice) curRE).getChoiceCount (); j-- > 0;)
-          addChoice (((ExpRChoice) curRE).getChoiceAt (j));
+        for (int j = aRChoice.getChoiceCount (); j-- > 0;)
+          addChoice (aRChoice.getChoiceAt (j));
       }
     }
   }

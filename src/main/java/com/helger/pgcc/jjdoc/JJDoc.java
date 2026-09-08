@@ -207,14 +207,14 @@ public final class JJDoc
         gen.productionEnd (np);
       }
       else
-        if (np instanceof CodeProductionCpp)
+        if (np instanceof final CodeProductionCpp aCodeProductionCpp)
         {
-          gen.cppcode ((CodeProductionCpp) np);
+          gen.cppcode (aCodeProductionCpp);
         }
         else
-          if (np instanceof CodeProductionJava)
+          if (np instanceof final CodeProductionJava aCodeProductionJava)
           {
-            gen.javacode ((CodeProductionJava) np);
+            gen.javacode (aCodeProductionJava);
           }
     }
     gen.nonterminalsEnd ();
@@ -223,54 +223,54 @@ public final class JJDoc
   private static void _emitExpansionTree (final Expansion exp, final IDocGenerator gen) throws IOException
   {
     // gen.text("[->" + exp.getClass().getName() + "]");
-    if (exp instanceof ExpAction)
+    if (exp instanceof final ExpAction aAction)
     {
-      _emitExpansionAction ((ExpAction) exp, gen);
+      _emitExpansionAction (aAction, gen);
     }
     else
-      if (exp instanceof ExpChoice)
+      if (exp instanceof final ExpChoice aChoice)
       {
-        _emitExpansionChoice ((ExpChoice) exp, gen);
+        _emitExpansionChoice (aChoice, gen);
       }
       else
-        if (exp instanceof ExpLookahead)
+        if (exp instanceof final ExpLookahead aLookahead)
         {
-          _emitExpansionLookahead ((ExpLookahead) exp, gen);
+          _emitExpansionLookahead (aLookahead, gen);
         }
         else
-          if (exp instanceof ExpNonTerminal)
+          if (exp instanceof final ExpNonTerminal aNonTerminal)
           {
-            _emitExpansionNonTerminal ((ExpNonTerminal) exp, gen);
+            _emitExpansionNonTerminal (aNonTerminal, gen);
           }
           else
-            if (exp instanceof ExpOneOrMore)
+            if (exp instanceof final ExpOneOrMore aOneOrMore)
             {
-              _emitExpansionOneOrMore ((ExpOneOrMore) exp, gen);
+              _emitExpansionOneOrMore (aOneOrMore, gen);
             }
             else
-              if (exp instanceof AbstractExpRegularExpression)
+              if (exp instanceof final AbstractExpRegularExpression aRegularExpression)
               {
-                _emitExpansionRegularExpression ((AbstractExpRegularExpression) exp, gen);
+                _emitExpansionRegularExpression (aRegularExpression, gen);
               }
               else
-                if (exp instanceof ExpSequence)
+                if (exp instanceof final ExpSequence aSequence)
                 {
-                  _emitExpansionSequence ((ExpSequence) exp, gen);
+                  _emitExpansionSequence (aSequence, gen);
                 }
                 else
-                  if (exp instanceof ExpTryBlock)
+                  if (exp instanceof final ExpTryBlock aTryBlock)
                   {
-                    _emitExpansionTryBlock ((ExpTryBlock) exp, gen);
+                    _emitExpansionTryBlock (aTryBlock, gen);
                   }
                   else
-                    if (exp instanceof ExpZeroOrMore)
+                    if (exp instanceof final ExpZeroOrMore aZeroOrMore)
                     {
-                      _emitExpansionZeroOrMore ((ExpZeroOrMore) exp, gen);
+                      _emitExpansionZeroOrMore (aZeroOrMore, gen);
                     }
                     else
-                      if (exp instanceof ExpZeroOrOne)
+                      if (exp instanceof final ExpZeroOrOne aZeroOrOne)
                       {
-                        _emitExpansionZeroOrOne ((ExpZeroOrOne) exp, gen);
+                        _emitExpansionZeroOrOne (aZeroOrOne, gen);
                       }
                       else
                       {
@@ -423,21 +423,21 @@ public final class JJDoc
         else
           returnString += ",";
 
-        if (o instanceof SingleCharacter)
+        if (o instanceof final SingleCharacter aSingleCharacter)
         {
           returnString += "\"";
-          final char s[] = { ((SingleCharacter) o).getChar () };
+          final char s[] = { aSingleCharacter.getChar () };
           returnString += JavaCCGlobals.addEscapes (new String (s));
           returnString += "\"";
         }
         else
-          if (o instanceof CharacterRange)
+          if (o instanceof final CharacterRange aCharacterRange)
           {
             returnString += "\"";
-            final char s[] = { ((CharacterRange) o).getLeft () };
+            final char s[] = { aCharacterRange.getLeft () };
             returnString += JavaCCGlobals.addEscapes (new String (s));
             returnString += "\"-\"";
-            s[0] = ((CharacterRange) o).getRight ();
+            s[0] = aCharacterRange.getRight ();
             returnString += JavaCCGlobals.addEscapes (new String (s));
             returnString += "\"";
           }

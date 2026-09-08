@@ -95,7 +95,7 @@ public class Semanticize
      */
     for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
     {
-      ExpansionTreeWalker.preOrderWalk ((aNormalProduction).getExpansion (), new ProductionDefinedChecker ());
+      ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new ProductionDefinedChecker ());
     }
 
     /*
@@ -641,9 +641,9 @@ public class Semanticize
   // otherwise.
   public static boolean emptyExpansionExists (final Expansion exp)
   {
-    if (exp instanceof ExpNonTerminal)
+    if (exp instanceof final ExpNonTerminal aNonTerminal)
     {
-      return ((ExpNonTerminal) exp).getProd ().isEmptyPossible ();
+      return aNonTerminal.getProd ().isEmptyPossible ();
     }
 
     if (exp instanceof ExpAction)
@@ -656,9 +656,9 @@ public class Semanticize
       return false;
     }
 
-    if (exp instanceof ExpOneOrMore)
+    if (exp instanceof final ExpOneOrMore aOneOrMore)
     {
-      return emptyExpansionExists (((ExpOneOrMore) exp).getExpansion ());
+      return emptyExpansionExists (aOneOrMore.getExpansion ());
     }
 
     if (exp instanceof ExpZeroOrMore || exp instanceof ExpZeroOrOne)
@@ -671,25 +671,25 @@ public class Semanticize
       return true;
     }
 
-    if (exp instanceof ExpChoice)
+    if (exp instanceof final ExpChoice aChoice)
     {
-      for (final Expansion aElement : ((ExpChoice) exp).getChoices ())
+      for (final Expansion aElement : aChoice.getChoices ())
         if (emptyExpansionExists (aElement))
           return true;
       return false;
     }
 
-    if (exp instanceof ExpSequence)
+    if (exp instanceof final ExpSequence aSequence)
     {
-      for (final Expansion aElement : ((ExpSequence) exp).getUnits ())
+      for (final Expansion aElement : aSequence.getUnits ())
         if (!emptyExpansionExists (aElement))
           return false;
       return true;
     }
 
-    if (exp instanceof ExpTryBlock)
+    if (exp instanceof final ExpTryBlock aTryBlock)
     {
-      return emptyExpansionExists (((ExpTryBlock) exp).m_exp);
+      return emptyExpansionExists (aTryBlock.m_exp);
     }
 
     // This should be dead code.
@@ -699,11 +699,11 @@ public class Semanticize
   // Updates prod.leftExpansions based on a walk of exp.
   static private void _addLeftMost (final NormalProduction prod, final Expansion exp)
   {
-    if (exp instanceof ExpNonTerminal)
+    if (exp instanceof final ExpNonTerminal aExpNonTerminal)
     {
       for (int i = 0; i < prod.m_leIndex; i++)
       {
-        if (prod.getLeftExpansions ()[i] == ((ExpNonTerminal) exp).getProd ())
+        if (prod.getLeftExpansions ()[i] == aExpNonTerminal.getProd ())
         {
           return;
         }
@@ -714,33 +714,33 @@ public class Semanticize
         System.arraycopy (prod.getLeftExpansions (), 0, newle, 0, prod.m_leIndex);
         prod.setLeftExpansions (newle);
       }
-      prod.getLeftExpansions ()[prod.m_leIndex++] = ((ExpNonTerminal) exp).getProd ();
+      prod.getLeftExpansions ()[prod.m_leIndex++] = aExpNonTerminal.getProd ();
     }
     else
-      if (exp instanceof ExpOneOrMore)
+      if (exp instanceof final ExpOneOrMore aExpOneOrMore)
       {
-        _addLeftMost (prod, ((ExpOneOrMore) exp).getExpansion ());
+        _addLeftMost (prod, aExpOneOrMore.getExpansion ());
       }
       else
-        if (exp instanceof ExpZeroOrMore)
+        if (exp instanceof final ExpZeroOrMore aZeroOrMore)
         {
-          _addLeftMost (prod, ((ExpZeroOrMore) exp).getExpansion ());
+          _addLeftMost (prod, aZeroOrMore.getExpansion ());
         }
         else
-          if (exp instanceof ExpZeroOrOne)
+          if (exp instanceof final ExpZeroOrOne aZeroOrOne)
           {
-            _addLeftMost (prod, ((ExpZeroOrOne) exp).getExpansion ());
+            _addLeftMost (prod, aZeroOrOne.getExpansion ());
           }
           else
-            if (exp instanceof ExpChoice)
+            if (exp instanceof final ExpChoice aExpChoice)
             {
-              for (final Expansion aObject : ((ExpChoice) exp).getChoices ())
+              for (final Expansion aObject : aExpChoice.getChoices ())
                 _addLeftMost (prod, aObject);
             }
             else
-              if (exp instanceof ExpSequence)
+              if (exp instanceof final ExpSequence aExpSequence)
               {
-                for (final Expansion aObject : ((ExpSequence) exp).getUnits ())
+                for (final Expansion aObject : aExpSequence.getUnits ())
                 {
                   _addLeftMost (prod, aObject);
                   if (!emptyExpansionExists (aObject))
@@ -748,9 +748,9 @@ public class Semanticize
                 }
               }
               else
-                if (exp instanceof ExpTryBlock)
+                if (exp instanceof final ExpTryBlock aExpTryBlock)
                 {
-                  _addLeftMost (prod, ((ExpTryBlock) exp).m_exp);
+                  _addLeftMost (prod, aExpTryBlock.m_exp);
                 }
   }
 
@@ -853,40 +853,40 @@ public class Semanticize
         }
     }
 
-    if (rexp instanceof ExpRChoice)
+    if (rexp instanceof final ExpRChoice aRChoice)
     {
-      for (final AbstractExpRegularExpression aElement : ((ExpRChoice) rexp).getChoices ())
+      for (final AbstractExpRegularExpression aElement : aRChoice.getChoices ())
         if (_rexpWalk (aElement))
           return true;
       return false;
     }
 
-    if (rexp instanceof ExpRSequence)
+    if (rexp instanceof final ExpRSequence aRSequence)
     {
-      for (final AbstractExpRegularExpression aElement : ((ExpRSequence) rexp).getUnits ())
+      for (final AbstractExpRegularExpression aElement : aRSequence.getUnits ())
         if (_rexpWalk (aElement))
           return true;
       return false;
     }
 
-    if (rexp instanceof ExpROneOrMore)
+    if (rexp instanceof final ExpROneOrMore aROneOrMore)
     {
-      return _rexpWalk (((ExpROneOrMore) rexp).getRegExpr ());
+      return _rexpWalk (aROneOrMore.getRegExpr ());
     }
 
-    if (rexp instanceof ExpRZeroOrMore)
+    if (rexp instanceof final ExpRZeroOrMore aRZeroOrMore)
     {
-      return _rexpWalk (((ExpRZeroOrMore) rexp).getRegExpr ());
+      return _rexpWalk (aRZeroOrMore.getRegExpr ());
     }
 
-    if (rexp instanceof ExpRZeroOrOne)
+    if (rexp instanceof final ExpRZeroOrOne aRZeroOrOne)
     {
-      return _rexpWalk (((ExpRZeroOrOne) rexp).getRegExpr ());
+      return _rexpWalk (aRZeroOrOne.getRegExpr ());
     }
 
-    if (rexp instanceof ExpRRepetitionRange)
+    if (rexp instanceof final ExpRRepetitionRange aRRepetitionRange)
     {
-      return _rexpWalk (((ExpRRepetitionRange) rexp).getRegExpr ());
+      return _rexpWalk (aRRepetitionRange.getRegExpr ());
     }
 
     return false;
@@ -953,7 +953,7 @@ public class Semanticize
 
     public void action (final Expansion e)
     {
-      if (e instanceof ExpSequence)
+      if (e instanceof final ExpSequence seq)
       {
         if (e.getParent () instanceof ExpChoice ||
           e.getParent () instanceof ExpZeroOrMore ||
@@ -962,7 +962,6 @@ public class Semanticize
         {
           return;
         }
-        final ExpSequence seq = (ExpSequence) e;
         final ExpLookahead la = (ExpLookahead) (seq.getUnitAt (0));
         if (!la.isExplicit ())
           return;
@@ -1067,17 +1066,17 @@ public class Semanticize
         }
       }
       else
-        if (e instanceof ExpZeroOrMore)
+        if (e instanceof final ExpZeroOrMore aExpZeroOrMore)
         {
-          if (Semanticize.emptyExpansionExists (((ExpZeroOrMore) e).getExpansion ()))
+          if (Semanticize.emptyExpansionExists (aExpZeroOrMore.getExpansion ()))
           {
             JavaCCErrors.semantic_error (e, "Expansion within \"(...)*\" can be matched by empty string.");
           }
         }
         else
-          if (e instanceof ExpZeroOrOne)
+          if (e instanceof final ExpZeroOrOne aExpZeroOrOne)
           {
-            if (Semanticize.emptyExpansionExists (((ExpZeroOrOne) e).getExpansion ()))
+            if (Semanticize.emptyExpansionExists (aExpZeroOrOne.getExpansion ()))
             {
               JavaCCErrors.semantic_error (e, "Expansion within \"(...)?\" can be matched by empty string.");
             }

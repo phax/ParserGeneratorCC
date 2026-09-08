@@ -103,9 +103,9 @@ public class NodeScope
   @Nullable
   static NodeScope getEnclosingNodeScope (final Node node)
   {
-    if (node instanceof ASTBNFDeclaration)
+    if (node instanceof final ASTBNFDeclaration aASTBNFDeclaration)
     {
-      return ((ASTBNFDeclaration) node).m_node_scope;
+      return aASTBNFDeclaration.m_node_scope;
     }
     for (Node n = node.jjtGetParent (); n != null; n = n.jjtGetParent ())
     {
@@ -114,14 +114,14 @@ public class NodeScope
         return ((ASTBNFDeclaration) n).m_node_scope;
       }
       else
-        if (n instanceof ASTBNFNodeScope)
+        if (n instanceof final ASTBNFNodeScope aASTBNFNodeScope)
         {
-          return ((ASTBNFNodeScope) n).m_node_scope;
+          return aASTBNFNodeScope.m_node_scope;
         }
         else
-          if (n instanceof ASTExpansionNodeScope)
+          if (n instanceof final ASTExpansionNodeScope aASTExpansionNodeScope)
           {
-            return ((ASTExpansionNodeScope) n).m_node_scope;
+            return aASTExpansionNodeScope.m_node_scope;
           }
     }
     return null;

@@ -118,9 +118,9 @@ public final class LookaheadCalc
       else
       {
         final AbstractExpRegularExpression re = grammar ().rexpsOfTokens ().get (Integer.valueOf (m.m_match[i]));
-        if (re instanceof ExpRStringLiteral)
+        if (re instanceof final ExpRStringLiteral aRStringLiteral)
         {
-          ret += " \"" + addEscapes (((ExpRStringLiteral) re).m_image) + "\"";
+          ret += " \"" + addEscapes (aRStringLiteral.m_image) + "\"";
         }
         else
           if (re.hasLabel ())

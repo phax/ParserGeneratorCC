@@ -203,9 +203,9 @@ public class OtherFilesGenJava
           final RegExprSpec res = (aRegExprSpec);
           final AbstractExpRegularExpression re = res.rexp;
           ostr.print ("    ");
-          if (re instanceof ExpRStringLiteral)
+          if (re instanceof final ExpRStringLiteral aRStringLiteral)
           {
-            ostr.println ("\"\\\"" + addEscapes (addEscapes (((ExpRStringLiteral) re).m_image)) + "\\\"\",");
+            ostr.println ("\"\\\"" + addEscapes (addEscapes (aRStringLiteral.m_image)) + "\\\"\",");
           }
           else
             if (re.hasLabel ())

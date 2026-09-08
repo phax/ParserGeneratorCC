@@ -177,9 +177,9 @@ public class OtherFilesGenCPP
         {
           re = res.rexp;
           s_ostr.println ("  static const JJChar tokenImage_arr_" + ++cnt + "[] = ");
-          if (re instanceof ExpRStringLiteral)
+          if (re instanceof final ExpRStringLiteral aRStringLiteral)
           {
-            printCharArray (s_ostr, "\"" + ((ExpRStringLiteral) re).m_image + "\"");
+            printCharArray (s_ostr, "\"" + aRStringLiteral.m_image + "\"");
           }
           else
             if (re.hasLabel ())
