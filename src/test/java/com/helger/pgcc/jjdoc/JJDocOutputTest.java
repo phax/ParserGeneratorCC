@@ -34,6 +34,7 @@
 package com.helger.pgcc.jjdoc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -113,11 +114,25 @@ public final class JJDocOutputTest
   public void testHtmlIsTheDefault () throws Exception
   {
     final String s = _run ("sample.html");
-    assertTrue (s, s.contains ("<HTML>") || s.contains ("<html>"));
+
+    // HTML5, not the HTML 3.2 this used to emit
+    assertTrue (s, s.startsWith ("<!DOCTYPE html>"));
+    assertTrue (s, s.contains ("<html lang=\"en\">"));
+    assertTrue (s, s.contains ("<meta charset="));
+
     // The productions and the tokens have to show up
     assertTrue (s, s.contains ("sum"));
     assertTrue (s, s.contains ("NUMBER"));
     assertTrue (s, s.contains ("PLUS"));
+
+    // Anchors are ids, and the layout is a stylesheet rather than an attribute on every cell
+    assertTrue (s, s.contains ("id=\"prod1\""));
+    assertFalse (s, s.contains ("<A NAME"));
+    assertFalse (s, s.contains ("ALIGN="));
+    assertFalse (s, s.contains ("VALIGN="));
+
+    // A token production with nothing to show used to leave an empty row behind
+    assertFalse (s, s.contains ("<pre>\n   </pre>"));
   }
 
   @Test

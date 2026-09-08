@@ -376,6 +376,11 @@ public final class GrammarState
     m_nCurrentLine--;
   }
 
+  public void incCurrentLine ()
+  {
+    m_nCurrentLine++;
+  }
+
   /**
    * @return A generation number that is unique within this run. Used by the lookahead computation
    *         to mark the expansions it has already visited.
@@ -394,5 +399,10 @@ public final class GrammarState
   public void setCurrentColumn (final int nCurrentColumn)
   {
     m_nCurrentColumn = nCurrentColumn;
+  }
+
+  public void incCurrentColumn ()
+  {
+    m_nCurrentColumn++;
   }
 }

@@ -41,6 +41,7 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.context.PGCCContext;
+import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
 import com.helger.pgcc.parser.AbstractNormalProduction;
@@ -54,10 +55,27 @@ import com.helger.xml.serialize.write.EXMLSerializeVersion;
 import com.helger.xml.serialize.write.XMLMaskHelper;
 
 /**
- * Output BNF in HTML 3.2 format.
+ * Output BNF as HTML5.
+ * <p>
+ * This used to emit HTML 3.2, which is from 1997: upper case tags, <code>ALIGN</code> and
+ * <code>VALIGN</code> attributes on every cell, and <code>&lt;a name&gt;</code> anchors. The
+ * layout is a small default stylesheet now, so the markup says what things are rather than where
+ * to put them, and a stylesheet given with the <code>CSS</code> option is linked after it and
+ * therefore wins.
  */
 public class HTMLGenerator extends TextGenerator
 {
+  /** Enough layout to replace what the ALIGN attributes used to do, and no more. */
+  private static final String DEFAULT_CSS = "body { font-family: sans-serif; margin: 2em; }\n" +
+                                            "h1, h2 { text-align: center; }\n" +
+                                            "table { border-collapse: collapse; margin: 0 auto; }\n" +
+                                            "caption { font-weight: bold; }\n" +
+                                            "td { vertical-align: baseline; padding: 0.1em 0.4em; }\n" +
+                                            "td.lhs { text-align: right; }\n" +
+                                            "td.op { text-align: center; }\n" +
+                                            "td.rhs { text-align: left; }\n" +
+                                            "pre { margin: 0; }";
+
   private final Map <String, String> m_aIDMap = new HashMap <> ();
   private int m_nID = 1;
 
@@ -95,31 +113,36 @@ public class HTMLGenerator extends TextGenerator
   public void documentStart () throws IOException
   {
     m_aPW = createPrintWriter ();
-    _println ("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2//EN\">");
-    _println ("<HTML>");
-    _println ("<HEAD>");
-    if (StringHelper.isNotEmpty (JJDocOptions.getCSS ()))
-    {
-      _println ("<LINK REL=\"stylesheet\" type=\"text/css\" href=\"" + JJDocOptions.getCSS () + "\"/>");
-    }
+    _println ("<!DOCTYPE html>");
+    _println ("<html lang=\"en\">");
+    _println ("<head>");
+    _println ("<meta charset=\"" + Options.getOutputEncoding () + "\">");
     if (StringHelper.isNotEmpty (PGCCContext.current ().jjdoc ().getInputFile ()))
     {
-      _println ("<TITLE>BNF for " + PGCCContext.current ().jjdoc ().getInputFile () + "</TITLE>");
+      _println ("<title>BNF for " + PGCCContext.current ().jjdoc ().getInputFile () + "</title>");
     }
     else
     {
-      _println ("<TITLE>A BNF grammar by JJDoc</TITLE>");
+      _println ("<title>A BNF grammar by JJDoc</title>");
     }
-    _println ("</HEAD>");
-    _println ("<BODY>");
-    _println ("<H1 ALIGN=CENTER>BNF for " + PGCCContext.current ().jjdoc ().getInputFile () + "</H1>");
+    _println ("<style>");
+    _println (DEFAULT_CSS);
+    _println ("</style>");
+    if (StringHelper.isNotEmpty (JJDocOptions.getCSS ()))
+    {
+      // After the default, so that it can override it
+      _println ("<link rel=\"stylesheet\" href=\"" + JJDocOptions.getCSS () + "\">");
+    }
+    _println ("</head>");
+    _println ("<body>");
+    _println ("<h1>BNF for " + PGCCContext.current ().jjdoc ().getInputFile () + "</h1>");
   }
 
   @Override
   public void documentEnd () throws IOException
   {
-    _println ("</BODY>");
-    _println ("</HTML>");
+    _println ("</body>");
+    _println ("</html>");
     m_aPW.close ();
   }
 
@@ -130,36 +153,40 @@ public class HTMLGenerator extends TextGenerator
   @Override
   public void specialTokens (final String s) throws IOException
   {
-    _println (" <!-- Special token -->");
-    _println (" <TR>");
-    _println ("  <TD>");
-    _println ("    <PRE>");
+    _println (" <tr>");
+    _println ("  <td class=\"special\">");
+    _println ("   <pre>");
     print (s);
-    _println ("    </PRE>");
-    _println ("  </TD>");
-    _println (" </TR>");
+    _println ("   </pre>");
+    _println ("  </td>");
+    _println (" </tr>");
   }
 
   @Override
   public void handleTokenProduction (final TokenProduction aTp) throws IOException
   {
-    _println (" <!-- Token -->");
-    _println (" <TR>");
-    _println ("  <TD>");
-    _println ("   <PRE>");
-    text (JJDoc.getStandardTokenProductionText (aTp));
-    _println ("   </PRE>");
-    _println ("  </TD>");
-    _println (" </TR>");
+    final String sText = JJDoc.getStandardTokenProductionText (aTp);
+    if (StringHelper.isEmpty (sText.trim ()))
+    {
+      // A production with nothing to show used to produce an empty row
+      return;
+    }
+    _println (" <tr>");
+    _println ("  <td>");
+    _println ("   <pre>");
+    text (sText);
+    _println ("   </pre>");
+    _println ("  </td>");
+    _println (" </tr>");
   }
 
   @Override
   public void nonterminalsStart () throws IOException
   {
-    _println ("<H2 ALIGN='CENTER'>NON-TERMINALS</H2>");
+    _println ("<h2>NON-TERMINALS</h2>");
     if (JJDocOptions.isOneTable ())
     {
-      _println ("<TABLE>");
+      _println ("<table>");
     }
   }
 
@@ -168,28 +195,28 @@ public class HTMLGenerator extends TextGenerator
   {
     if (JJDocOptions.isOneTable ())
     {
-      _println ("</TABLE>");
+      _println ("</table>");
     }
   }
 
   @Override
   public void tokensStart () throws IOException
   {
-    _println ("<H2 ALIGN=CENTER>TOKENS</H2>");
-    _println ("<TABLE>");
+    _println ("<h2>TOKENS</h2>");
+    _println ("<table>");
   }
 
   @Override
   public void tokensEnd () throws IOException
   {
-    _println ("</TABLE>");
+    _println ("</table>");
   }
 
   @Override
   public void javacode (final CodeProductionJava aJp) throws IOException
   {
     productionStart (aJp);
-    _println ("<I>java code</I></TD></TR>");
+    _println ("<em>java code</em></td></tr>");
     productionEnd (aJp);
   }
 
@@ -197,7 +224,7 @@ public class HTMLGenerator extends TextGenerator
   public void cppcode (final CodeProductionCpp aCp) throws IOException
   {
     productionStart (aCp);
-    _println ("<I>cpp code</I></TD></TR>");
+    _println ("<em>cpp code</em></td></tr>");
     productionEnd (aCp);
   }
 
@@ -207,13 +234,13 @@ public class HTMLGenerator extends TextGenerator
     if (!JJDocOptions.isOneTable ())
     {
       _println ("");
-      _println ("<TABLE ALIGN=CENTER>");
-      _println ("<CAPTION><STRONG>" + aNp.getLhs () + "</STRONG></CAPTION>");
+      _println ("<table>");
+      _println ("<caption>" + aNp.getLhs () + "</caption>");
     }
-    _println ("<TR>");
-    _println ("<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME=\"" + getID (aNp.getLhs ()) + "\">" + aNp.getLhs () + "</A></TD>");
-    _println ("<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>");
-    print ("<TD ALIGN=LEFT VALIGN=BASELINE>");
+    _println ("<tr>");
+    _println ("<td class=\"lhs\" id=\"" + getID (aNp.getLhs ()) + "\">" + aNp.getLhs () + "</td>");
+    _println ("<td class=\"op\">::=</td>");
+    print ("<td class=\"rhs\">");
   }
 
   @Override
@@ -221,7 +248,7 @@ public class HTMLGenerator extends TextGenerator
   {
     if (!JJDocOptions.isOneTable ())
     {
-      _println ("</TABLE>");
+      _println ("</table>");
       _println ("<HR>");
     }
   }
@@ -231,30 +258,30 @@ public class HTMLGenerator extends TextGenerator
   {
     if (!bFirst)
     {
-      _println ("<TR>");
-      _println ("<TD ALIGN=RIGHT VALIGN=BASELINE></TD>");
-      _println ("<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>");
-      print ("<TD ALIGN=LEFT VALIGN=BASELINE>");
+      _println ("<tr>");
+      _println ("<td class=\"lhs\"></td>");
+      _println ("<td class=\"op\">|</td>");
+      print ("<td class=\"rhs\">");
     }
   }
 
   @Override
   public void expansionEnd (final Expansion e, final boolean bFirst) throws IOException
   {
-    _println ("</TD>");
-    _println ("</TR>");
+    _println ("</td>");
+    _println ("</tr>");
   }
 
   @Override
   public void nonTerminalStart (final ExpNonTerminal aNt) throws IOException
   {
-    print ("<A HREF=\"#" + getID (aNt.getName ()) + "\">");
+    print ("<a href=\"#" + getID (aNt.getName ()) + "\">");
   }
 
   @Override
   public void nonTerminalEnd (final ExpNonTerminal aNt) throws IOException
   {
-    print ("</A>");
+    print ("</a>");
   }
 
   @Override

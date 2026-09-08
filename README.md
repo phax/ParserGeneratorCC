@@ -86,6 +86,7 @@ v3.0.0 - work in progress
 * **Breaking API change** The grammar model spells its position the ph-commons way: `getLineNumber ()` / `getColumnNumber ()` and `setLineNumber ()` / `setColumnNumber ()` on `NormalProduction`, `TokenProduction`, `Expansion`, `ICCCharacter` and both `Token` classes. `IGrammarLocation` is now `ILocation` plus the resource id
 * **Breaking API change** Renamed the two abstract classes that did not say so: `NormalProduction` is `AbstractNormalProduction` and `JavaCCParserInternals` is `AbstractJavaCCParserInternals`
 * **Breaking API change** `Nfa` and the two carriers inside `TokenizerData` are records. `TokenizerData.NfaState.m_aCharacters` and friends are accessors now, so they read `characters ()`
+* JJDoc's HTML output is HTML5 instead of HTML 3.2. Lower case tags, `<meta charset>`, `id` anchors instead of `<a name>`, and a small default stylesheet in place of the `ALIGN` and `VALIGN` attributes - a stylesheet given with the `CSS` option is linked after it and still wins. Token productions with nothing to show no longer leave an empty table row behind
 * **Breaking API change** Removed `JavaCCErrors.reInit ()`, deprecated since the error counters moved into `PGCCContext`
 
 v2.0.3 - 2026-09-08
