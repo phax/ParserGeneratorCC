@@ -47,7 +47,6 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.output.EOutputLanguage;
-import com.helger.pgcc.output.IParserSyntax;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpAction;
@@ -72,11 +71,6 @@ public class ParseEngine
    *         than switching on the language at every spot.}
    */
   @NonNull
-  private IParserSyntax _syntax ()
-  {
-    return IParserSyntax.of (m_aCodeGenerator.getOutputLanguage ());
-  }
-
   private int m_nGenSymbolIndex = 0;
   private int m_nIndentCount = 0;
   private boolean m_bJJ2LA = false;
@@ -105,6 +99,12 @@ public class ParseEngine
    */
   public ParseEngine ()
   {}
+
+  @NonNull
+  private EOutputLanguage _lang ()
+  {
+    return m_aCodeGenerator.getOutputLanguage ();
+  }
 
   /**
    * The phase 1 routines generates their output into String's and dumps these String's once for
@@ -425,7 +425,7 @@ public class ParseEngine
                 sRetval += "\n" + "switch (";
                 if (Options.isCacheTokens ())
                 {
-                  sRetval += "jj_nt" + _syntax ().getMemberAccess () + "kind";
+                  sRetval += "jj_nt" + _lang ().getMemberAccess () + "kind";
                 }
                 else
                   sRetval += "jj_ntk == -1 ? jj_ntk_f() : jj_ntk";
@@ -905,7 +905,7 @@ public class ParseEngine
     if (Options.isDebugParser ())
     {
       m_aCodeGenerator.genCodeNewLine ();
-      for (final String sLine : _syntax ().getTraceEnterLines (JavaCCGlobals.addUnicodeEscapes (p.getLhs ())))
+      for (final String sLine : _lang ().getTraceEnterLines (JavaCCGlobals.addUnicodeEscapes (p.getLhs ())))
         m_aCodeGenerator.genCodeLine (sLine);
       m_aCodeGenerator.genCodeLine ("    try {");
       m_nIndentCount += 2;
@@ -929,11 +929,11 @@ public class ParseEngine
 
     if (p.isJumpPatched () && !bVoidReturn)
     {
-      m_aCodeGenerator.genCodeLine (_syntax ().getMissingReturnStatement ());
+      m_aCodeGenerator.genCodeLine (_lang ().getMissingReturnStatement ());
     }
     if (Options.isDebugParser ())
     {
-      for (final String sLine : _syntax ().getTraceExitLines (JavaCCGlobals.addUnicodeEscapes (p.getLhs ())))
+      for (final String sLine : _lang ().getTraceExitLines (JavaCCGlobals.addUnicodeEscapes (p.getLhs ())))
         m_aCodeGenerator.genCodeLine (sLine);
     }
     if (!bVoidReturn)
@@ -991,7 +991,7 @@ public class ParseEngine
       if (e_nrw.getRhsToken () == null)
         sTail = ");";
       else
-        sTail = ")" + _syntax ().getMemberAccess () + e_nrw.getRhsToken ().image + ";";
+        sTail = ")" + _lang ().getMemberAccess () + e_nrw.getRhsToken ().image + ";";
 
       if (e_nrw.hasLabel ())
       {
@@ -1178,7 +1178,7 @@ public class ParseEngine
                 }
                 sRetval += "\n";
                 final int nLabelIndex = ++m_nGenSymbolIndex;
-                sRetval += _syntax ().getLoopStart (nLabelIndex) + INDENT_INC;
+                sRetval += _lang ().getLoopStart (nLabelIndex) + INDENT_INC;
                 sRetval += _phase1ExpansionGen (aNested_e);
                 aConds = new ExpLookahead [1];
                 aConds[0] = aLa;
@@ -1186,12 +1186,12 @@ public class ParseEngine
                 // [ph] empty statement needed???
                 aActions[0] = true ? "" : "\n;";
 
-                aActions[1] = _syntax ().getLoopBreak (nLabelIndex);
+                aActions[1] = _lang ().getLoopBreak (nLabelIndex);
 
                 sRetval += buildLookaheadChecker (aConds, aActions);
                 sRetval += INDENT_DEC + "\n" + "}";
 
-                sRetval += _syntax ().getLoopEnd (nLabelIndex);
+                sRetval += _lang ().getLoopEnd (nLabelIndex);
               }
               else
                 if (e instanceof final ExpZeroOrMore e_nrw)
@@ -1210,7 +1210,7 @@ public class ParseEngine
                   }
                   sRetval += "\n";
                   final int nLabelIndex = ++m_nGenSymbolIndex;
-                  sRetval += _syntax ().getLoopStart (nLabelIndex) + INDENT_INC;
+                  sRetval += _lang ().getLoopStart (nLabelIndex) + INDENT_INC;
 
                   aConds = new ExpLookahead [1];
                   aConds[0] = aLa;
@@ -1218,13 +1218,13 @@ public class ParseEngine
                   // [ph] empty statement needed???
                   aActions[0] = true ? "" : "\n;";
 
-                  aActions[1] = _syntax ().getLoopBreak (nLabelIndex);
+                  aActions[1] = _lang ().getLoopBreak (nLabelIndex);
 
                   sRetval += buildLookaheadChecker (aConds, aActions);
                   sRetval += _phase1ExpansionGen (aNested_e);
                   sRetval += INDENT_DEC + "\n" + "}";
 
-                  sRetval += _syntax ().getLoopEnd (nLabelIndex);
+                  sRetval += _lang ().getLoopEnd (nLabelIndex);
                 }
                 else
                   if (e instanceof final ExpZeroOrOne e_nrw)
@@ -1319,7 +1319,7 @@ public class ParseEngine
   {
     final EOutputLanguage eOutputLanguage = m_aCodeGenerator.getOutputLanguage ();
     final Expansion e = aLa.getLaExpansion ();
-    m_aCodeGenerator.genCodeLine (_syntax ().getLookaheadEntryDeclaration (e.getInternalName ()));
+    m_aCodeGenerator.genCodeLine (_lang ().getLookaheadEntryDeclaration (e.getInternalName ()));
     m_aCodeGenerator.genCodeLine (" {");
     m_aCodeGenerator.genCodeLine ("    jj_la = xla;");
     m_aCodeGenerator.genCodeLine ("    jj_scanpos = token;");
@@ -1534,7 +1534,7 @@ public class ParseEngine
     final EOutputLanguage eOutputLanguage = m_aCodeGenerator.getOutputLanguage ();
     if (!bRecursive_call)
     {
-      m_aCodeGenerator.genCodeLine (_syntax ().getLookaheadScanDeclaration (e.getInternalName ()));
+      m_aCodeGenerator.genCodeLine (_lang ().getLookaheadScanDeclaration (e.getInternalName ()));
 
       m_aCodeGenerator.genCodeLine (" {");
       switch (eOutputLanguage)
@@ -1962,8 +1962,7 @@ public class ParseEngine
         if (Options.isDebugParser ())
         {
           aCodeGenerator.genCodeNewLine ();
-          for (final String sLine : IParserSyntax.of (eOutputLanguage)
-                                                 .getTraceEnterLines (JavaCCGlobals.addUnicodeEscapes (cp.getLhs ())))
+          for (final String sLine : eOutputLanguage.getTraceEnterLines (JavaCCGlobals.addUnicodeEscapes (cp.getLhs ())))
             aCodeGenerator.genCodeLine (sLine);
           aCodeGenerator.genCodeLine ("    try {");
 
@@ -2016,7 +2015,7 @@ public class ParseEngine
             aCodeGenerator.printTrailingComments (t);
           }
           aCodeGenerator.genCode (")");
-          aCodeGenerator.genCode (IParserSyntax.of (eOutputLanguage).getThrowsClause ());
+          aCodeGenerator.genCode (eOutputLanguage.getThrowsClause ());
           for (final List <Token> aElement2 : jp.getThrowsList ())
           {
             aCodeGenerator.genCode (", ");

@@ -33,6 +33,7 @@
  */
 package com.helger.pgcc.output;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.jspecify.annotations.NonNull;
@@ -138,6 +139,67 @@ public enum EOutputLanguage implements IHasID <String>
       aSB.append (" {\n");
       return aSB.toString ();
     }
+
+    @Override
+    public String getMemberAccess ()
+    {
+      return ".";
+    }
+
+    @Override
+    public String getLoopStart (final int nLabelIndex)
+    {
+      return "label_" + nLabelIndex + ":\n" + "while (true) {";
+    }
+
+    @Override
+    public String getLoopBreak (final int nLabelIndex)
+    {
+      return "\nbreak label_" + nLabelIndex + ";";
+    }
+
+    @Override
+    public String getLoopEnd (final int nLabelIndex)
+    {
+      // A labelled break needs nothing after the loop
+      return "";
+    }
+
+    @Override
+    public String getMissingReturnStatement ()
+    {
+      return "    throw new IllegalStateException (\"Missing return statement in function\");";
+    }
+
+    @Override
+    public String getThrowsClause ()
+    {
+      return " throws ParseException";
+    }
+
+    @Override
+    public List <String> getTraceEnterLines (final String sProductionName)
+    {
+      return List.of ("    trace_call(\"" + sProductionName + "\");");
+    }
+
+    @Override
+    public List <String> getTraceExitLines (final String sProductionName)
+    {
+      return List.of ("    } finally {", "      trace_return(\"" + sProductionName + "\");", "    }");
+    }
+
+    @Override
+    public String getLookaheadEntryDeclaration (final String sInternalName)
+    {
+      return "  private boolean jj_2" + sInternalName + "(int xla)";
+    }
+
+    @Override
+    public String getLookaheadScanDeclaration (final String sInternalName)
+    {
+      return "  private boolean jj_3" + sInternalName + "()";
+    }
   },
   /** Generate C++. This backend is frozen but supported. */
   CPP ("c++")
@@ -225,6 +287,73 @@ public enum EOutputLanguage implements IHasID <String>
       _appendCommaSeparated (aSB, aSuperInterfaces);
       aSB.append (" {\npublic:\n");
       return aSB.toString ();
+    }
+    @Override
+    public String getMemberAccess ()
+    {
+      return "->";
+    }
+
+    @Override
+    public String getLoopStart (final int nLabelIndex)
+    {
+      return "while (!hasError) {";
+    }
+
+    @Override
+    public String getLoopBreak (final int nLabelIndex)
+    {
+      return "\ngoto end_label_" + nLabelIndex + ";";
+    }
+
+    @Override
+    public String getLoopEnd (final int nLabelIndex)
+    {
+      // The goto needs somewhere to land
+      return "\nend_label_" + nLabelIndex + ": ;";
+    }
+
+    @Override
+    public String getMissingReturnStatement ()
+    {
+      return "    throw \"Missing return statement in function\";";
+    }
+
+    @Override
+    public String getThrowsClause ()
+    {
+      // C++ reports through its error handler instead
+      return "";
+    }
+
+    @Override
+    public List <String> getTraceEnterLines (final String sProductionName)
+    {
+      // No finally in C++, so a pair of scope guards does the entry and the exit
+      return List.of ("    JJEnter<std::function<void()>> jjenter([this]() {trace_call  (\"" +
+                      sProductionName +
+                      "\"); });",
+                      "    JJExit <std::function<void()>> jjexit ([this]() {trace_return(\"" +
+                                  sProductionName +
+                                  "\"); });");
+    }
+
+    @Override
+    public List <String> getTraceExitLines (final String sProductionName)
+    {
+      return List.of ("    } catch(...) { }");
+    }
+
+    @Override
+    public String getLookaheadEntryDeclaration (final String sInternalName)
+    {
+      return " inline bool jj_2" + sInternalName + "(int xla)";
+    }
+
+    @Override
+    public String getLookaheadScanDeclaration (final String sInternalName)
+    {
+      return " inline bool jj_3" + sInternalName + "()";
     }
   };
 
@@ -402,6 +531,111 @@ public enum EOutputLanguage implements IHasID <String>
       aSB.append (aStrings[i]);
     }
   }
+
+  /**
+   * {@return how a member of a pointer or reference is reached - "." in Java, "-&gt;" in C++. Never
+   *         <code>null</code>.}
+   */
+  @NonNull
+  @Nonempty
+  public abstract String getMemberAccess ();
+
+  /**
+   * The head of a loop that the generated code may want to leave from the inside.
+   *
+   * @param nLabelIndex
+   *        The unique number of this loop within the production.
+   * @return The code that opens the loop, without the indentation change. Never <code>null</code>.
+   */
+  @NonNull
+  @Nonempty
+  public abstract String getLoopStart (int nLabelIndex);
+
+  /**
+   * How the generated code leaves a loop from the inside.
+   *
+   * @param nLabelIndex
+   *        The number used by the matching {@link #getLoopStart(int)}.
+   * @return The statement that leaves that loop. Never <code>null</code>.
+   */
+  @NonNull
+  @Nonempty
+  public abstract String getLoopBreak (int nLabelIndex);
+
+  /**
+   * What a loop needs after its closing brace, which in C++ is where a break lands.
+   *
+   * @param nLabelIndex
+   *        The number used by the matching {@link #getLoopStart(int)}.
+   * @return What has to follow the closing brace of the loop - a landing label in C++, nothing in
+   *         Java. Never <code>null</code>, but maybe empty.
+   */
+  @NonNull
+  public abstract String getLoopEnd (int nLabelIndex);
+
+  /**
+   * {@return the statement that a non-void production ends with when control can fall off the end -
+   *         the compiler requires it in Java, and C++ needs its own spelling. Never
+   *         <code>null</code>.}
+   */
+  @NonNull
+  @Nonempty
+  public abstract String getMissingReturnStatement ();
+
+  /**
+   * What follows a production's parameter list to declare that it can fail.
+   *
+   * @return " throws ParseException" in Java, nothing in C++, which reports through its error
+   *         handler. Never <code>null</code>, but maybe empty.
+   */
+  @NonNull
+  public abstract String getThrowsClause ();
+
+  /**
+   * The tracing that {@code DEBUG_PARSER} adds when a production is entered. Java prints on entry
+   * and prints again from a finally block; C++ has no finally, so it declares scope guards that do
+   * both.
+   *
+   * @param sProductionName
+   *        The name of the production, already escaped. May not be <code>null</code>.
+   * @return The lines to emit, in order. Never <code>null</code>.
+   */
+  @NonNull
+  public abstract List <String> getTraceEnterLines (@NonNull String sProductionName);
+
+  /**
+   * The counterpart of {@link #getTraceEnterLines(String)} that closes the production's try block.
+   *
+   * @param sProductionName
+   *        The name of the production, already escaped. May not be <code>null</code>.
+   * @return The lines to emit, in order. Never <code>null</code>.
+   */
+  @NonNull
+  public abstract List <String> getTraceExitLines (@NonNull String sProductionName);
+
+  /**
+   * The header of the routine that the parser calls to try a syntactic lookahead.
+   *
+   * @param sInternalName
+   *        The generated suffix of the lookahead routine. May not be <code>null</code>.
+   * @return The declaration of the {@code jj_2} entry point, which takes the lookahead limit. Never
+   *         <code>null</code>.
+   */
+  @NonNull
+  @Nonempty
+  public abstract String getLookaheadEntryDeclaration (@NonNull String sInternalName);
+
+  /**
+   * The header of the routine that walks one expansion during a syntactic lookahead.
+   *
+   * @param sInternalName
+   *        The generated suffix of the lookahead routine. May not be <code>null</code>.
+   * @return The declaration of the {@code jj_3} routine that does the actual scan. Never
+   *         <code>null</code>.
+   */
+  @NonNull
+  @Nonempty
+  public abstract String getLookaheadScanDeclaration (@NonNull String sInternalName);
 
   /**
    * {@return <code>true</code> if this is the Java backend}
