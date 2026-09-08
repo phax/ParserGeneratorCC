@@ -34,7 +34,6 @@
 package com.helger.pgcc.jjtree;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -48,42 +47,34 @@ public class JJTreeGlobals
   /**
    * This set stores the JJTree-specific options that should not be passed down to JavaCC
    */
-  private static final Set <String> JJTREE_OPTIONS = new HashSet <> ();
-
-  static final List <String> TOOL_LIST = new ArrayList <> ();
+  /**
+   * The JJTree specific options, which must not be passed down to JavaCC.
+   */
+  private static final Set <String> JJTREE_OPTIONS = Set.of ("JJTREE_OUTPUT_DIRECTORY",
+                                                            "MULTI",
+                                                            "NODE_PREFIX",
+                                                            "NODE_PACKAGE",
+                                                            "NODE_EXTENDS",
+                                                            "NODE_CLASS",
+                                                            "NODE_STACK_SIZE",
+                                                            "NODE_DEFAULT_VOID",
+                                                            "OUTPUT_FILE",
+                                                            "CHECK_DEFINITE_NODE",
+                                                            "NODE_SCOPE_HOOK",
+                                                            "TRACK_TOKENS",
+                                                            "NODE_FACTORY",
+                                                            "NODE_USES_PARSER",
+                                                            "BUILD_NODE_FILES",
+                                                            "VISITOR",
+                                                            "VISITOR_EXCEPTION",
+                                                            "VISITOR_DATA_TYPE",
+                                                            "VISITOR_RETURN_TYPE",
+                                                            "VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME",
+                                                            "NODE_INCLUDES");
 
   static void initialize ()
   {
-    TOOL_LIST.clear ();
     PGCCContext.current ().jjtree ().reset ();
-
-    JJTREE_OPTIONS.clear ();
-    JJTREE_OPTIONS.add ("JJTREE_OUTPUT_DIRECTORY");
-    JJTREE_OPTIONS.add ("MULTI");
-    JJTREE_OPTIONS.add ("NODE_PREFIX");
-    JJTREE_OPTIONS.add ("NODE_PACKAGE");
-    JJTREE_OPTIONS.add ("NODE_EXTENDS");
-    JJTREE_OPTIONS.add ("NODE_CLASS");
-    JJTREE_OPTIONS.add ("NODE_STACK_SIZE");
-    JJTREE_OPTIONS.add ("NODE_DEFAULT_VOID");
-    JJTREE_OPTIONS.add ("OUTPUT_FILE");
-    JJTREE_OPTIONS.add ("CHECK_DEFINITE_NODE");
-    JJTREE_OPTIONS.add ("NODE_SCOPE_HOOK");
-    JJTREE_OPTIONS.add ("TRACK_TOKENS");
-    JJTREE_OPTIONS.add ("NODE_FACTORY");
-    JJTREE_OPTIONS.add ("NODE_USES_PARSER");
-    JJTREE_OPTIONS.add ("BUILD_NODE_FILES");
-    JJTREE_OPTIONS.add ("VISITOR");
-    JJTREE_OPTIONS.add ("VISITOR_EXCEPTION");
-    JJTREE_OPTIONS.add ("VISITOR_DATA_TYPE");
-    JJTREE_OPTIONS.add ("VISITOR_RETURN_TYPE");
-    JJTREE_OPTIONS.add ("VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME");
-    JJTREE_OPTIONS.add ("NODE_INCLUDES");
-  }
-
-  static
-  {
-    initialize ();
   }
 
   public static boolean isOptionJJTreeOnly (@NonNull final String optionName)

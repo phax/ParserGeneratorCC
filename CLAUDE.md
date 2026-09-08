@@ -67,13 +67,16 @@ errors, the parsed grammar, the parser build scratch, the lookahead scratch, the
 scratch, the JJTree and JJDoc runs, and the whole token manager generation including the per lexical
 state NFA and string literal construction.
 
-Three mutable statics remain and are meant to: the two console printers in `PGPrinter` and the
-`FilesJava` test hook. `Main.reInitAll ()` is two lines.
+There is no `static` non final field left in `src/main/java`. The two settings that are genuinely
+process wide - the console printers and the "read templates from the class path" test hook - are
+instance fields on the `ProcessState` singleton in the same package, because they must survive
+`Main.reInitAll ()` and be visible to a worker thread. `Main.reInitAll ()` is two lines.
 
 When hunting for state, grep for `static final` holding a collection as well as for plain mutable
-statics - eleven per run collections hid behind it and were found only after the migration had been
+statics - fifteen per run collections hid behind it and were found only after the migration had been
 called finished. One of them made a second JJTree run in the same JVM emit the first grammar's node
-classes.
+classes. What is left as `static final` outside the context package is five genuine constants, built
+with `Map.copyOf` / `Set.of` so that they cannot be written to at all.
 
 Three guard rails protect this: `StateIsolationTest` (generate, generate something else, generate
 again, byte-identical), `ConcurrentGenerationTest` (two grammars at once, matching their sequential

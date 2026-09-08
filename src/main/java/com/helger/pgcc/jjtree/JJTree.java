@@ -43,6 +43,7 @@ import com.helger.pgcc.jjtree.output.JJTreeStateCpp;
 import com.helger.pgcc.jjtree.output.JJTreeStateJava;
 import com.helger.pgcc.jjtree.output.NodeFilesCpp;
 import com.helger.pgcc.jjtree.output.NodeFilesJava;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.Options;
 
@@ -118,8 +119,8 @@ public class JJTree
   @NonNull
   public ESuccess main (final String [] args)
   {
-    // initialize static state for allowing repeat runs without exiting
-    ASTNodeDescriptor.reInit ();
+    // Drop everything the previous run left behind, so that repeat runs in one JVM are
+    // independent. reInitAll replaces the whole context, the JJTree state included
     com.helger.pgcc.parser.Main.reInitAll ();
 
     JavaCCGlobals.bannerLine ("Tree Builder", "");
@@ -166,9 +167,9 @@ public class JJTree
       }
       PGPrinter.info ("Reading from file " + io.getInputFilename () + " . . .");
 
-      JJTreeGlobals.TOOL_LIST.clear ();
-      JJTreeGlobals.TOOL_LIST.addAll (JavaCCGlobals.getToolNames (fn));
-      JJTreeGlobals.TOOL_LIST.add ("JJTree");
+      PGCCContext.current ().jjtree ().toolList ().clear ();
+      PGCCContext.current ().jjtree ().toolList ().addAll (JavaCCGlobals.getToolNames (fn));
+      PGCCContext.current ().jjtree ().toolList ().add ("JJTree");
 
       try
       {

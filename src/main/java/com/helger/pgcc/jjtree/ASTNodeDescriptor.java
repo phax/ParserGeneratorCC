@@ -41,12 +41,10 @@ import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.pgcc.context.PGCCContext;
+
 public class ASTNodeDescriptor extends JJTreeNode
 {
-  private static final List <String> s_aNodeIds = new ArrayList <> ();
-  private static final List <String> s_aNodeNames = new ArrayList <> ();
-  private static final Map <String, String> s_aNodeSeen = new HashMap <> ();
-
   static ASTNodeDescriptor indefinite (final String s)
   {
     final ASTNodeDescriptor nd = new ASTNodeDescriptor (JJTreeParserTreeConstants.JJTNODEDESCRIPTOR);
@@ -59,21 +57,13 @@ public class ASTNodeDescriptor extends JJTreeNode
   @NonNull
   public static List <String> getNodeIds ()
   {
-    return s_aNodeIds;
+    return PGCCContext.current ().jjtree ().nodeIds ();
   }
 
   @NonNull
   public static List <String> getNodeNames ()
   {
-    return s_aNodeNames;
-  }
-
-  static void reInit ()
-  {
-    // initialize static state for allowing repeat runs without exiting
-    s_aNodeIds.clear ();
-    s_aNodeNames.clear ();
-    s_aNodeSeen.clear ();
+    return PGCCContext.current ().jjtree ().nodeNames ();
   }
 
   private boolean m_faked = false;
@@ -89,11 +79,11 @@ public class ASTNodeDescriptor extends JJTreeNode
   void setNodeIdValue ()
   {
     final String k = getNodeId ();
-    if (!s_aNodeSeen.containsKey (k))
+    if (!PGCCContext.current ().jjtree ().nodeSeen ().containsKey (k))
     {
-      s_aNodeSeen.put (k, k);
-      s_aNodeNames.add (m_name);
-      s_aNodeIds.add (k);
+      PGCCContext.current ().jjtree ().nodeSeen ().put (k, k);
+      PGCCContext.current ().jjtree ().nodeNames ().add (m_name);
+      PGCCContext.current ().jjtree ().nodeIds ().add (k);
     }
   }
 

@@ -506,7 +506,7 @@ public class Options
                                         sName +
                                         "\".  Option setting will be ignored. Valid options are: " +
                                         StringImplode.imploder ()
-                                                     .source (s_aSupportedJavaTemplateTypes)
+                                                     .source (SUPPORTED_JAVA_TEMPLATE_TYPES)
                                                      .separator (", ")
                                                      .build ());
       }
@@ -524,7 +524,7 @@ public class Options
                                           sName +
                                           "\".  Option setting will be ignored. Valid options are: " +
                                           StringImplode.imploder ()
-                                                       .source (s_aSupportedJavaCharStreamTypes)
+                                                       .source (SUPPORTED_JAVA_CHAR_STREAM_TYPES)
                                                        .separator (", ")
                                                        .build ());
         }
@@ -1022,16 +1022,12 @@ public class Options
     return new File (stringValue (USEROPTION__OUTPUT_DIRECTORY));
   }
 
-  private static final Set <String> s_aSupportedJavaTemplateTypes = new HashSet <> ();
-  static
-  {
-    s_aSupportedJavaTemplateTypes.add (JAVA_TEMPLATE_TYPE_CLASSIC);
-    s_aSupportedJavaTemplateTypes.add (JAVA_TEMPLATE_TYPE_MODERN);
-  }
+  private static final Set <String> SUPPORTED_JAVA_TEMPLATE_TYPES = Set.of (JAVA_TEMPLATE_TYPE_CLASSIC,
+                                                                            JAVA_TEMPLATE_TYPE_MODERN);
 
   private static boolean _isValidJavaTemplateType (@Nullable final String sType)
   {
-    return sType == null ? false : s_aSupportedJavaTemplateTypes.contains (sType.toLowerCase (Locale.US));
+    return sType == null ? false : SUPPORTED_JAVA_TEMPLATE_TYPES.contains (sType.toLowerCase (Locale.US));
   }
 
   @NonNull
@@ -1045,16 +1041,12 @@ public class Options
     return stringValue (USEROPTION__JAVA_TEMPLATE_TYPE);
   }
 
-  private static final Set <String> s_aSupportedJavaCharStreamTypes = new HashSet <> ();
-  static
-  {
-    s_aSupportedJavaCharStreamTypes.add (JAVA_CHAR_STREAM_TYPE_SIMPLE);
-    s_aSupportedJavaCharStreamTypes.add (JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE);
-  }
+  private static final Set <String> SUPPORTED_JAVA_CHAR_STREAM_TYPES = Set.of (JAVA_CHAR_STREAM_TYPE_SIMPLE,
+                                                                               JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE);
 
   private static boolean _isValidJavaCharStreamType (@Nullable final String sType)
   {
-    return sType == null ? false : s_aSupportedJavaCharStreamTypes.contains (sType.toLowerCase (Locale.US));
+    return sType == null ? false : SUPPORTED_JAVA_CHAR_STREAM_TYPES.contains (sType.toLowerCase (Locale.US));
   }
 
   public static String getJavaCharStreamType ()

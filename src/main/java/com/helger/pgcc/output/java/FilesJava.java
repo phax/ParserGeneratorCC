@@ -48,6 +48,7 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.WillNotClose;
 import com.helger.base.system.EJavaVersion;
+import com.helger.pgcc.context.ProcessState;
 import com.helger.pgcc.JavaVersionHelper;
 import com.helger.pgcc.PGVersion;
 import com.helger.pgcc.output.OutputFile;
@@ -86,14 +87,12 @@ public class FilesJava
    */
   private static final String tokenMgrErrorVersion = PGVersion.MAJOR_DOT_MINOR;
 
-  private static boolean s_bReadFromClassPath = true;
-
   private FilesJava ()
   {}
 
   public static void setReadFromClassPath (final boolean bReadFromClassPath)
   {
-    s_bReadFromClassPath = bReadFromClassPath;
+    ProcessState.getInstance ().setReadTemplatesFromClassPath (bReadFromClassPath);
   }
 
   private static Map <String, Object> _getDefaultOptions ()
@@ -145,7 +144,7 @@ public class FilesJava
         final Map <String, Object> options = _getDefaultOptions ();
         final OutputFileGenerator generator = new OutputFileGenerator (locations.getCharStreamTemplateResourceUrl (),
                                                                        options);
-        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.setReadFromClasspath (ProcessState.getInstance ().isReadTemplatesFromClassPath ());
         generator.generate (ostr);
       }
     }
@@ -174,7 +173,7 @@ public class FilesJava
         final Map <String, Object> options = _getDefaultOptions ();
         final OutputFileGenerator generator = new OutputFileGenerator (locations.getAbstractCharStreamTemplateResourceUrl (),
                                                                        options);
-        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.setReadFromClasspath (ProcessState.getInstance ().isReadTemplatesFromClassPath ());
         generator.generate (ostr);
       }
     }
@@ -203,7 +202,7 @@ public class FilesJava
         final Map <String, Object> options = _getDefaultOptions ();
         final OutputFileGenerator generator = new OutputFileGenerator (locations.getJavaCharStreamTemplateResourceUrl (),
                                                                        options);
-        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.setReadFromClasspath (ProcessState.getInstance ().isReadTemplatesFromClassPath ());
         generator.generate (ostr);
       }
     }
@@ -231,7 +230,7 @@ public class FilesJava
         final Map <String, Object> options = _getDefaultOptions ();
         final OutputFileGenerator generator = new OutputFileGenerator (locations.getSimpleCharStreamTemplateResourceUrl (),
                                                                        options);
-        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.setReadFromClasspath (ProcessState.getInstance ().isReadTemplatesFromClassPath ());
         generator.generate (ostr);
       }
     }
@@ -259,7 +258,7 @@ public class FilesJava
         final Map <String, Object> options = _getDefaultOptions ();
         final OutputFileGenerator generator = new OutputFileGenerator (locations.getCharSequenceCharStreamTemplateResourceUrl (),
                                                                        options);
-        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.setReadFromClasspath (ProcessState.getInstance ().isReadTemplatesFromClassPath ());
         generator.generate (ostr);
       }
     }
@@ -294,7 +293,7 @@ public class FilesJava
 
         final Map <String, Object> options = _getDefaultOptions ();
         final OutputFileGenerator generator = new OutputFileGenerator (templatePath, options);
-        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.setReadFromClasspath (ProcessState.getInstance ().isReadTemplatesFromClassPath ());
         generator.generate (ostr);
       }
     }
@@ -322,7 +321,7 @@ public class FilesJava
         final Map <String, Object> options = _getDefaultOptions ();
         final OutputFileGenerator generator = new OutputFileGenerator (locations.getParseExceptionTemplateResourceUrl (),
                                                                        options);
-        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.setReadFromClasspath (ProcessState.getInstance ().isReadTemplatesFromClassPath ());
         generator.generate (ostr);
       }
     }
@@ -350,7 +349,7 @@ public class FilesJava
         final Map <String, Object> options = _getDefaultOptions ();
         final OutputFileGenerator generator = new OutputFileGenerator (locations.getTokenMgrErrorTemplateResourceUrl (),
                                                                        options);
-        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.setReadFromClasspath (ProcessState.getInstance ().isReadTemplatesFromClassPath ());
         generator.generate (ostr);
       }
     }
@@ -380,7 +379,7 @@ public class FilesJava
         final Map <String, Object> options = _getDefaultOptions ();
         final OutputFileGenerator generator = new OutputFileGenerator (locations.getTokenTemplateResourceUrl (),
                                                                        options);
-        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.setReadFromClasspath (ProcessState.getInstance ().isReadTemplatesFromClassPath ());
         generator.generate (ostr);
       }
     }
@@ -408,7 +407,7 @@ public class FilesJava
         final Map <String, Object> options = Options.getAllOptions ();
         final OutputFileGenerator generator = new OutputFileGenerator (locations.getTokenManagerTemplateResourceUrl (),
                                                                        options);
-        generator.setReadFromClasspath (s_bReadFromClassPath);
+        generator.setReadFromClasspath (ProcessState.getInstance ().isReadTemplatesFromClassPath ());
         generator.generate (ostr);
       }
     }

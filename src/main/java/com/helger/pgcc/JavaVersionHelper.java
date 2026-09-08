@@ -58,10 +58,11 @@ public final class JavaVersionHelper
    * Major language version to enum value. Derived from the enum constant names, so that a new JDK
    * added to ph-base is picked up without a change here.
    */
-  private static final Map <Integer, EJavaVersion> MAJOR_TO_VERSION = new HashMap <> ();
+  private static final Map <Integer, EJavaVersion> MAJOR_TO_VERSION;
 
   static
   {
+    final Map <Integer, EJavaVersion> aMap = new HashMap <> ();
     for (final EJavaVersion eVersion : EJavaVersion.values ())
     {
       // "JDK_1_8" -> 8, "JDK_17" -> 17, "UNKNOWN" -> not a version
@@ -75,8 +76,9 @@ public final class JavaVersionHelper
 
       final int nMajor = StringParser.parseInt (sMajor, -1);
       if (nMajor > 0)
-        MAJOR_TO_VERSION.put (Integer.valueOf (nMajor), eVersion);
+        aMap.put (Integer.valueOf (nMajor), eVersion);
     }
+    MAJOR_TO_VERSION = Map.copyOf (aMap);
   }
 
   private JavaVersionHelper ()

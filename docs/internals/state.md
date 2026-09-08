@@ -30,13 +30,18 @@ The old classes are still the API — `JavaCCGlobals.grammar ()`, `Options.getOu
 
 ## What is still static, and why
 
-| Class | Count | Why |
-|---|---|---|
-| `PGPrinter` | 2 | the console, legitimately process wide |
-| `FilesJava` | 1 | a test hook that makes templates load from the checkout |
+Nothing. There is no `static` non final field anywhere in `src/main/java`.
 
-That is all of them: **117 mutable statics at the start of this work, 3 now**, and neither of the
-remaining classes holds anything about a generator run.
+Two things are still process wide rather than per run, and they live on
+`com.helger.pgcc.context.ProcessState`: where the tool writes its console output, and whether the
+templates are read from the class path or from this checkout. Neither belongs to a generator run.
+An embedder sets them once; a test sets them in `@BeforeClass` and then generates on whatever
+thread it likes, which `ConcurrentGenerationTest` does. Putting them in `PGCCContext` would lose
+the setting the moment `Main.reInitAll ()` replaces the context, and hide it from a worker thread.
+`ProcessState` holds them as instance fields on a `static final` singleton, so the reference is
+constant and the state is not static.
+
+**117 mutable statics at the start of this work, 0 now.**
 
 ### The `static final` trap
 
@@ -63,6 +68,16 @@ lifetime is the run rather than the lexical state - it collects one entry per le
 sits beside `nfa ()` and `stringLiterals ()` rather than inside them, and it has no reset method
 because `Main.reInitAll ()` drops the whole context anyway. The three JJTree collections moved into
 `JJTreeState`.
+
+All of these are now in `TokenizerDataBuildState` and `JJTreeState`, together with
+`ASTNodeDescriptor`'s three node tables and `JJTreeGlobals.TOOL_LIST`, which had the same shape.
+What is left as `static final` outside the context package is five genuine constants, and they are
+now immutable rather than merely final: `Map.copyOf`, `Set.of` and `Collections.unmodifiableSet`
+instead of a `HashMap` that happens not to be written to after the static initializer.
+
+`JJTreeGlobals.JJTREE_OPTIONS` was the odd one out - a constant set that `initialize ()` cleared and
+refilled with the same 21 names on every run. It is a `Set.of` now and `initialize ()` only resets
+the context.
 
 When looking for state, grep for `static final` holding a collection as well as for plain mutable
 statics.

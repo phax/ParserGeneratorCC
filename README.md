@@ -76,6 +76,7 @@ v2.0.4 - work in progress
 * Fixed JJTree carrying node types from one run into the next when several grammars are processed in the same JVM, so that the second grammar's output contained the first grammar's node classes. The C++ node files were affected most visibly
 * Fixed `JavaCCInterpreter` failing on the first character of any input for grammars with more than one character class token. The composite state the tokenizer starts in had no entry in the `TokenizerData`, so the NFA was skipped entirely. Only the interpreter is affected; generated code never used this path
 * Fixed `JavaCCInterpreter` losing the characters a `MORE` production consumed, so that a token assembled across a lexical state switch reported only its last piece - a string literal came out as its closing quote
+* **Breaking API change** No `static` non final field is left in the code base. The last per run collections - `ASTNodeDescriptor`'s node tables and `JJTreeGlobals.TOOL_LIST` - moved into `PGCCContext`, and the two genuinely process wide settings moved to the new `com.helger.pgcc.context.ProcessState`. `PGPrinter.init` and `FilesJava.setReadFromClassPath` are unchanged
 
 v2.0.3 - 2026-09-08
 * Added the new option `JAVA_CHAR_STREAM_TYPE` that allows to generate a `CharSequenceCharStream` that needs no internal buffer at all ([issue #21](https://github.com/tulipcc/ParserGeneratorCC/issues/21))

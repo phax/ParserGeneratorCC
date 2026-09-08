@@ -56,7 +56,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
   {
     final JJTreeIO io = (JJTreeIO) data;
     io.println ("/*@bgen(jjtree) " +
-                JavaCCGlobals.getIdString (JJTreeGlobals.TOOL_LIST, new File (io.getOutputFilename ()).getName ()) +
+                JavaCCGlobals.getIdString (PGCCContext.current ().jjtree ().toolList (), new File (io.getOutputFilename ()).getName ()) +
                 (Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) ? "" : " */"));
     io.print ((Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) ? "" : "/*") + "@egen*/");
 

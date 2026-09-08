@@ -46,6 +46,7 @@ import org.jspecify.annotations.Nullable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.rt.StackTraceHelper;
 import com.helger.base.string.StringHelper;
+import com.helger.pgcc.context.ProcessState;
 
 public final class PGPrinter
 {
@@ -87,11 +88,27 @@ public final class PGPrinter
     }
   }
 
-  private static IPrinter s_aOut = new PSPrinter (System.out, false);
-  private static IPrinter s_aErr = new PSPrinter (System.err, false);
+  static
+  {
+    // The default is the console. It lives on ProcessState so that no static non final field
+    // exists outside the context package
+    ProcessState.getInstance ().setPrinters (new PSPrinter (System.out, false), new PSPrinter (System.err, false));
+  }
 
   private PGPrinter ()
   {}
+
+  @NonNull
+  private static IPrinter _out ()
+  {
+    return ProcessState.getInstance ().getOut ();
+  }
+
+  @NonNull
+  private static IPrinter _err ()
+  {
+    return ProcessState.getInstance ().getErr ();
+  }
 
   public static void init (@NonNull final IPrinter aPrinter)
   {
@@ -100,25 +117,22 @@ public final class PGPrinter
 
   public static void init (@NonNull final IPrinter aPrinterInfo, @NonNull final IPrinter aPrinterError)
   {
-    ValueEnforcer.notNull (aPrinterInfo, "PrinterInfo");
-    ValueEnforcer.notNull (aPrinterError, "PrinterError");
-    s_aOut = aPrinterInfo;
-    s_aErr = aPrinterError;
+    ProcessState.getInstance ().setPrinters (aPrinterInfo, aPrinterError);
   }
 
   public static void debug (@NonNull final String sMsg)
   {
-    s_aOut.println (sMsg);
+    _out ().println (sMsg);
   }
 
   public static void info ()
   {
-    s_aOut.println (null);
+    _out ().println (null);
   }
 
   public static void info (@NonNull final String sMsg)
   {
-    s_aOut.println (sMsg);
+    _out ().println (sMsg);
   }
 
   public static void warn (@NonNull final String sMsg)
@@ -128,9 +142,9 @@ public final class PGPrinter
 
   public static void warn (@NonNull final String sMsg, @Nullable final Throwable t)
   {
-    s_aErr.println (sMsg);
+    _err ().println (sMsg);
     if (t != null)
-      s_aErr.println (StackTraceHelper.getStackAsString (t));
+      _err ().println (StackTraceHelper.getStackAsString (t));
   }
 
   public static void error (@NonNull final String sMsg)
@@ -140,21 +154,21 @@ public final class PGPrinter
 
   public static void error (@NonNull final String sMsg, @Nullable final Throwable t)
   {
-    s_aErr.println (sMsg);
+    _err ().println (sMsg);
     if (t != null)
-      s_aErr.println (StackTraceHelper.getStackAsString (t));
+      _err ().println (StackTraceHelper.getStackAsString (t));
   }
 
   public static void flush ()
   {
-    s_aOut.flush ();
-    s_aErr.flush ();
+    _out ().flush ();
+    _err ().flush ();
   }
 
   public static void close () throws Exception
   {
-    s_aOut.close ();
-    s_aErr.close ();
+    _out ().close ();
+    _err ().close ();
   }
 
   @NonNull

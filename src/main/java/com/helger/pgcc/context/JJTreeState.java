@@ -64,6 +64,16 @@ public final class JJTreeState
    * the same JVM emitted the node classes of the first grammar as well: running Alpha and then Beta
    * produced ASTAlfa in Beta's output directory, and a reference to it in BetaTree.h.
    */
+  /*
+   * The node descriptors seen so far, in declaration order, and the tools that produced the file
+   * being read. Both were static collections outside the context - in ASTNodeDescriptor and
+   * JJTreeGlobals - with hand written clear () calls to undo the previous run.
+   */
+  private final List <String> m_aNodeIds = new ArrayList <> ();
+  private final List <String> m_aNodeNames = new ArrayList <> ();
+  private final Map <String, String> m_aNodeSeen = new HashMap <> ();
+  private final List <String> m_aToolList = new ArrayList <> ();
+
   private final Set <String> m_aNodesGenerated = new HashSet <> ();
   private final Set <String> m_aNodesToGenerate = new HashSet <> ();
   private final List <String> m_aHeadersForJJTreeH = new ArrayList <> ();
@@ -74,6 +84,43 @@ public final class JJTreeState
   private Token m_aParserImplements;
   private Token m_aParserClassBodyStart;
   private Token m_aParserImports;
+
+  /**
+   * @return The node ids, in the order the descriptors were seen. Never <code>null</code>.
+   */
+  @NonNull
+  public List <String> nodeIds ()
+  {
+    return m_aNodeIds;
+  }
+
+  /**
+   * @return The node names, in the same order as {@link #nodeIds()}. Never <code>null</code>.
+   */
+  @NonNull
+  public List <String> nodeNames ()
+  {
+    return m_aNodeNames;
+  }
+
+  /**
+   * @return The node ids already recorded, so that a repeated descriptor is only counted once.
+   *         Never <code>null</code>.
+   */
+  @NonNull
+  public Map <String, String> nodeSeen ()
+  {
+    return m_aNodeSeen;
+  }
+
+  /**
+   * @return The tools that produced the file being read, JJTree included. Never <code>null</code>.
+   */
+  @NonNull
+  public List <String> toolList ()
+  {
+    return m_aToolList;
+  }
 
   /**
    * @return The names of the node files already written in this run. Never <code>null</code>.
@@ -188,6 +235,10 @@ public final class JJTreeState
   public void reset ()
   {
     m_aProductions.clear ();
+    m_aNodeIds.clear ();
+    m_aNodeNames.clear ();
+    m_aNodeSeen.clear ();
+    m_aToolList.clear ();
     m_aNodesGenerated.clear ();
     m_aNodesToGenerate.clear ();
     m_aHeadersForJJTreeH.clear ();
