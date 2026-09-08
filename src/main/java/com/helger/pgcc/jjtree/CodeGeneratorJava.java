@@ -61,8 +61,9 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
     aIo.println ("/*@bgen(jjtree) " +
-                JavaCCGlobals.getIdString (PGCCContext.current ().jjtree ().toolList (), new File (aIo.getOutputFilename ()).getName ()) +
-                " */");
+                 JavaCCGlobals.getIdString (PGCCContext.current ().jjtree ().toolList (),
+                                            new File (aIo.getOutputFilename ()).getName ()) +
+                 " */");
     aIo.print ("/*@egen*/");
 
     return aNode.childrenAccept (this, aIo);
@@ -182,10 +183,10 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
         // specified in
         // OPTIONS), then generate an import for the node package.
         if (StringHelper.isNotEmpty (PGCCContext.current ().jjtree ().getNodePackageName ()) &&
-          !PGCCContext.current ()
-                      .jjtree ()
-                      .getNodePackageName ()
-                      .equals (PGCCContext.current ().jjtree ().getPackageName ()))
+            !PGCCContext.current ()
+                        .jjtree ()
+                        .getNodePackageName ()
+                        .equals (PGCCContext.current ().jjtree ().getPackageName ()))
         {
           aIo.getOut ().println ();
           aIo.getOut ().println ("import " + PGCCContext.current ().jjtree ().getNodePackageName () + ".*;");
@@ -395,25 +396,25 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
     {
       // Old-style multiple-implementations.
       aIo.println ("(" +
-                  sNodeClass +
-                  ")" +
-                  sNodeClass +
-                  ".jjtCreate(" +
-                  sParserArg +
-                  aNs.getNodeDescriptor ().getNodeId () +
-                  ");");
+                   sNodeClass +
+                   ")" +
+                   sNodeClass +
+                   ".jjtCreate(" +
+                   sParserArg +
+                   aNs.getNodeDescriptor ().getNodeId () +
+                   ");");
     }
     else
       if (JJTreeOptions.getNodeFactory ().length () > 0)
       {
         aIo.println ("(" +
-                    sNodeClass +
-                    ")" +
-                    JJTreeOptions.getNodeFactory () +
-                    ".jjtCreate(" +
-                    sParserArg +
-                    aNs.getNodeDescriptor ().getNodeId () +
-                    ");");
+                     sNodeClass +
+                     ")" +
+                     JJTreeOptions.getNodeFactory () +
+                     ".jjtCreate(" +
+                     sParserArg +
+                     aNs.getNodeDescriptor ().getNodeId () +
+                     ");");
       }
       else
       {
@@ -436,7 +437,10 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
     }
   }
 
-  void insertCloseNodeCode (@NonNull final NodeScope aNs, @NonNull final JJTreeIO aIo, final String sIndent, final boolean bIsFinal)
+  void insertCloseNodeCode (@NonNull final NodeScope aNs,
+                            @NonNull final JJTreeIO aIo,
+                            final String sIndent,
+                            final boolean bIsFinal)
   {
     final String sCloseNode = aNs.getNodeDescriptor ().closeNode (aNs.getNodeVar ());
     aIo.println (sIndent + sCloseNode);
@@ -562,7 +566,10 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
     }
   }
 
-  void tryExpansionUnit (@NonNull final NodeScope aNs, @NonNull final JJTreeIO aIo, final String sIndent, @NonNull final JJTreeNode aExpansion_unit)
+  void tryExpansionUnit (@NonNull final NodeScope aNs,
+                         @NonNull final JJTreeIO aIo,
+                         final String sIndent,
+                         @NonNull final JJTreeNode aExpansion_unit)
   {
     aIo.println (sIndent + "try {");
     closeJJTreeComment (aIo);

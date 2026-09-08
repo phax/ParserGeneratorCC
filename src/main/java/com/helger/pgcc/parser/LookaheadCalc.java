@@ -184,7 +184,7 @@ public final class LookaheadCalc
           {
             JavaCCErrors.warning (aExp,
                                   "This choice can expand to the empty token sequence " +
-                                       "and will therefore always be taken in favor of the choices appearing later.");
+                                        "and will therefore always be taken in favor of the choices appearing later.");
             break;
           }
           else
@@ -192,7 +192,7 @@ public final class LookaheadCalc
             {
               JavaCCErrors.warning (aExp,
                                     "JAVACODE non-terminal will force this choice to be taken " +
-                                         "in favor of the choices appearing later.");
+                                          "in favor of the choices appearing later.");
               break;
             }
         }
@@ -328,9 +328,9 @@ public final class LookaheadCalc
         {
           JavaCCErrors.warning (aNested,
                                 "JAVACODE non-terminal within " +
-                                        _image (aExp) +
-                                        " construct will force this construct to be entered in favor of " +
-                                        "expansions occurring after construct.");
+                                         _image (aExp) +
+                                         " construct will force this construct to be entered in favor of " +
+                                         "expansions occurring after construct.");
         }
       }
       if ((m = _overlap (aFirst, aFollow)) == null)

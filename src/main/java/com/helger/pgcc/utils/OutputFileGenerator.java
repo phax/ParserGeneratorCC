@@ -121,7 +121,7 @@ public class OutputFileGenerator
       throw new IOException ("Invalid template name: " + m_sTemplateName);
 
     try (final NonBlockingBufferedReader aIn = new NonBlockingBufferedReader (new InputStreamReader (aIs,
-                                                                                                    TEMPLATE_FILE_CHARSET)))
+                                                                                                     TEMPLATE_FILE_CHARSET)))
     {
       _process (aIn, aOut, false);
     }
@@ -202,7 +202,8 @@ public class OutputFileGenerator
       }
       if (cCh == '?')
       {
-        sValue = _substituteWithConditional (sVariableExpression.substring (0, i), sVariableExpression.substring (i + 1));
+        sValue = _substituteWithConditional (sVariableExpression.substring (0, i),
+                                             sVariableExpression.substring (i + 1));
         break;
       }
       if (cCh != '_' && !Character.isJavaIdentifierPart (cCh))
@@ -231,7 +232,8 @@ public class OutputFileGenerator
    * @throws IOException
    *         If the expression is malformed
    */
-  private String _substituteWithConditional (final String sVariableName, @NonNull final String sValues) throws IOException
+  private String _substituteWithConditional (final String sVariableName, @NonNull final String sValues)
+                                                                                                        throws IOException
   {
     // Split values into true and false values.
 
@@ -250,7 +252,8 @@ public class OutputFileGenerator
    * @param sDefaultValue
    * @return
    */
-  private String _substituteWithDefault (@NonNull final String sVariableName, final String sDefaultValue) throws IOException
+  private String _substituteWithDefault (@NonNull final String sVariableName, final String sDefaultValue)
+                                                                                                          throws IOException
   {
     final Object aObj = m_aOptions.get (sVariableName.trim ());
     if (aObj == null || aObj.toString ().length () == 0)
@@ -281,7 +284,7 @@ public class OutputFileGenerator
   }
 
   private void _process (final NonBlockingBufferedReader aIn, @NonNull final Writer aOut, final boolean bIgnoring)
-                                                                                                       throws IOException
+                                                                                                                   throws IOException
   {
     // out.println("*** process ignore=" + ignoring + " : " + peekLine(in));
     while (_peekLine (aIn) != null)
@@ -308,7 +311,7 @@ public class OutputFileGenerator
   }
 
   private void _processIf (final NonBlockingBufferedReader aIn, final Writer aOut, final boolean bIgnoring)
-                                                                                                         throws IOException
+                                                                                                            throws IOException
   {
     String sLine = _getLine (aIn).trim ();
     assert sLine.trim ().startsWith ("#if");

@@ -58,10 +58,10 @@ import com.helger.xml.serialize.write.XMLMaskHelper;
  * Output BNF as HTML5.
  * <p>
  * This used to emit HTML 3.2, which is from 1997: upper case tags, <code>ALIGN</code> and
- * <code>VALIGN</code> attributes on every cell, and <code>&lt;a name&gt;</code> anchors. The
- * layout is a small default stylesheet now, so the markup says what things are rather than where
- * to put them, and a stylesheet given with the <code>CSS</code> option is linked after it and
- * therefore wins.
+ * <code>VALIGN</code> attributes on every cell, and <code>&lt;a name&gt;</code> anchors. The layout
+ * is a small default stylesheet now, so the markup says what things are rather than where to put
+ * them, and a stylesheet given with the <code>CSS</code> option is linked after it and therefore
+ * wins.
  */
 public class HTMLGenerator extends TextGenerator
 {

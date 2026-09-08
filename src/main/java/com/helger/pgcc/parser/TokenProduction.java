@@ -85,6 +85,7 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_nColumn;
   }
+
   /**
    * @param nColumn
    *        the column to set
@@ -93,6 +94,7 @@ public class TokenProduction implements IGrammarLocation
   {
     m_nColumn = nColumn;
   }
+
   /**
    * @return the line
    */
@@ -100,6 +102,7 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_nLine;
   }
+
   /**
    * @param nLine
    *        the line to set
@@ -108,6 +111,7 @@ public class TokenProduction implements IGrammarLocation
   {
     m_nLine = nLine;
   }
+
   /**
    * @return The value of m_aLexStates.
    */
@@ -115,6 +119,7 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_aLexStates;
   }
+
   /**
    * @param aValue
    *        The new value of m_aLexStates.
@@ -123,6 +128,7 @@ public class TokenProduction implements IGrammarLocation
   {
     m_aLexStates = aValue;
   }
+
   /**
    * @return The value of m_eKind.
    */
@@ -130,6 +136,7 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_eKind;
   }
+
   /**
    * @param aValue
    *        The new value of m_eKind.
@@ -138,6 +145,7 @@ public class TokenProduction implements IGrammarLocation
   {
     m_eKind = aValue;
   }
+
   /**
    * @return The value of m_aRespecs.
    */
@@ -145,6 +153,7 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_aRespecs;
   }
+
   /**
    * @param aValue
    *        The new value of m_aRespecs.
@@ -153,6 +162,7 @@ public class TokenProduction implements IGrammarLocation
   {
     m_aRespecs = aValue;
   }
+
   /**
    * @return The value of m_bIsExplicit.
    */
@@ -160,6 +170,7 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_bIsExplicit;
   }
+
   /**
    * @param aValue
    *        The new value of m_bIsExplicit.
@@ -168,6 +179,7 @@ public class TokenProduction implements IGrammarLocation
   {
     m_bIsExplicit = aValue;
   }
+
   /**
    * @return The value of m_bIgnoreCase.
    */
@@ -175,6 +187,7 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_bIgnoreCase;
   }
+
   /**
    * @param aValue
    *        The new value of m_bIgnoreCase.
@@ -183,6 +196,7 @@ public class TokenProduction implements IGrammarLocation
   {
     m_bIgnoreCase = aValue;
   }
+
   /**
    * @return The value of m_aFirstToken.
    */
@@ -190,6 +204,7 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_aFirstToken;
   }
+
   /**
    * @param aValue
    *        The new value of m_aFirstToken.
@@ -198,6 +213,7 @@ public class TokenProduction implements IGrammarLocation
   {
     m_aFirstToken = aValue;
   }
+
   /**
    * @return The value of m_aLastToken.
    */
@@ -205,6 +221,7 @@ public class TokenProduction implements IGrammarLocation
   {
     return m_aLastToken;
   }
+
   /**
    * @param aValue
    *        The new value of m_aLastToken.

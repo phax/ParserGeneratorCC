@@ -82,6 +82,7 @@ public class ASTNodeDescriptor extends JJTreeNode
   {
     m_sName = aValue;
   }
+
   private boolean m_bIsGT;
 
   /**
@@ -100,6 +101,7 @@ public class ASTNodeDescriptor extends JJTreeNode
   {
     m_bIsGT = aValue;
   }
+
   private ASTNodeDescriptorExpression m_aExpression;
 
   /**
@@ -118,6 +120,7 @@ public class ASTNodeDescriptor extends JJTreeNode
   {
     m_aExpression = aValue;
   }
+
   ASTNodeDescriptor (final int nID)
   {
     super (nID);

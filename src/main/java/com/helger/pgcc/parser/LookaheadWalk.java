@@ -194,8 +194,8 @@ public final class LookaheadWalk
     // A semantic lookahead can reject anything, so when it is being taken into account nothing
     // downstream of it is guaranteed to be reachable
     if (LookaheadState.current ().isConsiderSemanticLA () &&
-      aExp instanceof final ExpLookahead aLookahead &&
-      aLookahead.getActionTokens ().isNotEmpty ())
+        aExp instanceof final ExpLookahead aLookahead &&
+        aLookahead.getActionTokens ().isNotEmpty ())
     {
       return new ArrayList <> ();
     }

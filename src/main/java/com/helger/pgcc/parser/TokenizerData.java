@@ -84,10 +84,12 @@ public class TokenizerData
   {
     return m_sParserName;
   }
+
   public void setParserName (final String sParserName)
   {
     this.m_sParserName = sParserName;
   }
+
   /**
    * @return The value of m_sDecls.
    */
@@ -95,10 +97,12 @@ public class TokenizerData
   {
     return m_sDecls;
   }
+
   public void setDecls (final String sDecls)
   {
     this.m_sDecls = sDecls;
   }
+
   /**
    * @return The value of m_aLiteralSequence.
    */
@@ -106,10 +110,12 @@ public class TokenizerData
   {
     return m_aLiteralSequence;
   }
+
   public void setLiteralSequence (final Map <Integer, List <String>> aLiteralSequence)
   {
     this.m_aLiteralSequence = aLiteralSequence;
   }
+
   /**
    * @return The value of m_aLiteralKinds.
    */
@@ -117,10 +123,12 @@ public class TokenizerData
   {
     return m_aLiteralKinds;
   }
+
   public void setLiteralKinds (final Map <Integer, List <Integer>> aLiteralKinds)
   {
     this.m_aLiteralKinds = aLiteralKinds;
   }
+
   /**
    * @return The value of m_aKindToNfaStartState.
    */
@@ -128,10 +136,12 @@ public class TokenizerData
   {
     return m_aKindToNfaStartState;
   }
+
   public void setKindToNfaStartState (final Map <Integer, Integer> aKindToNfaStartState)
   {
     this.m_aKindToNfaStartState = aKindToNfaStartState;
   }
+
   /**
    * @return The value of m_aNfa.
    */
@@ -139,6 +149,7 @@ public class TokenizerData
   {
     return m_aNfa;
   }
+
   public void addNfaState (final int nIndex,
                            final Set <Character> characters,
                            final Set <Integer> nextStates,
@@ -148,6 +159,7 @@ public class TokenizerData
     final NfaState aNfaState = new NfaState (nIndex, characters, nextStates, aCompositeStates, nKind);
     m_aNfa.put (Integer.valueOf (nIndex), aNfaState);
   }
+
   /**
    * @return The value of m_aAllMatches.
    */
@@ -155,6 +167,7 @@ public class TokenizerData
   {
     return m_aAllMatches;
   }
+
   public void updateMatchInfo (@NonNull final Map <Integer, String> aActions,
                                @NonNull final int [] aNewLexStateIndices,
                                @NonNull final long [] aToSkip,
@@ -187,15 +200,16 @@ public class TokenizerData
             eMatchType = EMatchType.TOKEN;
           }
       final MatchInfo aMatchInfo = new MatchInfo (Options.isIgnoreCase () ? null
-                                                                         : ExpRStringLiteral.strLit ()
-                                                                                            .getAllImages ()[i],
-                                                 i,
-                                                 eMatchType,
-                                                 aNewLexStateIndices[i],
-                                                 aActions.get (Integer.valueOf (i)));
+                                                                          : ExpRStringLiteral.strLit ()
+                                                                                             .getAllImages ()[i],
+                                                  i,
+                                                  eMatchType,
+                                                  aNewLexStateIndices[i],
+                                                  aActions.get (Integer.valueOf (i)));
       m_aAllMatches.put (Integer.valueOf (i), aMatchInfo);
     }
   }
+
   /**
    * @return The value of m_aInitialStates.
    */
@@ -203,10 +217,12 @@ public class TokenizerData
   {
     return m_aInitialStates;
   }
+
   public void setInitialStates (final Map <Integer, Integer> aInitialStates)
   {
     this.m_aInitialStates = aInitialStates;
   }
+
   /**
    * @return The value of m_aWildcardKind.
    */
@@ -214,10 +230,12 @@ public class TokenizerData
   {
     return m_aWildcardKind;
   }
+
   public void setWildcardKind (final Map <Integer, Integer> aWildcardKind)
   {
     this.m_aWildcardKind = aWildcardKind;
   }
+
   /**
    * @return The value of m_aLexStateNames.
    */
@@ -225,10 +243,12 @@ public class TokenizerData
   {
     return m_aLexStateNames;
   }
+
   public void setLexStateNames (final String [] aLexStateNames)
   {
     this.m_aLexStateNames = aLexStateNames;
   }
+
   /**
    * @return The value of m_nDefaultLexState.
    */
@@ -236,10 +256,12 @@ public class TokenizerData
   {
     return m_nDefaultLexState;
   }
+
   public void setDefaultLexState (final int nDefaultLexState)
   {
     this.m_nDefaultLexState = nDefaultLexState;
   }
+
   // Class representing NFA state.
   /**
    * One state of the NFA the interpreter walks.
@@ -252,8 +274,8 @@ public class TokenizerData
    *        The states reachable from here. May not be <code>null</code>.
    * @param compositeStates
    *        The states this one stands for, if it is a composite one. The initial state has to
-   *        transition to several states at once so that the NFA tries every possibility. May not
-   *        be <code>null</code>.
+   *        transition to several states at once so that the NFA tries every possibility. May not be
+   *        <code>null</code>.
    * @param kind
    *        The token kind matched here, or {@link Integer#MAX_VALUE} if this is not a final state.
    */
@@ -263,6 +285,7 @@ public class TokenizerData
                           Set <Integer> compositeStates,
                           int kind)
   {}
+
   /** What a matched kind does with the input. */
   public static enum EMatchType
   {
@@ -271,12 +294,12 @@ public class TokenizerData
     MORE,
     TOKEN,
   }
+
   /**
    * What matching a kind means: which token it is and what it does to the lexical state.
    *
    * @param image
-   *        The string literal image if this is a string literal token, <code>null</code>
-   *        otherwise.
+   *        The string literal image if this is a string literal token, <code>null</code> otherwise.
    * @param kind
    *        The token kind.
    * @param matchType

@@ -50,8 +50,8 @@ public class ASTBNFAction extends JJTreeNode
   }
 
   /**
-   * Walk up the tree for the node scope this action sits inside, if it is a different one than
-   * the scope given.
+   * Walk up the tree for the node scope this action sits inside, if it is a different one than the
+   * scope given.
    *
    * @param aNs
    *        The scope to stop at. May be <code>null</code>.

@@ -62,6 +62,7 @@ public class ASTProduction extends JJTreeNode
   {
     m_sName = aValue;
   }
+
   private List <String> m_aThrowsList = new ArrayList <> ();
 
   /**
@@ -80,6 +81,7 @@ public class ASTProduction extends JJTreeNode
   {
     m_aThrowsList = aValue;
   }
+
   ASTProduction (final int nID)
   {
     super (nID);

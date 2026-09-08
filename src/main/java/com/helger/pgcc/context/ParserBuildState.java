@@ -46,9 +46,9 @@ import com.helger.pgcc.parser.Token;
  * states have been handed out.
  * <p>
  * This is the instance state behind the static fields of
- * {@link com.helger.pgcc.parser.AbstractJavaCCParserInternals}. Keeping it here also removes an aliasing
- * trap: the target list used to be captured in a static field initializer, so it pointed at the
- * list of whichever run happened to load the class first.
+ * {@link com.helger.pgcc.parser.AbstractJavaCCParserInternals}. Keeping it here also removes an
+ * aliasing trap: the target list used to be captured in a static field initializer, so it pointed
+ * at the list of whichever run happened to load the class first.
  *
  * @author Philip Helger
  */

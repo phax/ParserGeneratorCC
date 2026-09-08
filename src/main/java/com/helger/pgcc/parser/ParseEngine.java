@@ -232,7 +232,7 @@ public class ParseEngine
               // made sure that
               // the LOOKAHEAD is suitable).
               if (aUnit instanceof ExpNonTerminal &&
-                ((ExpNonTerminal) aUnit).getProd () instanceof AbstractCodeProduction)
+                  ((ExpNonTerminal) aUnit).getProd () instanceof AbstractCodeProduction)
               {
                 if (i > 0 && seq.getUnitAt (i - 1) instanceof ExpLookahead)
                 {
@@ -323,8 +323,8 @@ public class ParseEngine
       m_bJJ2LA = false;
 
       if (aLa.getAmount () == 0 ||
-        Semanticize.emptyExpansionExists (aLa.getLaExpansion ()) ||
-        _javaCodeCheck (aLa.getLaExpansion ()))
+          Semanticize.emptyExpansionExists (aLa.getLaExpansion ()) ||
+          _javaCodeCheck (aLa.getLaExpansion ()))
       {
 
         // This handles the following cases:
@@ -660,7 +660,10 @@ public class ParseEngine
     sParams = aSig.toString ();
 
     // For now, just ignore comments
-    m_aCodeGenerator.generateMethodDefHeader (sRet, grammar ().getParserName (), p.getLhs () + sParams, aSig.toString ());
+    m_aCodeGenerator.generateMethodDefHeader (sRet,
+                                              grammar ().getParserName (),
+                                              p.getLhs () + sParams,
+                                              aSig.toString ());
 
     return "";
   }
@@ -715,7 +718,10 @@ public class ParseEngine
     final String sParams = aSig.toString ();
 
     // For now, just ignore comments
-    m_aCodeGenerator.generateMethodDefHeader (sRet, grammar ().getParserName (), p.getLhs () + sParams, aSig.toString ());
+    m_aCodeGenerator.generateMethodDefHeader (sRet,
+                                              grammar ().getParserName (),
+                                              p.getLhs () + sParams,
+                                              aSig.toString ());
 
     // Generate a default value for error return.
     String sDefault_return;
@@ -874,7 +880,7 @@ public class ParseEngine
         break;
       case CPP:
         if ((Options.booleanValue (Options.USEROPTION__CPP_STOP_ON_FIRST_ERROR) && sError_ret_cpp != null) ||
-          (Options.hasDepthLimit () && !bVoidReturn))
+            (Options.hasDepthLimit () && !bVoidReturn))
         {
           m_aCodeGenerator.genCode (sError_ret_cpp);
         }
@@ -1130,8 +1136,8 @@ public class ParseEngine
                       // protect it.
                       final Expansion aElem = e_nrw.getUnitAt (i);
                       if (!(aElem instanceof ExpAction) ||
-                        !(e.getParent () instanceof BNFProduction) ||
-                        i != e_nrw.getUnitCount () - 1)
+                          !(e.getParent () instanceof BNFProduction) ||
+                          i != e_nrw.getUnitCount () - 1)
                       {
                         bWrap_in_block = true;
                         sRetval += "\nif (!hasError) {";
@@ -1326,7 +1332,11 @@ public class ParseEngine
         break;
       case CPP:
         m_aCodeGenerator.genCodeLine ("    jj_done = false;");
-        m_aCodeGenerator.genCodeLine ("    return (!jj_3" + e.getInternalName () + "() || jj_done)" + sRet_suffix + ";");
+        m_aCodeGenerator.genCodeLine ("    return (!jj_3" +
+                                      e.getInternalName () +
+                                      "() || jj_done)" +
+                                      sRet_suffix +
+                                      ";");
         break;
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -1362,10 +1372,10 @@ public class ParseEngine
     if (Options.isDebugLookahead () && m_aJj3Expansion != null)
     {
       String sTracecode = "trace_return(\"" +
-                         JavaCCGlobals.addUnicodeEscapes (((AbstractNormalProduction) m_aJj3Expansion.getParent ()).getLhs ()) +
-                         "(LOOKAHEAD " +
-                         (bValue ? "FAILED" : "SUCCEEDED") +
-                         ")\");";
+                          JavaCCGlobals.addUnicodeEscapes (((AbstractNormalProduction) m_aJj3Expansion.getParent ()).getLhs ()) +
+                          "(LOOKAHEAD " +
+                          (bValue ? "FAILED" : "SUCCEEDED") +
+                          ")\");";
       if (Options.isErrorReporting ())
       {
         sTracecode = "if (!jj_rescan) " + sTracecode;
@@ -1542,8 +1552,8 @@ public class ParseEngine
           m_aCodeGenerator.genCode ("if (!jj_rescan) ");
         }
         m_aCodeGenerator.genCodeLine ("trace_call(\"" +
-                                     JavaCCGlobals.addUnicodeEscapes (((AbstractNormalProduction) e.getParent ()).getLhs ()) +
-                                     "(LOOKING AHEAD...)\");");
+                                      JavaCCGlobals.addUnicodeEscapes (((AbstractNormalProduction) e.getParent ()).getLhs ()) +
+                                      "(LOOKING AHEAD...)\");");
         m_aJj3Expansion = e;
       }
       else
@@ -1583,8 +1593,8 @@ public class ParseEngine
         if (aNtprod instanceof AbstractCodeProduction)
         {
           m_aCodeGenerator.genCodeLine ("    if (true) { jj_la = 0; jj_scanpos = jj_lastpos; " +
-                                       _genReturn (false) +
-                                       "}");
+                                        _genReturn (false) +
+                                        "}");
         }
         else
         {
@@ -1705,7 +1715,9 @@ public class ParseEngine
                 m_aCodeGenerator.genCodeLine ("      xsp = jj_scanpos;");
                 // codeGenerator.genCodeLine(" if (jj_3" +
                 // nested_e.internal_name + "()) { jj_scanpos = xsp; break; }");
-                m_aCodeGenerator.genCodeLine ("      if (" + _genjj_3Call (aNested_e) + ") { jj_scanpos = xsp; break; }");
+                m_aCodeGenerator.genCodeLine ("      if (" +
+                                              _genjj_3Call (aNested_e) +
+                                              ") { jj_scanpos = xsp; break; }");
                 // codeGenerator.genCodeLine(" if (jj_la == 0 && jj_scanpos ==
                 // jj_lastpos) " + genReturn(false));
                 m_aCodeGenerator.genCodeLine ("    }");
@@ -1725,8 +1737,8 @@ public class ParseEngine
                   // nested_e.internal_name + "()) { jj_scanpos = xsp; break;
                   // }");
                   m_aCodeGenerator.genCodeLine ("      if (" +
-                                               _genjj_3Call (aNested_e) +
-                                               ") { jj_scanpos = xsp; break; }");
+                                                _genjj_3Call (aNested_e) +
+                                                ") { jj_scanpos = xsp; break; }");
                   // codeGenerator.genCodeLine(" if (jj_la == 0 && jj_scanpos ==
                   // jj_lastpos) " + genReturn(false));
                   m_aCodeGenerator.genCodeLine ("    }");
@@ -1834,8 +1846,8 @@ public class ParseEngine
           {
             // Adding infinity to something
             nMin = Integer.MAX_VALUE;
-                                     // results
-                                     // in infinity.
+            // results
+            // in infinity.
           }
           else
           {
@@ -2019,8 +2031,8 @@ public class ParseEngine
           {
             aCodeGenerator.genCodeLine ("    } finally {");
             aCodeGenerator.genCodeLine ("      trace_return(\"" +
-                                       JavaCCGlobals.addUnicodeEscapes (jp.getLhs ()) +
-                                       "\");");
+                                        JavaCCGlobals.addUnicodeEscapes (jp.getLhs ()) +
+                                        "\");");
             aCodeGenerator.genCodeLine ("    }");
           }
           aCodeGenerator.genCodeLine ("  }");
@@ -2149,7 +2161,8 @@ public class ParseEngine
               Expansion aTmp = e_nrw.getUnitAt (1);
               while (aTmp instanceof ExpNonTerminal)
               {
-                final AbstractNormalProduction aNtprod = (grammar ().productionTable ().get (((ExpNonTerminal) aTmp).getName ()));
+                final AbstractNormalProduction aNtprod = (grammar ().productionTable ()
+                                                                    .get (((ExpNonTerminal) aTmp).getName ()));
                 if (aNtprod instanceof AbstractCodeProduction)
                   break;
                 aTmp = aNtprod.getExpansion ();
@@ -2196,9 +2209,8 @@ public class ParseEngine
  * @param exp
  *        The expansion to generate the jj3 method for. May not be <code>null</code>.
  * @param count
- *        The number of tokens that may still be consumed, which is what limits how many jj3
- *        methods are generated.
+ *        The number of tokens that may still be consumed, which is what limits how many jj3 methods
+ *        are generated.
  */
 record Phase3Data (Expansion exp, int count)
 {}
-

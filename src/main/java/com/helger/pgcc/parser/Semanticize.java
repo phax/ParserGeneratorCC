@@ -118,7 +118,8 @@ public class Semanticize
         {
           if (grammar ().lexStateS2I ().get (aRes.getNextState ()) == null)
           {
-            JavaCCErrors.semanticError (aRes.getNsTok (), "Lexical state \"" + aRes.getNextState () + "\" has not been defined.");
+            JavaCCErrors.semanticError (aRes.getNsTok (),
+                                        "Lexical state \"" + aRes.getNextState () + "\" has not been defined.");
           }
         }
         if (aRes.getRexp () instanceof ExpREndOfFile)
@@ -126,12 +127,11 @@ public class Semanticize
           // JavaCCErrors.semanticError(res.getRexp (), "Badly placed <EOF>.");
           if (aTp.getLexStates () != null)
             JavaCCErrors.semanticError (aRes.getRexp (),
-                                         "EOF action/state change must be specified for all states, " +
-                                                   "i.e., <*>TOKEN:.");
+                                        "EOF action/state change must be specified for all states, " +
+                                                         "i.e., <*>TOKEN:.");
           if (aTp.getKind () != ETokenKind.TOKEN)
             JavaCCErrors.semanticError (aRes.getRexp (),
-                                         "EOF action/state change can be specified only in a " +
-                                                   "TOKEN specification.");
+                                        "EOF action/state change can be specified only in a " + "TOKEN specification.");
           if (grammar ().getNextStateForEof () != null || grammar ().getActionForEof () != null)
             JavaCCErrors.semanticError (aRes.getRexp (), "Duplicate action/state change specification for <EOF>.");
           grammar ().setActionForEof (aRes.getAct ());
@@ -143,24 +143,24 @@ public class Semanticize
           {
             JavaCCErrors.warning (aRes.getRexp (),
                                   "Ignoring regular expression specification since " +
-                                            "option USER_TOKEN_MANAGER has been set to true.");
+                                                   "option USER_TOKEN_MANAGER has been set to true.");
           }
           else
             if (aTp.isExplicit () && !Options.isUserTokenManager () && aRes.getRexp () instanceof ExpRJustName)
             {
               JavaCCErrors.warning (aRes.getRexp (),
                                     "Ignoring free-standing regular expression reference.  " +
-                                              "If you really want this, you must give it a different label as <NEWLABEL:<" +
-                                              aRes.getRexp ().getLabel () +
-                                              ">>.");
+                                                     "If you really want this, you must give it a different label as <NEWLABEL:<" +
+                                                     aRes.getRexp ().getLabel () +
+                                                     ">>.");
               prepareToRemove (aRespecs, aRes);
             }
             else
               if (!aTp.isExplicit () && aRes.getRexp ().m_bPrivateRexp)
               {
                 JavaCCErrors.semanticError (aRes.getRexp (),
-                                             "Private (#) regular expression cannot be defined within " +
-                                                       "grammar productions.");
+                                            "Private (#) regular expression cannot be defined within " +
+                                                             "grammar productions.");
               }
       }
     }
@@ -193,10 +193,10 @@ public class Semanticize
           if (grammar ().lexStateS2I ().get (s) != null)
           {
             JavaCCErrors.semanticError (aRes.getRexp (),
-                                         "Lexical token name \"" +
-                                                   s +
-                                                   "\" is the same as " +
-                                                   "that of a lexical state.");
+                                        "Lexical token name \"" +
+                                                         s +
+                                                         "\" is the same as " +
+                                                         "that of a lexical state.");
           }
         }
       }
@@ -262,24 +262,24 @@ public class Semanticize
                 {
                   // inline BNF string is used earlier with an IGNORE_CASE.
                   JavaCCErrors.semanticError (sl,
-                                               "String \"" +
-                                                   sl.getImage () +
-                                                   "\" can never be matched " +
-                                                   "due to presence of more general (IGNORE_CASE) regular expression " +
-                                                   "at line " +
-                                                   aOther.getLineNumber () +
-                                                   ", column " +
-                                                   aOther.getColumnNumber () +
-                                                   ".");
+                                              "String \"" +
+                                                  sl.getImage () +
+                                                  "\" can never be matched " +
+                                                  "due to presence of more general (IGNORE_CASE) regular expression " +
+                                                  "at line " +
+                                                  aOther.getLineNumber () +
+                                                  ", column " +
+                                                  aOther.getColumnNumber () +
+                                                  ".");
                 }
                 else
                 {
                   // give the standard error message.
                   JavaCCErrors.semanticError (sl,
-                                               "Duplicate definition of string token \"" +
-                                                   sl.getImage () +
-                                                   "\" " +
-                                                   "can never be matched.");
+                                              "Duplicate definition of string token \"" +
+                                                  sl.getImage () +
+                                                  "\" " +
+                                                  "can never be matched.");
                 }
               }
               else
@@ -337,35 +337,35 @@ public class Semanticize
                       if (tp.getLexStates ()[i].equals ("DEFAULT"))
                       {
                         JavaCCErrors.semanticError (sl,
-                                                     "Duplicate definition of string token \"" + sl.getImage () + "\".");
+                                                    "Duplicate definition of string token \"" + sl.getImage () + "\".");
                       }
                       else
                       {
                         JavaCCErrors.semanticError (sl,
-                                                     "Duplicate definition of string token \"" +
-                                                         sl.getImage () +
-                                                         "\" in lexical state \"" +
-                                                         tp.getLexStates ()[i] +
-                                                         "\".");
+                                                    "Duplicate definition of string token \"" +
+                                                        sl.getImage () +
+                                                        "\" in lexical state \"" +
+                                                        tp.getLexStates ()[i] +
+                                                        "\".");
                       }
                     }
                     else
                       if (aRe.m_aTpContext.getKind () != ETokenKind.TOKEN)
                       {
                         JavaCCErrors.semanticError (sl,
-                                                     "String token \"" +
-                                                         sl.getImage () +
-                                                         "\" has been defined as a \"" +
-                                                         aRe.m_aTpContext.getKind ().getImage () +
-                                                         "\" token.");
+                                                    "String token \"" +
+                                                        sl.getImage () +
+                                                        "\" has been defined as a \"" +
+                                                        aRe.m_aTpContext.getKind ().getImage () +
+                                                        "\" token.");
                       }
                       else
                         if (aRe.m_bPrivateRexp)
                         {
                           JavaCCErrors.semanticError (sl,
-                                                       "String token \"" +
-                                                           sl.getImage () +
-                                                           "\" has been defined as a private regular expression.");
+                                                      "String token \"" +
+                                                          sl.getImage () +
+                                                          "\" has been defined as a private regular expression.");
                         }
                         else
                         {
@@ -394,7 +394,8 @@ public class Semanticize
           }
         if (!(aRes.getRexp () instanceof ExpRJustName) && aRes.getRexp ().hasLabel ())
         {
-          grammar ().namesOfTokens ().put (Integer.valueOf (aRes.getRexp ().getOrdinal ()), aRes.getRexp ().getLabel ());
+          grammar ().namesOfTokens ()
+                    .put (Integer.valueOf (aRes.getRexp ().getOrdinal ()), aRes.getRexp ().getLabel ());
         }
         if (!(aRes.getRexp () instanceof ExpRJustName))
         {
@@ -496,7 +497,7 @@ public class Semanticize
           {
             JavaCCErrors.warning (aRes.getRexp (),
                                   "Unlabeled regular expression cannot be referred to by " +
-                                            "user generated token manager.");
+                                                   "user generated token manager.");
           }
         }
       }
@@ -589,7 +590,7 @@ public class Semanticize
                                            "... --> " +
                                            PGCCContext.current ().semanticize ().getLoopString ());
                 JavaCCErrors.semanticError (aRexp,
-                                             "Loop in regular expression detected: \"" +
+                                            "Loop in regular expression detected: \"" +
                                                    PGCCContext.current ().semanticize ().getLoopString () +
                                                    "\"");
               }
@@ -609,7 +610,7 @@ public class Semanticize
           ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new LookaheadChecker ());
         }
       }
-    // matches "if (Options.getSanityCheck()) {"
+      // matches "if (Options.getSanityCheck()) {"
     }
 
     if (JavaCCErrors.getErrorCount () != 0)
@@ -777,7 +778,7 @@ public class Semanticize
         {
           aProd.setWalkStatus (1);
           JavaCCErrors.semanticError (aProd,
-                                       "Left recursion detected: \"" +
+                                      "Left recursion detected: \"" +
                                              PGCCContext.current ().semanticize ().getLoopString () +
                                              "\"");
           return false;
@@ -799,7 +800,7 @@ public class Semanticize
             {
               aProd.setWalkStatus (1);
               JavaCCErrors.semanticError (aProd,
-                                           "Left recursion detected: \"" +
+                                          "Left recursion detected: \"" +
                                                  PGCCContext.current ().semanticize ().getLoopString () +
                                                  "\"");
               return false;
@@ -844,9 +845,9 @@ public class Semanticize
             {
               jn.getRegexpr ().setWalkStatus (1);
               JavaCCErrors.semanticError (jn.getRegexpr (),
-                                           "Loop in regular expression detected: \"" +
-                                                         PGCCContext.current ().semanticize ().getLoopString () +
-                                                         "\"");
+                                          "Loop in regular expression detected: \"" +
+                                                            PGCCContext.current ().semanticize ().getLoopString () +
+                                                            "\"");
               return false;
             }
             jn.getRegexpr ().setWalkStatus (1);
@@ -920,6 +921,7 @@ public class Semanticize
     {
       m_aRoot = aValue;
     }
+
     public boolean goDeeper (final Expansion e)
     {
       return true;
@@ -938,19 +940,19 @@ public class Semanticize
           if (jn == m_aRoot && !jn.m_aTpContext.isExplicit () && aRexp.m_bPrivateRexp)
           {
             JavaCCErrors.semanticError (e,
-                                         "Token name \"" +
-                                            jn.getLabel () +
-                                            "\" refers to a private " +
-                                            "(with a #) regular expression.");
+                                        "Token name \"" +
+                                           jn.getLabel () +
+                                           "\" refers to a private " +
+                                           "(with a #) regular expression.");
           }
           else
             if (jn == m_aRoot && !jn.m_aTpContext.isExplicit () && aRexp.m_aTpContext.getKind () != ETokenKind.TOKEN)
             {
               JavaCCErrors.semanticError (e,
-                                           "Token name \"" +
-                                              jn.getLabel () +
-                                              "\" refers to a non-token " +
-                                              "(SKIP, MORE, IGNORE_IN_BNF) regular expression.");
+                                          "Token name \"" +
+                                             jn.getLabel () +
+                                             "\" refers to a non-token " +
+                                             "(SKIP, MORE, IGNORE_IN_BNF) regular expression.");
             }
             else
             {
@@ -976,9 +978,9 @@ public class Semanticize
       if (e instanceof final ExpSequence seq)
       {
         if (e.getParent () instanceof ExpChoice ||
-          e.getParent () instanceof ExpZeroOrMore ||
-          e.getParent () instanceof ExpOneOrMore ||
-          e.getParent () instanceof ExpZeroOrOne)
+            e.getParent () instanceof ExpZeroOrMore ||
+            e.getParent () instanceof ExpOneOrMore ||
+            e.getParent () instanceof ExpZeroOrOne)
         {
           return;
         }
@@ -1012,7 +1014,7 @@ public class Semanticize
           {
             JavaCCErrors.warning (aLa,
                                   "Encountered LOOKAHEAD(...) at a non-choice location.  " +
-                                      "Only semantic lookahead will be considered here.");
+                                       "Only semantic lookahead will be considered here.");
           }
           else
           {

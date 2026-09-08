@@ -127,9 +127,9 @@ public class OtherFilesGenJava
     if (w == null)
     {
       JavaCCErrors.semanticError ("Could not open file " +
-                                   grammar ().getParserName () +
-                                   CONSTANTS_FILENAME_SUFFIX +
-                                   " for writing.");
+                                  grammar ().getParserName () +
+                                  CONSTANTS_FILENAME_SUFFIX +
+                                  " for writing.");
       return;
     }
 

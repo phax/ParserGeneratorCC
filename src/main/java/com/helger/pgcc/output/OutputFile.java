@@ -106,7 +106,9 @@ public class OutputFile implements AutoCloseable
    * @throws IOException
    *         on error
    */
-  public OutputFile (@NonNull final File aFile, @Nullable final String sCompatibleVersion, @Nullable final String [] aOptions) throws IOException
+  public OutputFile (@NonNull final File aFile,
+                     @Nullable final String sCompatibleVersion,
+                     @Nullable final String [] aOptions) throws IOException
   {
     m_aFile = aFile;
     m_sCompatibleVersion = sCompatibleVersion;

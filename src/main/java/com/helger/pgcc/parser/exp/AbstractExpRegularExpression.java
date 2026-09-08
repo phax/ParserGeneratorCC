@@ -110,8 +110,8 @@ public abstract sealed class AbstractExpRegularExpression extends Expansion perm
   /**
    * The name in angle brackets, if the grammar gave this one.
    *
-   * @return The name this regular expression was given in the grammar, empty if it is
-   *         anonymous. Never <code>null</code>.
+   * @return The name this regular expression was given in the grammar, empty if it is anonymous.
+   *         Never <code>null</code>.
    */
   public final String getLabel ()
   {
@@ -240,8 +240,8 @@ public abstract sealed class AbstractExpRegularExpression extends Expansion perm
   /**
    * Whether this is the "match anything" expression.
    *
-   * @return <code>true</code> if this matches every single character, which the token manager
-   *         can special case.
+   * @return <code>true</code> if this matches every single character, which the token manager can
+   *         special case.
    */
   public boolean canMatchAnyChar ()
   {

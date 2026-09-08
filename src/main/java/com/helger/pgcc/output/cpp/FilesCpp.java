@@ -53,7 +53,10 @@ public class FilesCpp
   private FilesCpp ()
   {}
 
-  private static void genFile (final String sDir, final String sName, final String sVersion, final String [] aParameters)
+  private static void genFile (final String sDir,
+                               final String sName,
+                               final String sVersion,
+                               final String [] aParameters)
   {
     final File aFile = new File (Options.getOutputDirectory (), sName);
     try (final OutputFile aOutputFile = new OutputFile (aFile, sVersion, aParameters))
@@ -63,8 +66,12 @@ public class FilesCpp
 
       try (final PrintWriter aOstr = aOutputFile.getPrintWriter ())
       {
-        final OutputFileGenerator aGenerator = new OutputFileGenerator ("/templates/" + sDir + "/" + sName + ".template",
-                                                                       Options.getAllOptions ());
+        final OutputFileGenerator aGenerator = new OutputFileGenerator ("/templates/" +
+                                                                        sDir +
+                                                                        "/" +
+                                                                        sName +
+                                                                        ".template",
+                                                                        Options.getAllOptions ());
         aGenerator.generate (aOstr);
       }
     }
@@ -100,8 +107,8 @@ public class FilesCpp
   public static void genToken ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC,
-                                                 Options.USEROPTION__CPP_TOKEN_INCLUDES,
-                                                 Options.USEROPTION__TOKEN_EXTENDS };
+                                                  Options.USEROPTION__CPP_TOKEN_INCLUDES,
+                                                  Options.USEROPTION__TOKEN_EXTENDS };
     genFile ("cpp", "Token.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
     genFile ("cpp", "Token.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
@@ -121,8 +128,8 @@ public class FilesCpp
   public static void genErrorHandler ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC,
-                                                 Options.USEROPTION__BUILD_PARSER,
-                                                 Options.USEROPTION__BUILD_TOKEN_MANAGER };
+                                                  Options.USEROPTION__BUILD_PARSER,
+                                                  Options.USEROPTION__BUILD_TOKEN_MANAGER };
     genFile ("cpp", "ErrorHandler.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 

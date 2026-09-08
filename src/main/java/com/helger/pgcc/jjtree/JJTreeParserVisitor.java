@@ -45,11 +45,10 @@ package com.helger.pgcc.jjtree;
  * <code>target/generated-sources</code> are generated and name this type about thirty times.
  * Parameterising it here would leave generated code implementing a raw type.
  * <p>
- * Making it generic properly means changing what JJTree emits for everyone, which would break
- * every existing visitor implementation. And the generator already has the mechanism for choosing
- * those types: <code>VISITOR_RETURN_TYPE</code> and <code>VISITOR_DATA_TYPE</code> produce, for
- * example, <code>Integer visit (ASTSum node, String data)</code> with <code>jjtAccept</code>
- * following suit.
+ * Making it generic properly means changing what JJTree emits for everyone, which would break every
+ * existing visitor implementation. And the generator already has the mechanism for choosing those
+ * types: <code>VISITOR_RETURN_TYPE</code> and <code>VISITOR_DATA_TYPE</code> produce, for example,
+ * <code>Integer visit (ASTSum node, String data)</code> with <code>jjtAccept</code> following suit.
  */
 public interface JJTreeParserVisitor
 {

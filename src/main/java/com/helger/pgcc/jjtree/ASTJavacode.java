@@ -55,6 +55,7 @@ public class ASTJavacode extends ASTProduction
   {
     m_aStmBeginLoc = aValue;
   }
+
   ASTJavacode (final int nID)
   {
     super (nID);

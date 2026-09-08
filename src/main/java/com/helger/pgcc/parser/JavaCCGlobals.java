@@ -452,15 +452,16 @@ public final class JavaCCGlobals
           }
         }
         JavaCCErrors.parseError (aLocation,
-                                  "Encountered non-hex character '" +
-                                     cCh +
-                                     "' at position " +
-                                     nIndex +
-                                     " of string " +
-                                     "- Unicode escape must have 4 hex digits after it.");
+                                 "Encountered non-hex character '" +
+                                            cCh +
+                                            "' at position " +
+                                            nIndex +
+                                            " of string " +
+                                            "- Unicode escape must have 4 hex digits after it.");
         return sRetval;
       }
-      JavaCCErrors.parseError (aLocation, "Illegal escape sequence '\\" + cCh + "' at position " + nIndex + " of string.");
+      JavaCCErrors.parseError (aLocation,
+                               "Illegal escape sequence '\\" + cCh + "' at position " + nIndex + " of string.");
       return sRetval;
     }
     return sRetval;

@@ -231,7 +231,7 @@ public class CodeGenerator
   public final void saveOutput (final String sFileName, @NonNull final StringBuilder aSB)
   {
     try (final NonBlockingBufferedWriter aFw = FileHelper.getBufferedWriter (new File (sFileName),
-                                                                            Options.getOutputEncoding ()))
+                                                                             Options.getOutputEncoding ()))
     {
       aFw.write (aSB.toString ());
     }

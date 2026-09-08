@@ -200,9 +200,9 @@ public class NfaState
         break;
 
     if (!aNfa.isUnicodeWarningGiven () &&
-      c > 0xff &&
-      !Options.isJavaUnicodeEscape () &&
-      !Options.isJavaUserCharStream ())
+        c > 0xff &&
+        !Options.isJavaUnicodeEscape () &&
+        !Options.isJavaUserCharStream ())
     {
       aNfa.setUnicodeWarningGiven (true);
       JavaCCErrors.warning (LexGenJava.lexer ().getCurRE (),
@@ -247,9 +247,9 @@ public class NfaState
     }
 
     if (!aNfa.isUnicodeWarningGiven () &&
-      (cLeft > 0xff || cRight > 0xff) &&
-      !Options.isJavaUnicodeEscape () &&
-      !Options.isJavaUserCharStream ())
+        (cLeft > 0xff || cRight > 0xff) &&
+        !Options.isJavaUnicodeEscape () &&
+        !Options.isJavaUserCharStream ())
     {
       aNfa.setUnicodeWarningGiven (true);
       JavaCCErrors.warning (LexGenJava.lexer ().getCurRE (),
@@ -272,8 +272,8 @@ public class NfaState
     int i = 0;
     for (; i < nLen; i += 2)
       if (m_aRangeMoves[i] == 0 ||
-        (m_aRangeMoves[i] > cLeft) ||
-        ((m_aRangeMoves[i] == cLeft) && (m_aRangeMoves[i + 1] > cRight)))
+          (m_aRangeMoves[i] > cLeft) ||
+          ((m_aRangeMoves[i] == cLeft) && (m_aRangeMoves[i + 1] > cRight)))
         break;
 
     cTempLeft1 = m_aRangeMoves[i];
@@ -486,10 +486,10 @@ public class NfaState
 
   public boolean hasTransitions ()
   {
-    return (m_aAsciiMoves[0] != 0L ||
-      m_aAsciiMoves[1] != 0L ||
-      (m_aCharMoves != null && m_aCharMoves[0] != 0) ||
-      (m_aRangeMoves != null && m_aRangeMoves[0] != 0));
+    return m_aAsciiMoves[0] != 0L ||
+           m_aAsciiMoves[1] != 0L ||
+           (m_aCharMoves != null && m_aCharMoves[0] != 0) ||
+           (m_aRangeMoves != null && m_aRangeMoves[0] != 0);
   }
 
   private void _mergeMoves (@NonNull final NfaState aSource)
@@ -570,12 +570,12 @@ public class NfaState
       final NfaState aCandidate = aAllStates.get (i);
 
       if (this != aCandidate &&
-        aCandidate.m_nStateName != -1 &&
-        m_nKindToPrint == aCandidate.m_nKindToPrint &&
-        m_aAsciiMoves[0] == aCandidate.m_aAsciiMoves[0] &&
-        m_aAsciiMoves[1] == aCandidate.m_aAsciiMoves[1] &&
-        Arrays.equals (m_aCharMoves, aCandidate.m_aCharMoves) &&
-        Arrays.equals (m_aRangeMoves, aCandidate.m_aRangeMoves))
+          aCandidate.m_nStateName != -1 &&
+          m_nKindToPrint == aCandidate.m_nKindToPrint &&
+          m_aAsciiMoves[0] == aCandidate.m_aAsciiMoves[0] &&
+          m_aAsciiMoves[1] == aCandidate.m_aAsciiMoves[1] &&
+          Arrays.equals (m_aCharMoves, aCandidate.m_aCharMoves) &&
+          Arrays.equals (m_aRangeMoves, aCandidate.m_aRangeMoves))
       {
         if (m_aNext == aCandidate.m_aNext)
           return aCandidate;
@@ -662,9 +662,9 @@ public class NfaState
    * <p>
    * After the closure the set can hold states that are indistinguishable, and every one of them
    * costs a case in the generated token manager. Two passes remove them, repeated until neither
-   * finds anything: states that consume the same characters collapse into one equivalent state,
-   * and states that lead to the same place keep one of their number with the others' character
-   * moves merged in.
+   * finds anything: states that consume the same characters collapse into one equivalent state, and
+   * states that lead to the same place keep one of their number with the others' character moves
+   * merged in.
    *
    * @param bOptReqd
    *        <code>false</code> to do the closure only and skip the shrinking.
@@ -717,10 +717,10 @@ public class NfaState
             {
               aOtherMove = m_aEpsilonMoves.get (j);
               if (aOtherMove.hasTransitions () &&
-                (aMove.m_aAsciiMoves[0] == aOtherMove.m_aAsciiMoves[0] &&
-                  aMove.m_aAsciiMoves[1] == aOtherMove.m_aAsciiMoves[1] &&
-                  Arrays.equals (aMove.m_aCharMoves, aOtherMove.m_aCharMoves) &&
-                  Arrays.equals (aMove.m_aRangeMoves, aOtherMove.m_aRangeMoves)))
+                  (aMove.m_aAsciiMoves[0] == aOtherMove.m_aAsciiMoves[0] &&
+                   aMove.m_aAsciiMoves[1] == aOtherMove.m_aAsciiMoves[1] &&
+                   Arrays.equals (aMove.m_aCharMoves, aOtherMove.m_aCharMoves) &&
+                   Arrays.equals (aMove.m_aRangeMoves, aOtherMove.m_aRangeMoves)))
               {
                 if (aEquivStates == null)
                 {
@@ -1071,7 +1071,7 @@ public class NfaState
     for (i = 0; i <= 255; i++)
     {
       if (aDone[i] ||
-        (aDone[i] = aLoBytes[i][0] == 0 && aLoBytes[i][1] == 0 && aLoBytes[i][2] == 0 && aLoBytes[i][3] == 0))
+          (aDone[i] = aLoBytes[i][0] == 0 && aLoBytes[i][1] == 0 && aLoBytes[i][2] == 0 && aLoBytes[i][3] == 0))
         continue;
 
       for (j = i + 1; j < 256; j++)
@@ -1080,9 +1080,9 @@ public class NfaState
           continue;
 
         if (aLoBytes[i][0] == aLoBytes[j][0] &&
-          aLoBytes[i][1] == aLoBytes[j][1] &&
-          aLoBytes[i][2] == aLoBytes[j][2] &&
-          aLoBytes[i][3] == aLoBytes[j][3])
+            aLoBytes[i][1] == aLoBytes[j][1] &&
+            aLoBytes[i][2] == aLoBytes[j][2] &&
+            aLoBytes[i][3] == aLoBytes[j][3])
         {
           aDone[j] = true;
           if (aCommon == null)
@@ -1213,7 +1213,7 @@ public class NfaState
     {
       final NfaState aState = aNfa.nonAsciiTableForMethod ().get (i);
       if (_equalLoByteVectors (m_aLoByteVec, aState.m_aLoByteVec) &&
-        Arrays.equals (m_aNonAsciiMoveIndices, aState.m_aNonAsciiMoveIndices))
+          Arrays.equals (m_aNonAsciiMoveIndices, aState.m_aNonAsciiMoveIndices))
       {
         m_nNonAsciiMethod = i;
         return;
@@ -1297,8 +1297,8 @@ public class NfaState
         final int [] aOverlappingSet = aNfa.compositeStateTable ().get (s);
 
         while (nToRet < aNameSet.length &&
-          ((bStarts && aNfa.indexedAllStates ().get (aNameSet[nToRet]).m_nInNextOf > 1) ||
-            _elemOccurs (aNameSet[nToRet], aOverlappingSet) >= 0))
+               ((bStarts && aNfa.indexedAllStates ().get (aNameSet[nToRet]).m_nInNextOf > 1) ||
+                _elemOccurs (aNameSet[nToRet], aOverlappingSet) >= 0))
           nToRet++;
       }
     }
@@ -1614,8 +1614,8 @@ public class NfaState
     final int [] aNameSet = aNfa.allNextStates ().get (sSet);
 
     if (aNameSet.length == 1 ||
-      aNfa.compositeStateTable ().get (sSet) != null ||
-      aNfa.stateSetsToFix ().get (sSet) != null)
+        aNfa.compositeStateTable ().get (sSet) != null ||
+        aNfa.stateSetsToFix ().get (sSet) != null)
       return false;
 
     final Map <String, int []> aOccursIn = new HashMap <> ();
@@ -2022,10 +2022,10 @@ public class NfaState
     for (final NfaState temp1 : aNfa.getAllStates ())
     {
       if (this == temp1 ||
-        temp1.m_nStateName == -1 ||
-        temp1.m_bDummy ||
-        m_nStateName == temp1.m_nStateName ||
-        temp1.m_aAsciiMoves[nByteNum] == 0L)
+          temp1.m_nStateName == -1 ||
+          temp1.m_bDummy ||
+          m_nStateName == temp1.m_nStateName ||
+          temp1.m_aAsciiMoves[nByteNum] == 0L)
         continue;
 
       if (!bNextIntersects && _intersect (temp1.m_aNext.m_sEpsilonMovesString, m_aNext.m_sEpsilonMovesString))
@@ -2137,10 +2137,10 @@ public class NfaState
       final NfaState aTemp1 = s_allState;
 
       if (this == aTemp1 ||
-        aTemp1.m_nStateName == -1 ||
-        aTemp1.m_bDummy ||
-        m_nStateName == aTemp1.m_nStateName ||
-        aTemp1.m_aAsciiMoves[nByteNum] == 0L)
+          aTemp1.m_nStateName == -1 ||
+          aTemp1.m_bDummy ||
+          m_nStateName == aTemp1.m_nStateName ||
+          aTemp1.m_aAsciiMoves[nByteNum] == 0L)
         continue;
 
       if (bOnlyState && (m_aAsciiMoves[nByteNum] & aTemp1.m_aAsciiMoves[nByteNum]) != 0L)
@@ -2150,11 +2150,11 @@ public class NfaState
         bNextIntersects = true;
 
       if (!dumped[aTemp1.m_nStateName] &&
-        !aTemp1.m_bIsComposite &&
-        m_aAsciiMoves[nByteNum] == aTemp1.m_aAsciiMoves[nByteNum] &&
-        m_nKindToPrint == aTemp1.m_nKindToPrint &&
-        (m_aNext.m_sEpsilonMovesString == aTemp1.m_aNext.m_sEpsilonMovesString ||
-          (m_aNext.m_sEpsilonMovesString != null &&
+          !aTemp1.m_bIsComposite &&
+          m_aAsciiMoves[nByteNum] == aTemp1.m_aAsciiMoves[nByteNum] &&
+          m_nKindToPrint == aTemp1.m_nKindToPrint &&
+          (m_aNext.m_sEpsilonMovesString == aTemp1.m_aNext.m_sEpsilonMovesString ||
+           (m_aNext.m_sEpsilonMovesString != null &&
             aTemp1.m_aNext.m_sEpsilonMovesString != null &&
             m_aNext.m_sEpsilonMovesString.equals (aTemp1.m_aNext.m_sEpsilonMovesString))))
       {
@@ -2320,10 +2320,10 @@ public class NfaState
       final NfaState aTemp = s_allState;
 
       if (aDumped[aTemp.m_nStateName] ||
-        aTemp.m_nLexState != LexGenJava.lexer ().getLexStateIndex () ||
-        !aTemp.hasTransitions () ||
-        aTemp.m_bDummy ||
-        aTemp.m_nStateName == -1)
+          aTemp.m_nLexState != LexGenJava.lexer ().getLexStateIndex () ||
+          !aTemp.hasTransitions () ||
+          aTemp.m_bDummy ||
+          aTemp.m_nStateName == -1)
         continue;
 
       String sToPrint = "";
@@ -2470,10 +2470,10 @@ public class NfaState
     for (final NfaState temp1 : aNfa.getAllStates ())
     {
       if (this == temp1 ||
-        temp1.m_nStateName == -1 ||
-        temp1.m_bDummy ||
-        m_nStateName == temp1.m_nStateName ||
-        (temp1.m_nNonAsciiMethod == -1))
+          temp1.m_nStateName == -1 ||
+          temp1.m_bDummy ||
+          m_nStateName == temp1.m_nStateName ||
+          (temp1.m_nNonAsciiMethod == -1))
         continue;
 
       if (!bNextIntersects && _intersect (temp1.m_aNext.m_sEpsilonMovesString, m_aNext.m_sEpsilonMovesString))
@@ -2565,21 +2565,21 @@ public class NfaState
       final NfaState aTemp1 = s_allState;
 
       if (this == aTemp1 ||
-        aTemp1.m_nStateName == -1 ||
-        aTemp1.m_bDummy ||
-        m_nStateName == aTemp1.m_nStateName ||
-        (aTemp1.m_nNonAsciiMethod == -1))
+          aTemp1.m_nStateName == -1 ||
+          aTemp1.m_bDummy ||
+          m_nStateName == aTemp1.m_nStateName ||
+          (aTemp1.m_nNonAsciiMethod == -1))
         continue;
 
       if (!bNextIntersects && _intersect (aTemp1.m_aNext.m_sEpsilonMovesString, m_aNext.m_sEpsilonMovesString))
         bNextIntersects = true;
 
       if (!dumped[aTemp1.m_nStateName] &&
-        !aTemp1.m_bIsComposite &&
-        m_nNonAsciiMethod == aTemp1.m_nNonAsciiMethod &&
-        m_nKindToPrint == aTemp1.m_nKindToPrint &&
-        (m_aNext.m_sEpsilonMovesString == aTemp1.m_aNext.m_sEpsilonMovesString ||
-          (m_aNext.m_sEpsilonMovesString != null &&
+          !aTemp1.m_bIsComposite &&
+          m_nNonAsciiMethod == aTemp1.m_nNonAsciiMethod &&
+          m_nKindToPrint == aTemp1.m_nKindToPrint &&
+          (m_aNext.m_sEpsilonMovesString == aTemp1.m_aNext.m_sEpsilonMovesString ||
+           (m_aNext.m_sEpsilonMovesString != null &&
             aTemp1.m_aNext.m_sEpsilonMovesString != null &&
             m_aNext.m_sEpsilonMovesString.equals (aTemp1.m_aNext.m_sEpsilonMovesString))))
       {
@@ -2723,10 +2723,10 @@ public class NfaState
     for (final NfaState temp : aNfa.getAllStates ())
     {
       if (temp.m_nStateName == -1 ||
-        aDumped[temp.m_nStateName] ||
-        temp.m_nLexState != LexGenJava.lexer ().getLexStateIndex () ||
-        !temp.hasTransitions () ||
-        temp.m_bDummy)
+          aDumped[temp.m_nStateName] ||
+          temp.m_nLexState != LexGenJava.lexer ().getLexStateIndex () ||
+          !temp.hasTransitions () ||
+          temp.m_bDummy)
         continue;
 
       String sToPrint = "";
@@ -2993,10 +2993,10 @@ public class NfaState
     {
       NfaState aStateForCase = null;
       if (tmpState.m_nStateName == -1 ||
-        tmpState.m_bDummy ||
-        !tmpState._isUsefulState () ||
-        tmpState.m_aNext == null ||
-        tmpState.m_aNext.m_nUsefulEpsilonMoves < 1)
+          tmpState.m_bDummy ||
+          !tmpState._isUsefulState () ||
+          tmpState.m_aNext == null ||
+          tmpState.m_aNext.m_nUsefulEpsilonMoves < 1)
         continue;
 
       final String s = tmpState.m_aNext.m_sEpsilonMovesString;
@@ -3104,9 +3104,9 @@ public class NfaState
       final NfaState aTemp = s_allState;
 
       if (aTemp.m_nLexState != LexGenJava.lexer ().getLexStateIndex () ||
-        !aTemp.hasTransitions () ||
-        aTemp.m_bDummy ||
-        aTemp.m_nStateName == -1)
+          !aTemp.hasTransitions () ||
+          aTemp.m_bDummy ||
+          aTemp.m_nStateName == -1)
         continue;
 
       if (aKindsForStates == null)

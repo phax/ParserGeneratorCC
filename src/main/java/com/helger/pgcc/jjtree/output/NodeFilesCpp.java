@@ -142,8 +142,14 @@ public final class NodeFilesCpp
   {
     final File aFile = new File (nodeIncludeFile ());
 
-    final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
-                                 "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    final String [] aOptions = { "MULTI",
+                                 "NODE_USES_PARSER",
+                                 "VISITOR",
+                                 "TRACK_TOKENS",
+                                 "NODE_PREFIX",
+                                 "NODE_EXTENDS",
+                                 "NODE_FACTORY",
+                                 Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
 
     try (final OutputFile aOutputFile = new OutputFile (aFile, NODE_VERSION, aOptions))
     {
@@ -170,8 +176,14 @@ public final class NodeFilesCpp
   {
     final File aFile = new File (simpleNodeIncludeFile ());
 
-    final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
-                                 "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    final String [] aOptions = { "MULTI",
+                                 "NODE_USES_PARSER",
+                                 "VISITOR",
+                                 "TRACK_TOKENS",
+                                 "NODE_PREFIX",
+                                 "NODE_EXTENDS",
+                                 "NODE_FACTORY",
+                                 Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
 
     try (final OutputFile aOutputFile = new OutputFile (aFile, NODE_VERSION, aOptions))
     {
@@ -198,8 +210,14 @@ public final class NodeFilesCpp
   {
     final File aFile = new File (simpleNodeCodeFile ());
 
-    final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
-                                 "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    final String [] aOptions = { "MULTI",
+                                 "NODE_USES_PARSER",
+                                 "VISITOR",
+                                 "TRACK_TOKENS",
+                                 "NODE_PREFIX",
+                                 "NODE_EXTENDS",
+                                 "NODE_FACTORY",
+                                 Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
 
     try (final OutputFile aOutputFile = new OutputFile (aFile, NODE_VERSION, aOptions))
     {
@@ -224,8 +242,14 @@ public final class NodeFilesCpp
 
   private static void _generateMultiTreeInterface ()
   {
-    final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
-                                 "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    final String [] aOptions = { "MULTI",
+                                 "NODE_USES_PARSER",
+                                 "VISITOR",
+                                 "TRACK_TOKENS",
+                                 "NODE_PREFIX",
+                                 "NODE_EXTENDS",
+                                 "NODE_FACTORY",
+                                 Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     try
     {
       for (final String sNode : PGCCContext.current ().jjtree ().nodesToGenerate ())
@@ -257,8 +281,14 @@ public final class NodeFilesCpp
 
   private static void _generateMultiTreeImpl ()
   {
-    final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
-                                 "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    final String [] aOptions = { "MULTI",
+                                 "NODE_USES_PARSER",
+                                 "VISITOR",
+                                 "TRACK_TOKENS",
+                                 "NODE_PREFIX",
+                                 "NODE_EXTENDS",
+                                 "NODE_FACTORY",
+                                 Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
 
     try
     {
@@ -296,8 +326,13 @@ public final class NodeFilesCpp
 
     try
     {
-      final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX",
-                                   "NODE_EXTENDS", "NODE_FACTORY",
+      final String [] aOptions = { "MULTI",
+                                   "NODE_USES_PARSER",
+                                   "VISITOR",
+                                   "TRACK_TOKENS",
+                                   "NODE_PREFIX",
+                                   "NODE_EXTENDS",
+                                   "NODE_FACTORY",
                                    Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
       try (OutputFile aOutputFile = new OutputFile (aFile, NODE_VERSION, aOptions))
       {
@@ -337,8 +372,14 @@ public final class NodeFilesCpp
   {
     final File aFile = new File (jjtreeImplFile ());
 
-    final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
-                                 "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    final String [] aOptions = { "MULTI",
+                                 "NODE_USES_PARSER",
+                                 "VISITOR",
+                                 "TRACK_TOKENS",
+                                 "NODE_PREFIX",
+                                 "NODE_EXTENDS",
+                                 "NODE_FACTORY",
+                                 Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
 
     try (final OutputFile aOutputFile = new OutputFile (aFile, NODE_VERSION, aOptions))
     {
@@ -545,14 +586,14 @@ public final class NodeFilesCpp
         }
         final String sNodeType = JJTreeOptions.getNodePrefix () + n;
         aOstr.println ("  virtual " +
-                      sReturnType +
-                      " " +
-                      _getVisitMethodName (sNodeType) +
-                      "(const " +
-                      sNodeType +
-                      " *node, " +
-                      sArgumentType +
-                      " data) = 0;");
+                       sReturnType +
+                       " " +
+                       _getVisitMethodName (sNodeType) +
+                       "(const " +
+                       sNodeType +
+                       " *node, " +
+                       sArgumentType +
+                       " data) = 0;");
       }
     }
 
@@ -596,14 +637,14 @@ public final class NodeFilesCpp
         }
         final String sNodeType = JJTreeOptions.getNodePrefix () + n;
         aOstr.println ("  virtual " +
-                      sRet +
-                      " " +
-                      _getVisitMethodName (sNodeType) +
-                      "(const " +
-                      sNodeType +
-                      " *node, " +
-                      sArgumentType +
-                      " data) {");
+                       sRet +
+                       " " +
+                       _getVisitMethodName (sNodeType) +
+                       "(const " +
+                       sNodeType +
+                       " *node, " +
+                       sArgumentType +
+                       " data) {");
         aOstr.println ("    " + (sRet.trim ().equals ("void") ? "" : "return ") + "defaultVisit(node, data);");
         aOstr.println ("  }");
       }

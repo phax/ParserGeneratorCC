@@ -276,7 +276,7 @@ public class Main
 
       // 2013/07/22 Java Modern is a
       final boolean bIsJavaModern = eOutputLanguage.isJava () &&
-        Options.getJavaTemplateType ().equals (Options.JAVA_TEMPLATE_TYPE_MODERN);
+                                    Options.getJavaTemplateType ().equals (Options.JAVA_TEMPLATE_TYPE_MODERN);
 
       JavaCCGlobals.createOutputDir (Options.getOutputDirectory ());
 

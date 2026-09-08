@@ -327,7 +327,7 @@ public abstract class AbstractJavaCCParserInternals
       PGCCContext.current ().parserBuild ().setFirstToken (PGCCContext.current ().parserBuild ().getFirstToken ().next);
     }
     if (!PGCCContext.current ().parserBuild ().isInsertionPoint1Set () ||
-      !PGCCContext.current ().parserBuild ().isInsertionPoint2Set ())
+        !PGCCContext.current ().parserBuild ().isInsertionPoint2Set ())
     {
       JavaCCErrors.parseError (t, "Parser class has not been defined between PARSER_BEGIN and PARSER_END.");
     }
@@ -462,8 +462,6 @@ public abstract class AbstractJavaCCParserInternals
     }
   }
 
-
-
   /**
    * Turn a string literal as written in the grammar into the characters it stands for.
    *
@@ -518,11 +516,11 @@ public abstract class AbstractJavaCCParserInternals
     if (sLeft.charAt (0) > s.charAt (0))
     {
       JavaCCErrors.parseError (t,
-                                "Right end of character range \'" +
-                                   s +
-                                   "\' has a lower ordinal value than the left end of character range \'" +
-                                   sLeft +
-                                   "\'.");
+                               "Right end of character range \'" +
+                                  s +
+                                  "\' has a lower ordinal value than the left end of character range \'" +
+                                  sLeft +
+                                  "\'.");
       return sLeft.charAt (0);
     }
     return s.charAt (0);

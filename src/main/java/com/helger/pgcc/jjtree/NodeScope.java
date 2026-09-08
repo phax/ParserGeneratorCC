@@ -57,8 +57,8 @@ public class NodeScope
   {
     m_aProduction = aValue;
   }
-  private ASTNodeDescriptor m_aNodeDescriptor;
 
+  private ASTNodeDescriptor m_aNodeDescriptor;
 
   /**
    * @param aValue
@@ -68,6 +68,7 @@ public class NodeScope
   {
     m_aNodeDescriptor = aValue;
   }
+
   private String m_sClosedVar;
 
   /**
@@ -86,6 +87,7 @@ public class NodeScope
   {
     m_sClosedVar = aValue;
   }
+
   private String m_sExceptionVar;
 
   /**
@@ -104,6 +106,7 @@ public class NodeScope
   {
     m_sExceptionVar = aValue;
   }
+
   private String m_sNodeVar;
 
   /**
@@ -122,6 +125,7 @@ public class NodeScope
   {
     m_sNodeVar = aValue;
   }
+
   private int m_nScopeNumber;
 
   /**
@@ -140,6 +144,7 @@ public class NodeScope
   {
     m_nScopeNumber = aValue;
   }
+
   NodeScope (final ASTProduction p, @Nullable final ASTNodeDescriptor n)
   {
     m_aProduction = p;

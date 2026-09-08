@@ -76,6 +76,7 @@ public class TextGenerator implements IDocGenerator
   {
     m_aPW = aValue;
   }
+
   public TextGenerator ()
   {}
 

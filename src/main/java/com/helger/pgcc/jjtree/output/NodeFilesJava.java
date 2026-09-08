@@ -98,8 +98,14 @@ public final class NodeFilesJava
       return;
     }
 
-    final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
-                                "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    final String [] aOptions = { "MULTI",
+                                 "NODE_USES_PARSER",
+                                 "VISITOR",
+                                 "TRACK_TOKENS",
+                                 "NODE_PREFIX",
+                                 "NODE_EXTENDS",
+                                 "NODE_FACTORY",
+                                 Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     try (final OutputFile aOutputFile = new OutputFile (aFile, NODE_VERSION, aOptions))
     {
       aOutputFile.setToolName ("JJTree");
@@ -226,12 +232,12 @@ public final class NodeFilesJava
         sArgumentType = "Object";
 
       aOstr.println ("  public " +
-                    JJTreeOptions.getVisitorReturnType () +
-                    " visit(SimpleNode node, " +
-                    sArgumentType +
-                    " data)" +
-                    sVe +
-                    ";");
+                     JJTreeOptions.getVisitorReturnType () +
+                     " visit(SimpleNode node, " +
+                     sArgumentType +
+                     " data)" +
+                     sVe +
+                     ";");
       if (JJTreeOptions.isMulti ())
       {
         for (final String n : aNodeNames)
@@ -242,16 +248,16 @@ public final class NodeFilesJava
           }
           final String sNodeType = JJTreeOptions.getNodePrefix () + n;
           aOstr.println ("  public " +
-                        JJTreeOptions.getVisitorReturnType () +
-                        " " +
-                        _getVisitMethodName (sNodeType) +
-                        "(" +
-                        sNodeType +
-                        " node, " +
-                        sArgumentType +
-                        " data)" +
-                        sVe +
-                        ";");
+                         JJTreeOptions.getVisitorReturnType () +
+                         " " +
+                         _getVisitMethodName (sNodeType) +
+                         "(" +
+                         sNodeType +
+                         " node, " +
+                         sArgumentType +
+                         " data)" +
+                         sVe +
+                         ";");
         }
       }
       aOstr.println ("}");
@@ -305,17 +311,23 @@ public final class NodeFilesJava
 
       final String sRet = JJTreeOptions.getVisitorReturnType ();
       aOstr.println ("  public " +
-                    sRet +
-                    " defaultVisit(final SimpleNode node, final " +
-                    sArgumentType +
-                    " data)" +
-                    sVe +
-                    "{");
+                     sRet +
+                     " defaultVisit(final SimpleNode node, final " +
+                     sArgumentType +
+                     " data)" +
+                     sVe +
+                     "{");
       aOstr.println ("    node.childrenAccept(this, data);");
       aOstr.println ("    return" + (sRet.trim ().equals ("void") ? "" : " data") + ";");
       aOstr.println ("  }");
 
-      aOstr.println ("  public " + sRet + " visit(final SimpleNode node, final " + sArgumentType + " data)" + sVe + "{");
+      aOstr.println ("  public " +
+                     sRet +
+                     " visit(final SimpleNode node, final " +
+                     sArgumentType +
+                     " data)" +
+                     sVe +
+                     "{");
       aOstr.println ("    " + (sRet.trim ().equals ("void") ? "" : "return ") + "defaultVisit(node, data);");
       aOstr.println ("  }");
 
@@ -329,16 +341,16 @@ public final class NodeFilesJava
           }
           final String sNodeType = JJTreeOptions.getNodePrefix () + n;
           aOstr.println ("  public " +
-                        sRet +
-                        " " +
-                        _getVisitMethodName (sNodeType) +
-                        "(" +
-                        sNodeType +
-                        " node, " +
-                        sArgumentType +
-                        " data)" +
-                        sVe +
-                        "{");
+                         sRet +
+                         " " +
+                         _getVisitMethodName (sNodeType) +
+                         "(" +
+                         sNodeType +
+                         " node, " +
+                         sArgumentType +
+                         " data)" +
+                         sVe +
+                         "{");
           aOstr.println ("    " + (sRet.trim ().equals ("void") ? "" : "return ") + "defaultVisit(node, data);");
           aOstr.println ("  }");
         }
@@ -382,16 +394,18 @@ public final class NodeFilesJava
 
       final Map <String, Object> aOptions = Options.getAllOptions ();
       aOptions.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
-      aOptions.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (JJTreeOptions.getVisitorReturnType ().equals ("void")));
+      aOptions.put ("VISITOR_RETURN_TYPE_VOID",
+                    Boolean.valueOf (JJTreeOptions.getVisitorReturnType ().equals ("void")));
 
       final OutputFileGenerator aGenerator = new OutputFileGenerator ("/templates/java/jjtree/SimpleNode.template",
-                                                                     aOptions);
+                                                                      aOptions);
 
       aGenerator.generate (aOstr);
     }
   }
 
-  private static void _generateMultiNode_java (@NonNull final OutputFile aOutputFile, final String sNodeType) throws IOException
+  private static void _generateMultiNode_java (@NonNull final OutputFile aOutputFile, final String sNodeType)
+                                                                                                              throws IOException
   {
     try (final PrintWriter aOstr = aOutputFile.getPrintWriter ())
     {
@@ -400,10 +414,11 @@ public final class NodeFilesJava
       final Map <String, Object> aOptions = Options.getAllOptions ();
       aOptions.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
       aOptions.put ("NODE_TYPE", sNodeType);
-      aOptions.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (JJTreeOptions.getVisitorReturnType ().equals ("void")));
+      aOptions.put ("VISITOR_RETURN_TYPE_VOID",
+                    Boolean.valueOf (JJTreeOptions.getVisitorReturnType ().equals ("void")));
 
       final OutputFileGenerator aGenerator = new OutputFileGenerator ("/templates/java/jjtree/MultiNode.template",
-                                                                     aOptions);
+                                                                      aOptions);
 
       aGenerator.generate (aOstr);
     }

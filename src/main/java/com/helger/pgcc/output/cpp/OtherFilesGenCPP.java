@@ -109,7 +109,7 @@ public class OtherFilesGenCPP
       s_ostr.println ("/* " + getIdString (aTn, grammar ().getParserName () + "Constants.java") + " */");
 
       if (!grammar ().cuToInsertionPoint1 ().isEmpty () &&
-        grammar ().cuToInsertionPoint1 ().get (0).kind == JavaCCParserConstants.PACKAGE)
+          grammar ().cuToInsertionPoint1 ().get (0).kind == JavaCCParserConstants.PACKAGE)
       {
         for (int i = 1; i < grammar ().cuToInsertionPoint1 ().size (); i++)
         {

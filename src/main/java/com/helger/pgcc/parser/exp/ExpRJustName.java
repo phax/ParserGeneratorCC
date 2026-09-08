@@ -66,6 +66,7 @@ public final class ExpRJustName extends AbstractExpRegularExpression
   {
     m_aRegexpr = aValue;
   }
+
   @Override
   public Nfa generateNfa (final boolean bIgnoreCase)
   {

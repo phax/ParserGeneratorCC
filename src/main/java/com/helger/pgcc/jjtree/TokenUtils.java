@@ -131,5 +131,4 @@ public final class TokenUtils
     return JavaCCGlobals.removeEscapesAndQuotes (t, sStr);
   }
 
-
 }

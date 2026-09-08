@@ -59,6 +59,7 @@ public class ASTBNFDeclaration extends JJTreeNode
   {
     m_aNodeScope = aValue;
   }
+
   ASTBNFDeclaration (final int nID)
   {
     super (nID);

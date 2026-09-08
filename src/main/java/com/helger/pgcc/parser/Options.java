@@ -206,8 +206,8 @@ public class Options
     aTemp.add (new OptionInfo (USEROPTION__OUTPUT_ENCODING, EOptionType.STRING, StandardCharsets.UTF_8.name ()));
     PGCCContext.current ().options ().setLanguage (EOutputLanguage.JAVA);
     aTemp.add (new OptionInfo (USEROPTION__OUTPUT_LANGUAGE,
-                              EOptionType.STRING,
-                              PGCCContext.current ().options ().getLanguage ().getID ()));
+                               EOptionType.STRING,
+                               PGCCContext.current ().options ().getLanguage ().getID ()));
 
     aTemp.add (new OptionInfo (USEROPTION__JAVA_TEMPLATE_TYPE, EOptionType.STRING, JAVA_TEMPLATE_TYPE_CLASSIC));
     aTemp.add (new OptionInfo (USEROPTION__JAVA_CHAR_STREAM_TYPE, EOptionType.STRING, JAVA_CHAR_STREAM_TYPE_SIMPLE));
@@ -395,7 +395,7 @@ public class Options
     }
 
     if (sName.equalsIgnoreCase (USEROPTION__JDK_VERSION) &&
-      (aValue.getClass () == String.class || aValue.getClass () == Integer.class))
+        (aValue.getClass () == String.class || aValue.getClass () == Integer.class))
     {
       final EJavaVersion eRet = JavaVersionHelper.getFromStringOrNull (aValue.toString ());
       if (eRet != null)
@@ -442,10 +442,10 @@ public class Options
       {
         JavaCCErrors.warning (aValueloc,
                               "Bad option value \"" +
-                                        aRealSrc +
-                                        "\" for \"" +
-                                        sName +
-                                        "\".  Option setting will be ignored.");
+                                         aRealSrc +
+                                         "\" for \"" +
+                                         sName +
+                                         "\".  Option setting will be ignored.");
         return;
       }
 
@@ -500,14 +500,14 @@ public class Options
       {
         JavaCCErrors.warning (aValueloc,
                               "Bad option value \"" +
-                                        aValue +
-                                        "\" for \"" +
-                                        sName +
-                                        "\".  Option setting will be ignored. Valid options are: " +
-                                        StringImplode.imploder ()
-                                                     .source (SUPPORTED_JAVA_TEMPLATE_TYPES)
-                                                     .separator (", ")
-                                                     .build ());
+                                         aValue +
+                                         "\" for \"" +
+                                         sName +
+                                         "\".  Option setting will be ignored. Valid options are: " +
+                                         StringImplode.imploder ()
+                                                      .source (SUPPORTED_JAVA_TEMPLATE_TYPES)
+                                                      .separator (", ")
+                                                      .build ());
       }
     }
     else
@@ -518,14 +518,14 @@ public class Options
         {
           JavaCCErrors.warning (aValueloc,
                                 "Bad option value \"" +
-                                          aValue +
-                                          "\" for \"" +
-                                          sName +
-                                          "\".  Option setting will be ignored. Valid options are: " +
-                                          StringImplode.imploder ()
-                                                       .source (SUPPORTED_JAVA_CHAR_STREAM_TYPES)
-                                                       .separator (", ")
-                                                       .build ());
+                                           aValue +
+                                           "\" for \"" +
+                                           sName +
+                                           "\".  Option setting will be ignored. Valid options are: " +
+                                           StringImplode.imploder ()
+                                                        .source (SUPPORTED_JAVA_CHAR_STREAM_TYPES)
+                                                        .separator (", ")
+                                                        .build ());
         }
       }
       else
@@ -537,14 +537,14 @@ public class Options
           {
             JavaCCErrors.warning (aValueloc,
                                   "Bad option value \"" +
-                                            aValue +
-                                            "\" for \"" +
-                                            sName +
-                                            "\".  Option setting will be ignored. Valid options are: " +
-                                            StringImplode.imploder ()
-                                                         .source (EOutputLanguage.values (), EOutputLanguage::getID)
-                                                         .separator (", ")
-                                                         .build ());
+                                             aValue +
+                                             "\" for \"" +
+                                             sName +
+                                             "\".  Option setting will be ignored. Valid options are: " +
+                                             StringImplode.imploder ()
+                                                          .source (EOutputLanguage.values (), EOutputLanguage::getID)
+                                                          .separator (", ")
+                                                          .build ());
             return;
           }
           PGCCContext.current ().options ().setLanguage (eOutLanguage);
@@ -597,9 +597,9 @@ public class Options
       }
       else
         if (sNameUC.length () > 2 &&
-          sNameUC.charAt (0) == 'N' &&
-          sNameUC.charAt (1) == 'O' &&
-          optionValues ().containsKey (sNameUC.substring (2)))
+            sNameUC.charAt (0) == 'N' &&
+            sNameUC.charAt (1) == 'O' &&
+            optionValues ().containsKey (sNameUC.substring (2)))
         {
           aVal = Boolean.FALSE;
           sNameUC = sNameUC.substring (2);
@@ -693,7 +693,7 @@ public class Options
     if (isDebugLookahead () && !isDebugParser ())
     {
       if (cmdLineSetting ().contains (USEROPTION__DEBUG_PARSER) ||
-        inputFileSetting ().contains (USEROPTION__DEBUG_PARSER))
+          inputFileSetting ().contains (USEROPTION__DEBUG_PARSER))
       {
         JavaCCErrors.warning ("True setting of option DEBUG_LOOKAHEAD overrides " +
                               "false setting of option DEBUG_PARSER.");

@@ -125,6 +125,7 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   {
     m_nLeIndex = aValue;
   }
+
   /**
    * The following variable is used to maintain state information for the left-recursion
    * determination algorithm: It is initialized to 0, and set to -1 if this node has been visited in

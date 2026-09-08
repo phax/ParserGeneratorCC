@@ -69,6 +69,7 @@ public class RegExprSpec
   {
     return m_aRexp;
   }
+
   /**
    * @param aValue
    *        The new value of m_aRexp.
@@ -77,6 +78,7 @@ public class RegExprSpec
   {
     m_aRexp = aValue;
   }
+
   /**
    * @return The value of m_aAct.
    */
@@ -84,6 +86,7 @@ public class RegExprSpec
   {
     return m_aAct;
   }
+
   /**
    * @param aValue
    *        The new value of m_aAct.
@@ -92,6 +95,7 @@ public class RegExprSpec
   {
     m_aAct = aValue;
   }
+
   /**
    * @return The value of m_sNextState.
    */
@@ -99,6 +103,7 @@ public class RegExprSpec
   {
     return m_sNextState;
   }
+
   /**
    * @param aValue
    *        The new value of m_sNextState.
@@ -107,6 +112,7 @@ public class RegExprSpec
   {
     m_sNextState = aValue;
   }
+
   /**
    * @return The value of m_aNsTok.
    */
@@ -114,6 +120,7 @@ public class RegExprSpec
   {
     return m_aNsTok;
   }
+
   /**
    * @param aValue
    *        The new value of m_aNsTok.

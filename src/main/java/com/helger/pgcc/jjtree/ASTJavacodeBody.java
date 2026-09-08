@@ -55,6 +55,7 @@ public class ASTJavacodeBody extends JJTreeNode
   {
     m_aNodeScope = aValue;
   }
+
   ASTJavacodeBody (final int nID)
   {
     super (nID);

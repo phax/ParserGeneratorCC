@@ -151,7 +151,7 @@ public final class JJTreeIO
       m_sInputFilename = aFp.getPath ();
 
       m_aIn = new NonBlockingBufferedReader (new InputStreamReader (new FileInputStream (m_sInputFilename),
-                                                                   Options.getGrammarEncoding ()));
+                                                                    Options.getGrammarEncoding ()));
 
     }
     catch (final SecurityException aSe)

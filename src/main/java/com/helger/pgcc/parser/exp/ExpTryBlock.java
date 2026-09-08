@@ -77,6 +77,7 @@ public final class ExpTryBlock extends Expansion
   {
     return m_aExp;
   }
+
   /**
    * @param aValue
    *        The new value of m_aExp.
@@ -85,6 +86,7 @@ public final class ExpTryBlock extends Expansion
   {
     m_aExp = aValue;
   }
+
   @Override
   public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
@@ -95,6 +97,7 @@ public final class ExpTryBlock extends Expansion
     }
     return aSB;
   }
+
   /**
    * @return The value of m_aTypes.
    */
@@ -102,6 +105,7 @@ public final class ExpTryBlock extends Expansion
   {
     return m_aTypes;
   }
+
   /**
    * @param aValue
    *        The new value of m_aTypes.
@@ -110,6 +114,7 @@ public final class ExpTryBlock extends Expansion
   {
     m_aTypes = aValue;
   }
+
   /**
    * @return The value of m_aIds.
    */
@@ -117,6 +122,7 @@ public final class ExpTryBlock extends Expansion
   {
     return m_aIds;
   }
+
   /**
    * @param aValue
    *        The new value of m_aIds.
@@ -125,6 +131,7 @@ public final class ExpTryBlock extends Expansion
   {
     m_aIds = aValue;
   }
+
   /**
    * @return The value of m_aCatchblks.
    */
@@ -132,6 +139,7 @@ public final class ExpTryBlock extends Expansion
   {
     return m_aCatchblks;
   }
+
   /**
    * @param aValue
    *        The new value of m_aCatchblks.
@@ -140,6 +148,7 @@ public final class ExpTryBlock extends Expansion
   {
     m_aCatchblks = aValue;
   }
+
   /**
    * @return The value of m_aFinallyblk.
    */
@@ -147,6 +156,7 @@ public final class ExpTryBlock extends Expansion
   {
     return m_aFinallyblk;
   }
+
   /**
    * @param aValue
    *        The new value of m_aFinallyblk.

@@ -65,6 +65,7 @@ public class ASTBNF extends ASTProduction
   {
     m_aDeclBeginLoc = aValue;
   }
+
   @Override
   public String toString ()
   {

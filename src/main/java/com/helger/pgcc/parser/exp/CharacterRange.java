@@ -61,11 +61,11 @@ public final class CharacterRange implements ICCCharacter
   {
     if (l > r)
       JavaCCErrors.semanticError (this,
-                                   "Invalid range : \"" +
-                                         (int) l +
-                                         "\" - \"" +
-                                         (int) r +
-                                         "\". First character shoud be less than or equal to the second one in a range.");
+                                  "Invalid range : \"" +
+                                        (int) l +
+                                        "\" - \"" +
+                                        (int) r +
+                                        "\". First character shoud be less than or equal to the second one in a range.");
 
     setLeft (l);
     setRight (r);

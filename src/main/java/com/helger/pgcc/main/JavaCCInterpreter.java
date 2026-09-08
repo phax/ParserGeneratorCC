@@ -227,7 +227,11 @@ public class JavaCCInterpreter
         }
         if (aMatchInfo.matchType () == TokenizerData.EMatchType.TOKEN)
         {
-          PGPrinter.error ("Token: " + nMatchedKind + "; image: \"" + sInput.substring (nTokenBeg, nMatchedPos + 1) + "\"");
+          PGPrinter.error ("Token: " +
+                           nMatchedKind +
+                           "; image: \"" +
+                           sInput.substring (nTokenBeg, nMatchedPos + 1) +
+                           "\"");
         }
         if (aMatchInfo.matchType () != TokenizerData.EMatchType.MORE)
         {

@@ -178,10 +178,11 @@ public final class ExpRChoice extends AbstractExpRegularExpression
     for (final AbstractExpRegularExpression curRE : getChoices ())
     {
       if (!curRE.m_bPrivateRexp &&
-        // curRE instanceof RJustName &&
-        curRE.getOrdinal () > 0 &&
-        curRE.getOrdinal () < getOrdinal () &&
-        LexGenJava.lexer ().getLexStates ()[curRE.getOrdinal ()] == LexGenJava.lexer ().getLexStates ()[getOrdinal ()])
+          // curRE instanceof RJustName &&
+          curRE.getOrdinal () > 0 &&
+          curRE.getOrdinal () < getOrdinal () &&
+          LexGenJava.lexer ().getLexStates ()[curRE.getOrdinal ()] == LexGenJava.lexer ()
+                                                                                .getLexStates ()[getOrdinal ()])
       {
         if (hasLabel ())
           JavaCCErrors.warning (this,

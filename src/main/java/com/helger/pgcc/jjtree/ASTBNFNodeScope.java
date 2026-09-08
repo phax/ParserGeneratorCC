@@ -55,6 +55,7 @@ public class ASTBNFNodeScope extends JJTreeNode
   {
     m_aNodeScope = aValue;
   }
+
   private JJTreeNode m_aExpansionUnit;
 
   /**
@@ -73,6 +74,7 @@ public class ASTBNFNodeScope extends JJTreeNode
   {
     m_aExpansionUnit = aValue;
   }
+
   ASTBNFNodeScope (final int nID)
   {
     super (nID);

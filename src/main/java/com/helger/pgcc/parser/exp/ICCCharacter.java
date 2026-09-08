@@ -35,7 +35,6 @@ package com.helger.pgcc.parser.exp;
 
 import com.helger.pgcc.parser.IGrammarLocation;
 
-
 /**
  * Marker interface
  *
