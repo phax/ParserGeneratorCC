@@ -55,7 +55,7 @@ public class OutputHelper
    * from invalid comment syntax, but rather returns version 0.0 (which will always be taken to mean
    * the file is out of date). Works for Java and CPP.
    *
-   * @param fileName
+   * @param sFileName
    *        eg Token.java
    * @return The version as a double, eg 4.1
    * @since 4.1

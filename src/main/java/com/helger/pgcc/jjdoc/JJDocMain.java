@@ -110,7 +110,7 @@ public final class JJDocMain
   /**
    * A main program that exercises the parser.
    *
-   * @param args
+   * @param aArgs
    *        Cmdline args
    * @throws Exception
    *         in case of error
@@ -125,7 +125,7 @@ public final class JJDocMain
    * The method to call to exercise the parser from other Java programs. It returns an error code.
    * See how the main program above uses this method.
    *
-   * @param args
+   * @param aArgs
    *        Cmdline args
    * @return {@link ESuccess}
    * @throws Exception

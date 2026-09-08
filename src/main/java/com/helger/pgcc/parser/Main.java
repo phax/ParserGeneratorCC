@@ -183,7 +183,7 @@ public class Main
    * A main program that exercises the parser. Calls <code>System.exit</code> with return code 0 for
    * success and 1 for error!
    *
-   * @param args
+   * @param aArgs
    *        arguments to main
    * @throws IOException
    *         on IO error
@@ -199,7 +199,7 @@ public class Main
    * The method to call to exercise the parser from other Java programs. It returns an error code.
    * See how the main program above uses this method.
    *
-   * @param args
+   * @param aArgs
    *        main arguments
    * @return {@link ESuccess}
    * @throws IOException

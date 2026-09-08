@@ -112,7 +112,7 @@ public class JJTree
   /**
    * A main program that exercises the parser.
    *
-   * @param args
+   * @param aArgs
    *        commandline arguments
    * @return {@link ESuccess}
    */

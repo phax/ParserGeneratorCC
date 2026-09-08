@@ -103,7 +103,7 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
-   * @param left
+   * @param cLeft
    *        the left to set
    */
   public void setLeft (final char cLeft)
@@ -120,7 +120,7 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
-   * @param right
+   * @param cRight
    *        the right to set
    */
   public void setRight (final char cRight)

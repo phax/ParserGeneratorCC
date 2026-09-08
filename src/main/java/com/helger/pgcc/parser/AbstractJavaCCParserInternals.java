@@ -49,7 +49,7 @@ import com.helger.pgcc.parser.exp.Expansion;
 /**
  * Utilities.
  */
-public abstract class JavaCCParserInternals
+public abstract class AbstractJavaCCParserInternals
 {
   /**
    * Class to hold modifiers.
@@ -213,7 +213,7 @@ public abstract class JavaCCParserInternals
     PGCCContext.current ().parserBuild ().setFirstToken (t);
   }
 
-  protected static void addProduction (final NormalProduction p)
+  protected static void addProduction (final AbstractNormalProduction p)
   {
     grammar ().bnfProductions ().add (p);
   }

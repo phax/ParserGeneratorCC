@@ -125,7 +125,7 @@ public class ParseEngine
 
     if (aExp instanceof final ExpNonTerminal aNonTerminal)
     {
-      final NormalProduction aProd = aNonTerminal.getProd ();
+      final AbstractNormalProduction aProd = aNonTerminal.getProd ();
       if (aProd instanceof AbstractCodeProduction)
         return true;
       return _javaCodeCheck (aProd.getExpansion ());
@@ -1362,7 +1362,7 @@ public class ParseEngine
     if (Options.isDebugLookahead () && m_aJj3Expansion != null)
     {
       String sTracecode = "trace_return(\"" +
-                         JavaCCGlobals.addUnicodeEscapes (((NormalProduction) m_aJj3Expansion.getParent ()).getLhs ()) +
+                         JavaCCGlobals.addUnicodeEscapes (((AbstractNormalProduction) m_aJj3Expansion.getParent ()).getLhs ()) +
                          "(LOOKAHEAD " +
                          (bValue ? "FAILED" : "SUCCEEDED") +
                          ")\");";
@@ -1389,7 +1389,7 @@ public class ParseEngine
         else
           if (aSeq instanceof final ExpNonTerminal e_nrw)
           {
-            final NormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
+            final AbstractNormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
             if (aNtprod instanceof AbstractCodeProduction)
             {
               break; // nothing to do here
@@ -1432,7 +1432,7 @@ public class ParseEngine
         // there's no need to check it below for "e_nrw" and "ntexp". In
         // fact, we rely here on the fact that the "name" fields of both these
         // variables are the same.
-        final NormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
+        final AbstractNormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (aNtprod instanceof AbstractCodeProduction)
         {
           // nothing to do here
@@ -1533,7 +1533,7 @@ public class ParseEngine
       }
       _genStackCheck (false);
       m_bXspDeclared = false;
-      if (Options.isDebugLookahead () && e.getParent () instanceof NormalProduction)
+      if (Options.isDebugLookahead () && e.getParent () instanceof AbstractNormalProduction)
       {
         m_aCodeGenerator.genCode ("    ");
         if (Options.isErrorReporting ())
@@ -1541,7 +1541,7 @@ public class ParseEngine
           m_aCodeGenerator.genCode ("if (!jj_rescan) ");
         }
         m_aCodeGenerator.genCodeLine ("trace_call(\"" +
-                                     JavaCCGlobals.addUnicodeEscapes (((NormalProduction) e.getParent ()).getLhs ()) +
+                                     JavaCCGlobals.addUnicodeEscapes (((AbstractNormalProduction) e.getParent ()).getLhs ()) +
                                      "(LOOKING AHEAD...)\");");
         m_aJj3Expansion = e;
       }
@@ -1578,7 +1578,7 @@ public class ParseEngine
         // there's no need to check it below for "e_nrw" and "ntexp". In
         // fact, we rely here on the fact that the "name" fields of both these
         // variables are the same.
-        final NormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
+        final AbstractNormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (aNtprod instanceof AbstractCodeProduction)
         {
           m_aCodeGenerator.genCodeLine ("    if (true) { jj_la = 0; jj_scanpos = jj_lastpos; " +
@@ -1792,7 +1792,7 @@ public class ParseEngine
 
       if (e instanceof final ExpNonTerminal e_nrw)
       {
-        final NormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
+        final AbstractNormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (aNtprod instanceof AbstractCodeProduction)
         {
           return Integer.MAX_VALUE;
@@ -1880,7 +1880,7 @@ public class ParseEngine
   {
     m_aCodeGenerator = aCodeGenerator;
     final EOutputLanguage eOutputLanguage = m_aCodeGenerator.getOutputLanguage ();
-    for (final NormalProduction p : grammar ().bnfProductions ())
+    for (final AbstractNormalProduction p : grammar ().bnfProductions ())
     {
       if (p instanceof final CodeProductionCpp cp)
       {
@@ -2088,7 +2088,7 @@ public class ParseEngine
     else
       if (e instanceof final ExpNonTerminal e_nrw)
       {
-        final NormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
+        final AbstractNormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (aNtprod instanceof AbstractCodeProduction)
         {
           // javacode, true - always (warn?)
@@ -2147,7 +2147,7 @@ public class ParseEngine
               Expansion aTmp = e_nrw.getUnitAt (1);
               while (aTmp instanceof ExpNonTerminal)
               {
-                final NormalProduction aNtprod = (grammar ().productionTable ().get (((ExpNonTerminal) aTmp).getName ()));
+                final AbstractNormalProduction aNtprod = (grammar ().productionTable ().get (((ExpNonTerminal) aTmp).getName ()));
                 if (aNtprod instanceof AbstractCodeProduction)
                   break;
                 aTmp = aNtprod.getExpansion ();

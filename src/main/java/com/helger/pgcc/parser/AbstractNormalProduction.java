@@ -43,7 +43,7 @@ import com.helger.pgcc.parser.exp.Expansion;
 /**
  * Describes JavaCC productions.
  */
-public abstract class NormalProduction implements IGrammarLocation
+public abstract class AbstractNormalProduction implements IGrammarLocation
 {
   protected static final String EOL = System.getProperty ("line.separator", "\n");
 
@@ -99,7 +99,7 @@ public abstract class NormalProduction implements IGrammarLocation
    * A list of all non-terminals that this one can expand to without having to consume any tokens.
    * Also an index that shows how many pointers exist.
    */
-  private NormalProduction [] m_aLeftExpansions = new NormalProduction [10];
+  private AbstractNormalProduction [] m_aLeftExpansions = new AbstractNormalProduction [10];
   int m_nLeIndex = 0;
 
   /**
@@ -129,37 +129,37 @@ public abstract class NormalProduction implements IGrammarLocation
   protected String getSimpleName ()
   {
     final String sName = getClass ().getName ();
-    return sName.substring (sName.lastIndexOf (".") + 1); // strip the package
-                                                        // name
+    // strip the package name
+    return sName.substring (sName.lastIndexOf (".") + 1);
   }
 
-  public StringBuilder dump (final int nIndent, final Set <? super NormalProduction> aAlreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super AbstractNormalProduction> aAlreadyDumped)
   {
-    final StringBuilder aSb = dumpPrefix (nIndent).append (System.identityHashCode (this))
-                                                .append (' ')
-                                                .append (getSimpleName ())
-                                                .append (' ')
-                                                .append (getLhs ());
+    final StringBuilder aSB = dumpPrefix (nIndent).append (System.identityHashCode (this))
+                                                  .append (' ')
+                                                  .append (getSimpleName ())
+                                                  .append (' ')
+                                                  .append (getLhs ());
     if (!aAlreadyDumped.contains (this))
     {
       aAlreadyDumped.add (this);
       if (getExpansion () != null)
       {
         // cannot re-use already dumped
-        aSb.append (EOL).append (getExpansion ().dump (nIndent + 1, new HashSet <> ()));
+        aSB.append (EOL).append (getExpansion ().dump (nIndent + 1, new HashSet <> ()));
       }
     }
 
-    return aSb;
+    return aSB;
   }
 
   /**
-   * @param line
+   * @param nLine
    *        the line to set
    */
   public void setLineNumber (final int nLine)
   {
-    this.m_nLine = nLine;
+    m_nLine = nLine;
   }
 
   /**
@@ -171,12 +171,12 @@ public abstract class NormalProduction implements IGrammarLocation
   }
 
   /**
-   * @param column
+   * @param nColumn
    *        the column to set
    */
   public void setColumnNumber (final int nColumn)
   {
-    this.m_nColumn = nColumn;
+    m_nColumn = nColumn;
   }
 
   /**
@@ -188,12 +188,12 @@ public abstract class NormalProduction implements IGrammarLocation
   }
 
   /**
-   * @param parents
+   * @param aParents
    *        the parents to set
    */
   void setParents (final List <Expansion> aParents)
   {
-    this.m_aParents = aParents;
+    m_aParents = aParents;
   }
 
   /**
@@ -205,12 +205,12 @@ public abstract class NormalProduction implements IGrammarLocation
   }
 
   /**
-   * @param accessMod
+   * @param sAccessMod
    *        the accessMod to set
    */
   public void setAccessMod (final String sAccessMod)
   {
-    this.m_sAccessMod = sAccessMod;
+    m_sAccessMod = sAccessMod;
   }
 
   /**
@@ -222,12 +222,12 @@ public abstract class NormalProduction implements IGrammarLocation
   }
 
   /**
-   * @param lhs
+   * @param sLhs
    *        the lhs to set
    */
   public void setLhs (final String sLhs)
   {
-    this.m_sLhs = sLhs;
+    m_sLhs = sLhs;
   }
 
   /**
@@ -255,12 +255,12 @@ public abstract class NormalProduction implements IGrammarLocation
   }
 
   /**
-   * @param throws_list
+   * @param aThrowsList
    *        the throws_list to set
    */
-  public void setThrowsList (final List <List <Token>> aThrows_list)
+  public void setThrowsList (final List <List <Token>> aThrowsList)
   {
-    this.m_aThrowsList = aThrows_list;
+    m_aThrowsList = aThrowsList;
   }
 
   /**
@@ -272,12 +272,12 @@ public abstract class NormalProduction implements IGrammarLocation
   }
 
   /**
-   * @param expansion
+   * @param aExpansion
    *        the expansion to set
    */
   public void setExpansion (final Expansion aExpansion)
   {
-    this.m_aExpansion = aExpansion;
+    m_aExpansion = aExpansion;
   }
 
   /**
@@ -289,12 +289,12 @@ public abstract class NormalProduction implements IGrammarLocation
   }
 
   /**
-   * @param emptyPossible
+   * @param bEmptyPossible
    *        the emptyPossible to set
    */
   boolean setEmptyPossible (final boolean bEmptyPossible)
   {
-    this.m_bEmptyPossible = bEmptyPossible;
+    m_bEmptyPossible = bEmptyPossible;
     return bEmptyPossible;
   }
 
@@ -307,29 +307,29 @@ public abstract class NormalProduction implements IGrammarLocation
   }
 
   /**
-   * @param leftExpansions
+   * @param aLeftExpansions
    *        the leftExpansions to set
    */
-  void setLeftExpansions (final NormalProduction [] aLeftExpansions)
+  void setLeftExpansions (final AbstractNormalProduction [] aLeftExpansions)
   {
-    this.m_aLeftExpansions = aLeftExpansions;
+    m_aLeftExpansions = aLeftExpansions;
   }
 
   /**
    * @return the leftExpansions
    */
-  NormalProduction [] getLeftExpansions ()
+  AbstractNormalProduction [] getLeftExpansions ()
   {
     return m_aLeftExpansions;
   }
 
   /**
-   * @param walkStatus
+   * @param nWalkStatus
    *        the walkStatus to set
    */
   void setWalkStatus (final int nWalkStatus)
   {
-    this.m_nWalkStatus = nWalkStatus;
+    m_nWalkStatus = nWalkStatus;
   }
 
   /**
@@ -341,13 +341,13 @@ public abstract class NormalProduction implements IGrammarLocation
   }
 
   /**
-   * @param firstToken
+   * @param aFirstToken
    *        the firstToken to set
    * @return parameter token
    */
   public Token setFirstToken (final Token aFirstToken)
   {
-    this.m_aFirstToken = aFirstToken;
+    m_aFirstToken = aFirstToken;
     return aFirstToken;
   }
 
@@ -360,12 +360,12 @@ public abstract class NormalProduction implements IGrammarLocation
   }
 
   /**
-   * @param lastToken
+   * @param aLastToken
    *        the lastToken to set
    */
   public void setLastToken (final Token aLastToken)
   {
-    this.m_aLastToken = aLastToken;
+    m_aLastToken = aLastToken;
   }
 
   /**

@@ -146,9 +146,9 @@ public sealed class Expansion implements IGrammarLocation permits
   }
 
   /**
-   * @param indent
+   * @param nIndent
    *        indentation level
-   * @param alreadyDumped
+   * @param aAlreadyDumped
    *        what was already dumped?
    * @return String
    */
@@ -167,7 +167,7 @@ public sealed class Expansion implements IGrammarLocation permits
   }
 
   /**
-   * @param column
+   * @param nColumn
    *        the column to set
    */
   public final void setColumnNumber (final int nColumn)
@@ -184,7 +184,7 @@ public sealed class Expansion implements IGrammarLocation permits
   }
 
   /**
-   * @param line
+   * @param nLine
    *        the line to set
    */
   public final void setLineNumber (final int nLine)

@@ -46,7 +46,7 @@ import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
@@ -126,12 +126,12 @@ public class TextGenerator implements IDocGenerator
     productionEnd (aCp);
   }
 
-  public void productionStart (final NormalProduction aNp) throws IOException
+  public void productionStart (final AbstractNormalProduction aNp) throws IOException
   {
     m_aPW.write ("\t" + aNp.getLhs () + "\t:=\t");
   }
 
-  public void productionEnd (final NormalProduction aNp) throws IOException
+  public void productionEnd (final AbstractNormalProduction aNp) throws IOException
   {
     m_aPW.write ("\n");
   }

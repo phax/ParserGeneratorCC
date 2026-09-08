@@ -43,7 +43,7 @@ import com.helger.base.string.StringHelper;
 import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpNonTerminal;
@@ -202,7 +202,7 @@ public class HTMLGenerator extends TextGenerator
   }
 
   @Override
-  public void productionStart (final NormalProduction aNp) throws IOException
+  public void productionStart (final AbstractNormalProduction aNp) throws IOException
   {
     if (!JJDocOptions.isOneTable ())
     {
@@ -217,7 +217,7 @@ public class HTMLGenerator extends TextGenerator
   }
 
   @Override
-  public void productionEnd (final NormalProduction aNp) throws IOException
+  public void productionEnd (final AbstractNormalProduction aNp) throws IOException
   {
     if (!JJDocOptions.isOneTable ())
     {

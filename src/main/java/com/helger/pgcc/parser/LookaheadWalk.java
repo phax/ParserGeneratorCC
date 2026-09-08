@@ -82,7 +82,7 @@ public final class LookaheadWalk
 
     if (aExp instanceof final ExpNonTerminal aNonTerminal)
     {
-      final NormalProduction aProd = aNonTerminal.getProd ();
+      final AbstractNormalProduction aProd = aNonTerminal.getProd ();
       if (aProd instanceof AbstractCodeProduction)
       {
         return new ArrayList <> ();
@@ -200,9 +200,9 @@ public final class LookaheadWalk
       return aRetval;
     }
 
-    if (aExp.getParent () instanceof NormalProduction)
+    if (aExp.getParent () instanceof AbstractNormalProduction)
     {
-      final List <Expansion> aParents = ((NormalProduction) aExp.getParent ()).getParents ();
+      final List <Expansion> aParents = ((AbstractNormalProduction) aExp.getParent ()).getParents ();
       final List <MatchInfo> aRetval = new ArrayList <> ();
       // System.out.println("1; gen: " + generation + "; exp: " + exp);
       for (final Expansion parent : aParents)

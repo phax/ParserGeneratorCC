@@ -111,9 +111,9 @@ public final class JavaCCGlobals
    * This prints the banner line when the various tools are invoked. This takes as argument the
    * tool's full name and its version.
    *
-   * @param fullName
+   * @param sFullName
    *        full application name
-   * @param ver
+   * @param sVer
    *        version string
    */
   public static void bannerLine (final String sFullName, final String sVer)
@@ -132,9 +132,9 @@ public final class JavaCCGlobals
   /**
    * Returns the identifying string for the file name, given a toolname used to generate it.
    *
-   * @param toolName
+   * @param sToolName
    *        tool name
-   * @param fileName
+   * @param sFileName
    *        file name
    * @return ID string
    */
@@ -147,9 +147,9 @@ public final class JavaCCGlobals
    * Returns the identifying string for the file name, given a set of tool names that are used to
    * generate it. Total name may not exceed 200 characters.
    *
-   * @param toolNames
+   * @param aToolNames
    *        tool names
-   * @param fileName
+   * @param sFileName
    *        file names
    * @return ID string
    */
@@ -169,9 +169,9 @@ public final class JavaCCGlobals
   }
 
   /**
-   * @param toolName
+   * @param sToolName
    *        tool name
-   * @param fileName
+   * @param sFileName
    *        file name
    * @return <code>true</code> if tool name passed is one of the tool names returned by
    *         getToolNames(fileName).
@@ -238,7 +238,7 @@ public final class JavaCCGlobals
   /**
    * Returns a List of names of the tools that have been used to generate the given file.
    *
-   * @param fileName
+   * @param sFileName
    *        file name
    * @return tool names
    */
@@ -579,7 +579,7 @@ public final class JavaCCGlobals
   /**
    * Replaces all backslashes with double backslashes.
    *
-   * @param str
+   * @param sStr
    *        source string
    * @return result string
    */

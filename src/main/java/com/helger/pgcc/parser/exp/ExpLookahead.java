@@ -91,7 +91,7 @@ public final class ExpLookahead extends Expansion
   }
 
   /**
-   * @param amount
+   * @param nAmount
    *        the amount to set
    */
   public final void setAmount (final int nAmount)
@@ -108,7 +108,7 @@ public final class ExpLookahead extends Expansion
   }
 
   /**
-   * @param la_expansion
+   * @param aLa_expansion
    *        the la_expansion to set
    */
   public final void setLaExpansion (final Expansion aLa_expansion)
@@ -125,7 +125,7 @@ public final class ExpLookahead extends Expansion
   }
 
   /**
-   * @param isExplicit
+   * @param bIsExplicit
    *        the isExplicit to set
    */
   public final void setExplicit (final boolean bIsExplicit)

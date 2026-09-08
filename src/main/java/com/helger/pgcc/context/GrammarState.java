@@ -43,7 +43,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.Token;
 import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
@@ -64,8 +64,8 @@ public final class GrammarState
   private final ICommonsList <Token> m_aCuToInsertionPoint1 = new CommonsArrayList <> ();
   private final ICommonsList <Token> m_aCuToInsertionPoint2 = new CommonsArrayList <> ();
   private final ICommonsList <Token> m_aCuFromInsertionPoint2 = new CommonsArrayList <> ();
-  private final List <NormalProduction> m_aBnfProductions = new ArrayList <> ();
-  private final Map <String, NormalProduction> m_aProductionTable = new HashMap <> ();
+  private final List <AbstractNormalProduction> m_aBnfProductions = new ArrayList <> ();
+  private final Map <String, AbstractNormalProduction> m_aProductionTable = new HashMap <> ();
   private final Map <String, Integer> m_aLexStateS2I = new HashMap <> ();
   private final Map <Integer, String> m_aLexStateI2S = new HashMap <> ();
   private final List <TokenProduction> m_aRexprList = new ArrayList <> ();
@@ -117,14 +117,14 @@ public final class GrammarState
 
   /** @return All BNF productions in the order they were declared */
   @NonNull
-  public List <NormalProduction> bnfProductions ()
+  public List <AbstractNormalProduction> bnfProductions ()
   {
     return m_aBnfProductions;
   }
 
   /** @return Production name to production */
   @NonNull
-  public Map <String, NormalProduction> productionTable ()
+  public Map <String, AbstractNormalProduction> productionTable ()
   {
     return m_aProductionTable;
   }

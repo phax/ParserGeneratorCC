@@ -83,9 +83,9 @@ public class JavaCCInterpreter
    * then whatever options apply. {@link #main(String[])} does that; a direct caller must do it too,
    * or the option lookups fail.
    *
-   * @param grammar
+   * @param sGrammar
    *        The grammar source. May not be <code>null</code>.
-   * @param input
+   * @param sInput
    *        The text to tokenize. May not be <code>null</code>.
    */
   public void runTokenizer (final String sGrammar, final String sInput)

@@ -377,7 +377,7 @@ public class CodeGenerator
   /**
    * Generate annotation. @XX syntax for java, comments in C++
    *
-   * @param ann
+   * @param sAnn
    *        annotation name
    */
   public final void genAnnotation (final String sAnn)
@@ -400,7 +400,7 @@ public class CodeGenerator
   /**
    * Generate a modifier
    *
-   * @param mod
+   * @param sMod
    *        modifier
    */
   public final void genModifier (final String sMod)
@@ -426,13 +426,13 @@ public class CodeGenerator
    * Generate a class with a given name, an array of superclass and another array of super
    * interfaces
    *
-   * @param mod
+   * @param sMod
    *        modifier
-   * @param name
+   * @param sName
    *        name
-   * @param superClasses
+   * @param aSuperClasses
    *        super classes
-   * @param superInterfaces
+   * @param aSuperInterfaces
    *        super interfaces
    */
   public final void genClassStart (final String sMod,

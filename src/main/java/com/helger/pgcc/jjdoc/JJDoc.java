@@ -46,7 +46,7 @@ import com.helger.pgcc.parser.BNFProduction;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
 import com.helger.pgcc.parser.JavaCCGlobals;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.RegExprSpec;
 import com.helger.pgcc.parser.Token;
 import com.helger.pgcc.parser.TokenProduction;
@@ -101,7 +101,7 @@ public final class JJDoc
 
   /*
    * private static boolean toplevelExpansion(Expansion exp) { return exp.parent != null && (
-   * (exp.parent instanceof NormalProduction) || (exp.parent instanceof TokenProduction) ); }
+   * (exp.parent instanceof AbstractNormalProduction) || (exp.parent instanceof TokenProduction) ); }
    */
 
   private static void _emitTokenProductions (final IDocGenerator aGen, final List <TokenProduction> aProds)
@@ -176,11 +176,11 @@ public final class JJDoc
     return sToken;
   }
 
-  private static void _emitNormalProductions (final IDocGenerator aGen, final List <NormalProduction> aProds)
+  private static void _emitNormalProductions (final IDocGenerator aGen, final List <AbstractNormalProduction> aProds)
                                                                                                             throws IOException
   {
     aGen.nonterminalsStart ();
-    for (final NormalProduction np : aProds)
+    for (final AbstractNormalProduction np : aProds)
     {
       _emitTopLevelSpecialTokens (np.getFirstToken (), aGen);
       if (np instanceof BNFProduction)

@@ -77,9 +77,9 @@ public class OutputFileGenerator
   private String m_sCurrentLine;
 
   /**
-   * @param templateName
+   * @param sTemplateName
    *        the name of the template. E.g. "/templates/java/Token.template".
-   * @param options
+   * @param aOptions
    *        the processing options in force, such as "STATIC=yes"
    */
   public OutputFileGenerator (final String sTemplateName, @NonNull final Map <String, Object> aOptions)
@@ -106,7 +106,7 @@ public class OutputFileGenerator
   /**
    * Generate the output file.
    *
-   * @param out
+   * @param aOut
    *        writer
    * @throws IOException
    *         on IO error
@@ -220,10 +220,16 @@ public class OutputFileGenerator
   }
 
   /**
-   * @param substring
-   * @param defaultValue
-   * @return
+   * Expand a <code>${name?then:else}</code> expression: the part before the colon if the variable
+   * is set and true, the part after it otherwise.
+   *
+   * @param sVariableName
+   *        The variable to look at. May not be <code>null</code>.
+   * @param sValues
+   *        The two alternatives, separated by a colon. May not be <code>null</code>.
+   * @return The chosen alternative, itself substituted. Never <code>null</code>.
    * @throws IOException
+   *         If the expression is malformed
    */
   private String _substituteWithConditional (final String sVariableName, final String sValues) throws IOException
   {
@@ -240,8 +246,8 @@ public class OutputFileGenerator
   }
 
   /**
-   * @param variableName
-   * @param defaultValue
+   * @param sVariableName
+   * @param sDefaultValue
    * @return
    */
   private String _substituteWithDefault (final String sVariableName, final String sDefaultValue) throws IOException

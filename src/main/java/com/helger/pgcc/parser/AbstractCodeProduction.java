@@ -43,7 +43,7 @@ import com.helger.collection.commons.ICommonsList;
  * Describes a CODE productions.
  */
 
-public abstract class AbstractCodeProduction extends NormalProduction
+public abstract class AbstractCodeProduction extends AbstractNormalProduction
 {
   /**
    * The tokens that implement this JAVACODE/CPPCODE production.

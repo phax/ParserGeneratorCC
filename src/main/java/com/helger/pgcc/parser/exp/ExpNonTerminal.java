@@ -41,7 +41,7 @@ import org.jspecify.annotations.NonNull;
 import com.helger.annotation.Nonnegative;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.Token;
 
 /**
@@ -71,7 +71,7 @@ public final class ExpNonTerminal extends Expansion
   /**
    * The production this non-terminal corresponds to.
    */
-  private NormalProduction m_aProd;
+  private AbstractNormalProduction m_aProd;
 
   @Override
   public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
@@ -101,7 +101,7 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * @param lhsTokens
+   * @param aLhsTokens
    *        the lhsTokens to set
    */
   public final void setLhsTokens (@NonNull final List <Token> aLhsTokens)
@@ -118,7 +118,7 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * @param name
+   * @param sName
    *        the name to set
    */
   public final void setName (final String sName)
@@ -171,16 +171,16 @@ public final class ExpNonTerminal extends Expansion
   /**
    * @return the prod
    */
-  public final NormalProduction getProd ()
+  public final AbstractNormalProduction getProd ()
   {
     return m_aProd;
   }
 
   /**
-   * @param prod
+   * @param aProd
    *        the prod to set
    */
-  public final void setProd (final NormalProduction aProd)
+  public final void setProd (final AbstractNormalProduction aProd)
   {
     m_aProd = aProd;
   }

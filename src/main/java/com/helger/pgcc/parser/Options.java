@@ -265,7 +265,7 @@ public class Options
   /**
    * Convenience method to retrieve integer options.
    *
-   * @param option
+   * @param sOption
    *        Name of the option to be retrieved. May not be <code>null</code>.
    * @return int value
    */
@@ -277,7 +277,7 @@ public class Options
   /**
    * Convenience method to retrieve boolean options.
    *
-   * @param option
+   * @param sOption
    *        Name of the option to be retrieved. May not be <code>null</code>.
    * @return boolean value
    */
@@ -289,7 +289,7 @@ public class Options
   /**
    * Convenience method to retrieve string options.
    *
-   * @param option
+   * @param sOption
    *        Name of the option to be retrieved. May not be <code>null</code>.
    * @return String value
    */
@@ -331,7 +331,7 @@ public class Options
    * generating Token.java to record the JavaCC options that were used to generate the file. All of
    * the options must be boolean values.
    *
-   * @param interestingOptions
+   * @param aInterestingOptions
    *        the options of interest, eg {Options.USEROPTION__KEEP_LINE_COLUMN,
    *        Options.USEROPTION__CACHE_TOKENS}
    * @return the string representation of the options, eg "KEEP_LINE_COLUMN=true,CACHE_TOKENS=false"
@@ -367,7 +367,7 @@ public class Options
    * Determine if a given command line argument might be an option flag. Command line options start
    * with a dash&nbsp;(-).
    *
-   * @param opt
+   * @param sOpt
    *        The command line argument to examine.
    * @return True when the argument looks like an option flag.
    */
@@ -380,9 +380,9 @@ public class Options
    * Help function to handle cases where the meaning of an option has changed over time. If the user
    * has supplied an option in the old format, it will be converted to the new format.
    *
-   * @param name
+   * @param sName
    *        The name of the option being checked.
-   * @param value
+   * @param aValue
    *        The option's value.
    * @return The upgraded value.
    */
@@ -478,7 +478,7 @@ public class Options
    * command line - previously it was only called for the former, so that e.g.
    * <code>-OUTPUT_LANGUAGE=c++</code> on the command line was silently ignored.
    *
-   * @param valueloc
+   * @param aValueloc
    *        Location of the option value, used for warnings. May be <code>null</code> for command
    *        line options, where no location is available.
    * @param sNameUC

@@ -94,11 +94,11 @@ public class OutputFile implements AutoCloseable
   /**
    * Create a new OutputFile.
    *
-   * @param file
+   * @param aFile
    *        the file to write to.
-   * @param compatibleVersion
+   * @param sCompatibleVersion
    *        the minimum compatible JavaCC version.
-   * @param options
+   * @param aOptions
    *        if the file already exists, and cannot be overwritten, this is a list of options (such s
    *        STATIC=false) to check for changes.
    * @throws IOException
@@ -191,8 +191,10 @@ public class OutputFile implements AutoCloseable
   /**
    * Output a warning if the file was created with an incompatible version of JavaCC.
    *
-   * @param fileName
-   * @param versionId
+   * @param aFile
+   *        The file to inspect. May not be <code>null</code>.
+   * @param sVersionId
+   *        The version this generator would write. May not be <code>null</code>.
    */
   private void _checkVersion (final File aFile, final String sVersionId)
   {
@@ -232,8 +234,10 @@ public class OutputFile implements AutoCloseable
    * Read the options line from the file and compare to the options currently in use. Output a
    * warning if they are different.
    *
-   * @param fileName
-   * @param options
+   * @param aFile
+   *        The file to inspect. May not be <code>null</code>.
+   * @param aOptions
+   *        The option names whose values the file has to match. May be <code>null</code>.
    */
   private void _checkOptions (final File aFile, final String [] aOptions)
   {
@@ -358,7 +362,7 @@ public class OutputFile implements AutoCloseable
   }
 
   /**
-   * @param toolName
+   * @param sToolName
    *        the toolName to set
    */
   public void setToolName (final String sToolName)

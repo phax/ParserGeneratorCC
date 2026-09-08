@@ -198,7 +198,7 @@ public final class SelfGenerate
   }
 
   /**
-   * @param args
+   * @param aArgs
    *        Optional single argument: the target directory. Defaults to <code>target/selfgen</code>.
    * @throws IOException
    *         On IO error

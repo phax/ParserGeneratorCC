@@ -3533,17 +3533,15 @@ public class NfaState
   }
 
   /**
-   * Add a state that stands for a composite set and matches nothing itself, unless the state is
-   * already there.
+   * Turn everything {@link #updateNfaData(int, int, int, int)} collected per lexical state into the
+   * {@link TokenizerData} that {@code JavaCCInterpreter} reads.
+   * <p>
+   * The state names of each lexical state are shifted so that all of them fit into one array, and
+   * a lexical state whose start state is composite gets a synthesized state for it - the name the
+   * NFA construction handed out belongs to no {@code NfaState} object.
    *
-   * @param tokenizerData
-   *        Where to add it. May not be <code>null</code>.
-   * @param nName
-   *        The name of the composite state, already shifted by the lexical state offset.
-   * @param aMemberStates
-   *        The member state names, not yet shifted.
-   * @param nOffset
-   *        The lexical state offset to shift the member names by.
+   * @param aTokenizerData
+   *        Where to put the result. May not be <code>null</code>.
    */
   public static void buildTokenizerData (final TokenizerData aTokenizerData)
   {

@@ -39,7 +39,7 @@ import java.io.Writer;
 import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.RegExprSpec;
 import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
@@ -129,10 +129,10 @@ public class XTextGenerator implements IDocGenerator
   public void cppcode (final CodeProductionCpp aCp)
   {}
 
-  public void productionStart (final NormalProduction aNp)
+  public void productionStart (final AbstractNormalProduction aNp)
   {}
 
-  public void productionEnd (final NormalProduction aNp)
+  public void productionEnd (final AbstractNormalProduction aNp)
   {}
 
   public void expansionStart (final Expansion e, final boolean bFirst)

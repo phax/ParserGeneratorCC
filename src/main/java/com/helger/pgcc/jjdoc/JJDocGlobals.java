@@ -44,7 +44,7 @@ public final class JJDocGlobals
   public static final String STANDARD_OUTPUT = "standard output";
 
   /**
-   * @param generator
+   * @param aGenerator
    *        The generator to set.
    */
   public static void setGenerator (final IDocGenerator aGenerator)

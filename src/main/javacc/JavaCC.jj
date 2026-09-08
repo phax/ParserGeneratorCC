@@ -88,7 +88,7 @@ import java.util.ArrayList;
 
 import com.helger.pgcc.parser.exp.*;
 
-public class JavaCCParser extends JavaCCParserInternals {
+public class JavaCCParser extends AbstractJavaCCParserInternals {
   /**
    * The name of the parser class.
    */
@@ -811,7 +811,7 @@ void bnf_production() :
   }
 }
 
-void AccessModifier(NormalProduction p) :
+void AccessModifier(AbstractNormalProduction p) :
   {
     Token t = null;
   }

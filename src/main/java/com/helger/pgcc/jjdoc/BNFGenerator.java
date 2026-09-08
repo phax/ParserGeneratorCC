@@ -40,7 +40,7 @@ import java.util.Map;
 
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpNonTerminal;
@@ -118,13 +118,13 @@ public class BNFGenerator implements IDocGenerator
   public void nonTerminalEnd (final ExpNonTerminal aNt)
   {}
 
-  public void productionStart (final NormalProduction aNp) throws IOException
+  public void productionStart (final AbstractNormalProduction aNp) throws IOException
   {
     print ("\n");
     print (aNp.getLhs () + " ::= ");
   }
 
-  public void productionEnd (final NormalProduction aNp) throws IOException
+  public void productionEnd (final AbstractNormalProduction aNp) throws IOException
   {
     print ("\n");
   }

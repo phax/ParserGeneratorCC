@@ -107,7 +107,7 @@ public class Token implements IGrammarLocation
   /**
    * Constructs a new token for the specified Image.
    *
-   * @param kind
+   * @param nKind
    *        Token kind
    */
   public Token (final int nKind)
@@ -118,9 +118,9 @@ public class Token implements IGrammarLocation
   /**
    * Constructs a new token for the specified Image and Kind.
    *
-   * @param kind
+   * @param nKind
    *        Token kind
-   * @param image
+   * @param sImage
    *        image string
    */
   public Token (final int nKind, final String sImage)
@@ -156,9 +156,9 @@ public class Token implements IGrammarLocation
    * IDToken(ofKind, image); to the following switch statement. Then you can cast matchedToken
    * variable to the appropriate type and use it in your lexical actions.
    * 
-   * @param ofKind
+   * @param nOfKind
    *        Token kind
-   * @param image
+   * @param sImage
    *        Image string
    * @return the correct token
    */

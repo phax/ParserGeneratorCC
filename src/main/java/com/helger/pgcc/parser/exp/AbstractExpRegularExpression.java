@@ -138,7 +138,7 @@ public abstract sealed class AbstractExpRegularExpression extends Expansion perm
   }
 
   /**
-   * @param lhsTokens
+   * @param aLhsTokens
    *        the lhsTokens to set
    */
   public final void setLhsTokens (@NonNull final List <Token> aLhsTokens)

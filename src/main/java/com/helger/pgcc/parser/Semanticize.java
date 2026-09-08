@@ -73,7 +73,7 @@ public class Semanticize
      * points (but at beginning of sequences) and converts them to trivial choices. This way, their
      * semantic lookahead specification can be evaluated during other lookahead evaluations.
      */
-    for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
+    for (final AbstractNormalProduction aNormalProduction : grammar ().bnfProductions ())
     {
       ExpansionTreeWalker.postOrderWalk (aNormalProduction.getExpansion (), new LookaheadFixer ());
     }
@@ -81,7 +81,7 @@ public class Semanticize
     /*
      * The following loop populates "production_table"
      */
-    for (final NormalProduction p : grammar ().bnfProductions ())
+    for (final AbstractNormalProduction p : grammar ().bnfProductions ())
     {
       if (grammar ().productionTable ().put (p.getLhs (), p) != null)
       {
@@ -93,7 +93,7 @@ public class Semanticize
      * The following walks the entire parse tree to make sure that all non-terminals on RHS's are
      * defined on the LHS.
      */
-    for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
+    for (final AbstractNormalProduction aNormalProduction : grammar ().bnfProductions ())
     {
       ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new ProductionDefinedChecker ());
     }
@@ -504,7 +504,7 @@ public class Semanticize
       throw new MetaParseException ("Error count is already present!");
 
     // The following code sets the value of the "emptyPossible" field of
-    // NormalProduction
+    // AbstractNormalProduction
     // nodes. This field is initialized to false, and then the entire list of
     // productions is processed. This is repeated as long as at least one item
     // got updated from false to true in the pass.
@@ -512,9 +512,9 @@ public class Semanticize
     while (bEmptyUpdate)
     {
       bEmptyUpdate = false;
-      for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
+      for (final AbstractNormalProduction aNormalProduction : grammar ().bnfProductions ())
       {
-        final NormalProduction aProd = aNormalProduction;
+        final AbstractNormalProduction aProd = aNormalProduction;
         if (emptyExpansionExists (aProd.getExpansion ()))
         {
           if (!aProd.isEmptyPossible ())
@@ -531,7 +531,7 @@ public class Semanticize
       // The following code checks that all ZeroOrMore, ZeroOrOne, and OneOrMore
       // nodes
       // do not contain expansions that can expand to the empty token list.
-      for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
+      for (final AbstractNormalProduction aNormalProduction : grammar ().bnfProductions ())
       {
         ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new EmptyChecker ());
       }
@@ -541,7 +541,7 @@ public class Semanticize
       // productions that it can expand to without consuming any tokens. Once
       // this is
       // done, a left-recursion check can be performed.
-      for (final NormalProduction prod : grammar ().bnfProductions ())
+      for (final AbstractNormalProduction prod : grammar ().bnfProductions ())
       {
         _addLeftMost (prod, prod.getExpansion ());
       }
@@ -551,7 +551,7 @@ public class Semanticize
       // been determined to participate in a left recursive loop, it is not
       // tried
       // in any other loop.
-      for (final NormalProduction prod : grammar ().bnfProductions ())
+      for (final AbstractNormalProduction prod : grammar ().bnfProductions ())
       {
         if (prod.getWalkStatus () == 0)
         {
@@ -602,7 +602,7 @@ public class Semanticize
        */
       if (JavaCCErrors.getErrorCount () == 0)
       {
-        for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
+        for (final AbstractNormalProduction aNormalProduction : grammar ().bnfProductions ())
         {
           ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new LookaheadChecker ());
         }
@@ -616,9 +616,9 @@ public class Semanticize
   /**
    * Check whether "str" is superceded by another equal (except case) string in the table.
    *
-   * @param table
+   * @param aTable
    *        The string literals to search. May not be <code>null</code>.
-   * @param str
+   * @param sStr
    *        The image to check. May not be <code>null</code>.
    * @return The <code>IGNORE_CASE</code> regular expression that supercedes "str", or
    *         <code>null</code> if there is none. Used to be returned through a static field.
@@ -697,7 +697,7 @@ public class Semanticize
   }
 
   // Updates prod.leftExpansions based on a walk of exp.
-  static private void _addLeftMost (final NormalProduction aProd, final Expansion aExp)
+  static private void _addLeftMost (final AbstractNormalProduction aProd, final Expansion aExp)
   {
     if (aExp instanceof final ExpNonTerminal aExpNonTerminal)
     {
@@ -710,7 +710,7 @@ public class Semanticize
       }
       if (aProd.m_nLeIndex == aProd.getLeftExpansions ().length)
       {
-        final NormalProduction [] aNewle = new NormalProduction [aProd.m_nLeIndex * 2];
+        final AbstractNormalProduction [] aNewle = new AbstractNormalProduction [aProd.m_nLeIndex * 2];
         System.arraycopy (aProd.getLeftExpansions (), 0, aNewle, 0, aProd.m_nLeIndex);
         aProd.setLeftExpansions (aNewle);
       }
@@ -758,7 +758,7 @@ public class Semanticize
 
   // Returns true to indicate an unraveling of a detected left recursion loop,
   // and returns false otherwise.
-  private static boolean _prodWalk (final NormalProduction aProd)
+  private static boolean _prodWalk (final AbstractNormalProduction aProd)
   {
     aProd.setWalkStatus (-1);
     for (int i = 0; i < aProd.m_nLeIndex; i++)
@@ -1032,7 +1032,7 @@ public class Semanticize
     {
       if (e instanceof final ExpNonTerminal nt)
       {
-        final NormalProduction aNp = grammar ().productionTable ().get (nt.getName ());
+        final AbstractNormalProduction aNp = grammar ().productionTable ().get (nt.getName ());
         if (aNp == null)
         {
           JavaCCErrors.semantic_error (e, "Non-terminal " + nt.getName () + " has not been defined.");

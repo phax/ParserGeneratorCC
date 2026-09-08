@@ -43,7 +43,7 @@ import com.helger.annotation.style.ReturnsMutableObject;
 /**
  * Describes BNF productions.
  */
-public class BNFProduction extends NormalProduction
+public class BNFProduction extends AbstractNormalProduction
 {
   /**
    * The declarations of this production.
@@ -67,7 +67,7 @@ public class BNFProduction extends NormalProduction
   }
 
   /**
-   * @param jumpPatched
+   * @param bJumpPatched
    *        the jumpPatched to set
    */
   public void setJumpPatched (final boolean bJumpPatched)
