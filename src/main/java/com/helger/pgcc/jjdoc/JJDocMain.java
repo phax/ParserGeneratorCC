@@ -33,8 +33,6 @@
  */
 package com.helger.pgcc.jjdoc;
 
-import com.helger.pgcc.context.PGCCContext;
-
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.Reader;
@@ -45,6 +43,7 @@ import org.jspecify.annotations.NonNull;
 import com.helger.base.state.ESuccess;
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.PGPrinter;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.JavaCCParser;

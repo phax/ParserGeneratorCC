@@ -33,11 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
-
-import com.helger.pgcc.context.LookaheadState;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.addEscapes;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +43,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.pgcc.PGPrinter;
+import com.helger.pgcc.context.LookaheadState;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpChoice;
 import com.helger.pgcc.parser.exp.ExpLookahead;

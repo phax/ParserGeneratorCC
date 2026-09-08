@@ -34,7 +34,6 @@
 package com.helger.pgcc.output.java;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.printToken;
 import static com.helger.pgcc.parser.JavaCCParserConstants.PACKAGE;
 import static com.helger.pgcc.parser.JavaCCParserConstants.SEMICOLON;

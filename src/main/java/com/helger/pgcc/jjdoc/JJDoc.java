@@ -33,8 +33,6 @@
  */
 package com.helger.pgcc.jjdoc;
 
-import com.helger.pgcc.context.PGCCContext;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.io.IOException;
@@ -43,6 +41,7 @@ import java.util.List;
 
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.PGPrinter;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.BNFProduction;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;

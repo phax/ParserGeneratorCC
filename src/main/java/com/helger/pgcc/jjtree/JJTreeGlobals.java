@@ -33,62 +33,52 @@
  */
 package com.helger.pgcc.jjtree;
 
-import com.helger.pgcc.context.PGCCContext;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.pgcc.context.PGCCContext;
+
 public class JJTreeGlobals
 {
   /**
-   * This set stores the JJTree-specific options that should not be passed down
-   * to JavaCC
+   * This set stores the JJTree-specific options that should not be passed down to JavaCC
    */
-  private static final Set <String> s_jjtreeOptions = new HashSet <> ();
+  private static final Set <String> JJTREE_OPTIONS = new HashSet <> ();
 
-  static final List <String> toolList = new ArrayList <> ();
-
-
-
-
-
-
-
+  static final List <String> TOOL_LIST = new ArrayList <> ();
 
   static void initialize ()
   {
-    toolList.clear ();
+    TOOL_LIST.clear ();
     PGCCContext.current ().jjtree ().reset ();
 
-    s_jjtreeOptions.clear ();
-    s_jjtreeOptions.add ("JJTREE_OUTPUT_DIRECTORY");
-    s_jjtreeOptions.add ("MULTI");
-    s_jjtreeOptions.add ("NODE_PREFIX");
-    s_jjtreeOptions.add ("NODE_PACKAGE");
-    s_jjtreeOptions.add ("NODE_EXTENDS");
-    s_jjtreeOptions.add ("NODE_CLASS");
-    s_jjtreeOptions.add ("NODE_STACK_SIZE");
-    s_jjtreeOptions.add ("NODE_DEFAULT_VOID");
-    s_jjtreeOptions.add ("OUTPUT_FILE");
-    s_jjtreeOptions.add ("CHECK_DEFINITE_NODE");
-    s_jjtreeOptions.add ("NODE_SCOPE_HOOK");
-    s_jjtreeOptions.add ("TRACK_TOKENS");
-    s_jjtreeOptions.add ("NODE_FACTORY");
-    s_jjtreeOptions.add ("NODE_USES_PARSER");
-    s_jjtreeOptions.add ("BUILD_NODE_FILES");
-    s_jjtreeOptions.add ("VISITOR");
-    s_jjtreeOptions.add ("VISITOR_EXCEPTION");
-    s_jjtreeOptions.add ("VISITOR_DATA_TYPE");
-    s_jjtreeOptions.add ("VISITOR_RETURN_TYPE");
-    s_jjtreeOptions.add ("VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME");
-    s_jjtreeOptions.add ("NODE_INCLUDES");
+    JJTREE_OPTIONS.clear ();
+    JJTREE_OPTIONS.add ("JJTREE_OUTPUT_DIRECTORY");
+    JJTREE_OPTIONS.add ("MULTI");
+    JJTREE_OPTIONS.add ("NODE_PREFIX");
+    JJTREE_OPTIONS.add ("NODE_PACKAGE");
+    JJTREE_OPTIONS.add ("NODE_EXTENDS");
+    JJTREE_OPTIONS.add ("NODE_CLASS");
+    JJTREE_OPTIONS.add ("NODE_STACK_SIZE");
+    JJTREE_OPTIONS.add ("NODE_DEFAULT_VOID");
+    JJTREE_OPTIONS.add ("OUTPUT_FILE");
+    JJTREE_OPTIONS.add ("CHECK_DEFINITE_NODE");
+    JJTREE_OPTIONS.add ("NODE_SCOPE_HOOK");
+    JJTREE_OPTIONS.add ("TRACK_TOKENS");
+    JJTREE_OPTIONS.add ("NODE_FACTORY");
+    JJTREE_OPTIONS.add ("NODE_USES_PARSER");
+    JJTREE_OPTIONS.add ("BUILD_NODE_FILES");
+    JJTREE_OPTIONS.add ("VISITOR");
+    JJTREE_OPTIONS.add ("VISITOR_EXCEPTION");
+    JJTREE_OPTIONS.add ("VISITOR_DATA_TYPE");
+    JJTREE_OPTIONS.add ("VISITOR_RETURN_TYPE");
+    JJTREE_OPTIONS.add ("VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME");
+    JJTREE_OPTIONS.add ("NODE_INCLUDES");
   }
 
   static
@@ -98,6 +88,6 @@ public class JJTreeGlobals
 
   public static boolean isOptionJJTreeOnly (@NonNull final String optionName)
   {
-    return s_jjtreeOptions.contains (optionName.toUpperCase (Locale.US));
+    return JJTREE_OPTIONS.contains (optionName.toUpperCase (Locale.US));
   }
 }

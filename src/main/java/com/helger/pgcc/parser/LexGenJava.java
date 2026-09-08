@@ -64,27 +64,24 @@
 
 package com.helger.pgcc.parser;
 
-import org.jspecify.annotations.NonNull;
-
-import com.helger.pgcc.context.LexerState;
-import com.helger.pgcc.context.PGCCContext;
-
-import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.CPG;
+import com.helger.pgcc.context.LexerState;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.OutputHelper;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;

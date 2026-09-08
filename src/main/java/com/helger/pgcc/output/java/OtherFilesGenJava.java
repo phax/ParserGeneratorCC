@@ -63,10 +63,9 @@
  */
 package com.helger.pgcc.output.java;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.addEscapes;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 import static com.helger.pgcc.parser.JavaCCGlobals.printToken;
 import static com.helger.pgcc.parser.JavaCCGlobals.printTokenSetup;
 import static com.helger.pgcc.parser.JavaCCGlobals.printTrailingComments;

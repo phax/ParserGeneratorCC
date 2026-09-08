@@ -64,8 +64,6 @@
 
 package com.helger.pgcc.parser.exp;
 
-import com.helger.pgcc.context.StringLiteralBuildState;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,6 +76,7 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.base.reflection.GenericReflection;
 import com.helger.base.string.StringHelper;
+import com.helger.pgcc.context.StringLiteralBuildState;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.parser.CodeGenerator;

@@ -36,9 +36,8 @@
 
 package com.helger.pgcc.parser;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.addUnicodeEscapes;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.io.File;
 import java.io.IOException;

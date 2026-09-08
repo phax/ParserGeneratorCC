@@ -63,9 +63,8 @@
  */
 package com.helger.pgcc.output.cpp;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 import static com.helger.pgcc.parser.JavaCCGlobals.printToken;
 import static com.helger.pgcc.parser.JavaCCGlobals.printTokenSetup;
 import static com.helger.pgcc.parser.JavaCCGlobals.printTrailingComments;

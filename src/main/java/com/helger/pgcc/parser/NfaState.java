@@ -63,8 +63,6 @@
  */
 package com.helger.pgcc.parser;
 
-import com.helger.pgcc.context.NfaBuildState;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,6 +77,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.base.string.StringHelper;
+import com.helger.pgcc.context.NfaBuildState;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 

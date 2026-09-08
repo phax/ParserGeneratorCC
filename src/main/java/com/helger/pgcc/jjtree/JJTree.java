@@ -197,9 +197,9 @@ public class JJTree
       }
       PGPrinter.info ("Reading from file " + io.getInputFilename () + " . . .");
 
-      JJTreeGlobals.toolList.clear ();
-      JJTreeGlobals.toolList.addAll (JavaCCGlobals.getToolNames (fn));
-      JJTreeGlobals.toolList.add ("JJTree");
+      JJTreeGlobals.TOOL_LIST.clear ();
+      JJTreeGlobals.TOOL_LIST.addAll (JavaCCGlobals.getToolNames (fn));
+      JJTreeGlobals.TOOL_LIST.add ("JJTree");
 
       try
       {

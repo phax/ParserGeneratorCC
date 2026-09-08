@@ -33,14 +33,13 @@
  */
 package com.helger.pgcc.parser.exp;
 
-import com.helger.pgcc.context.PGCCContext;
-
 import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.base.string.StringHelper;
+import com.helger.pgcc.context.PGCCContext;
 
 /**
  * Describes expansions - entities that may occur on the right hand sides of

@@ -36,8 +36,6 @@
 
 package com.helger.pgcc.jjtree.output;
 
-import com.helger.pgcc.context.PGCCContext;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -45,7 +43,7 @@ import java.util.Map;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.CGlobal;
 import com.helger.pgcc.PGVersion;
-import com.helger.pgcc.jjtree.JJTreeGlobals;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.jjtree.JJTreeOptions;
 import com.helger.pgcc.output.OutputFile;
 import com.helger.pgcc.parser.Options;

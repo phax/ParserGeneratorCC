@@ -36,14 +36,13 @@
 
 package com.helger.pgcc.jjtree;
 
-import com.helger.pgcc.context.PGCCContext;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.helger.base.string.StringHelper;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.jjtree.output.JJTreeStateJava;
 import com.helger.pgcc.jjtree.output.NodeFilesJava;
 import com.helger.pgcc.parser.JavaCCGlobals;
@@ -62,7 +61,7 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
   {
     final JJTreeIO io = (JJTreeIO) data;
     io.println ("/*@bgen(jjtree) " +
-                JavaCCGlobals.getIdString (JJTreeGlobals.toolList, new File (io.getOutputFilename ()).getName ()) +
+                JavaCCGlobals.getIdString (JJTreeGlobals.TOOL_LIST, new File (io.getOutputFilename ()).getName ()) +
                 " */");
     io.print ("/*@egen*/");
 

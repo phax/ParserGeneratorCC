@@ -33,15 +33,13 @@
  */
 package com.helger.pgcc.parser;
 
-import com.helger.pgcc.context.PGCCContext;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
-
 
 import java.util.HashMap;
 import java.util.List;
 
 import com.helger.collection.commons.CommonsArrayList;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpAction;
 import com.helger.pgcc.parser.exp.ExpREndOfFile;

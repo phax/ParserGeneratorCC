@@ -33,19 +33,16 @@
  */
 package com.helger.pgcc.parser;
 
-import com.helger.pgcc.context.PGCCContext;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
-import org.jspecify.annotations.Nullable;
-
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.exp.*;
 
 public class Semanticize

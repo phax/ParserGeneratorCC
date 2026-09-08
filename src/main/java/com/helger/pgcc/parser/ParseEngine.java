@@ -65,7 +65,6 @@ package com.helger.pgcc.parser;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
-
 import java.util.HashSet;
 import java.util.List;
 

@@ -33,9 +33,6 @@
  */
 package com.helger.pgcc.parser;
 
-import com.helger.pgcc.context.GrammarState;
-import com.helger.pgcc.context.PGCCContext;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,10 +40,8 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -55,14 +50,13 @@ import com.helger.annotation.Nonempty;
 import com.helger.base.string.StringHelper;
 import com.helger.base.string.StringImplode;
 import com.helger.collection.commons.CommonsArrayList;
-import com.helger.collection.commons.ICommonsList;
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.CPG;
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.PGVersion;
+import com.helger.pgcc.context.GrammarState;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
-import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
-import com.helger.pgcc.parser.exp.ExpAction;
 
 /**
  * This package contains data created as a result of parsing and semanticizing a JavaCC input file.

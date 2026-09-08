@@ -36,6 +36,7 @@ package com.helger.pgcc.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.helger.pgcc.context.LookaheadState;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpChoice;
 import com.helger.pgcc.parser.exp.ExpLookahead;
@@ -45,7 +46,6 @@ import com.helger.pgcc.parser.exp.ExpSequence;
 import com.helger.pgcc.parser.exp.ExpTryBlock;
 import com.helger.pgcc.parser.exp.ExpZeroOrMore;
 import com.helger.pgcc.parser.exp.ExpZeroOrOne;
-import com.helger.pgcc.context.LookaheadState;
 import com.helger.pgcc.parser.exp.Expansion;
 
 public final class LookaheadWalk

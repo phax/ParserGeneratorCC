@@ -33,11 +33,10 @@
  */
 package com.helger.pgcc.jjdoc;
 
-import com.helger.pgcc.context.PGCCContext;
-
 import java.io.IOException;
 import java.io.Writer;
 
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
 import com.helger.pgcc.parser.NormalProduction;
