@@ -83,7 +83,7 @@ public class TokenProduction implements IGrammarLocation
   private Token m_aLastToken;
 
   /**
-   * @return the column
+   * {@return the column}
    */
   public final int getColumnNumber ()
   {
@@ -100,7 +100,7 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
-   * @return the line
+   * {@return the line}
    */
   public final int getLineNumber ()
   {

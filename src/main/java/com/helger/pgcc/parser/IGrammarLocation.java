@@ -53,8 +53,8 @@ import com.helger.pgcc.context.PGCCContext;
 public interface IGrammarLocation extends ILocation
 {
   /**
-   * @return The grammar file currently being read, because that is what every location in the model
-   *         refers to. May be <code>null</code> before a file has been opened.
+   * {@return the grammar file currently being read, because that is what every location in the model
+   *         refers to. May be <code>null</code> before a file has been opened.}
    */
   @Nullable
   default String getResourceID ()

@@ -88,8 +88,8 @@ public final class TokenizerDataBuildState
   private final Map <Integer, NfaState> m_aNfaStateMap = new HashMap <> ();
 
   /**
-   * @return Lexical state index to its composite start state, for the lexical states whose start
-   *         state has no {@code NfaState} of its own. Never <code>null</code>.
+   * {@return lexical state index to its composite start state, for the lexical states whose start
+   *         state has no {@code NfaState} of its own. Never <code>null</code>.}
    */
   @NonNull
   public Map <Integer, CompositeStartState> compositeStartStates ()
@@ -98,7 +98,7 @@ public final class TokenizerDataBuildState
   }
 
   /**
-   * @return Lexical state index to the NFA state the tokenizer starts in. Never <code>null</code>.
+   * {@return lexical state index to the NFA state the tokenizer starts in. Never <code>null</code>}
    */
   @NonNull
   public Map <Integer, NfaState> initialStates ()
@@ -107,7 +107,7 @@ public final class TokenizerDataBuildState
   }
 
   /**
-   * @return Lexical state index to all NFA states of that lexical state. Never <code>null</code>.
+   * {@return lexical state index to all NFA states of that lexical state. Never <code>null</code>}
    */
   @NonNull
   public Map <Integer, List <NfaState>> statesForLexicalState ()
@@ -116,8 +116,8 @@ public final class TokenizerDataBuildState
   }
 
   /**
-   * @return Lexical state index to the amount its state names have to be shifted by, so that the
-   *         states of all lexical states fit into one array. Never <code>null</code>.
+   * {@return lexical state index to the amount its state names have to be shifted by, so that the
+   *         states of all lexical states fit into one array. Never <code>null</code>.}
    */
   @NonNull
   public Map <Integer, Integer> nfaStateOffset ()
@@ -126,8 +126,8 @@ public final class TokenizerDataBuildState
   }
 
   /**
-   * @return Lexical state index to the kind of the token that matches any character, or
-   *         {@link Integer#MAX_VALUE} if there is none. Never <code>null</code>.
+   * {@return lexical state index to the kind of the token that matches any character, or
+   *         {@link Integer#MAX_VALUE} if there is none. Never <code>null</code>.}
    */
   @NonNull
   public Map <Integer, Integer> matchAnyChar ()
@@ -136,7 +136,7 @@ public final class TokenizerDataBuildState
   }
 
   /**
-   * @return Literal length to the string literals of that length. Never <code>null</code>.
+   * {@return literal length to the string literals of that length. Never <code>null</code>}
    */
   @NonNull
   public Map <Integer, List <String>> literalsByLength ()
@@ -145,8 +145,8 @@ public final class TokenizerDataBuildState
   }
 
   /**
-   * @return Literal length to the token kinds of the literals of that length, in the same order as
-   *         {@link #literalsByLength()}. Never <code>null</code>.
+   * {@return literal length to the token kinds of the literals of that length, in the same order as
+   *         {@link #literalsByLength()}. Never <code>null</code>.}
    */
   @NonNull
   public Map <Integer, List <Integer>> literalKinds ()
@@ -155,7 +155,7 @@ public final class TokenizerDataBuildState
   }
 
   /**
-   * @return Token kind to the lexical state it belongs to. Never <code>null</code>.
+   * {@return token kind to the lexical state it belongs to. Never <code>null</code>}
    */
   @NonNull
   public Map <Integer, Integer> kindToLexicalState ()
@@ -164,8 +164,8 @@ public final class TokenizerDataBuildState
   }
 
   /**
-   * @return Token kind to the NFA state a literal match continues in, if any. Never
-   *         <code>null</code>.
+   * {@return token kind to the NFA state a literal match continues in, if any. Never
+   *         <code>null</code>.}
    */
   @NonNull
   public Map <Integer, NfaState> nfaStateMap ()

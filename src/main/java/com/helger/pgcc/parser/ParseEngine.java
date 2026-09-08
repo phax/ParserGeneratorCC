@@ -64,8 +64,8 @@ import com.helger.pgcc.parser.exp.Expansion;
 public class ParseEngine
 {
   /**
-   * @return The syntax of the target language, so that the engine says what it wants emitted rather
-   *         than switching on the language at every spot.
+   * {@return the syntax of the target language, so that the engine says what it wants emitted rather
+   *         than switching on the language at every spot.}
    */
   @NonNull
   private IParserSyntax _syntax ()

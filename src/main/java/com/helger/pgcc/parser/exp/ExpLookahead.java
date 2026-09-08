@@ -78,7 +78,7 @@ public final class ExpLookahead extends Expansion
   private boolean m_bIsExplicit;
 
   /**
-   * @return the action_tokens
+   * {@return the action_tokens}
    */
   @NonNull
   public final ICommonsList <Token> getActionTokens ()
@@ -87,7 +87,7 @@ public final class ExpLookahead extends Expansion
   }
 
   /**
-   * @return the amount
+   * {@return the amount}
    */
   public final int getAmount ()
   {
@@ -104,7 +104,7 @@ public final class ExpLookahead extends Expansion
   }
 
   /**
-   * @return the la_expansion
+   * {@return the la_expansion}
    */
   public final Expansion getLaExpansion ()
   {
@@ -121,7 +121,7 @@ public final class ExpLookahead extends Expansion
   }
 
   /**
-   * @return the isExplicit
+   * {@return the isExplicit}
    */
   public final boolean isExplicit ()
   {

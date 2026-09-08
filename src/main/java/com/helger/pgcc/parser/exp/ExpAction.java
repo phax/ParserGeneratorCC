@@ -57,7 +57,7 @@ public final class ExpAction extends Expansion
   {}
 
   /**
-   * @return the action_tokens
+   * {@return the action_tokens}
    */
   @NonNull
   @ReturnsMutableObject

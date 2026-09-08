@@ -91,23 +91,42 @@ public final class NfaBuildState
   private int [] [] m_aKinds;
   private int [] [] [] m_aStatesForState;
 
+  /**
+   * Whether the "generated code will not compile without UNICODE_INPUT" warning has already been
+   * given. It is issued once per run, not once per character above 0xff.
+   *
+   * @return <code>true</code> if the warning was already given.
+   */
   public boolean isUnicodeWarningGiven ()
   {
     return m_bUnicodeWarningGiven;
   }
 
+  /**
+   * Whether the "generated code will not compile without UNICODE_INPUT" warning has already been
+   * given. It is issued once per run, not once per character above 0xff.
+   *
+   * @param bUnicodeWarningGiven
+   *        <code>true</code> once the warning has been given.
+   */
   public void setUnicodeWarningGiven (final boolean bUnicodeWarningGiven)
   {
     m_bUnicodeWarningGiven = bUnicodeWarningGiven;
   }
 
+  /**
+   * How many NFA states of the current lexical state have been given a number. This is the size
+   * the generated jjstateSet array needs.
+   *
+   * @return The number of numbered states.
+   */
   public int getGeneratedStates ()
   {
     return m_nGeneratedStates;
   }
 
 
-  /** @return The current value, and increments it afterwards. */
+  /** {@return the current value, and increments it afterwards} */
   public int getAndIncGeneratedStates ()
   {
     return m_nGeneratedStates++;
@@ -115,213 +134,424 @@ public final class NfaBuildState
 
 
 
-  /** @return The current value, and increments it afterwards. */
+  /** {@return the current value, and increments it afterwards} */
   public int getAndIncIdCnt ()
   {
     return m_nIdCnt++;
   }
 
+  /**
+   * How many jjbitVec arrays have been emitted for non ASCII character tests. Each distinct 256
+   * bit vector gets one, and the counter names it.
+   *
+   * @return The number of vectors emitted so far.
+   */
   public int getLoHiByteCnt ()
   {
     return m_nLoHiByteCnt;
   }
 
 
-  /** @return The current value, and increments it afterwards. */
+  /** {@return the current value, and increments it afterwards} */
   public int getAndIncLoHiByteCnt ()
   {
     return m_nLoHiByteCnt++;
   }
 
+  /**
+   * The state number handed out for the composite state that stands for "no state at all", or -1
+   * while none has been needed yet.
+   *
+   * @return The state number, or -1.
+   */
   public int getDummyStateIndex ()
   {
     return m_nDummyStateIndex;
   }
 
+  /**
+   * The state number handed out for the composite state that stands for "no state at all", or -1
+   * while none has been needed yet.
+   *
+   * @param nDummyStateIndex
+   *        The state number.
+   */
   public void setDummyStateIndex (final int nDummyStateIndex)
   {
     m_nDummyStateIndex = nDummyStateIndex;
   }
 
+  /**
+   * The termination flag of the epsilon move optimisation, which keeps merging states until a
+   * full pass changes nothing.
+   *
+   * @return <code>true</code> when the last pass changed nothing.
+   */
   public boolean isDone ()
   {
     return m_bDone;
   }
 
+  /**
+   * The termination flag of the epsilon move optimisation, which keeps merging states until a
+   * full pass changes nothing.
+   *
+   * @param bDone
+   *        <code>true</code> when the last pass changed nothing.
+   */
   public void setDone (final boolean bDone)
   {
     m_bDone = bDone;
   }
 
+  /**
+   * One flag per state, used by the closure computation to avoid walking a state twice. It is
+   * cleared between passes rather than reallocated.
+   *
+   * @return The flags, indexed by state id. May be <code>null</code> before generation starts.
+   */
   public boolean [] getMark ()
   {
     return m_aMark;
   }
 
+  /**
+   * One flag per state, used by the closure computation to avoid walking a state twice. It is
+   * cleared between passes rather than reallocated.
+   *
+   * @param aMark
+   *        The flags, indexed by state id.
+   */
   public void setMark (final boolean [] aMark)
   {
     m_aMark = aMark;
   }
 
+  /**
+   * One flag per numbered state, telling {@code getStateSetString} which members of a state set
+   * are still live.
+   *
+   * @return The flags, indexed by state number. May be <code>null</code> before generation starts.
+   */
   public boolean [] getStateDone ()
   {
     return m_aStateDone;
   }
 
+  /**
+   * One flag per numbered state, telling {@code getStateSetString} which members of a state set
+   * are still live.
+   *
+   * @param aStateDone
+   *        The flags, indexed by state number.
+   */
   public void setStateDone (final boolean [] aStateDone)
   {
     m_aStateDone = aStateDone;
   }
 
+  /**
+   * Every NFA state created for the current lexical state, in creation order. A state's id is its
+   * position here.
+   *
+   * @return The states. Never <code>null</code>.
+   */
   public List <NfaState> getAllStates ()
   {
     return m_aAllStates;
   }
 
+  /**
+   * Every NFA state created for the current lexical state, in creation order. A state's id is its
+   * position here.
+   *
+   * @param aAllStates
+   *        The states.
+   */
   public void setAllStates (final List <NfaState> aAllStates)
   {
     m_aAllStates = aAllStates;
   }
 
+  /**
+   * Whether any generated transition calls jjCheckNAddStates with a single index, which decides
+   * whether that overload is emitted at all.
+   *
+   * @return <code>true</code> if the generated token manager needs it.
+   */
   public boolean isJJCheckNAddStatesUnaryNeeded ()
   {
     return m_bJJCheckNAddStatesUnaryNeeded;
   }
 
+  /**
+   * Whether any generated transition calls jjCheckNAddStates with a single index, which decides
+   * whether that overload is emitted at all.
+   *
+   * @param bJJCheckNAddStatesUnaryNeeded
+   *        <code>true</code> if the generated token manager needs it.
+   */
   public void setJJCheckNAddStatesUnaryNeeded (final boolean bJJCheckNAddStatesUnaryNeeded)
   {
     m_bJJCheckNAddStatesUnaryNeeded = bJJCheckNAddStatesUnaryNeeded;
   }
 
+  /**
+   * Whether any generated transition calls jjCheckNAddStates with a start and an end index, which
+   * decides whether that overload is emitted at all.
+   *
+   * @return <code>true</code> if the generated token manager needs it.
+   */
   public boolean isJJCheckNAddStatesDualNeeded ()
   {
     return m_bJJCheckNAddStatesDualNeeded;
   }
 
+  /**
+   * Whether any generated transition calls jjCheckNAddStates with a start and an end index, which
+   * decides whether that overload is emitted at all.
+   *
+   * @param bJJCheckNAddStatesDualNeeded
+   *        <code>true</code> if the generated token manager needs it.
+   */
   public void setJJCheckNAddStatesDualNeeded (final boolean bJJCheckNAddStatesDualNeeded)
   {
     m_bJJCheckNAddStatesDualNeeded = bJJCheckNAddStatesDualNeeded;
   }
 
+  /**
+   * The text of every jjbitVec array emitted so far, in the order they were emitted, so that a
+   * later state can ask whether a vector it needs is already there.
+   *
+   * @return The array initialisers. Never <code>null</code>.
+   */
   public List <String> getAllBitVectors ()
   {
     return m_aAllBitVectors;
   }
 
 
+  /**
+   * Scratch space collecting the jjbitVec indices of one state's character ranges while its
+   * transition is being written.
+   *
+   * @return The scratch array. Never <code>null</code>.
+   */
   public int [] getTmpIndices ()
   {
     return m_aTmpIndices;
   }
 
 
+  /**
+   * The initialiser of a bit vector with every bit set, kept here so that a state whose vector
+   * matches it can be recognised and generated as an unconditional move.
+   *
+   * @return The array initialiser text. Never <code>null</code>.
+   */
   public String getAllBits ()
   {
     return m_sAllBits;
   }
 
 
+  /**
+   * How much of the generated jjnextStates array is in use. Every state set that goes in there
+   * claims a contiguous run starting here.
+   *
+   * @return The next free index, and therefore the length the array needs.
+   */
   public int getLastIndex ()
   {
     return m_nLastIndex;
   }
 
+  /**
+   * How much of the generated jjnextStates array is in use. Every state set that goes in there
+   * claims a contiguous run starting here.
+   *
+   * @param nLastIndex
+   *        The next free index.
+   */
   public void setLastIndex (final int nLastIndex)
   {
     m_nLastIndex = nLastIndex;
   }
 
+  /**
+   * For each lexical state, the token kind each numbered state matches. Filled in when the
+   * lexical state is generated and read again when the whole table is written out.
+   *
+   * @return The kinds, indexed by lexical state and then by state number. May be <code>null</code> before
+   *   *         generation starts.
+   */
   public int [] [] getKinds ()
   {
     return m_aKinds;
   }
 
+  /**
+   * For each lexical state, the token kind each numbered state matches. Filled in when the
+   * lexical state is generated and read again when the whole table is written out.
+   *
+   * @param aKinds
+   *        The kinds, indexed by lexical state and then by state number.
+   */
   public void setKinds (final int [] [] aKinds)
   {
     m_aKinds = aKinds;
   }
 
+  /**
+   * For each lexical state, the composite state sets each numbered state stands for. Filled in
+   * when the lexical state is generated and read again when the whole table is written out.
+   *
+   * @return The state sets, indexed by lexical state and then by state number. May be <code>null</code>
+   *   *         before generation starts.
+   */
   public int [] [] [] getStatesForState ()
   {
     return m_aStatesForState;
   }
 
+  /**
+   * For each lexical state, the composite state sets each numbered state stands for. Filled in
+   * when the lexical state is generated and read again when the whole table is written out.
+   *
+   * @param aStatesForState
+   *        The state sets, indexed by lexical state and then by state number.
+   */
   public void setStatesForState (final int [] [] [] aStatesForState)
   {
     m_aStatesForState = aStatesForState;
   }
 
-  /** @return indexedAllStates */
+  /**
+   * The NFA states that carry a state number, indexed by that number. A state only gets one once
+   * it is reachable by a real character move, so this is a subset of {@link #getAllStates()}.
+   *
+   * @return The numbered states, indexed by state number. Never <code>null</code>.
+   */
   @NonNull
   public List <NfaState> indexedAllStates ()
   {
     return m_aIndexedAllStates;
   }
 
-  /** @return nonAsciiTableForMethod */
+  /**
+   * The states whose non ASCII character test was large enough to be worth a jjCanMove_ method of
+   * its own. The position here is the number in the method name.
+   *
+   * @return The states that got their own method. Never <code>null</code>.
+   */
   @NonNull
   public List <NfaState> nonAsciiTableForMethod ()
   {
     return m_aNonAsciiTableForMethod;
   }
 
-  /** @return equivStatesTable */
+  /**
+   * States that turned out to behave identically, keyed by a signature built from what they match
+   * and where they go. The first state with a given signature stands in for all the others.
+   *
+   * @return The representative state per signature. Never <code>null</code>.
+   */
   @NonNull
   public Map <String, NfaState> equivStatesTable ()
   {
     return m_aEquivStatesTable;
   }
 
-  /** @return allNextStates */
+  /**
+   * The state sets that appear as a transition target, keyed by the string form of the set.
+   *
+   * @return The state numbers per state set string. Never <code>null</code>.
+   */
   @NonNull
   public Map <String, int []> allNextStates ()
   {
     return m_aAllNextStates;
   }
 
-  /** @return loHiByteTab */
+  /**
+   * The jjbitVec index of every distinct 256 bit vector emitted so far, keyed by the array
+   * initialiser itself so that an identical vector is written only once.
+   *
+   * @return The vector index per initialiser text. Never <code>null</code>.
+   */
   @NonNull
   public Map <String, Integer> loHiByteTab ()
   {
     return m_aLoHiByteTab;
   }
 
-  /** @return stateNameForComposite */
+  /**
+   * The synthesised state number that stands for a set of states, keyed by the string form of the
+   * set. Turning a set into one number is what makes the generated automaton a DFA.
+   *
+   * @return The composite state number per state set string. Never <code>null</code>.
+   */
   @NonNull
   public Map <String, Integer> stateNameForComposite ()
   {
     return m_aStateNameForComposite;
   }
 
-  /** @return compositeStateTable */
+  /**
+   * The reverse of {@link #stateNameForComposite()}: the set of states each composite number
+   * stands for, keyed by the same string form.
+   *
+   * @return The state numbers per state set string. Never <code>null</code>.
+   */
   @NonNull
   public Map <String, int []> compositeStateTable ()
   {
     return m_aCompositeStateTable;
   }
 
-  /** @return stateBlockTable */
+  /**
+   * The state sets that are entered as a block rather than as a start state, used as a set - key
+   * and value are the same string. A block can be generated as one contiguous run of
+   * jjnextStates entries.
+   *
+   * @return The state set strings that are blocks. Never <code>null</code>.
+   */
   @NonNull
   public Map <String, String> stateBlockTable ()
   {
     return m_aStateBlockTable;
   }
 
-  /** @return stateSetsToFix */
+  /**
+   * State sets that had members removed because those members always occur together with another
+   * state, keyed by the string form of the original set. The removed positions are -1.
+   *
+   * @return The patched state sets per original state set string. Never <code>null</code>.
+   */
   @NonNull
   public Map <String, int []> stateSetsToFix ()
   {
     return m_aStateSetsToFix;
   }
 
-  /** @return tableToDump */
+  /**
+   * Where each state set landed in the generated jjnextStates array, keyed by the string form of
+   * the set: a two element array of the first and the last index.
+   *
+   * @return The index range per state set string. Never <code>null</code>.
+   */
   @NonNull
   public Map <String, int []> tableToDump ()
   {
     return m_aTableToDump;
   }
 
-  /** @return orderedStateSet */
+  /**
+   * The state sets in the order they go into the generated jjnextStates array, which is the order
+   * the ranges in {@link #tableToDump()} refer to.
+   *
+   * @return The state sets in emission order. Never <code>null</code>.
+   */
   @NonNull
   public List <int []> orderedStateSet ()
   {

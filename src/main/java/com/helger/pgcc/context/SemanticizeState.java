@@ -82,7 +82,7 @@ public final class SemanticizeState
     m_aRemoveWhat.clear ();
   }
 
-  /** @return The recursion path found so far, for the error message. */
+  /** {@return the recursion path found so far, for the error message} */
   @Nullable
   public String getLoopString ()
   {

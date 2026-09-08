@@ -63,7 +63,7 @@ public final class OptionState
   private EOutputLanguage m_eLanguage = EOutputLanguage.JAVA;
 
   /**
-   * @return The mutable map of option name to value. Never <code>null</code>.
+   * {@return the mutable map of option name to value. Never <code>null</code>}
    */
   @NonNull
   public Map <String, Object> values ()
@@ -72,7 +72,7 @@ public final class OptionState
   }
 
   /**
-   * @return The names of the options that were set on the command line. Never <code>null</code>.
+   * {@return the names of the options that were set on the command line. Never <code>null</code>}
    */
   @NonNull
   public Set <String> cmdLineSet ()
@@ -81,7 +81,7 @@ public final class OptionState
   }
 
   /**
-   * @return The names of the options that were set in the grammar file. Never <code>null</code>.
+   * {@return the names of the options that were set in the grammar file. Never <code>null</code>}
    */
   @NonNull
   public Set <String> inputFileSet ()

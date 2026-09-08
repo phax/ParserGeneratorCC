@@ -61,7 +61,7 @@ public class BNFProduction extends AbstractNormalProduction
   private boolean m_bJumpPatched = false;
 
   /**
-   * @return the declaration_tokens
+   * {@return the declaration_tokens}
    */
   @NonNull
   @ReturnsMutableObject
@@ -80,7 +80,7 @@ public class BNFProduction extends AbstractNormalProduction
   }
 
   /**
-   * @return the jumpPatched
+   * {@return the jumpPatched}
    */
   public boolean isJumpPatched ()
   {

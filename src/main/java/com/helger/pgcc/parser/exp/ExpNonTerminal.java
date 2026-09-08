@@ -84,7 +84,7 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * @return the lhsTokens
+   * {@return the lhsTokens}
    */
   @NonNull
   public final Iterable <Token> getLhsTokens ()
@@ -114,7 +114,7 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * @return the name
+   * {@return the name}
    */
   public final String getName ()
   {
@@ -137,7 +137,7 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * @return the argument_tokens
+   * {@return the argument_tokens}
    */
   @NonNull
   public final Iterable <Token> getArgumentTokens ()
@@ -164,7 +164,7 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * @return the argument_tokens
+   * {@return the argument_tokens}
    */
   @NonNull
   public final Iterable <Token> getParametrizedTypeTokens ()
@@ -173,7 +173,7 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * @return the prod
+   * {@return the prod}
    */
   public final AbstractNormalProduction getProd ()
   {

@@ -94,7 +94,7 @@ public abstract class AbstractCodeGenerator
 
 
   /**
-   * @return The language being generated. Never <code>null</code>.
+   * {@return the language being generated. Never <code>null</code>}
    */
   public final EOutputLanguage getOutputLanguage ()
   {
@@ -123,7 +123,7 @@ public abstract class AbstractCodeGenerator
   }
 
   /**
-   * @return The column the next copied character would go to. 1-based.
+   * {@return the column the next copied character would go to. 1-based}
    */
   protected final int getCol ()
   {
@@ -131,7 +131,7 @@ public abstract class AbstractCodeGenerator
   }
 
   /**
-   * @return The line the next copied character would go to. 1-based.
+   * {@return the line the next copied character would go to. 1-based}
    */
   protected final int getLineNumber ()
   {
@@ -554,8 +554,8 @@ public abstract class AbstractCodeGenerator
   }
 
   /**
-   * @return The name of the char stream class the current options select. Never
-   *         <code>null</code>.
+   * {@return the name of the char stream class the current options select. Never
+   *         <code>null</code>.}
    */
   public static String getCharStreamName ()
   {

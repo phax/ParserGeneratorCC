@@ -97,110 +97,122 @@ public final class GrammarState
   private int m_nCurrentColumn;
   private long m_nNextExpansionGeneration = 1;
 
-  /** @return The tokens from the start of the file to the first insertion point */
+  /** {@return the tokens from the start of the file to the first insertion point} */
   @NonNull
   public ICommonsList <Token> cuToInsertionPoint1 ()
   {
     return m_aCuToInsertionPoint1;
   }
 
-  /** @return The tokens from the first to the second insertion point */
+  /** {@return the tokens from the first to the second insertion point} */
   @NonNull
   public ICommonsList <Token> cuToInsertionPoint2 ()
   {
     return m_aCuToInsertionPoint2;
   }
 
-  /** @return The tokens from the second insertion point to the end of the parser class */
+  /** {@return the tokens from the second insertion point to the end of the parser class} */
   @NonNull
   public ICommonsList <Token> cuFromInsertionPoint2 ()
   {
     return m_aCuFromInsertionPoint2;
   }
 
-  /** @return All BNF productions in the order they were declared */
+  /** {@return all BNF productions in the order they were declared} */
   @NonNull
   public List <AbstractNormalProduction> bnfProductions ()
   {
     return m_aBnfProductions;
   }
 
-  /** @return Production name to production */
+  /** {@return production name to production} */
   @NonNull
   public Map <String, AbstractNormalProduction> productionTable ()
   {
     return m_aProductionTable;
   }
 
-  /** @return Lexical state name to its index */
+  /** {@return lexical state name to its index} */
   @NonNull
   public Map <String, Integer> lexStateS2I ()
   {
     return m_aLexStateS2I;
   }
 
-  /** @return Lexical state index to its name */
+  /** {@return lexical state index to its name} */
   @NonNull
   public Map <Integer, String> lexStateI2S ()
   {
     return m_aLexStateI2S;
   }
 
-  /** @return All token productions in the order they were declared */
+  /** {@return all token productions in the order they were declared} */
   @NonNull
   public List <TokenProduction> rexprList ()
   {
     return m_aRexprList;
   }
 
-  /** @return Token label to the regular expression it names */
+  /** {@return token label to the regular expression it names} */
   @NonNull
   public Map <String, AbstractExpRegularExpression> namedTokensTable ()
   {
     return m_aNamedTokensTable;
   }
 
-  /** @return The named regular expressions in the order they were declared */
+  /** {@return the named regular expressions in the order they were declared} */
   @NonNull
   public List <AbstractExpRegularExpression> orderedNameTokens ()
   {
     return m_aOrderedNameTokens;
   }
 
-  /** @return Token ordinal to its label */
+  /** {@return token ordinal to its label} */
   @NonNull
   public Map <Integer, String> namesOfTokens ()
   {
     return m_aNamesOfTokens;
   }
 
-  /** @return Token ordinal to its regular expression */
+  /** {@return token ordinal to its regular expression} */
   @NonNull
   public Map <Integer, AbstractExpRegularExpression> rexpsOfTokens ()
   {
     return m_aRexpsOfTokens;
   }
 
-  /** @return Lexical state to image to the regular expression matching it */
+  /** {@return lexical state to image to the regular expression matching it} */
   @NonNull
   public Map <String, Map <String, Map <String, AbstractExpRegularExpression>>> simpleTokensTable ()
   {
     return m_aSimpleTokensTable;
   }
 
-  /** @return The token masks emitted for the error reporting arrays */
+  /** {@return the token masks emitted for the error reporting arrays} */
   @NonNull
   public List <int []> maskVals ()
   {
     return m_aMaskVals;
   }
 
+  /**
+   * The grammar file this run is reading.
+   *
+   * @return The file name as it was given on the command line. May be <code>null</code> before parsing
+   *   *         starts.
+   */
   @Nullable
   public String getFileName ()
   {
     return m_sFileName;
   }
 
+  /**
+   * The grammar file this run is reading.
+   *
+   * @param sFileName
+   *        The file name.
+   */
   public void setFileName (@Nullable final String sFileName)
   {
     m_sFileName = sFileName;
@@ -208,67 +220,126 @@ public final class GrammarState
 
 
 
+  /**
+   * Whether the grammar handed to the parser generator came out of JJTree rather than straight
+   * from the user. Error messages have to point back at the .jjt in that case.
+   *
+   * @return <code>true</code> if JJTree produced this grammar.
+   */
   public boolean isJJTreeGenerated ()
   {
     return m_bJJTreeGenerated;
   }
 
+  /**
+   * Whether the grammar handed to the parser generator came out of JJTree rather than straight
+   * from the user. Error messages have to point back at the .jjt in that case.
+   *
+   * @param bJJTreeGenerated
+   *        <code>true</code> if JJTree produced this grammar.
+   */
   public void setJJTreeGenerated (final boolean bJJTreeGenerated)
   {
     m_bJJTreeGenerated = bJJTreeGenerated;
   }
 
-  /** @return The tools that generated the grammar file, as read from its header */
+  /** {@return the tools that generated the grammar file, as read from its header} */
   @Nullable
   public List <String> getToolNameList ()
   {
     return m_aToolNames;
   }
 
+  /**
+   * The tools that have already written to this grammar - JJTree puts its name in the header of
+   * what it generates, and the parser generator appends its own.
+   *
+   * @param aToolNames
+   *        The tool names.
+   */
   public void setToolNameList (@Nullable final List <String> aToolNames)
   {
     m_aToolNames = aToolNames;
   }
 
-  /** @return The name of the generated parser class */
+  /** {@return the name of the generated parser class} */
   @Nullable
   public String getParserName ()
   {
     return m_sParserName;
   }
 
+  /**
+   * The name of the parser class to generate, as the PARSER_BEGIN of the grammar gives it. Nearly
+   * every generated file is named after it.
+   *
+   * @param sParserName
+   *        The class name.
+   */
   public void setParserName (@Nullable final String sParserName)
   {
     m_sParserName = sParserName;
   }
 
+  /**
+   * The declarations from the TOKEN_MGR_DECLS section, copied verbatim into the generated token
+   * manager.
+   *
+   * @return The tokens of the section. May be <code>null</code> if the grammar has no such section.
+   */
   @Nullable
   public ICommonsList <Token> getTokenMgrDecls ()
   {
     return m_aTokenMgrDecls;
   }
 
+  /**
+   * The declarations from the TOKEN_MGR_DECLS section, copied verbatim into the generated token
+   * manager.
+   *
+   * @param aTokenMgrDecls
+   *        The tokens of the section.
+   */
   public void setTokenMgrDecls (@Nullable final ICommonsList <Token> aTokenMgrDecls)
   {
     m_aTokenMgrDecls = aTokenMgrDecls;
   }
 
+  /**
+   * The number of token kinds declared so far. Every regular expression that gets an ordinal
+   * takes the current value and increments it.
+   *
+   * @return The count.
+   */
   public int getTokenCount ()
   {
     return m_nTokenCount;
   }
 
+  /**
+   * The number of token kinds declared so far. Every regular expression that gets an ordinal
+   * takes the current value and increments it.
+   *
+   * @param nTokenCount
+   *        The count.
+   */
   public void setTokenCount (final int nTokenCount)
   {
     m_nTokenCount = nTokenCount;
   }
 
-  /** @return The current token count, and increments it afterwards. */
+  /** {@return the current token count, and increments it afterwards} */
   public int getAndIncTokenCount ()
   {
     return m_nTokenCount++;
   }
 
+  /**
+   * How many entries of the generated jj_la1 error reporting array are in use. Each choice point
+   * that reports errors claims one.
+   *
+   * @return The next free index, and therefore the length the array needs.
+   */
   public int getMaskIndex ()
   {
     return m_nMaskIndex;
@@ -280,78 +351,154 @@ public final class GrammarState
     m_nMaskIndex++;
   }
 
+  /**
+   * How many jj2 lookahead routines the parser needs. A choice that cannot be decided with a
+   * simple token mask gets one, and it is nonzero exactly when the generated parser needs the
+   * whole backtracking machinery.
+   *
+   * @return The number of jj2 routines generated so far.
+   */
   public int getJJ2Index ()
   {
     return m_nJJ2Index;
   }
 
 
-  /** @return The jj2 index after incrementing it. */
+  /** {@return the jj2 index after incrementing it} */
   public int incAndGetJJ2Index ()
   {
     return ++m_nJJ2Index;
   }
 
+  /**
+   * Whether any production uses syntactic lookahead, which decides whether the generated parser
+   * carries the jj_lookingAhead flag at all.
+   *
+   * @return <code>true</code> if at least one production needs it.
+   */
   public boolean isLookAheadNeeded ()
   {
     return m_bLookAheadNeeded;
   }
 
+  /**
+   * Whether any production uses syntactic lookahead, which decides whether the generated parser
+   * carries the jj_lookingAhead flag at all.
+   *
+   * @param bLookAheadNeeded
+   *        <code>true</code> if at least one production needs it.
+   */
   public void setLookAheadNeeded (final boolean bLookAheadNeeded)
   {
     m_bLookAheadNeeded = bLookAheadNeeded;
   }
 
+  /**
+   * The lexical action the grammar attached to &lt;EOF&gt;, if any.
+   *
+   * @return The action. May be <code>null</code>.
+   */
   @Nullable
   public ExpAction getActionForEof ()
   {
     return m_aActionForEof;
   }
 
+  /**
+   * The lexical action the grammar attached to &lt;EOF&gt;, if any.
+   *
+   * @param aActionForEof
+   *        The action.
+   */
   public void setActionForEof (@Nullable final ExpAction aActionForEof)
   {
     m_aActionForEof = aActionForEof;
   }
 
+  /**
+   * The lexical state the grammar wants to switch to on &lt;EOF&gt;, if any.
+   *
+   * @return The lexical state name. May be <code>null</code>.
+   */
   @Nullable
   public String getNextStateForEof ()
   {
     return m_sNextStateForEof;
   }
 
+  /**
+   * The lexical state the grammar wants to switch to on &lt;EOF&gt;, if any.
+   *
+   * @param sNextStateForEof
+   *        The lexical state name.
+   */
   public void setNextStateForEof (@Nullable final String sNextStateForEof)
   {
     m_sNextStateForEof = sNextStateForEof;
   }
 
+  /**
+   * The first token of the class declaration a C++ grammar writes between PARSER_BEGIN and
+   * PARSER_END, which the C++ backend copies into the generated header.
+   *
+   * @return The token. May be <code>null</code>.
+   */
   @Nullable
   public Token getOtherLanguageDeclTokenBegin ()
   {
     return m_aOtherLanguageDeclTokenBegin;
   }
 
+  /**
+   * The first token of the class declaration a C++ grammar writes between PARSER_BEGIN and
+   * PARSER_END, which the C++ backend copies into the generated header.
+   *
+   * @param aToken
+   *        The token.
+   */
   public void setOtherLanguageDeclTokenBegin (@Nullable final Token aToken)
   {
     m_aOtherLanguageDeclTokenBegin = aToken;
   }
 
+  /**
+   * The token just past the class declaration of a C++ grammar, the end of the range that starts
+   * at {@link #getOtherLanguageDeclTokenBegin()}.
+   *
+   * @return The token. May be <code>null</code>.
+   */
   @Nullable
   public Token getOtherLanguageDeclTokenEnd ()
   {
     return m_aOtherLanguageDeclTokenEnd;
   }
 
+  /**
+   * The token just past the class declaration of a C++ grammar, the end of the range that starts
+   * at {@link #getOtherLanguageDeclTokenBegin()}.
+   *
+   * @param aToken
+   *        The token.
+   */
   public void setOtherLanguageDeclTokenEnd (@Nullable final Token aToken)
   {
     m_aOtherLanguageDeclTokenEnd = aToken;
   }
 
-  /** @return The line of the token that is currently being printed */
+  /** {@return the line of the token that is currently being printed} */
   public int getCurrentLine ()
   {
     return m_nCurrentLine;
   }
 
+  /**
+   * Where the token printer has got to in the grammar file. Copying a stretch of the grammar into
+   * the output means reproducing its blank lines, so the printer tracks the position it last
+   * wrote.
+   *
+   * @param nCurrentLine
+   *        The line number.
+   */
   public void setCurrentLine (final int nCurrentLine)
   {
     m_nCurrentLine = nCurrentLine;
@@ -368,20 +515,26 @@ public final class GrammarState
   }
 
   /**
-   * @return A generation number that is unique within this run. Used by the lookahead computation
-   *         to mark the expansions it has already visited.
+   * {@return a generation number that is unique within this run. Used by the lookahead computation
+   *         to mark the expansions it has already visited.}
    */
   public long getAndIncNextExpansionGeneration ()
   {
     return m_nNextExpansionGeneration++;
   }
 
-  /** @return The column of the token that is currently being printed */
+  /** {@return the column of the token that is currently being printed} */
   public int getCurrentColumn ()
   {
     return m_nCurrentColumn;
   }
 
+  /**
+   * Where the token printer has got to within {@link #getCurrentLine()}.
+   *
+   * @param nCurrentColumn
+   *        The column number.
+   */
   public void setCurrentColumn (final int nCurrentColumn)
   {
     m_nCurrentColumn = nCurrentColumn;

@@ -79,7 +79,7 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
-   * @return the line
+   * {@return the line}
    */
   public int getLineNumber ()
   {
@@ -87,7 +87,7 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
-   * @return the column
+   * {@return the column}
    */
   public int getColumnNumber ()
   {
@@ -95,7 +95,7 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
-   * @return the left
+   * {@return the left}
    */
   public char getLeft ()
   {
@@ -112,7 +112,7 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
-   * @return the right
+   * {@return the right}
    */
   public char getRight ()
   {

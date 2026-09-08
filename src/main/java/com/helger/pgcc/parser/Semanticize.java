@@ -910,7 +910,7 @@ public class Semanticize
     private AbstractExpRegularExpression m_aRoot;
 
     /**
-     * @return The value of m_aRoot.
+     * {@return the value of m_aRoot}
      */
     public AbstractExpRegularExpression getRoot ()
     {

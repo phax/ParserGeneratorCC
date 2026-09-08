@@ -66,7 +66,7 @@ public final class ProcessState
   {}
 
   /**
-   * @return The single instance. Never <code>null</code>.
+   * {@return the single instance. Never <code>null</code>}
    */
   @NonNull
   public static ProcessState getInstance ()
@@ -75,7 +75,7 @@ public final class ProcessState
   }
 
   /**
-   * @return Where informational output goes, or <code>null</code> if it has not been set yet.
+   * {@return where informational output goes, or <code>null</code> if it has not been set yet}
    */
   public IPrinter getOut ()
   {
@@ -83,7 +83,7 @@ public final class ProcessState
   }
 
   /**
-   * @return Where error output goes, or <code>null</code> if it has not been set yet.
+   * {@return where error output goes, or <code>null</code> if it has not been set yet}
    */
   public IPrinter getErr ()
   {
@@ -107,8 +107,8 @@ public final class ProcessState
   }
 
   /**
-   * @return <code>true</code> if the templates are read from the class path, <code>false</code> if
-   *         they are read from the file system of this checkout.
+   * {@return <code>true</code> if the templates are read from the class path, <code>false</code> if
+   *         they are read from the file system of this checkout.}
    */
   public boolean isReadTemplatesFromClassPath ()
   {

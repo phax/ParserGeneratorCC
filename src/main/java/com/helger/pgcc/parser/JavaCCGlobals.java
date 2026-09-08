@@ -69,8 +69,8 @@ public final class JavaCCGlobals
   {}
 
   /**
-   * @return The grammar that is being processed by the current run. Never <code>null</code>. This
-   *         replaces the pile of static fields this class used to be.
+   * {@return the grammar that is being processed by the current run. Never <code>null</code>. This
+   *         replaces the pile of static fields this class used to be.}
    */
   @NonNull
   public static GrammarState grammar ()
@@ -670,8 +670,8 @@ public final class JavaCCGlobals
   @NonNull
   @Nonempty
   /**
-   * @return The file extension of the generated source files for the configured output language.
-   *         Never <code>null</code>. Public since the emitters moved into their own packages.
+   * {@return the file extension of the generated source files for the configured output language
+   *         Never <code>null</code>. Public since the emitters moved into their own packages.}
    */
   public static String getFileExtension ()
   {

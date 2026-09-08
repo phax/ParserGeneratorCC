@@ -90,7 +90,7 @@ public final class JJTreeState
   private Token m_aParserImports;
 
   /**
-   * @return The node ids, in the order the descriptors were seen. Never <code>null</code>.
+   * {@return the node ids, in the order the descriptors were seen. Never <code>null</code>}
    */
   @NonNull
   public List <String> nodeIds ()
@@ -99,7 +99,7 @@ public final class JJTreeState
   }
 
   /**
-   * @return The node names, in the same order as {@link #nodeIds()}. Never <code>null</code>.
+   * {@return the node names, in the same order as {@link #nodeIds()}. Never <code>null</code>}
    */
   @NonNull
   public List <String> nodeNames ()
@@ -108,8 +108,8 @@ public final class JJTreeState
   }
 
   /**
-   * @return The node ids already recorded, so that a repeated descriptor is only counted once.
-   *         Never <code>null</code>.
+   * {@return the node ids already recorded, so that a repeated descriptor is only counted once
+   *         Never <code>null</code>.}
    */
   @NonNull
   public Map <String, String> nodeSeen ()
@@ -118,7 +118,7 @@ public final class JJTreeState
   }
 
   /**
-   * @return The tools that produced the file being read, JJTree included. Never <code>null</code>.
+   * {@return the tools that produced the file being read, JJTree included. Never <code>null</code>}
    */
   @NonNull
   public List <String> toolList ()
@@ -127,7 +127,7 @@ public final class JJTreeState
   }
 
   /**
-   * @return The names of the node files already written in this run. Never <code>null</code>.
+   * {@return the names of the node files already written in this run. Never <code>null</code>}
    */
   @NonNull
   public Set <String> nodesGenerated ()
@@ -136,7 +136,7 @@ public final class JJTreeState
   }
 
   /**
-   * @return The node types the C++ backend still has to emit. Never <code>null</code>.
+   * {@return the node types the C++ backend still has to emit. Never <code>null</code>}
    */
   @NonNull
   public Set <String> nodesToGenerate ()
@@ -145,8 +145,8 @@ public final class JJTreeState
   }
 
   /**
-   * @return The header file names to be included from the generated JJTree header. Never
-   *         <code>null</code>.
+   * {@return the header file names to be included from the generated JJTree header. Never
+   *         <code>null</code>.}
    */
   @NonNull
   public List <String> headersForJJTreeH ()
@@ -154,7 +154,7 @@ public final class JJTreeState
     return m_aHeadersForJJTreeH;
   }
 
-  /** @return Production name to the production that declares it */
+  /** {@return production name to the production that declares it} */
   @NonNull
   public Map <String, ASTProduction> productions ()
   {
@@ -172,7 +172,7 @@ public final class JJTreeState
     m_sParserName = sParserName;
   }
 
-  /** @return The package of the generated parser. Never <code>null</code>, but maybe empty. */
+  /** {@return the package of the generated parser. Never <code>null</code>, but maybe empty} */
   @NonNull
   public String getPackageName ()
   {
@@ -185,8 +185,8 @@ public final class JJTreeState
   }
 
   /**
-   * @return The package of the generated node classes, which is <code>NODE_PACKAGE</code> if it was
-   *         set and the parser's package otherwise. Never <code>null</code>, but maybe empty.
+   * {@return the package of the generated node classes, which is <code>NODE_PACKAGE</code> if it was
+   *         set and the parser's package otherwise. Never <code>null</code>, but maybe empty.}
    */
   @NonNull
   public String getNodePackageName ()
@@ -199,7 +199,7 @@ public final class JJTreeState
     m_sNodePackageName = sNodePackageName;
   }
 
-  /** @return The token at which the parser class' implements clause starts */
+  /** {@return the token at which the parser class' implements clause starts} */
   @Nullable
   public Token getParserImplements ()
   {
@@ -211,7 +211,7 @@ public final class JJTreeState
     m_aParserImplements = aToken;
   }
 
-  /** @return The token at which the parser class body starts */
+  /** {@return the token at which the parser class body starts} */
   @Nullable
   public Token getParserClassBodyStart ()
   {
@@ -223,7 +223,7 @@ public final class JJTreeState
     m_aParserClassBodyStart = aToken;
   }
 
-  /** @return The token at which the parser's import declarations start */
+  /** {@return the token at which the parser's import declarations start} */
   @Nullable
   public Token getParserImports ()
   {

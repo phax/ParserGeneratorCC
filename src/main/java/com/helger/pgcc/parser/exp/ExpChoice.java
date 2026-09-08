@@ -70,7 +70,7 @@ public final class ExpChoice extends Expansion
   }
 
   /**
-   * @return the choices
+   * {@return the choices}
    */
   @NonNull
   public final Iterable <Expansion> getChoices ()

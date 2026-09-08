@@ -61,8 +61,8 @@ public final class LookaheadState
   private List <MatchInfo> m_aSizeLimitedMatches;
 
   /**
-   * @return How many tokens deep the current lookahead computation goes. 0 if no computation is
-   *         running.
+   * {@return how many tokens deep the current lookahead computation goes. 0 if no computation is
+   *         running.}
    */
   public int getLimit ()
   {
@@ -85,8 +85,8 @@ public final class LookaheadState
   }
 
   /**
-   * @return The matches that reached the lookahead limit. <code>null</code> if they are not being
-   *         collected.
+   * {@return the matches that reached the lookahead limit. <code>null</code> if they are not being
+   *         collected.}
    */
   @Nullable
   public List <MatchInfo> getSizeLimitedMatches ()

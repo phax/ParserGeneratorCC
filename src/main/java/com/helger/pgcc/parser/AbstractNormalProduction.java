@@ -257,7 +257,7 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
-   * @return the parents
+   * {@return the parents}
    */
   List <Expansion> getParents ()
   {
@@ -381,7 +381,7 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
-   * @return the emptyPossible
+   * {@return the emptyPossible}
    */
   boolean isEmptyPossible ()
   {
@@ -398,7 +398,7 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
-   * @return the leftExpansions
+   * {@return the leftExpansions}
    */
   AbstractNormalProduction [] getLeftExpansions ()
   {
@@ -415,7 +415,7 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
-   * @return the walkStatus
+   * {@return the walkStatus}
    */
   int getWalkStatus ()
   {

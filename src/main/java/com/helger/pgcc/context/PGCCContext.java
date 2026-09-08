@@ -71,8 +71,8 @@ public final class PGCCContext
   {}
 
   /**
-   * @return The context of the current thread, creating it on first access. Never
-   *         <code>null</code>.
+   * {@return the context of the current thread, creating it on first access. Never
+   *         <code>null</code>.}
    */
   @NonNull
   public static PGCCContext current ()

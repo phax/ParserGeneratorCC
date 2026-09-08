@@ -63,8 +63,8 @@ import com.helger.pgcc.output.java.LexGenJava;
 public class NfaState
 {
   /**
-   * @return The build state of the lexical state that is currently being generated. Never
-   *         <code>null</code>.
+   * {@return the build state of the lexical state that is currently being generated. Never
+   *         <code>null</code>.}
    */
   public static TokenizerDataBuildState tokenizerBuild ()
   {

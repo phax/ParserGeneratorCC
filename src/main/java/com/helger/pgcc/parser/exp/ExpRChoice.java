@@ -61,7 +61,7 @@ public final class ExpRChoice extends AbstractExpRegularExpression
   {}
 
   /**
-   * @return the choices
+   * {@return the choices}
    */
   @NonNull
   public final List <AbstractExpRegularExpression> getChoices ()

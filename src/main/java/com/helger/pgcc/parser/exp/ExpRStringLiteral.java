@@ -72,8 +72,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   private String m_sImage;
 
   /**
-   * @return The build state of the lexical state that is currently being generated. Never
-   *         <code>null</code>.
+   * {@return the build state of the lexical state that is currently being generated. Never
+   *         <code>null</code>.}
    */
   public static StringLiteralBuildState strLit ()
   {

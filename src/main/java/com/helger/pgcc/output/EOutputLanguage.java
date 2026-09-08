@@ -241,7 +241,7 @@ public enum EOutputLanguage implements IHasID <String>
   }
 
   /**
-   * @return The native data type for "long" values.
+   * {@return the native data type for "long" values}
    */
   @NonNull
   @Nonempty
@@ -268,15 +268,15 @@ public enum EOutputLanguage implements IHasID <String>
   }
 
   /**
-   * @return The native data type for "boolean" values.
+   * {@return the native data type for "boolean" values}
    */
   @NonNull
   @Nonempty
   public abstract String getTypeBoolean ();
 
   /**
-   * @return The file extension for a generated source file in this language, dot included. Never
-   *         <code>null</code>.
+   * {@return the file extension for a generated source file in this language, dot included. Never
+   *         <code>null</code>.}
    */
   @NonNull
   @Nonempty

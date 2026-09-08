@@ -358,7 +358,7 @@ public class OutputFile implements AutoCloseable
   }
 
   /**
-   * @return the toolName
+   * {@return the toolName}
    */
   public String getToolName ()
   {

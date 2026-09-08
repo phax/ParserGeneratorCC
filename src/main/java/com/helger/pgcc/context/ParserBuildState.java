@@ -69,8 +69,8 @@ public final class ParserBuildState
   }
 
   /**
-   * @return The compilation unit token list that is currently being filled. Never
-   *         <code>null</code>.
+   * {@return the compilation unit token list that is currently being filled. Never
+   *         <code>null</code>.}
    */
   @NonNull
   public List <Token> getAddTokenHere ()
@@ -121,7 +121,7 @@ public final class ParserBuildState
     m_bInsertionPoint2Set = b;
   }
 
-  /** @return The next unused lexical state index, and reserves it. */
+  /** {@return the next unused lexical state index, and reserves it} */
   public int getAndIncNextFreeLexState ()
   {
     return m_nNextFreeLexState++;
