@@ -43,16 +43,32 @@ public class ASTBNF extends ASTProduction
   ASTBNF (final int nID)
   {
     super (nID);
-    m_aThrowsList.add ("ParseException");
-    m_aThrowsList.add ("RuntimeException");
+    getThrowsList ().add ("ParseException");
+    getThrowsList ().add ("RuntimeException");
   }
 
-  Token m_aDeclBeginLoc;
+  private Token m_aDeclBeginLoc;
 
+  /**
+   * @return The value of m_aDeclBeginLoc.
+   */
+  public Token getDeclBeginLoc ()
+  {
+    return m_aDeclBeginLoc;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aDeclBeginLoc.
+   */
+  public void setDeclBeginLoc (final Token aValue)
+  {
+    m_aDeclBeginLoc = aValue;
+  }
   @Override
   public String toString ()
   {
-    return super.toString () + ": " + m_sName;
+    return super.toString () + ": " + getName ();
   }
 
   /** Accept the visitor. **/

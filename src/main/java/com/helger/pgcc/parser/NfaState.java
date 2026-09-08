@@ -292,7 +292,6 @@ public class NfaState
     }
   }
 
-
   // From hereon down all the functions are used for code generation
 
   /**
@@ -723,11 +722,11 @@ public class NfaState
               aTmpSB.append (equivState.m_nId).append (", ");
             final String sTmp = aTmpSB.toString ();
 
-            aNewState = nfa ().equivStatesTable ().get (sTmp);
+            aNewState = aNfa.equivStatesTable ().get (sTmp);
             if (aNewState == null)
             {
               aNewState = createEquivState (aEquivStates);
-              nfa ().equivStatesTable ().put (sTmp, aNewState);
+              aNfa.equivStatesTable ().put (sTmp, aNewState);
             }
 
             m_aEpsilonMoves.remove (i--);
@@ -798,6 +797,8 @@ public class NfaState
     if (m_sEpsilonMovesString != null)
       return m_sEpsilonMovesString;
 
+    final NfaBuildState aNfa = nfa ();
+
     if (m_nUsefulEpsilonMoves > 0)
     {
       NfaState aTempState;
@@ -810,7 +811,7 @@ public class NfaState
           if (aTempState.m_nStateName == -1)
             aTempState.generateCode ();
 
-          nfa ().indexedAllStates ().get (aTempState.m_nStateName).m_nInNextOf++;
+          aNfa.indexedAllStates ().get (aTempState.m_nStateName).m_nInNextOf++;
           aStateNames[nCnt] = aTempState.m_nStateName;
           m_sEpsilonMovesString += aTempState.m_nStateName + ", ";
           if (nCnt++ > 0 && nCnt % 16 == 0)
@@ -822,12 +823,12 @@ public class NfaState
     }
 
     m_nUsefulEpsilonMoves = nCnt;
-    if (m_sEpsilonMovesString != null && nfa ().allNextStates ().get (m_sEpsilonMovesString) == null)
+    if (m_sEpsilonMovesString != null && aNfa.allNextStates ().get (m_sEpsilonMovesString) == null)
     {
       final int [] aStatesToPut = new int [m_nUsefulEpsilonMoves];
 
       System.arraycopy (aStateNames, 0, aStatesToPut, 0, nCnt);
-      nfa ().allNextStates ().put (m_sEpsilonMovesString, aStatesToPut);
+      aNfa.allNextStates ().put (m_sEpsilonMovesString, aStatesToPut);
     }
 
     return m_sEpsilonMovesString;

@@ -96,13 +96,14 @@ public final class LookaheadWalk
       {
         final MatchInfo m = aPartialMatches.get (i);
         final MatchInfo aMnew = new MatchInfo ();
-        for (int j = 0; j < m.m_nFirstFreeLoc; j++)
+        for (int j = 0; j < m.getFirstFreeLoc (); j++)
         {
-          aMnew.m_aMatch[j] = m.m_aMatch[j];
+          aMnew.getMatch ()[j] = m.getMatch ()[j];
         }
-        aMnew.m_nFirstFreeLoc = m.m_nFirstFreeLoc;
-        aMnew.m_aMatch[aMnew.m_nFirstFreeLoc++] = aRegularExpression.getOrdinal ();
-        if (aMnew.m_nFirstFreeLoc == LookaheadState.current ().getLimit ())
+        aMnew.setFirstFreeLoc (m.getFirstFreeLoc ());
+        aMnew.getMatch ()[aMnew.getFirstFreeLoc ()] = aRegularExpression.getOrdinal ();
+        aMnew.setFirstFreeLoc (aMnew.getFirstFreeLoc () + 1);
+        if (aMnew.getFirstFreeLoc () == LookaheadState.current ().getLimit ())
         {
           LookaheadState.current ().getSizeLimitedMatches ().add (aMnew);
         }

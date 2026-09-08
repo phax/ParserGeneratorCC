@@ -37,9 +37,42 @@ import org.jspecify.annotations.NonNull;
 
 public class ASTBNFNodeScope extends JJTreeNode
 {
-  NodeScope m_aNodeScope;
-  JJTreeNode m_aExpansionUnit;
+  private NodeScope m_aNodeScope;
 
+  /**
+   * @return The value of m_aNodeScope.
+   */
+  public NodeScope getNodeScope ()
+  {
+    return m_aNodeScope;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aNodeScope.
+   */
+  public void setNodeScope (final NodeScope aValue)
+  {
+    m_aNodeScope = aValue;
+  }
+  private JJTreeNode m_aExpansionUnit;
+
+  /**
+   * @return The value of m_aExpansionUnit.
+   */
+  public JJTreeNode getExpansionUnit ()
+  {
+    return m_aExpansionUnit;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aExpansionUnit.
+   */
+  public void setExpansionUnit (final JJTreeNode aValue)
+  {
+    m_aExpansionUnit = aValue;
+  }
   ASTBNFNodeScope (final int nID)
   {
     super (nID);

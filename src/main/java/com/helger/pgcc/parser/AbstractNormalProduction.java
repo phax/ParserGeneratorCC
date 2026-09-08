@@ -107,8 +107,24 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
    * Also an index that shows how many pointers exist.
    */
   private AbstractNormalProduction [] m_aLeftExpansions = new AbstractNormalProduction [10];
-  int m_nLeIndex = 0;
+  private int m_nLeIndex = 0;
 
+  /**
+   * @return The value of m_nLeIndex.
+   */
+  public int getLeIndex ()
+  {
+    return m_nLeIndex;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_nLeIndex.
+   */
+  public void setLeIndex (final int aValue)
+  {
+    m_nLeIndex = aValue;
+  }
   /**
    * The following variable is used to maintain state information for the left-recursion
    * determination algorithm: It is initialized to 0, and set to -1 if this node has been visited in

@@ -45,7 +45,7 @@ public class ASTNodeDescriptor extends JJTreeNode
   static ASTNodeDescriptor indefinite (final String s)
   {
     final ASTNodeDescriptor aNd = new ASTNodeDescriptor (JJTreeParserTreeConstants.JJTNODEDESCRIPTOR);
-    aNd.m_sName = s;
+    aNd.setName (s);
     aNd.setNodeIdValue ();
     aNd.m_bFaked = true;
     return aNd;
@@ -64,10 +64,60 @@ public class ASTNodeDescriptor extends JJTreeNode
   }
 
   private boolean m_bFaked = false;
-  String m_sName;
-  boolean m_bIsGT;
-  ASTNodeDescriptorExpression m_aExpression;
+  private String m_sName;
 
+  /**
+   * @return The value of m_sName.
+   */
+  public String getName ()
+  {
+    return m_sName;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_sName.
+   */
+  public void setName (final String aValue)
+  {
+    m_sName = aValue;
+  }
+  private boolean m_bIsGT;
+
+  /**
+   * @return The value of m_bIsGT.
+   */
+  public boolean isGT ()
+  {
+    return m_bIsGT;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_bIsGT.
+   */
+  public void setGT (final boolean aValue)
+  {
+    m_bIsGT = aValue;
+  }
+  private ASTNodeDescriptorExpression m_aExpression;
+
+  /**
+   * @return The value of m_aExpression.
+   */
+  public ASTNodeDescriptorExpression getExpression ()
+  {
+    return m_aExpression;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aExpression.
+   */
+  public void setExpression (final ASTNodeDescriptorExpression aValue)
+  {
+    m_aExpression = aValue;
+  }
   ASTNodeDescriptor (final int nID)
   {
     super (nID);

@@ -71,11 +71,11 @@ public final class LookaheadCalc
       for (final MatchInfo element2 : aV2)
       {
         aM2 = element2;
-        nSize = aM1.m_nFirstFreeLoc;
+        nSize = aM1.getFirstFreeLoc ();
         aM3 = aM1;
-        if (nSize > aM2.m_nFirstFreeLoc)
+        if (nSize > aM2.getFirstFreeLoc ())
         {
-          nSize = aM2.m_nFirstFreeLoc;
+          nSize = aM2.getFirstFreeLoc ();
           aM3 = aM2;
         }
         if (nSize == 0)
@@ -85,7 +85,7 @@ public final class LookaheadCalc
         bDiff = false;
         for (int k = 0; k < nSize; k++)
         {
-          if (aM1.m_aMatch[k] != aM2.m_aMatch[k])
+          if (aM1.getMatch ()[k] != aM2.getMatch ()[k])
           {
             bDiff = true;
             break;
@@ -101,7 +101,7 @@ public final class LookaheadCalc
   private static boolean _isJavaCodeCheck (final List <MatchInfo> v)
   {
     for (final MatchInfo mi : v)
-      if (mi.m_nFirstFreeLoc == 0)
+      if (mi.getFirstFreeLoc () == 0)
         return true;
     return false;
   }
@@ -109,15 +109,15 @@ public final class LookaheadCalc
   private static String _image (@NonNull final MatchInfo m)
   {
     String sRet = "";
-    for (int i = 0; i < m.m_nFirstFreeLoc; i++)
+    for (int i = 0; i < m.getFirstFreeLoc (); i++)
     {
-      if (m.m_aMatch[i] == 0)
+      if (m.getMatch ()[i] == 0)
       {
         sRet += " <EOF>";
       }
       else
       {
-        final AbstractExpRegularExpression aRe = grammar ().rexpsOfTokens ().get (Integer.valueOf (m.m_aMatch[i]));
+        final AbstractExpRegularExpression aRe = grammar ().rexpsOfTokens ().get (Integer.valueOf (m.getMatch ()[i]));
         if (aRe instanceof final ExpRStringLiteral aRStringLiteral)
         {
           sRet += " \"" + addEscapes (aRStringLiteral.getImage ()) + "\"";
@@ -129,7 +129,7 @@ public final class LookaheadCalc
             sRet += " <token of kind " + i + ">";
       }
     }
-    if (m.m_nFirstFreeLoc == 0)
+    if (m.getFirstFreeLoc () == 0)
       return "";
     return sRet.substring (1);
   }
@@ -158,7 +158,7 @@ public final class LookaheadCalc
       {
         LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
         m = new MatchInfo ();
-        m.m_nFirstFreeLoc = 0;
+        m.setFirstFreeLoc (0);
         v = new ArrayList <> ();
         v.add (m);
         LookaheadWalk.genFirstSetRecursive (v, aCh.getChoiceAt (i));
@@ -169,7 +169,7 @@ public final class LookaheadCalc
       {
         LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
         m = new MatchInfo ();
-        m.m_nFirstFreeLoc = 0;
+        m.setFirstFreeLoc (0);
         v = new ArrayList <> ();
         v.add (m);
         LookaheadWalk.genFirstSetRecursive (v, aCh.getChoiceAt (i));
@@ -312,7 +312,7 @@ public final class LookaheadCalc
       LookaheadState.current ().setLimit (nLa);
       LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
       m = new MatchInfo ();
-      m.m_nFirstFreeLoc = 0;
+      m.setFirstFreeLoc (0);
       v = new ArrayList <> ();
       v.add (m);
       LookaheadState.current ().setConsiderSemanticLA (!Options.isForceLaCheck ());

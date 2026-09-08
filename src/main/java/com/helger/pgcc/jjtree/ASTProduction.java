@@ -44,9 +44,42 @@ public class ASTProduction extends JJTreeNode
 {
   private final Map <NodeScope, Integer> m_aScopes = new HashMap <> ();
   private int m_nNextNodeScopeNumber = 0;
-  String m_sName;
-  List <String> m_aThrowsList = new ArrayList <> ();
+  private String m_sName;
 
+  /**
+   * @return The value of m_sName.
+   */
+  public String getName ()
+  {
+    return m_sName;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_sName.
+   */
+  public void setName (final String aValue)
+  {
+    m_sName = aValue;
+  }
+  private List <String> m_aThrowsList = new ArrayList <> ();
+
+  /**
+   * @return The value of m_aThrowsList.
+   */
+  public List <String> getThrowsList ()
+  {
+    return m_aThrowsList;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aThrowsList.
+   */
+  public void setThrowsList (final List <String> aValue)
+  {
+    m_aThrowsList = aValue;
+  }
   ASTProduction (final int nID)
   {
     super (nID);

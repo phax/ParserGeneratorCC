@@ -704,20 +704,21 @@ public class Semanticize
   {
     if (aExp instanceof final ExpNonTerminal aExpNonTerminal)
     {
-      for (int i = 0; i < aProd.m_nLeIndex; i++)
+      for (int i = 0; i < aProd.getLeIndex (); i++)
       {
         if (aProd.getLeftExpansions ()[i] == aExpNonTerminal.getProd ())
         {
           return;
         }
       }
-      if (aProd.m_nLeIndex == aProd.getLeftExpansions ().length)
+      if (aProd.getLeIndex () == aProd.getLeftExpansions ().length)
       {
-        final AbstractNormalProduction [] aNewle = new AbstractNormalProduction [aProd.m_nLeIndex * 2];
-        System.arraycopy (aProd.getLeftExpansions (), 0, aNewle, 0, aProd.m_nLeIndex);
+        final AbstractNormalProduction [] aNewle = new AbstractNormalProduction [aProd.getLeIndex () * 2];
+        System.arraycopy (aProd.getLeftExpansions (), 0, aNewle, 0, aProd.getLeIndex ());
         aProd.setLeftExpansions (aNewle);
       }
-      aProd.getLeftExpansions ()[aProd.m_nLeIndex++] = aExpNonTerminal.getProd ();
+      aProd.getLeftExpansions ()[aProd.getLeIndex ()] = aExpNonTerminal.getProd ();
+      aProd.setLeIndex (aProd.getLeIndex () + 1);
     }
     else
       if (aExp instanceof final ExpOneOrMore aExpOneOrMore)
@@ -764,7 +765,7 @@ public class Semanticize
   private static boolean _prodWalk (@NonNull final AbstractNormalProduction aProd)
   {
     aProd.setWalkStatus (-1);
-    for (int i = 0; i < aProd.m_nLeIndex; i++)
+    for (int i = 0; i < aProd.getLeIndex (); i++)
     {
       if (aProd.getLeftExpansions ()[i].getWalkStatus () == -1)
       {

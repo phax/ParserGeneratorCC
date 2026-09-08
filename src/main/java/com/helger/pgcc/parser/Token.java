@@ -205,6 +205,10 @@ public class Token implements IGrammarLocation
    */
   public static class GTToken extends Token
   {
+    /**
+     * Which shift operator this ">" really belongs to. Read and written straight from the grammar's
+     * action code, like the fields of Token itself, so it stays a field.
+     */
     int m_nRealKind = JavaCCParserConstants.GT;
 
     public GTToken (final int nKind, final String sImage)

@@ -64,7 +64,7 @@ public class ASTBNFAction extends JJTreeNode
     {
       if (n instanceof final ASTBNFNodeScope aASTBNFNodeScope)
       {
-        if (aASTBNFNodeScope.m_aNodeScope == aNs)
+        if (aASTBNFNodeScope.getNodeScope () == aNs)
         {
           return n;
         }
@@ -72,7 +72,7 @@ public class ASTBNFAction extends JJTreeNode
       else
         if (n instanceof final ASTExpansionNodeScope aASTExpansionNodeScope)
         {
-          if (aASTExpansionNodeScope.m_aNodeScope == aNs)
+          if (aASTExpansionNodeScope.getNodeScope () == aNs)
           {
             return n;
           }

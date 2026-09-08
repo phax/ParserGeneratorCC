@@ -39,21 +39,114 @@ import org.jspecify.annotations.Nullable;
 
 public class NodeScope
 {
-  ASTProduction m_aProduction;
-  ASTNodeDescriptor m_aNodeDescriptor;
+  private ASTProduction m_aProduction;
 
-  String m_sClosedVar;
-  String m_sExceptionVar;
-  String m_sNodeVar;
-  int m_nScopeNumber;
+  /**
+   * @return The value of m_aProduction.
+   */
+  public ASTProduction getProduction ()
+  {
+    return m_aProduction;
+  }
 
+  /**
+   * @param aValue
+   *        The new value of m_aProduction.
+   */
+  public void setProduction (final ASTProduction aValue)
+  {
+    m_aProduction = aValue;
+  }
+  private ASTNodeDescriptor m_aNodeDescriptor;
+
+
+  /**
+   * @param aValue
+   *        The new value of m_aNodeDescriptor.
+   */
+  public void setNodeDescriptor (final ASTNodeDescriptor aValue)
+  {
+    m_aNodeDescriptor = aValue;
+  }
+  private String m_sClosedVar;
+
+  /**
+   * @return The value of m_sClosedVar.
+   */
+  public String getClosedVar ()
+  {
+    return m_sClosedVar;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_sClosedVar.
+   */
+  public void setClosedVar (final String aValue)
+  {
+    m_sClosedVar = aValue;
+  }
+  private String m_sExceptionVar;
+
+  /**
+   * @return The value of m_sExceptionVar.
+   */
+  public String getExceptionVar ()
+  {
+    return m_sExceptionVar;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_sExceptionVar.
+   */
+  public void setExceptionVar (final String aValue)
+  {
+    m_sExceptionVar = aValue;
+  }
+  private String m_sNodeVar;
+
+  /**
+   * @return The value of m_sNodeVar.
+   */
+  public String getNodeVar ()
+  {
+    return m_sNodeVar;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_sNodeVar.
+   */
+  public void setNodeVar (final String aValue)
+  {
+    m_sNodeVar = aValue;
+  }
+  private int m_nScopeNumber;
+
+  /**
+   * @return The value of m_nScopeNumber.
+   */
+  public int getScopeNumber ()
+  {
+    return m_nScopeNumber;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_nScopeNumber.
+   */
+  public void setScopeNumber (final int aValue)
+  {
+    m_nScopeNumber = aValue;
+  }
   NodeScope (final ASTProduction p, @Nullable final ASTNodeDescriptor n)
   {
     m_aProduction = p;
 
     if (n == null)
     {
-      String sNm = m_aProduction.m_sName;
+      String sNm = m_aProduction.getName ();
       if (JJTreeOptions.isNodeDefaultVoid ())
       {
         sNm = "void";
@@ -107,23 +200,23 @@ public class NodeScope
   {
     if (aNode instanceof final ASTBNFDeclaration aASTBNFDeclaration)
     {
-      return aASTBNFDeclaration.m_aNodeScope;
+      return aASTBNFDeclaration.getNodeScope ();
     }
     for (Node n = aNode.jjtGetParent (); n != null; n = n.jjtGetParent ())
     {
       if (n instanceof ASTBNFDeclaration)
       {
-        return ((ASTBNFDeclaration) n).m_aNodeScope;
+        return ((ASTBNFDeclaration) n).getNodeScope ();
       }
       else
         if (n instanceof final ASTBNFNodeScope aASTBNFNodeScope)
         {
-          return aASTBNFNodeScope.m_aNodeScope;
+          return aASTBNFNodeScope.getNodeScope ();
         }
         else
           if (n instanceof final ASTExpansionNodeScope aASTExpansionNodeScope)
           {
-            return aASTExpansionNodeScope.m_aNodeScope;
+            return aASTExpansionNodeScope.getNodeScope ();
           }
     }
     return null;

@@ -37,8 +37,24 @@ import org.jspecify.annotations.NonNull;
 
 public class ASTJavacode extends ASTProduction
 {
-  Token m_aStmBeginLoc;
+  private Token m_aStmBeginLoc;
 
+  /**
+   * @return The value of m_aStmBeginLoc.
+   */
+  public Token getStmBeginLoc ()
+  {
+    return m_aStmBeginLoc;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aStmBeginLoc.
+   */
+  public void setStmBeginLoc (final Token aValue)
+  {
+    m_aStmBeginLoc = aValue;
+  }
   ASTJavacode (final int nID)
   {
     super (nID);

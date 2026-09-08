@@ -41,6 +41,40 @@ import com.helger.pgcc.context.LookaheadState;
  */
 public class MatchInfo
 {
-  int [] m_aMatch = new int [LookaheadState.current ().getLimit ()];
-  int m_nFirstFreeLoc;
+  private int [] m_aMatch = new int [LookaheadState.current ().getLimit ()];
+
+  /**
+   * @return The value of m_aMatch.
+   */
+  public int [] getMatch ()
+  {
+    return m_aMatch;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aMatch.
+   */
+  public void setMatch (final int [] aValue)
+  {
+    m_aMatch = aValue;
+  }
+  private int m_nFirstFreeLoc;
+
+  /**
+   * @return The value of m_nFirstFreeLoc.
+   */
+  public int getFirstFreeLoc ()
+  {
+    return m_nFirstFreeLoc;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_nFirstFreeLoc.
+   */
+  public void setFirstFreeLoc (final int aValue)
+  {
+    m_nFirstFreeLoc = aValue;
+  }
 }
