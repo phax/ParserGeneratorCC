@@ -33,6 +33,7 @@
  */
 package com.helger.pgcc.jjtree;
 
+import com.helger.pgcc.context.PGCCContext;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -54,7 +55,7 @@ public final class JJTreeOptionsTest
   public void beforeEach ()
   {
     JJTreeOptions.init ();
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
   }
 
   @Test
@@ -118,7 +119,7 @@ public final class JJTreeOptionsTest
     assertEquals (1, JavaCCErrors.getWarningCount ());
 
     JJTreeOptions.init ();
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
 
     Options.setCmdLineOption ("VISITOR_DATA_TYPE=Object");
     Options.setCmdLineOption ("VISITOR=true");
@@ -126,7 +127,7 @@ public final class JJTreeOptionsTest
     assertEquals (0, JavaCCErrors.getWarningCount ());
 
     JJTreeOptions.init ();
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
 
     Options.setCmdLineOption ("VISITOR_DATA_TYPE=Object");
     JJTreeOptions.validate ();
@@ -141,7 +142,7 @@ public final class JJTreeOptionsTest
     assertEquals (1, JavaCCErrors.getWarningCount ());
 
     JJTreeOptions.init ();
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
 
     Options.setCmdLineOption ("VISITOR_DATA_TYPE=String");
     Options.setCmdLineOption ("VISITOR=true");
@@ -149,7 +150,7 @@ public final class JJTreeOptionsTest
     assertEquals (0, JavaCCErrors.getWarningCount ());
 
     JJTreeOptions.init ();
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
 
     Options.setCmdLineOption ("VISITOR_DATA_TYPE=String");
     JJTreeOptions.validate ();

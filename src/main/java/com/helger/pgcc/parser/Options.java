@@ -411,8 +411,8 @@ public class Options
     return aValue;
   }
 
-  public static void setInputFileOption (final Object aNameloc,
-                                         final Object aValueloc,
+  public static void setInputFileOption (@Nullable final IGrammarLocation aNameloc,
+                                         @Nullable final IGrammarLocation aValueloc,
                                          @NonNull final String sName,
                                          @NonNull final Object aSrcValue)
   {
@@ -488,7 +488,7 @@ public class Options
    * @param aValue
    *        The already upgraded option value. Never <code>null</code>.
    */
-  private static void _applyIndirectOptionFlags (@Nullable final Object aValueloc,
+  private static void _applyIndirectOptionFlags (@Nullable final IGrammarLocation aValueloc,
                                                  @NonNull final String sNameUC,
                                                  @NonNull final String sName,
                                                  @NonNull final Object aValue)

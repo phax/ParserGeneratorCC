@@ -38,9 +38,6 @@ import org.jspecify.annotations.Nullable;
 
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.context.PGCCContext;
-import com.helger.pgcc.parser.exp.CharacterRange;
-import com.helger.pgcc.parser.exp.Expansion;
-import com.helger.pgcc.parser.exp.SingleCharacter;
 
 /**
  * Output error messages and keep track of totals. The totals live in
@@ -52,36 +49,12 @@ public final class JavaCCErrors
   {}
 
   @NonNull
-  private static String _getLocationInfo (@Nullable final Object aNode)
+  private static String _getLocationInfo (@Nullable final IGrammarLocation aNode)
   {
-    if (aNode instanceof final NormalProduction n)
-    {
-      return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
-    }
-    if (aNode instanceof final TokenProduction n)
-    {
-      return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
-    }
-    if (aNode instanceof final Expansion n)
-    {
-      return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
-    }
-    if (aNode instanceof final CharacterRange n)
-    {
-      return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
-    }
-    if (aNode instanceof final SingleCharacter n)
-    {
-      return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
-    }
-    if (aNode instanceof final Token t)
-    {
-      return "Line " + t.beginLine + ", Column " + t.beginColumn + ": ";
-    }
-    return "";
+    return aNode == null ? "" : "Line " + aNode.getLine () + ", Column " + aNode.getColumn () + ": ";
   }
 
-  public static void parse_error (final Object aNode, final String sMess)
+  public static void parse_error (@Nullable final IGrammarLocation aNode, final String sMess)
   {
     PGPrinter.error ("Error: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onParseError ();
@@ -98,7 +71,7 @@ public final class JavaCCErrors
     return PGCCContext.current ().errors ().getParseErrorCount ();
   }
 
-  public static void semantic_error (final Object aNode, final String sMess)
+  public static void semantic_error (@Nullable final IGrammarLocation aNode, final String sMess)
   {
     PGPrinter.error ("Error: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onSemanticError ();
@@ -121,7 +94,7 @@ public final class JavaCCErrors
     return PGCCContext.current ().errors ().getSemanticErrorCount ();
   }
 
-  public static void warning (final Object aNode, final String sMess)
+  public static void warning (@Nullable final IGrammarLocation aNode, final String sMess)
   {
     PGPrinter.warn ("Warning: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onWarning ();
@@ -157,14 +130,5 @@ public final class JavaCCErrors
   public static void note (final String sMess)
   {
     PGPrinter.info ("Note: " + sMess);
-  }
-
-  /**
-   * @deprecated Use {@link PGCCContext#reset()} instead - the counters live in the context now.
-   */
-  @Deprecated (forRemoval = true)
-  public static void reInit ()
-  {
-    PGCCContext.current ().errors ().reset ();
   }
 }

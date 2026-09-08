@@ -82,6 +82,8 @@ v2.1.0 - work in progress
 * Fixed the `jjtree` help output advertising `JDK_VERSION (default "1.5")` and `OUTPUT_DIRECTORY (default "")`, neither of which was the actual default
 * Removed a leftover debug line that made `jjtree` print `opt:java` on every run
 * Local variables and parameters throughout the code base now use the project's Hungarian notation. The public fields of `Token` keep their names - generated parsers and grammar action code read `token.kind` and `t.image`
+* **Breaking API change** `JavaCCErrors.parse_error`, `semantic_error` and `warning` take a `com.helger.pgcc.parser.IGrammarLocation` instead of an `Object`. The new interface extends `com.helger.base.location.ILocation` and is implemented by `NormalProduction`, `TokenProduction`, `Expansion`, `ICCCharacter` and both `Token` classes - the six types the old `instanceof` cascade tested for. `Options.setInputFileOption` takes it too
+* **Breaking API change** Removed `JavaCCErrors.reInit ()`, deprecated since the error counters moved into `PGCCContext`
 
 v2.0.3 - 2026-09-08
 * Added the new option `JAVA_CHAR_STREAM_TYPE` that allows to generate a `CharSequenceCharStream` that needs no internal buffer at all ([issue #21](https://github.com/tulipcc/ParserGeneratorCC/issues/21))

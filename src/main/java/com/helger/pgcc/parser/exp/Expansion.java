@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser.exp;
 
+import com.helger.pgcc.parser.IGrammarLocation;
+
 import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
@@ -45,7 +47,7 @@ import com.helger.pgcc.context.PGCCContext;
  * Describes expansions - entities that may occur on the right hand sides of productions. This is
  * the base class of a bunch of other more specific classes.
  */
-public sealed class Expansion permits
+public sealed class Expansion implements IGrammarLocation permits
                               ExpAction,
                               ExpChoice,
                               ExpLookahead,

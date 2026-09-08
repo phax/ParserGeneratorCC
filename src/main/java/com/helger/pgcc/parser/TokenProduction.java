@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * Describes the various regular expression productions.
  */
-public class TokenProduction
+public class TokenProduction implements IGrammarLocation
 {
   /**
    * The starting line and column of this token production.

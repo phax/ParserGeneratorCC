@@ -33,6 +33,7 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.context.PGCCContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -58,7 +59,7 @@ public final class OptionsTest
   public void beforeEach ()
   {
     Options.init ();
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
   }
 
   @Test
@@ -265,7 +266,7 @@ public final class OptionsTest
     assertEquals ("java.lang.Object", Options.getTokenExtends ());
 
     Options.init ();
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
 
     Options.setInputFileOption (null, null, Options.USEROPTION__TOKEN_EXTENDS, "Object");
     assertEquals ("Object", Options.getTokenExtends ());
@@ -316,7 +317,7 @@ public final class OptionsTest
   public void testTheCppOnlyOptionsWarnWhenSetForJava ()
   {
     // Both are read by the C++ backend only, and used to be ignored without a word
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
     Options.setCmdLineOption ("-PARSER_SUPER_CLASS=MySuperParser");
     Options.normalize ();
     assertEquals (1, JavaCCErrors.getWarningCount ());
@@ -325,7 +326,7 @@ public final class OptionsTest
   @Test
   public void testTheCppOnlyOptionsDoNotWarnForCpp ()
   {
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
     Options.setCmdLineOption ("-OUTPUT_LANGUAGE=c++");
     Options.setCmdLineOption ("-PARSER_SUPER_CLASS=MySuperParser");
     Options.normalize ();

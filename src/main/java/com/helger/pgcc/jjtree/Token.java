@@ -38,11 +38,13 @@
 
 package com.helger.pgcc.jjtree;
 
+import com.helger.pgcc.parser.IGrammarLocation;
+
 /**
  * Describes the input token stream.
  */
 @SuppressWarnings ("hiding")
-public class Token
+public class Token implements IGrammarLocation
 {
   /**
    * An integer that describes the kind of this token. This numbering system is determined by
@@ -131,6 +133,16 @@ public class Token
    * Returns the image.
    */
   @Override
+  public int getLine ()
+  {
+    return beginLine;
+  }
+
+  public int getColumn ()
+  {
+    return beginColumn;
+  }
+
   public String toString ()
   {
     return image;

@@ -43,7 +43,7 @@ import com.helger.pgcc.parser.exp.Expansion;
 /**
  * Describes JavaCC productions.
  */
-public abstract class NormalProduction
+public abstract class NormalProduction implements IGrammarLocation
 {
   protected static final String EOL = System.getProperty ("line.separator", "\n");
 

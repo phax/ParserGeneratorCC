@@ -31,18 +31,56 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.helger.pgcc.parser.exp;
+package com.helger.pgcc.parser;
 
-import com.helger.pgcc.parser.IGrammarLocation;
+import org.jspecify.annotations.Nullable;
 
-import java.io.Serializable;
+import com.helger.base.location.ILocation;
+import com.helger.pgcc.context.PGCCContext;
 
 /**
- * Marker interface
+ * Something in the grammar that knows where it was written: a production, an expansion, a regular
+ * expression, a character descriptor or a single token.
+ * <p>
+ * This exists so that {@link JavaCCErrors} can take a location instead of an {@link Object} and an
+ * <code>instanceof</code> cascade over the six types that happen to have a line and a column.
+ * <p>
+ * It extends {@link ILocation} from ph-commons rather than starting from nothing, so that the
+ * usual helpers - <code>getAsString ()</code>, <code>hasLineNumber ()</code> - come along. The two
+ * abstract methods keep the names the grammar model has always used; the ph-commons spellings are
+ * defaults on top of them.
  *
  * @author Philip Helger
  */
-public interface ICCCharacter extends Serializable, IGrammarLocation
+public interface IGrammarLocation extends ILocation
 {
-  // empty
+  /**
+   * @return The line this was written on, or 0 if it is not known.
+   */
+  int getLine ();
+
+  /**
+   * @return The column this was written at, or 0 if it is not known.
+   */
+  int getColumn ();
+
+  default int getLineNumber ()
+  {
+    return getLine ();
+  }
+
+  default int getColumnNumber ()
+  {
+    return getColumn ();
+  }
+
+  /**
+   * @return The grammar file currently being read, because that is what every location in the
+   *         model refers to. May be <code>null</code> before a file has been opened.
+   */
+  @Nullable
+  default String getResourceID ()
+  {
+    return PGCCContext.current ().grammar ().getFileName ();
+  }
 }
