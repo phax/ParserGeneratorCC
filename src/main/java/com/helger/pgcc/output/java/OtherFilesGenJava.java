@@ -257,8 +257,4 @@ public class OtherFilesGenJava
     }
   }
 
-  public static void reInit ()
-  {
-    // empty
-  }
 }

@@ -61,33 +61,18 @@ work with what is on Maven Central.
 
 ## Generator state
 
-The generator historically kept everything in static fields. That state is moving into
-`com.helger.pgcc.context.PGCCContext`, one piece at a time:
+The generator historically kept everything in static fields - 117 mutable ones. They now live in
+`com.helger.pgcc.context.PGCCContext`, a `ThreadLocal` holding one state object per run: options,
+errors, the parsed grammar, the parser build scratch, the lookahead scratch, the semantic check
+scratch, the JJTree and JJDoc runs, and the whole token manager generation including the per lexical
+state NFA and string literal construction.
 
-- already migrated: the error/warning counters (`ErrorCollector`), every option value
-  (`OptionState`, which includes the output language), the lookahead analysis scratch state
-  (`LookaheadState`), and the whole parsed grammar (`GrammarState` - what `JavaCCGlobals` used to
-  hold). `JavaCCGlobals` is now a facade whose `grammar ()` returns that model.
-- also migrated: the grammar file reading scratch (`ParserBuildState`), the semantic check scratch
-  (`SemanticizeState`), the expansion generation counter, the JJTree run (`JJTreeState`), the JJDoc
-  run (`JJDocState`) and the whole token manager generation (`LexerState`, formerly the 43 statics
-  of `LexGenJava`)
-- still static: `NfaState` (17) and `ExpRStringLiteral` (12), plus `PGPrinter` (the console,
-  legitimately global) and one test hook in `FilesJava`
+Three mutable statics remain and are meant to: the two console printers in `PGPrinter` and the
+`FilesJava` test hook. `Main.reInitAll ()` is two lines.
 
-`LexGenJava` and `NfaState` are deliberately last: their statics are the working set of a single
-`LexGenJava.start ()` call, so they belong as instance fields of the lexer backend once the target
-languages are separated, not as context state.
-
-Where a static is really a scratch variable rather than state, prefer removing it over moving it -
-`Semanticize.other` became the return value of `findIgnoreCase`.
-
-The context is a `ThreadLocal`, so migrated state is already isolated per thread. `Main.reInitAll`
-calls `PGCCContext.reset ()` first and then the `reInit` methods of whatever has not moved yet; a
-class that has been migrated loses its `reInit` method.
-
-Two guard rails protect the migration: `StateIsolationTest` (generate, generate something else,
-generate again, byte-identical) and the golden files below.
+Three guard rails protect this: `StateIsolationTest` (generate, generate something else, generate
+again, byte-identical), `ConcurrentGenerationTest` (two grammars at once, matching their sequential
+output) and the golden files below. See `docs/internals/state.md`.
 
 ## The C++ backend
 

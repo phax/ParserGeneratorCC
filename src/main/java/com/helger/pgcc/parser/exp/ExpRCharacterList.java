@@ -2008,7 +2008,7 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
     if (false)
       PGPrinter.info ("lastRem : " + lastRemoved);
 
-    if (NfaState.s_unicodeWarningGiven || Options.isJavaUnicodeEscape ())
+    if (NfaState.nfa ().isUnicodeWarningGiven () || Options.isJavaUnicodeEscape ())
     {
       if (lastRemoved < (char) 0xffff)
         newDescriptors.add (new CharacterRange ((char) (lastRemoved + 1), (char) 0xffff));

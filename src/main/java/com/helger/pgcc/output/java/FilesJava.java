@@ -411,8 +411,4 @@ public class FilesJava
     }
   }
 
-  public static void reInit ()
-  {
-    // empty
-  }
 }

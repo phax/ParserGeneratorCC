@@ -241,8 +241,4 @@ public class OtherFilesGenCPP
     }
   }
 
-  public static void reInit ()
-  {
-    // empty
-  }
 }

@@ -814,8 +814,4 @@ public class ParseGenCPP extends ParseGenJava
     saveOutput (Options.getOutputDirectory () + File.separator + grammar ().getParserName () + getFileExtension ());
   }
 
-  public static void reInit ()
-  {
-    JavaCCGlobals.setLookAheadNeeded (false);
-  }
 }

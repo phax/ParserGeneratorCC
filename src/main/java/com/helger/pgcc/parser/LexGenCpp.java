@@ -287,7 +287,7 @@ public class LexGenCpp extends LexGenJava
     lexer ().setLexStates (new int [lexer ().getMaxOrdinal ()]);
     lexer ().setIgnoreCase (new boolean [lexer ().getMaxOrdinal ()]);
     lexer ().setRexprs (new AbstractExpRegularExpression [lexer ().getMaxOrdinal ()]);
-    ExpRStringLiteral.s_allImages = new String [lexer ().getMaxOrdinal ()];
+    ExpRStringLiteral.strLit ().setAllImages (new String [lexer ().getMaxOrdinal ()]);
     lexer ().setCanReachOnMore (new boolean [lexer ().getMaxLexStates ()]);
   }
 
@@ -443,7 +443,7 @@ public class LexGenCpp extends LexGenJava
       for (final NfaState aItem : lexer ().getInitialState ().m_epsilonMoves)
         aItem.generateCode ();
 
-      lexer ().getHasNfa ()[lexer ().getLexStateIndex ()] = (NfaState.s_generatedStates != 0);
+      lexer ().getHasNfa ()[lexer ().getLexStateIndex ()] = (NfaState.nfa ().getGeneratedStates () != 0);
       if (lexer ().getHasNfa ()[lexer ().getLexStateIndex ()])
       {
         lexer ().getInitialState ().generateCode ();
@@ -481,8 +481,8 @@ public class LexGenCpp extends LexGenJava
       if (lexer ().getHasNfa ()[lexer ().getLexStateIndex ()])
         NfaState.dumpMoveNfa (this);
 
-      if (lexer ().getStateSetSize () < NfaState.s_generatedStates)
-        lexer ().setStateSetSize (NfaState.s_generatedStates);
+      if (lexer ().getStateSetSize () < NfaState.nfa ().getGeneratedStates ())
+        lexer ().setStateSetSize (NfaState.nfa ().getGeneratedStates ());
     }
 
     for (final ExpRChoice aItem : choices)
@@ -1178,7 +1178,7 @@ public class LexGenCpp extends LexGenJava
           break;
 
         genCode ("         image.append");
-        if (ExpRStringLiteral.s_allImages[i] != null)
+        if (ExpRStringLiteral.strLit ().getAllImages ()[i] != null)
         {
           genCodeLine ("(jjstrLiteralImages[" + i + "]);");
           genCodeLine ("        lengthOfMatch = jjstrLiteralImages[" + i + "].length();");
@@ -1252,7 +1252,7 @@ public class LexGenCpp extends LexGenJava
 
         genCode ("         image.append");
 
-        if (ExpRStringLiteral.s_allImages[i] != null)
+        if (ExpRStringLiteral.strLit ().getAllImages ()[i] != null)
           genCodeLine ("(jjstrLiteralImages[" + i + "]);");
         else
           genCodeLine ("(input_stream->GetSuffix(jjimageLen));");
@@ -1330,7 +1330,7 @@ public class LexGenCpp extends LexGenJava
         {
           genCode ("        image.append");
 
-          if (ExpRStringLiteral.s_allImages[i] != null)
+          if (ExpRStringLiteral.strLit ().getAllImages ()[i] != null)
           {
             genCodeLine ("(jjstrLiteralImages[" + i + "]);");
             genCodeLine ("        lengthOfMatch = jjstrLiteralImages[" + i + "].length();");

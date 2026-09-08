@@ -21,6 +21,8 @@ with a list of `reInit` methods that nothing enforced.
 | `jjtree ()` | the parser being decorated, the package names, the class declaration pieces | 6 statics in `JJTreeGlobals` |
 | `jjdoc ()` | input file, output file, output generator | 3 statics in `JJDocGlobals` |
 | `lexer ()` | everything the token manager generation works with | 43 statics in `LexGenJava` |
+| `lexer ().nfa ()` | the NFA/DFA of the lexical state being generated | 17 statics + 11 collections in `NfaState` |
+| `lexer ().stringLiterals ()` | the string literal trie of that lexical state | 12 statics in `ExpRStringLiteral` |
 
 The old classes are still the API — `JavaCCGlobals.grammar ()`, `Options.getOutputLanguage ()`,
 `JavaCCErrors.warning (…)` — they just delegate. Grammar action code in `JavaCC.jj` and
@@ -30,16 +32,20 @@ The old classes are still the API — `JavaCCGlobals.grammar ()`, `Options.getOu
 
 | Class | Count | Why |
 |---|---|---|
-| `NfaState` | 17 | reset per *lexical state*, not per run |
-| `ExpRStringLiteral` | 12 | same |
 | `PGPrinter` | 2 | the console, legitimately process wide |
 | `FilesJava` | 1 | a test hook that makes templates load from the checkout |
 
-`NfaState` and `ExpRStringLiteral` are last for a reason: their state is reset once *per lexical
-state*, not per run — `NfaState.reInitStatic ()` and `ExpRStringLiteral.reInitStatic ()` are called
-inside the loop in `LexGenJava.start ()`. `LexerState` holds the run-scoped part already; what is
-left is the per-lexical-state DFA construction, which wants to be an object created inside that
-loop rather than a slot in the run's context.
+That is all of them: **117 mutable statics at the start of this work, 3 now**, and neither of the
+remaining classes holds anything about a generator run.
+
+`NfaState` and `ExpRStringLiteral` needed one extra idea. Their state is not per run, it is per
+*lexical state* — `LexGenJava.start ()` walks the lexical states and rebuilds the NFA and the
+string literal trie for each. So `LexerState` holds a `NfaBuildState` and a
+`StringLiteralBuildState` with their own `resetForLexicalState ()`, which is what the loop calls.
+Note what deliberately survives that reset: the token images, the character counter and the boiler
+plate flag are set once per run, before the loop.
+
+`Main.reInitAll ()` is now two lines - drop the context, refill the option defaults.
 
 ## Two statics that disappeared rather than moved
 
@@ -56,6 +62,7 @@ Two tests keep this honest while it moves:
 - `StateIsolationTest` generates a grammar, generates something with a different shape, generates
   the first grammar again, and requires the two results to be identical byte for byte — for JavaCC,
   for JJTree, and for Java output following C++ output.
-- `PGCCContextTest` shows that what has already migrated is isolated per thread. It deliberately
-  does **not** claim that two full generator runs can share a JVM concurrently; the lexer trio has
-  to move first.
+- `PGCCContextTest` shows that the options and error counters are isolated per thread.
+- `ConcurrentGenerationTest` is the payoff: two grammars generated **at the same time**, four rounds
+  of real interleaving, each byte-identical to what it produces on its own. Verified that it means
+  something - turning the context from a `ThreadLocal` into a plain static makes it fail.

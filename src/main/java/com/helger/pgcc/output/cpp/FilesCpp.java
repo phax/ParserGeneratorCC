@@ -126,8 +126,4 @@ public class FilesCpp
     genFile ("cpp", "ErrorHandler.h", PGVersion.MAJOR_DOT_MINOR, parameters);
   }
 
-  public static void reInit ()
-  {
-    // empty
-  }
 }

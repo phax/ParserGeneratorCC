@@ -62,6 +62,9 @@ public final class LexerState
   private final Map <String, List <TokenProduction>> m_aAllTpsForState = new LinkedHashMap <> ();
   private final Map <String, NfaState> m_aInitStates = new LinkedHashMap <> ();
 
+  private final NfaBuildState m_aNfa = new NfaBuildState ();
+  private final StringLiteralBuildState m_aStringLiterals = new StringLiteralBuildState ();
+
   private String m_sTokenMgrClassName;
   private int m_nLexStateIndex = 0;
   private ETokenKind [] m_aKinds;
@@ -533,6 +536,31 @@ public final class LexerState
   public Map <String, NfaState> initStates ()
   {
     return m_aInitStates;
+  }
+
+  /** @return The NFA/DFA construction of the lexical state that is currently being generated */
+  @NonNull
+  public NfaBuildState nfa ()
+  {
+    return m_aNfa;
+  }
+
+  /** @return The string literal trie of the lexical state that is currently being generated */
+  @NonNull
+  public StringLiteralBuildState stringLiterals ()
+  {
+    return m_aStringLiterals;
+  }
+
+  /**
+   * Start over for the next lexical state. Everything the NFA and the string literal construction
+   * accumulated is per lexical state, not per run - {@code LexGenJava.start ()} calls this at the
+   * top of its loop.
+   */
+  public void resetForLexicalState ()
+  {
+    m_aNfa.resetForLexicalState ();
+    m_aStringLiterals.resetForLexicalState ();
   }
 
   public boolean isGenerateDataOnly ()

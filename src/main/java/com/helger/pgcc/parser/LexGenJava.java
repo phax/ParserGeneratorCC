@@ -357,7 +357,7 @@ public class LexGenJava extends CodeGenerator
     lexer ().setLexStates (new int [lexer ().getMaxOrdinal ()]);
     lexer ().setIgnoreCase (new boolean [lexer ().getMaxOrdinal ()]);
     lexer ().setRexprs (new AbstractExpRegularExpression [lexer ().getMaxOrdinal ()]);
-    ExpRStringLiteral.s_allImages = new String [lexer ().getMaxOrdinal ()];
+    ExpRStringLiteral.strLit ().setAllImages (new String [lexer ().getMaxOrdinal ()]);
     lexer ().setCanReachOnMore (new boolean [lexer ().getMaxLexStates ()]);
   }
 
@@ -526,7 +526,7 @@ public class LexGenJava extends CodeGenerator
       for (final NfaState aItem : lexer ().getInitialState ().m_epsilonMoves)
         aItem.generateCode ();
 
-      lexer ().getHasNfa ()[lexer ().getLexStateIndex ()] = (NfaState.s_generatedStates != 0);
+      lexer ().getHasNfa ()[lexer ().getLexStateIndex ()] = (NfaState.nfa ().getGeneratedStates () != 0);
       if (lexer ().getHasNfa ()[lexer ().getLexStateIndex ()])
       {
         lexer ().getInitialState ().generateCode ();
@@ -572,9 +572,9 @@ public class LexGenJava extends CodeGenerator
           NfaState.dumpMoveNfa (this);
         }
       }
-      lexer ().setTotalNumStates (lexer ().getTotalNumStates () + NfaState.s_generatedStates);
-      if (lexer ().getStateSetSize () < NfaState.s_generatedStates)
-        lexer ().setStateSetSize (NfaState.s_generatedStates);
+      lexer ().setTotalNumStates (lexer ().getTotalNumStates () + NfaState.nfa ().getGeneratedStates ());
+      if (lexer ().getStateSetSize () < NfaState.nfa ().getGeneratedStates ())
+        lexer ().setStateSetSize (NfaState.nfa ().getGeneratedStates ());
     }
 
     for (final ExpRChoice aItem : choices)
@@ -1405,7 +1405,7 @@ public class LexGenJava extends CodeGenerator
           break;
 
         genCode ("         image.append");
-        if (ExpRStringLiteral.s_allImages[i] != null)
+        if (ExpRStringLiteral.strLit ().getAllImages ()[i] != null)
         {
           genCodeLine ("(jjstrLiteralImages[" + i + "]);");
           genCodeLine ("        lengthOfMatch = jjstrLiteralImages[" + i + "].length();");
@@ -1486,7 +1486,7 @@ public class LexGenJava extends CodeGenerator
 
         genCode ("         image.append");
 
-        if (ExpRStringLiteral.s_allImages[i] != null)
+        if (ExpRStringLiteral.strLit ().getAllImages ()[i] != null)
           genCodeLine ("(jjstrLiteralImages[" + i + "]);");
         else
           genCodeLine ("(input_stream.getSuffix(jjimageLen));");
@@ -1569,7 +1569,7 @@ public class LexGenJava extends CodeGenerator
         {
           genCode ("        image.append");
 
-          if (ExpRStringLiteral.s_allImages[i] != null)
+          if (ExpRStringLiteral.strLit ().getAllImages ()[i] != null)
           {
             genCodeLine ("(jjstrLiteralImages[" + i + "]);");
             genCodeLine ("        lengthOfMatch = jjstrLiteralImages[" + i + "].length();");

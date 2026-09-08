@@ -310,7 +310,7 @@ public class Main
 
       if (Options.isUnicodeInput ())
       {
-        NfaState.s_unicodeWarningGiven = true;
+        NfaState.nfa ().setUnicodeWarningGiven (true);
         JavaCCErrors.note ("UNICODE_INPUT option is specified. " +
                            "Please make sure you create the parser/lexer using a Reader with the correct character encoding.");
       }
@@ -386,15 +386,14 @@ public class Main
     return ESuccess.FAILURE;
   }
 
+  /**
+   * Start a fresh generator run on the current thread. Everything the generator knows lives in
+   * {@link com.helger.pgcc.context.PGCCContext} now, so this drops the whole context and refills
+   * the option defaults.
+   */
   public static void reInitAll ()
   {
-    // Everything that has already been migrated out of a static field
     com.helger.pgcc.context.PGCCContext.reset ();
-
     com.helger.pgcc.parser.Options.init ();
-    com.helger.pgcc.parser.exp.ExpRStringLiteral.reInit ();
-    com.helger.pgcc.output.java.FilesJava.reInit ();
-    com.helger.pgcc.parser.NfaState.reInit ();
-    com.helger.pgcc.output.java.OtherFilesGenJava.reInit ();
   }
 }
