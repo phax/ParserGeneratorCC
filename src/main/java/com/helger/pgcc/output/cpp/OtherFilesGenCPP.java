@@ -31,39 +31,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2012 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
 
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
 package com.helger.pgcc.output.cpp;
-
-import com.helger.pgcc.output.java.LexGenJava;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
@@ -80,6 +49,7 @@ import java.util.Locale;
 
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.CPG;
+import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.parser.ETokenKind;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCParserConstants;
@@ -96,7 +66,6 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
  */
 public class OtherFilesGenCPP
 {
-
   // Used by the CPP code generatror
   public static void printCharArray (final PrintWriter ostr, final String s)
   {
@@ -121,7 +90,8 @@ public class OtherFilesGenCPP
     FilesCpp.gen_ParseException ();
     FilesCpp.gen_ErrorHandler ();
 
-    final Writer w = FileHelper.getBufferedWriter (new File (Options.getOutputDirectory (), grammar ().getParserName () + "Constants.h"),
+    final Writer w = FileHelper.getBufferedWriter (new File (Options.getOutputDirectory (),
+                                                             grammar ().getParserName () + "Constants.h"),
                                                    Options.getOutputEncoding ());
     if (w == null)
     {
@@ -135,7 +105,8 @@ public class OtherFilesGenCPP
       tn.add (CPG.APP_NAME);
       s_ostr.println ("/* " + getIdString (tn, grammar ().getParserName () + "Constants.java") + " */");
 
-      if (grammar ().cuToInsertionPoint1 ().size () != 0 && grammar ().cuToInsertionPoint1 ().get (0).kind == JavaCCParserConstants.PACKAGE)
+      if (grammar ().cuToInsertionPoint1 ().size () != 0 &&
+        grammar ().cuToInsertionPoint1 ().get (0).kind == JavaCCParserConstants.PACKAGE)
       {
         for (int i = 1; i < grammar ().cuToInsertionPoint1 ().size (); i++)
         {
@@ -175,7 +146,8 @@ public class OtherFilesGenCPP
       final String constPrefix = "const";
       s_ostr.println ("  /** End of File. */");
       s_ostr.println (constPrefix + "  int _EOF = 0;");
-      for (final java.util.Iterator <AbstractExpRegularExpression> it = grammar ().orderedNameTokens ().iterator (); it.hasNext ();)
+      for (final java.util.Iterator <AbstractExpRegularExpression> it = grammar ().orderedNameTokens ().iterator (); it
+                                                                                                                       .hasNext ();)
       {
         re = it.next ();
         s_ostr.println ("  /** RegularExpression Id. */");

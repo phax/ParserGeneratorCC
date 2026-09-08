@@ -49,10 +49,9 @@ public class TokenProduction
   private int m_nLine;
 
   /**
-   * The states in which this regular expression production exists. If this
-   * array is null, then "&lt;*&gt;" has been specified and this regular
-   * expression exists in all states. However, this null value is replaced by a
-   * String array that includes all lexical state names during the
+   * The states in which this regular expression production exists. If this array is null, then
+   * "&lt;*&gt;" has been specified and this regular expression exists in all states. However, this
+   * null value is replaced by a String array that includes all lexical state names during the
    * semanticization phase.
    */
   public String [] m_lexStates;
@@ -63,27 +62,25 @@ public class TokenProduction
   public ETokenKind m_kind;
 
   /**
-   * The list of regular expression specifications that comprise this
-   * production. Each entry is a "RegExprSpec".
+   * The list of regular expression specifications that comprise this production. Each entry is a
+   * "RegExprSpec".
    */
   public List <RegExprSpec> m_respecs = new ArrayList <> ();
 
   /**
-   * This is true if this corresponds to a production that actually appears in
-   * the input grammar. Otherwise (if this is created to describe a regular
-   * expression that is part of the BNF) this is set to false.
+   * This is true if this corresponds to a production that actually appears in the input grammar.
+   * Otherwise (if this is created to describe a regular expression that is part of the BNF) this is
+   * set to false.
    */
   public boolean m_isExplicit = true;
 
   /**
-   * This is true if case is to be ignored within the regular expressions of
-   * this token production.
+   * This is true if case is to be ignored within the regular expressions of this token production.
    */
   public boolean m_ignoreCase = false;
 
   /**
-   * The first and last tokens from the input stream that represent this
-   * production.
+   * The first and last tokens from the input stream that represent this production.
    */
   public Token m_firstToken;
   public Token m_lastToken;

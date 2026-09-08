@@ -73,8 +73,7 @@ public abstract class JavaCCParserInternals
     {}
 
     /*
-     * A set of accessors that indicate whether the specified modifier is in the
-     * set.
+     * A set of accessors that indicate whether the specified modifier is in the set.
      */
 
     public static boolean isPublic (final int modifiers)
@@ -166,7 +165,10 @@ public abstract class JavaCCParserInternals
   {
     do
     {
-      PGCCContext.current ().parserBuild ().getAddTokenHere ().add (PGCCContext.current ().parserBuild ().getFirstToken ());
+      PGCCContext.current ()
+                 .parserBuild ()
+                 .getAddTokenHere ()
+                 .add (PGCCContext.current ().parserBuild ().getFirstToken ());
       PGCCContext.current ().parserBuild ().setFirstToken (PGCCContext.current ().parserBuild ().getFirstToken ().next);
     } while (PGCCContext.current ().parserBuild ().getFirstToken () != t);
     if (no == 1)
@@ -193,10 +195,14 @@ public abstract class JavaCCParserInternals
   {
     while (PGCCContext.current ().parserBuild ().getFirstToken () != t)
     {
-      PGCCContext.current ().parserBuild ().getAddTokenHere ().add (PGCCContext.current ().parserBuild ().getFirstToken ());
+      PGCCContext.current ()
+                 .parserBuild ()
+                 .getAddTokenHere ()
+                 .add (PGCCContext.current ().parserBuild ().getFirstToken ());
       PGCCContext.current ().parserBuild ().setFirstToken (PGCCContext.current ().parserBuild ().getFirstToken ().next);
     }
-    if (!PGCCContext.current ().parserBuild ().isInsertionPoint1Set () || !PGCCContext.current ().parserBuild ().isInsertionPoint2Set ())
+    if (!PGCCContext.current ().parserBuild ().isInsertionPoint1Set () ||
+      !PGCCContext.current ().parserBuild ().isInsertionPoint2Set ())
     {
       JavaCCErrors.parse_error (t, "Parser class has not been defined between PARSER_BEGIN and PARSER_END.");
     }
@@ -225,7 +231,9 @@ public abstract class JavaCCParserInternals
     {
       if (p.m_lexStates == null || p.m_lexStates.length != 1 || !p.m_lexStates[0].equals ("DEFAULT"))
       {
-        JavaCCErrors.warning (p, "Ignoring lexical state specifications since option " + "USER_TOKEN_MANAGER has been set to true.");
+        JavaCCErrors.warning (p,
+                              "Ignoring lexical state specifications since option " +
+                                 "USER_TOKEN_MANAGER has been set to true.");
       }
     }
     if (p.m_lexStates == null)
@@ -262,7 +270,9 @@ public abstract class JavaCCParserInternals
       grammar ().setTokenMgrDecls (new CommonsArrayList <> (decls));
       if (Options.isUserTokenManager ())
       {
-        JavaCCErrors.warning (t, "Ignoring declarations in \"TOKEN_MGR_DECLS\" since option " + "USER_TOKEN_MANAGER has been set to true.");
+        JavaCCErrors.warning (t,
+                              "Ignoring declarations in \"TOKEN_MGR_DECLS\" since option " +
+                                 "USER_TOKEN_MANAGER has been set to true.");
       }
     }
   }

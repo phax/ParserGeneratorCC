@@ -36,9 +36,9 @@ package com.helger.pgcc.main;
 /**
  * Command line entry point for the grammar documentation generator.
  *
- * @deprecated Use {@link JJDocLauncher} instead. This class only exists because its lower case name is
- *             what the upstream command line used, and renaming it would break anyone who invokes
- *             it directly.
+ * @deprecated Use {@link JJDocLauncher} instead. This class only exists because its lower case name
+ *             is what the upstream command line used, and renaming it would break anyone who
+ *             invokes it directly.
  * @author Philip Helger
  */
 @Deprecated (forRemoval = false)

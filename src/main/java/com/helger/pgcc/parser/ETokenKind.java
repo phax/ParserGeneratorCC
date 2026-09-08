@@ -34,8 +34,7 @@
 package com.helger.pgcc.parser;
 
 /**
- * Definitions of constants that identify the kind of regular expression
- * production this is.
+ * Definitions of constants that identify the kind of regular expression production this is.
  *
  * @author Philip Helger
  * @since 1.1.0

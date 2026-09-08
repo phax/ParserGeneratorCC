@@ -36,11 +36,11 @@ package com.helger.pgcc.context;
 /**
  * Counts the errors and warnings of a single generator run.
  * <p>
- * This is the instance state behind the static
- * {@link com.helger.pgcc.parser.JavaCCErrors} facade. It is the first piece of the generator state
- * that was moved out of a static field, and the pattern the remaining ones follow: the mutable data
- * lives here, {@link PGCCContext} owns one instance per run, and the old static class stays as a
- * thin delegate so that grammar action code keeps compiling.
+ * This is the instance state behind the static {@link com.helger.pgcc.parser.JavaCCErrors} facade.
+ * It is the first piece of the generator state that was moved out of a static field, and the
+ * pattern the remaining ones follow: the mutable data lives here, {@link PGCCContext} owns one
+ * instance per run, and the old static class stays as a thin delegate so that grammar action code
+ * keeps compiling.
  *
  * @author Philip Helger
  */

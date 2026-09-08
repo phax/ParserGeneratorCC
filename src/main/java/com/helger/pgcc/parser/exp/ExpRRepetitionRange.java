@@ -54,7 +54,11 @@ public class ExpRRepetitionRange extends AbstractExpRegularExpression
   private int m_max = -1;
   private final boolean m_hasMax;
 
-  public ExpRRepetitionRange (final Token t, final int r1, final int r2, final boolean hasMax, final AbstractExpRegularExpression r)
+  public ExpRRepetitionRange (final Token t,
+                              final int r1,
+                              final int r2,
+                              final boolean hasMax,
+                              final AbstractExpRegularExpression r)
   {
     setLine (t.beginLine);
     setColumn (t.beginColumn);

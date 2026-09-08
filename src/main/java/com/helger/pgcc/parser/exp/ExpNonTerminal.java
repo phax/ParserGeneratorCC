@@ -51,8 +51,8 @@ import com.helger.pgcc.parser.Token;
 public class ExpNonTerminal extends Expansion
 {
   /**
-   * The LHS to which the return value of the non-terminal is assigned. In case
-   * there is no LHS, then the vector remains empty.
+   * The LHS to which the return value of the non-terminal is assigned. In case there is no LHS,
+   * then the vector remains empty.
    */
   private final ICommonsList <Token> m_lhsTokens = new CommonsArrayList <> ();
 

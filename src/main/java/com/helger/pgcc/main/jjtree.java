@@ -36,9 +36,9 @@ package com.helger.pgcc.main;
 /**
  * Command line entry point for the tree builder preprocessor.
  *
- * @deprecated Use {@link JJTreeLauncher} instead. This class only exists because its lower case name is
- *             what the upstream command line used, and renaming it would break anyone who invokes
- *             it directly.
+ * @deprecated Use {@link JJTreeLauncher} instead. This class only exists because its lower case
+ *             name is what the upstream command line used, and renaming it would break anyone who
+ *             invokes it directly.
  * @author Philip Helger
  */
 @Deprecated (forRemoval = false)

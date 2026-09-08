@@ -44,8 +44,8 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral.KindInfo;
  * literals that becomes the {@code jjMoveStringLiteralDfa*} methods.
  * <p>
  * This is the instance state behind the static fields of
- * {@link com.helger.pgcc.parser.exp.ExpRStringLiteral}. Like {@link NfaBuildState} it is per lexical
- * state, not per run.
+ * {@link com.helger.pgcc.parser.exp.ExpRStringLiteral}. Like {@link NfaBuildState} it is per
+ * lexical state, not per run.
  *
  * @author Philip Helger
  */
@@ -174,6 +174,7 @@ public final class StringLiteralBuildState
   {
     m_aStatesForPos = aStatesForPos;
   }
+
   /** @return Whether the shared boiler plate methods were already emitted for this run */
   public boolean isBoilerPlateDumped ()
   {
@@ -186,9 +187,9 @@ public final class StringLiteralBuildState
   }
 
   /**
-   * Start over for the next lexical state. Mirrors what
-   * {@code ExpRStringLiteral.reInitStatic ()} used to do - note that the images, the character
-   * counter and the boiler plate flag are per run and deliberately survive.
+   * Start over for the next lexical state. Mirrors what {@code ExpRStringLiteral.reInitStatic ()}
+   * used to do - note that the images, the character counter and the boiler plate flag are per run
+   * and deliberately survive.
    */
   public void resetForLexicalState ()
   {

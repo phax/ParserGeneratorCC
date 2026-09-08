@@ -31,37 +31,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package com.helger.pgcc.jjtree.output;
 
 import java.io.File;
@@ -91,8 +60,7 @@ public final class NodeFilesJava
   {}
 
   /**
-   * ID of the latest version (of JJTree) in which one of the Node classes was
-   * modified.
+   * ID of the latest version (of JJTree) in which one of the Node classes was modified.
    */
   private static final String s_nodeVersion = PGVersion.MAJOR_DOT_MINOR;
 
@@ -119,8 +87,8 @@ public final class NodeFilesJava
       }
 
     /*
-     * Only build the node file if we're dealing with Node.java, or the
-     * NODE_BUILD_FILES option is set.
+     * Only build the node file if we're dealing with Node.java, or the NODE_BUILD_FILES option is
+     * set.
      */
     if (!(nodeType.equals ("Node") || JJTreeOptions.isBuildNodeFiles ()))
     {
@@ -132,13 +100,8 @@ public final class NodeFilesJava
       return;
     }
 
-    final String [] options = new String [] { "MULTI",
-                                              "NODE_USES_PARSER",
-                                              "VISITOR",
-                                              "TRACK_TOKENS",
-                                              "NODE_PREFIX",
-                                              "NODE_EXTENDS",
-                                              "NODE_FACTORY",
+    final String [] options = new String [] { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX",
+                                              "NODE_EXTENDS", "NODE_FACTORY",
                                               Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     try (final OutputFile outputFile = new OutputFile (file, s_nodeVersion, options))
     {
@@ -180,7 +143,10 @@ public final class NodeFilesJava
     {
       ostr.println ("package " + PGCCContext.current ().jjtree ().getNodePackageName () + ";");
       ostr.println ();
-      if (!PGCCContext.current ().jjtree ().getNodePackageName ().equals (PGCCContext.current ().jjtree ().getPackageName ()))
+      if (!PGCCContext.current ()
+                      .jjtree ()
+                      .getNodePackageName ()
+                      .equals (PGCCContext.current ().jjtree ().getPackageName ()))
       {
         ostr.println ("import " + PGCCContext.current ().jjtree ().getPackageName () + ".*;");
         ostr.println ();
@@ -263,7 +229,13 @@ public final class NodeFilesJava
       else
         argumentType = "Object";
 
-      ostr.println ("  public " + JJTreeOptions.getVisitorReturnType () + " visit(SimpleNode node, " + argumentType + " data)" + ve + ";");
+      ostr.println ("  public " +
+                    JJTreeOptions.getVisitorReturnType () +
+                    " visit(SimpleNode node, " +
+                    argumentType +
+                    " data)" +
+                    ve +
+                    ";");
       if (JJTreeOptions.isMulti ())
       {
         for (int i = 0; i < nodeNames.size (); ++i)
@@ -337,7 +309,13 @@ public final class NodeFilesJava
         argumentType = "Object";
 
       final String ret = JJTreeOptions.getVisitorReturnType ();
-      ostr.println ("  public " + ret + " defaultVisit(final SimpleNode node, final " + argumentType + " data)" + ve + "{");
+      ostr.println ("  public " +
+                    ret +
+                    " defaultVisit(final SimpleNode node, final " +
+                    argumentType +
+                    " data)" +
+                    ve +
+                    "{");
       ostr.println ("    node.childrenAccept(this, data);");
       ostr.println ("    return" + (ret.trim ().equals ("void") ? "" : " data") + ";");
       ostr.println ("  }");
@@ -412,7 +390,8 @@ public final class NodeFilesJava
       options.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
       options.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (JJTreeOptions.getVisitorReturnType ().equals ("void")));
 
-      final OutputFileGenerator generator = new OutputFileGenerator ("/templates/java/jjtree/SimpleNode.template", options);
+      final OutputFileGenerator generator = new OutputFileGenerator ("/templates/java/jjtree/SimpleNode.template",
+                                                                     options);
 
       generator.generate (ostr);
     }
@@ -429,7 +408,8 @@ public final class NodeFilesJava
       options.put ("NODE_TYPE", nodeType);
       options.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (JJTreeOptions.getVisitorReturnType ().equals ("void")));
 
-      final OutputFileGenerator generator = new OutputFileGenerator ("/templates/java/jjtree/MultiNode.template", options);
+      final OutputFileGenerator generator = new OutputFileGenerator ("/templates/java/jjtree/MultiNode.template",
+                                                                     options);
 
       generator.generate (ostr);
     }

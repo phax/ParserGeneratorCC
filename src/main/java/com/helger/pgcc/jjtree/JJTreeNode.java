@@ -73,9 +73,9 @@ public class JJTreeNode extends SimpleNode
   }
 
   /*****************************************************************
-   * The following is added manually to enhance all tree nodes with attributes
-   * that store the first and last tokens corresponding to each node, as well as
-   * to print the tokens back to the specified output stream.
+   * The following is added manually to enhance all tree nodes with attributes that store the first
+   * and last tokens corresponding to each node, as well as to print the tokens back to the
+   * specified output stream.
    *****************************************************************/
 
   private Token m_first;
@@ -123,8 +123,8 @@ public class JJTreeNode extends SimpleNode
   }
 
   /*
-   * Indicates whether the token should be replaced by white space or replaced
-   * with the actual node variable.
+   * Indicates whether the token should be replaced by white space or replaced with the actual node
+   * variable.
    */
   private boolean m_whitingOut = false;
 
@@ -143,10 +143,9 @@ public class JJTreeNode extends SimpleNode
     }
 
     /*
-     * If we're within a node scope we modify the source in the following ways:
-     * 1) we rename all references to `jjtThis' to be references to the actual
-     * node variable. 2) we replace all calls to `jjtree.currentNode()' with
-     * references to the node variable.
+     * If we're within a node scope we modify the source in the following ways: 1) we rename all
+     * references to `jjtThis' to be references to the actual node variable. 2) we replace all calls
+     * to `jjtree.currentNode()' with references to the node variable.
      */
 
     final NodeScope s = NodeScope.getEnclosingNodeScope (this);
@@ -176,8 +175,8 @@ public class JJTreeNode extends SimpleNode
               if (t.next.next.next.next.image.equals (")"))
               {
                 /*
-                 * Found `jjtree.currentNode()' so go into white out mode. We'll
-                 * stay in this mode until we find the closing parenthesis.
+                 * Found `jjtree.currentNode()' so go into white out mode. We'll stay in this mode
+                 * until we find the closing parenthesis.
                  */
                 m_whitingOut = true;
               }

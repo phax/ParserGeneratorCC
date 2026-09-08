@@ -31,48 +31,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
 package com.helger.pgcc.output.java;
-
-import com.helger.pgcc.parser.JavaCCParserConstants;
-
-import com.helger.pgcc.parser.CodeGenerator;
-import com.helger.pgcc.parser.MetaParseException;
-import com.helger.pgcc.parser.Options;
-import com.helger.pgcc.parser.JavaCCErrors;
-import com.helger.pgcc.parser.JavaCCGlobals;
-import com.helger.pgcc.parser.ParseEngine;
-import com.helger.pgcc.parser.Token;
-import com.helger.pgcc.parser.NormalProduction;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
@@ -85,6 +44,14 @@ import java.util.List;
 import com.helger.base.system.EJavaVersion;
 import com.helger.pgcc.CPG;
 import com.helger.pgcc.output.EOutputLanguage;
+import com.helger.pgcc.parser.CodeGenerator;
+import com.helger.pgcc.parser.JavaCCErrors;
+import com.helger.pgcc.parser.JavaCCGlobals;
+import com.helger.pgcc.parser.JavaCCParserConstants;
+import com.helger.pgcc.parser.MetaParseException;
+import com.helger.pgcc.parser.Options;
+import com.helger.pgcc.parser.ParseEngine;
+import com.helger.pgcc.parser.Token;
 
 /**
  * Generate the parser.
@@ -453,7 +420,9 @@ public class ParseGenJava extends CodeGenerator
           }
           else
           {
-            genCodeLine ("  public " + grammar ().getParserName () + "(final java.io.InputStream stream, final String encoding) {");
+            genCodeLine ("  public " +
+                         grammar ().getParserName () +
+                         "(final java.io.InputStream stream, final String encoding) {");
             genCodeLine ("   try {");
             genCodeLine ("     jj_input_stream = new " + getCharStreamName () + "(stream, encoding, 1, 1);");
             genCodeLine ("   } catch(final java.io.UnsupportedEncodingException e) {");
@@ -462,7 +431,9 @@ public class ParseGenJava extends CodeGenerator
           }
 
           if (Options.isTokenManagerUsesParser ())
-            genCodeLine ("	 token_source = new " + grammar ().getParserName () + "TokenManager(this, jj_input_stream);");
+            genCodeLine ("	 token_source = new " +
+                         grammar ().getParserName () +
+                         "TokenManager(this, jj_input_stream);");
           else
             genCodeLine ("	 token_source = new " + grammar ().getParserName () + "TokenManager(jj_input_stream);");
           genCodeLine ("	 token = new Token();");
@@ -662,7 +633,11 @@ public class ParseGenJava extends CodeGenerator
       genCodeLine ("   * Constructor with generated Token Manager.");
       genCodeLine ("   * @param tm Token manager to use");
       genCodeLine ("   */");
-      genCodeLine ("  public " + grammar ().getParserName () + "(final " + grammar ().getParserName () + "TokenManager tm) {");
+      genCodeLine ("  public " +
+                   grammar ().getParserName () +
+                   "(final " +
+                   grammar ().getParserName () +
+                   "TokenManager tm) {");
     }
     genCodeLine ("	 token_source = tm;");
     genCodeLine ("	 token = new Token();");

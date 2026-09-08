@@ -49,8 +49,7 @@ import com.helger.pgcc.parser.Token;
 public class ExpChoice extends Expansion
 {
   /**
-   * The list of choices of this expansion unit. Each List component will narrow
-   * to ExpansionUnit.
+   * The list of choices of this expansion unit. Each List component will narrow to ExpansionUnit.
    */
   private final List <Expansion> m_choices = new ArrayList <> ();
 

@@ -43,16 +43,15 @@ import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.NfaState;
 
 /**
- * Describes regular expressions which are sequences of other regular
- * expressions.
+ * Describes regular expressions which are sequences of other regular expressions.
  */
 
 public class ExpRSequence extends AbstractExpRegularExpression
 {
 
   /**
-   * The list of units in this regular expression sequence. Each list component
-   * will narrow to RegularExpression.
+   * The list of units in this regular expression sequence. Each list component will narrow to
+   * RegularExpression.
    */
   private final List <AbstractExpRegularExpression> m_units;
 

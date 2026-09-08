@@ -51,8 +51,8 @@ public class ExpTryBlock extends Expansion
   public Expansion m_exp;
 
   /**
-   * The types of each catch block. Each list entry is itself a list which in
-   * turn contains tokens as entries.
+   * The types of each catch block. Each list entry is itself a list which in turn contains tokens
+   * as entries.
    */
   public List <List <Token>> m_types;
 
@@ -62,14 +62,14 @@ public class ExpTryBlock extends Expansion
   public List <Token> m_ids;
 
   /**
-   * The block part of each catch block. Each list entry is itself a list which
-   * in turn contains tokens as entries.
+   * The block part of each catch block. Each list entry is itself a list which in turn contains
+   * tokens as entries.
    */
   public List <List <Token>> m_catchblks;
 
   /**
-   * The block part of the finally block. Each list entry is a token. If there
-   * is no finally block, this is null.
+   * The block part of the finally block. Each list entry is a token. If there is no finally block,
+   * this is null.
    */
   public List <Token> m_finallyblk;
 

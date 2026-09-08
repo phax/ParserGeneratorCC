@@ -158,7 +158,9 @@ public final class LookaheadWalk
       return genFirstSet (partialMatches, ((ExpTryBlock) exp).m_exp);
     }
 
-    if (LookaheadState.current ().isConsiderSemanticLA () && exp instanceof ExpLookahead && ((ExpLookahead) exp).getActionTokens ().isNotEmpty ())
+    if (LookaheadState.current ().isConsiderSemanticLA () &&
+      exp instanceof ExpLookahead &&
+      ((ExpLookahead) exp).getActionTokens ().isNotEmpty ())
     {
       return new ArrayList <> ();
     }
@@ -186,7 +188,9 @@ public final class LookaheadWalk
     }
   }
 
-  public static List <MatchInfo> genFollowSet (final List <MatchInfo> partialMatches, final Expansion exp, final long generation)
+  public static List <MatchInfo> genFollowSet (final List <MatchInfo> partialMatches,
+                                               final Expansion exp,
+                                               final long generation)
   {
     if (exp.getMyGeneration () == generation)
     {

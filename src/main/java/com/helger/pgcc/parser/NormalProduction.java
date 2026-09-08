@@ -48,8 +48,7 @@ public abstract class NormalProduction
   protected static final String EOL = System.getProperty ("line.separator", "\n");
 
   /**
-   * The line and column number of the construct that corresponds most closely
-   * to this node.
+   * The line and column number of the construct that corresponds most closely to this node.
    */
   private int m_column;
 
@@ -81,9 +80,8 @@ public abstract class NormalProduction
   private final List <Token> m_parameter_list_tokens = new ArrayList <> ();
 
   /**
-   * Each entry in this list is a list of tokens that represents an exception in
-   * the throws list of this production. This list does not include
-   * ParseException which is always thrown.
+   * Each entry in this list is a list of tokens that represents an exception in the throws list of
+   * this production. This list does not include ParseException which is always thrown.
    */
   private List <List <Token>> m_throws_list = new ArrayList <> ();
 
@@ -98,25 +96,23 @@ public abstract class NormalProduction
   private boolean m_emptyPossible = false;
 
   /**
-   * A list of all non-terminals that this one can expand to without having to
-   * consume any tokens. Also an index that shows how many pointers exist.
+   * A list of all non-terminals that this one can expand to without having to consume any tokens.
+   * Also an index that shows how many pointers exist.
    */
   private NormalProduction [] m_leftExpansions = new NormalProduction [10];
   int m_leIndex = 0;
 
   /**
-   * The following variable is used to maintain state information for the
-   * left-recursion determination algorithm: It is initialized to 0, and set to
-   * -1 if this node has been visited in a pre-order walk, and then it is set to
-   * 1 if the pre-order walk of the whole graph from this node has been
-   * traversed. i.e., -1 indicates partially processed, and 1 indicates fully
+   * The following variable is used to maintain state information for the left-recursion
+   * determination algorithm: It is initialized to 0, and set to -1 if this node has been visited in
+   * a pre-order walk, and then it is set to 1 if the pre-order walk of the whole graph from this
+   * node has been traversed. i.e., -1 indicates partially processed, and 1 indicates fully
    * processed.
    */
   private int m_walkStatus = 0;
 
   /**
-   * The first and last tokens from the input stream that represent this
-   * production.
+   * The first and last tokens from the input stream that represent this production.
    */
   private Token m_lastToken;
 

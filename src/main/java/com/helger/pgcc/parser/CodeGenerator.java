@@ -31,9 +31,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
 package com.helger.pgcc.parser;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.addUnicodeEscapes;
@@ -205,7 +202,8 @@ public class CodeGenerator
 
   public final void saveOutput (final String fileName, final StringBuilder sb)
   {
-    try (final NonBlockingBufferedWriter fw = FileHelper.getBufferedWriter (new File (fileName), Options.getOutputEncoding ()))
+    try (final NonBlockingBufferedWriter fw = FileHelper.getBufferedWriter (new File (fileName),
+                                                                            Options.getOutputEncoding ()))
     {
       fw.write (sb.toString ());
     }
@@ -399,8 +397,8 @@ public class CodeGenerator
   }
 
   /**
-   * Generate a class with a given name, an array of superclass and another
-   * array of super interfaces
+   * Generate a class with a given name, an array of superclass and another array of super
+   * interfaces
    *
    * @param mod
    *        modifier
@@ -411,7 +409,10 @@ public class CodeGenerator
    * @param superInterfaces
    *        super interfaces
    */
-  public final void genClassStart (final String mod, final String name, final String [] superClasses, final String [] superInterfaces)
+  public final void genClassStart (final String mod,
+                                   final String name,
+                                   final String [] superClasses,
+                                   final String [] superInterfaces)
   {
     final EOutputLanguage eOutputLanguage = getOutputLanguage ();
     switch (eOutputLanguage)
@@ -451,7 +452,9 @@ public class CodeGenerator
     }
   }
 
-  public final void generateMethodDefHeader (final String modsAndRetType, final String className, final String nameAndParams)
+  public final void generateMethodDefHeader (final String modsAndRetType,
+                                             final String className,
+                                             final String nameAndParams)
   {
     generateMethodDefHeader (modsAndRetType, className, nameAndParams, null);
   }

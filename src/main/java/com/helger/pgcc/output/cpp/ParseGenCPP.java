@@ -31,21 +31,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
 package com.helger.pgcc.output.cpp;
-
-import com.helger.pgcc.output.java.ParseGenJava;
-
-import com.helger.pgcc.parser.CodeGenerator;
-import com.helger.pgcc.parser.MetaParseException;
-import com.helger.pgcc.parser.Options;
-import com.helger.pgcc.parser.JavaCCErrors;
-import com.helger.pgcc.parser.JavaCCGlobals;
-import com.helger.pgcc.parser.ParseEngine;
-import com.helger.pgcc.parser.Token;
-import com.helger.pgcc.parser.NormalProduction;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
@@ -55,6 +41,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.helger.pgcc.CPG;
+import com.helger.pgcc.output.java.ParseGenJava;
+import com.helger.pgcc.parser.JavaCCErrors;
+import com.helger.pgcc.parser.JavaCCGlobals;
+import com.helger.pgcc.parser.MetaParseException;
+import com.helger.pgcc.parser.Options;
+import com.helger.pgcc.parser.ParseEngine;
+import com.helger.pgcc.parser.Token;
 
 /**
  * Generate the parser.
@@ -134,7 +127,10 @@ public class ParseGenCPP extends ParseGenJava
     genCodeNewLine ();
 
     final String superClass = Options.stringValue (Options.USEROPTION__PARSER_SUPER_CLASS);
-    genClassStart ("", grammar ().getParserName (), new String [] {}, superClass == null ? new String [0] : new String [] { "public " + superClass });
+    genClassStart ("",
+                   grammar ().getParserName (),
+                   new String [] {},
+                   superClass == null ? new String [0] : new String [] { "public " + superClass });
     switchToMainFile ();
     if (grammar ().cuToInsertionPoint2 ().size () != 0)
     {
@@ -145,10 +141,8 @@ public class ParseGenCPP extends ParseGenJava
 
     switchToMainFile ();
     /*
-     * genCodeLine("typedef class _LookaheadSuccess { } *LookaheadSuccess; // Dummy class"
-     * );
-     * genCodeLine("  static LookaheadSuccess jj_ls = new _LookaheadSuccess();"
-     * );
+     * genCodeLine("typedef class _LookaheadSuccess { } *LookaheadSuccess; // Dummy class" );
+     * genCodeLine("  static LookaheadSuccess jj_ls = new _LookaheadSuccess();" );
      */
 
     genCodeNewLine ();
@@ -234,7 +228,9 @@ public class ParseGenCPP extends ParseGenJava
     switchToIncludeFile (); // TEMP
     genCodeLine ("  Token *head; ");
     genCodeLine ("public: ");
-    generateMethodDefHeader (" ", grammar ().getParserName (), grammar ().getParserName () + "(TokenManager *tokenManager)");
+    generateMethodDefHeader (" ",
+                             grammar ().getParserName (),
+                             grammar ().getParserName () + "(TokenManager *tokenManager)");
     if (superClass != null)
     {
       genCodeLine (" : " + superClass + "()");
@@ -592,36 +588,30 @@ public class ParseGenCPP extends ParseGenJava
       }
       genCodeLine ("   }");
       /*
-       * generateMethodDefHeader("ParseException", cu_name,
-       * "generateParseException()"); genCodeLine("   {");
-       * //genCodeLine("    jj_expentries.clear();");
-       * //genCodeLine("    bool[] la1tokens = new boolean[" + tokenCount +
-       * "];"); //genCodeLine("    if (jj_kind >= 0) {");
-       * //genCodeLine("      la1tokens[jj_kind] = true;");
-       * //genCodeLine("      jj_kind = -1;"); //genCodeLine("    }");
-       * //genCodeLine("    for (int i = 0; i < " + maskindex + "; i++) {");
+       * generateMethodDefHeader("ParseException", cu_name, "generateParseException()");
+       * genCodeLine("   {"); //genCodeLine("    jj_expentries.clear();");
+       * //genCodeLine("    bool[] la1tokens = new boolean[" + tokenCount + "];");
+       * //genCodeLine("    if (jj_kind >= 0) {");
+       * //genCodeLine("      la1tokens[jj_kind] = true;"); //genCodeLine("      jj_kind = -1;");
+       * //genCodeLine("    }"); //genCodeLine("    for (int i = 0; i < " + maskindex + "; i++) {");
        * //genCodeLine("      if (jj_la1[i] == jj_gen) {");
-       * //genCodeLine("        for (int j = 0; j < 32; j++) {"); //for (int i =
-       * 0; i < (tokenCount-1)/32 + 1; i++) {
-       * //genCodeLine("          if ((jj_la1_" + i + "[i] & (1<<j)) != 0) {");
-       * //genCode("            la1tokens["); //if (i != 0) { //genCode((32*i) +
-       * "+"); //} //genCodeLine("j] = true;"); //genCodeLine("          }");
-       * //} //genCodeLine("        }"); //genCodeLine("      }");
-       * //genCodeLine("    }"); //genCodeLine("    for (int i = 0; i < " +
-       * tokenCount + "; i++) {"); //genCodeLine("      if (la1tokens[i]) {");
+       * //genCodeLine("        for (int j = 0; j < 32; j++) {"); //for (int i = 0; i <
+       * (tokenCount-1)/32 + 1; i++) { //genCodeLine("          if ((jj_la1_" + i +
+       * "[i] & (1<<j)) != 0) {"); //genCode("            la1tokens["); //if (i != 0) {
+       * //genCode((32*i) + "+"); //} //genCodeLine("j] = true;"); //genCodeLine("          }"); //}
+       * //genCodeLine("        }"); //genCodeLine("      }"); //genCodeLine("    }");
+       * //genCodeLine("    for (int i = 0; i < " + tokenCount + "; i++) {");
+       * //genCodeLine("      if (la1tokens[i]) {");
        * //genCodeLine("        jj_expentry = new int[1];");
        * //genCodeLine("        jj_expentry[0] = i;");
-       * //genCodeLine("        jj_expentries.add(jj_expentry);");
-       * //genCodeLine("      }"); //genCodeLine("    }"); //if (jj2index != 0)
-       * { //genCodeLine("    jj_endpos = 0;");
-       * //genCodeLine("    jj_rescan_token();");
-       * //genCodeLine("    jj_add_error_token(0, 0);"); //}
-       * //genCodeLine("    int exptokseq[][1] = new int[1];");
-       * //genCodeLine("    for (int i = 0; i < jj_expentries.size(); i++) {");
-       * //if (!Options.getGenerateGenerics())
-       * //genCodeLine("      exptokseq[i] = (int[])jj_expentries.get(i);");
-       * //else //genCodeLine("      exptokseq[i] = jj_expentries.get(i);");
-       * //genCodeLine("    }");
+       * //genCodeLine("        jj_expentries.add(jj_expentry);"); //genCodeLine("      }");
+       * //genCodeLine("    }"); //if (jj2index != 0) { //genCodeLine("    jj_endpos = 0;");
+       * //genCodeLine("    jj_rescan_token();"); //genCodeLine("    jj_add_error_token(0, 0);");
+       * //} //genCodeLine("    int exptokseq[][1] = new int[1];");
+       * //genCodeLine("    for (int i = 0; i < jj_expentries.size(); i++) {"); //if
+       * (!Options.getGenerateGenerics())
+       * //genCodeLine("      exptokseq[i] = (int[])jj_expentries.get(i);"); //else
+       * //genCodeLine("      exptokseq[i] = jj_expentries.get(i);"); //genCodeLine("    }");
        * genCodeLine("    return new _ParseException();");//token, nullptr,
        * tokenImage);"); genCodeLine(" }");
        */
@@ -638,20 +628,16 @@ public class ParseGenCPP extends ParseGenJava
       }
       genCodeLine ("   }");
       /*
-       * generateMethodDefHeader("ParseException", cu_name,
-       * "generateParseException()"); genCodeLine("   {");
-       * genCodeLine("    Token *errortok = token->next;"); if
+       * generateMethodDefHeader("ParseException", cu_name, "generateParseException()");
+       * genCodeLine("   {"); genCodeLine("    Token *errortok = token->next;"); if
        * (Options.getKeepLineColumn())
-       * genCodeLine("    int line = errortok.beginLine, column = errortok.beginColumn;"
-       * );
+       * genCodeLine("    int line = errortok.beginLine, column = errortok.beginColumn;" );
        * genCodeLine("    JJString mess = (errortok->kind == 0) ? tokenImage[0] : errortok->image;"
-       * ); if (Options.getKeepLineColumn())
-       * genCodeLine("    return new _ParseException();");// +
+       * ); if (Options.getKeepLineColumn()) genCodeLine("    return new _ParseException();");// +
        * //"\"Parse error at line \" + line + \", column \" + column + \".  " +
-       * //"Encountered: \" + mess);"); else
-       * genCodeLine("    return new _ParseException();");//
-       * \"Parse error at <unknown location>.  " +
-       * //"Encountered: \" + mess);"); genCodeLine("  }");
+       * //"Encountered: \" + mess);"); else genCodeLine("    return new _ParseException();");//
+       * \"Parse error at <unknown location>.  " + //"Encountered: \" + mess);");
+       * genCodeLine("  }");
        */
     }
     genCodeNewLine ();

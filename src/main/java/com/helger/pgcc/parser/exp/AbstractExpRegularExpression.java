@@ -52,21 +52,19 @@ import com.helger.pgcc.parser.TokenProduction;
 public abstract class AbstractExpRegularExpression extends Expansion
 {
   /**
-   * The label of the regular expression (if any). If no label is present, this
-   * is set to "".
+   * The label of the regular expression (if any). If no label is present, this is set to "".
    */
   private String m_sLabel = "";
 
   /**
-   * The ordinal value assigned to the regular expression. It is used for
-   * internal processing and passing information between the parser and the
-   * lexical analyzer.
+   * The ordinal value assigned to the regular expression. It is used for internal processing and
+   * passing information between the parser and the lexical analyzer.
    */
   private int m_nOrdinal;
 
   /**
-   * The LHS to which the token value of the regular expression is assigned. In
-   * case there is no LHS, then the list remains empty.
+   * The LHS to which the token value of the regular expression is assigned. In case there is no
+   * LHS, then the list remains empty.
    */
   private final List <Token> m_aLhsTokens = new ArrayList <> ();
 
@@ -76,23 +74,22 @@ public abstract class AbstractExpRegularExpression extends Expansion
   private Token m_aRhsToken;
 
   /**
-   * This flag is set if the regular expression has a label prefixed with the #
-   * symbol - this indicates that the purpose of the regular expression is
-   * solely for defining other regular expressions.
+   * This flag is set if the regular expression has a label prefixed with the # symbol - this
+   * indicates that the purpose of the regular expression is solely for defining other regular
+   * expressions.
    */
   public boolean m_bPrivateRexp = false;
 
   /**
-   * If this is a top-level regular expression (nested directly within a
-   * TokenProduction), then this field point to that TokenProduction object.
+   * If this is a top-level regular expression (nested directly within a TokenProduction), then this
+   * field point to that TokenProduction object.
    */
   public TokenProduction m_aTpContext;
   /**
-   * The following variable is used to maintain state information for the loop
-   * determination algorithm: It is initialized to 0, and set to -1 if this node
-   * has been visited in a pre-order walk, and then it is set to 1 if the
-   * pre-order walk of the whole graph from this node has been traversed. i.e.,
-   * -1 indicates partially processed, and 1 indicates fully processed.
+   * The following variable is used to maintain state information for the loop determination
+   * algorithm: It is initialized to 0, and set to -1 if this node has been visited in a pre-order
+   * walk, and then it is set to 1 if the pre-order walk of the whole graph from this node has been
+   * traversed. i.e., -1 indicates partially processed, and 1 indicates fully processed.
    */
   private int m_nWalkStatus = 0;
 

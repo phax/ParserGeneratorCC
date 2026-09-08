@@ -45,8 +45,8 @@ import com.helger.pgcc.parser.MatchInfo;
  * current lookahead computation goes, whether semantic lookahead is taken into account, and the
  * matches that hit the depth limit.
  * <p>
- * This is the instance state behind the static fields of
- * {@link com.helger.pgcc.parser.MatchInfo} and {@link com.helger.pgcc.parser.LookaheadWalk}.
+ * This is the instance state behind the static fields of {@link com.helger.pgcc.parser.MatchInfo}
+ * and {@link com.helger.pgcc.parser.LookaheadWalk}.
  *
  * @author Philip Helger
  */

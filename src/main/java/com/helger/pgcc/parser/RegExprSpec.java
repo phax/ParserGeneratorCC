@@ -37,8 +37,7 @@ import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpAction;
 
 /**
- * The object type of entries in the vector "respecs" of class
- * "TokenProduction".
+ * The object type of entries in the vector "respecs" of class "TokenProduction".
  */
 
 public class RegExprSpec
@@ -55,15 +54,15 @@ public class RegExprSpec
   public ExpAction act;
 
   /**
-   * The next state corresponding to this specification. If no next state has
-   * been specified, this field is set to "null".
+   * The next state corresponding to this specification. If no next state has been specified, this
+   * field is set to "null".
    */
   public String nextState;
 
   /**
-   * If the next state specification was explicit in the previous case, then
-   * this token is that of the identifier denoting the next state. This is used
-   * for location information, etc. in error reporting.
+   * If the next state specification was explicit in the previous case, then this token is that of
+   * the identifier denoting the next state. This is used for location information, etc. in error
+   * reporting.
    */
   public Token nsTok;
 

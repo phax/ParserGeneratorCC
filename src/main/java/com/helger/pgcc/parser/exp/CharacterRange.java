@@ -44,8 +44,7 @@ import com.helger.pgcc.parser.Token;
 public final class CharacterRange implements ICCCharacter
 {
   /**
-   * The line and column number of the construct that corresponds most closely
-   * to this node.
+   * The line and column number of the construct that corresponds most closely to this node.
    */
   private int m_nColumn;
 

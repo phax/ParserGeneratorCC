@@ -45,10 +45,10 @@ import com.helger.pgcc.parser.NfaState;
 /**
  * The state of building the NFA and then the DFA of ONE lexical state.
  * <p>
- * This is the instance state behind the static fields of
- * {@link com.helger.pgcc.parser.NfaState}. Unlike the rest of the context it does not live for a
- * whole run: {@code LexGenJava.start ()} walks the lexical states and starts a fresh one for each,
- * which is what {@link LexerState#resetForLexicalState()} does.
+ * This is the instance state behind the static fields of {@link com.helger.pgcc.parser.NfaState}.
+ * Unlike the rest of the context it does not live for a whole run: {@code LexGenJava.start ()}
+ * walks the lexical states and starts a fresh one for each, which is what
+ * {@link LexerState#resetForLexicalState()} does.
  *
  * @author Philip Helger
  */
@@ -79,7 +79,10 @@ public final class NfaBuildState
   private boolean m_bJJCheckNAddStatesDualNeeded = false;
   private List <String> m_aAllBitVectors = new ArrayList <> ();
   private int [] m_aTmpIndices = new int [512];
-  private String m_sAllBits = "{\n   0xffffffffffffffffL, " + "0xffffffffffffffffL, " + "0xffffffffffffffffL, " + "0xffffffffffffffffL\n};";
+  private String m_sAllBits = "{\n   0xffffffffffffffffL, " +
+                              "0xffffffffffffffffL, " +
+                              "0xffffffffffffffffL, " +
+                              "0xffffffffffffffffL\n};";
   private int m_nLastIndex = 0;
   private int [] [] m_aKinds;
   private int [] [] [] m_aStatesForState;
@@ -271,6 +274,7 @@ public final class NfaBuildState
   {
     m_aStatesForState = aStatesForState;
   }
+
   /** @return indexedAllStates */
   @NonNull
   public List <NfaState> indexedAllStates ()

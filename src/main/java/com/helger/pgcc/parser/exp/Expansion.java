@@ -42,33 +42,29 @@ import com.helger.base.string.StringHelper;
 import com.helger.pgcc.context.PGCCContext;
 
 /**
- * Describes expansions - entities that may occur on the right hand sides of
- * productions. This is the base class of a bunch of other more specific
- * classes.
+ * Describes expansions - entities that may occur on the right hand sides of productions. This is
+ * the base class of a bunch of other more specific classes.
  */
 public class Expansion
 {
   protected static final String EOL = System.getProperty ("line.separator", "\n");
 
   /**
-   * The line and column number of the construct that corresponds most closely
-   * to this node.
+   * The line and column number of the construct that corresponds most closely to this node.
    */
   private int m_nLine;
   private int m_nColumn;
 
   /**
-   * An internal name for this expansion. This is used to generate parser
-   * routines.
+   * An internal name for this expansion. This is used to generate parser routines.
    */
   private String m_sInternalName = "";
   private int m_nInternalIndex = -1;
 
   /**
-   * The parent of this expansion node. In case this is the top level expansion
-   * of the production it is a reference to the production node otherwise it is
-   * a reference to another Expansion node. In case this is the top level of a
-   * lookahead expansion,then the parent is null.
+   * The parent of this expansion node. In case this is the top level expansion of the production it
+   * is a reference to the production node otherwise it is a reference to another Expansion node. In
+   * case this is the top level of a lookahead expansion,then the parent is null.
    */
   private Object m_parent;
 
@@ -78,17 +74,15 @@ public class Expansion
   private int m_ordinalBase;
 
   /**
-   * To avoid right-recursive loops when calculating follow sets, we use a
-   * generation number which indicates if this expansion was visited by
-   * LookaheadWalk.genFollowSet in the same generation. New generations are
-   * obtained by incrementing the static counter below, and the current
+   * To avoid right-recursive loops when calculating follow sets, we use a generation number which
+   * indicates if this expansion was visited by LookaheadWalk.genFollowSet in the same generation.
+   * New generations are obtained by incrementing the static counter below, and the current
    * generation is stored in the non-static variable below.
    */
   private long m_myGeneration = 0;
 
   /**
-   * This flag is used for bookkeeping by the minimumSize method in class
-   * ParseEngine.
+   * This flag is used for bookkeeping by the minimumSize method in class ParseEngine.
    */
   private boolean m_inMinimumSize = false;
 
@@ -227,10 +221,9 @@ public class Expansion
   }
 
   /**
-   * A reimplementing of Object.hashCode() to be deterministic. This uses the
-   * line and column fields to generate an arbitrary number - we assume that
-   * this method is called only after line and column are set to their actual
-   * values.
+   * A reimplementing of Object.hashCode() to be deterministic. This uses the line and column fields
+   * to generate an arbitrary number - we assume that this method is called only after line and
+   * column are set to their actual values.
    */
   @Override
   public int hashCode ()

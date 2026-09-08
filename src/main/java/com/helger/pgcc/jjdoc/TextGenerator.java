@@ -158,9 +158,8 @@ public class TextGenerator implements IDocGenerator
   {}
 
   /**
-   * Create an output stream for the generated Jack code. Try to open a file
-   * based on the name of the parser, but if that fails use the standard output
-   * stream.
+   * Create an output stream for the generated Jack code. Try to open a file based on the name of
+   * the parser, but if that fails use the standard output stream.
    *
    * @return Never <code>null</code>.
    */
@@ -178,9 +177,8 @@ public class TextGenerator implements IDocGenerator
   }
 
   /**
-   * Create an output stream for the generated Jack code. Try to open a file
-   * based on the name of the parser, but if that fails use the standard output
-   * stream.
+   * Create an output stream for the generated Jack code. Try to open a file based on the name of
+   * the parser, but if that fails use the standard output stream.
    *
    * @return Never <code>null</code>.
    */
@@ -206,7 +204,9 @@ public class TextGenerator implements IDocGenerator
         }
         else
         {
-          PGCCContext.current ().jjdoc ().setOutputFile (PGCCContext.current ().jjdoc ().getInputFile ().substring (0, i) + ext);
+          PGCCContext.current ()
+                     .jjdoc ()
+                     .setOutputFile (PGCCContext.current ().jjdoc ().getInputFile ().substring (0, i) + ext);
         }
       }
     }
@@ -215,10 +215,13 @@ public class TextGenerator implements IDocGenerator
       PGCCContext.current ().jjdoc ().setOutputFile (JJDocOptions.getOutputFile ());
     }
 
-    final Writer aWriter = FileHelper.getBufferedWriter (new File (PGCCContext.current ().jjdoc ().getOutputFile ()), Options.getOutputEncoding ());
+    final Writer aWriter = FileHelper.getBufferedWriter (new File (PGCCContext.current ().jjdoc ().getOutputFile ()),
+                                                         Options.getOutputEncoding ());
     if (aWriter != null)
       return new PrintWriter (aWriter);
-    PGPrinter.error ("JJDoc: can't open output stream on file " + PGCCContext.current ().jjdoc ().getOutputFile () + ".  Using standard output.");
+    PGPrinter.error ("JJDoc: can't open output stream on file " +
+                     PGCCContext.current ().jjdoc ().getOutputFile () +
+                     ".  Using standard output.");
     return PGPrinter.getOutWriter ();
   }
 }

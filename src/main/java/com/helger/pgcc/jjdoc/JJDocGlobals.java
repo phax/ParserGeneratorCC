@@ -43,8 +43,6 @@ public final class JJDocGlobals
   public static final String STANDARD_INPUT = "standard input";
   public static final String STANDARD_OUTPUT = "standard output";
 
-
-
   /**
    * @param generator
    *        The generator to set.
@@ -55,8 +53,8 @@ public final class JJDocGlobals
   }
 
   /**
-   * The commandline option is either TEXT or not, but the generator might have
-   * been set to some other Generator using the setGenerator method.
+   * The commandline option is either TEXT or not, but the generator might have been set to some
+   * other Generator using the setGenerator method.
    *
    * @return the generator configured in options or set by setter.
    */

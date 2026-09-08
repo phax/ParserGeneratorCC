@@ -49,11 +49,10 @@ import com.helger.pgcc.parser.exp.ExpAction;
 /**
  * The working state of one token manager generation.
  * <p>
- * This is the instance state behind the static fields of
- * {@link com.helger.pgcc.parser.LexGenJava}. Some of it describes the whole run - the lexical state
- * names, the per token flags and the ordinal counter - and some of it is overwritten for each
- * lexical state as the generator walks them, which is why the fields that look like scratch really
- * are scratch.
+ * This is the instance state behind the static fields of {@link com.helger.pgcc.parser.LexGenJava}.
+ * Some of it describes the whole run - the lexical state names, the per token flags and the ordinal
+ * counter - and some of it is overwritten for each lexical state as the generator walks them, which
+ * is why the fields that look like scratch really are scratch.
  *
  * @author Philip Helger
  */

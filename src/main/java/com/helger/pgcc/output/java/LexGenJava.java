@@ -31,54 +31,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
 
 package com.helger.pgcc.output.java;
-
-import com.helger.pgcc.parser.JavaCCParserConstants;
-
-import com.helger.pgcc.parser.Nfa;
-import com.helger.pgcc.parser.RegExprSpec;
-
-import com.helger.pgcc.parser.CodeGenerator;
-import com.helger.pgcc.parser.ETokenKind;
-import com.helger.pgcc.parser.MetaParseException;
-import com.helger.pgcc.parser.NfaState;
-import com.helger.pgcc.parser.Token;
-import com.helger.pgcc.parser.TokenProduction;
-import com.helger.pgcc.parser.TokenizerData;
-import com.helger.pgcc.parser.Options;
-import com.helger.pgcc.parser.JavaCCErrors;
-import com.helger.pgcc.parser.JavaCCGlobals;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
@@ -100,6 +54,16 @@ import com.helger.pgcc.context.LexerState;
 import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.OutputHelper;
+import com.helger.pgcc.parser.CodeGenerator;
+import com.helger.pgcc.parser.ETokenKind;
+import com.helger.pgcc.parser.JavaCCErrors;
+import com.helger.pgcc.parser.JavaCCParserConstants;
+import com.helger.pgcc.parser.Nfa;
+import com.helger.pgcc.parser.NfaState;
+import com.helger.pgcc.parser.Options;
+import com.helger.pgcc.parser.RegExprSpec;
+import com.helger.pgcc.parser.Token;
+import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpAction;
 import com.helger.pgcc.parser.exp.ExpRChoice;
@@ -144,42 +108,39 @@ public class LexGenJava extends CodeGenerator
         break;
 
       int nKind = grammar ().cuToInsertionPoint1 ().get (nIndex).kind;
-      if (nKind == JavaCCParserConstants.PACKAGE || nKind == JavaCCParserConstants.IMPORT)
-      {
-        if (nKind == JavaCCParserConstants.IMPORT)
-          bHasImport = true;
-
-        for (; i < grammar ().cuToInsertionPoint1 ().size (); i++)
-        {
-          nKind = grammar ().cuToInsertionPoint1 ().get (i).kind;
-          if (nKind == JavaCCParserConstants.SEMICOLON ||
-              nKind == JavaCCParserConstants.ABSTRACT ||
-              nKind == JavaCCParserConstants.FINAL ||
-              nKind == JavaCCParserConstants.PRIVATE ||
-              nKind == JavaCCParserConstants.PROTECTED ||
-              nKind == JavaCCParserConstants.PUBLIC ||
-              nKind == JavaCCParserConstants.CLASS ||
-              nKind == JavaCCParserConstants.INTERFACE ||
-              nKind == JavaCCParserConstants.ENUM)
-          {
-            setLineAndCol (grammar ().cuToInsertionPoint1 ().get (nIndex).beginLine,
-                           grammar ().cuToInsertionPoint1 ().get (nIndex).beginColumn);
-            int j = nIndex;
-            for (; j < i; j++)
-            {
-              printToken (grammar ().cuToInsertionPoint1 ().get (j));
-            }
-            if (nKind == JavaCCParserConstants.SEMICOLON)
-              printToken (grammar ().cuToInsertionPoint1 ().get (j));
-            genCodeNewLine ();
-            break;
-          }
-        }
-        ++i;
-        nIndex = i;
-      }
-      else
+      if ((nKind != JavaCCParserConstants.PACKAGE) && (nKind != JavaCCParserConstants.IMPORT))
         break;
+      if (nKind == JavaCCParserConstants.IMPORT)
+        bHasImport = true;
+
+      for (; i < grammar ().cuToInsertionPoint1 ().size (); i++)
+      {
+        nKind = grammar ().cuToInsertionPoint1 ().get (i).kind;
+        if (nKind == JavaCCParserConstants.SEMICOLON ||
+          nKind == JavaCCParserConstants.ABSTRACT ||
+          nKind == JavaCCParserConstants.FINAL ||
+          nKind == JavaCCParserConstants.PRIVATE ||
+          nKind == JavaCCParserConstants.PROTECTED ||
+          nKind == JavaCCParserConstants.PUBLIC ||
+          nKind == JavaCCParserConstants.CLASS ||
+          nKind == JavaCCParserConstants.INTERFACE ||
+          nKind == JavaCCParserConstants.ENUM)
+        {
+          setLineAndCol (grammar ().cuToInsertionPoint1 ().get (nIndex).beginLine,
+                         grammar ().cuToInsertionPoint1 ().get (nIndex).beginColumn);
+          int j = nIndex;
+          for (; j < i; j++)
+          {
+            printToken (grammar ().cuToInsertionPoint1 ().get (j));
+          }
+          if (nKind == JavaCCParserConstants.SEMICOLON)
+            printToken (grammar ().cuToInsertionPoint1 ().get (j));
+          genCodeNewLine ();
+          break;
+        }
+      }
+      ++i;
+      nIndex = i;
     }
 
     genCodeNewLine ();
@@ -200,7 +161,10 @@ public class LexGenJava extends CodeGenerator
     // cu_name + "Constants");
     // String superClass =
     // Options.stringValue(Options.USEROPTION__TOKEN_MANAGER_SUPER_CLASS);
-    genClassStart (null, lexer ().getTokenMgrClassName (), new String [] {}, new String [] { grammar ().getParserName () + "Constants" });
+    genClassStart (null,
+                   lexer ().getTokenMgrClassName (),
+                   new String [] {},
+                   new String [] { grammar ().getParserName () + "Constants" });
     // genCodeLine("{"); // }
 
     if (grammar ().getTokenMgrDecls () != null && grammar ().getTokenMgrDecls ().isNotEmpty ())
@@ -284,7 +248,10 @@ public class LexGenJava extends CodeGenerator
     options.put ("hasSkipActions", Boolean.valueOf (lexer ().isHasSkipActions ()));
     options.put ("hasTokenActions", Boolean.valueOf (lexer ().isHasTokenActions ()));
     options.put ("stateSetSize", Integer.valueOf (lexer ().getStateSetSize ()));
-    options.put ("hasActions", Boolean.valueOf (lexer ().isHasMoreActions () || lexer ().isHasSkipActions () || lexer ().isHasTokenActions ()));
+    options.put ("hasActions",
+                 Boolean.valueOf (lexer ().isHasMoreActions () ||
+                   lexer ().isHasSkipActions () ||
+                   lexer ().isHasTokenActions ()));
     options.put ("tokMgrClassName", lexer ().getTokenMgrClassName ());
     int x = 0;
     for (final int l : lexer ().getMaxLongsReqd ())
@@ -453,8 +420,8 @@ public class LexGenJava extends CodeGenerator
           }
 
           if (!Options.isNoDfa () &&
-              lexer ().getCurRE () instanceof ExpRStringLiteral &&
-              StringHelper.isNotEmpty (((ExpRStringLiteral) lexer ().getCurRE ()).m_image))
+            lexer ().getCurRE () instanceof ExpRStringLiteral &&
+            StringHelper.isNotEmpty (((ExpRStringLiteral) lexer ().getCurRE ()).m_image))
           {
             ((ExpRStringLiteral) lexer ().getCurRE ()).generateDfa ();
             if (i != 0 && !lexer ().getMixed ()[lexer ().getLexStateIndex ()] && ignoring != ignore)
@@ -466,7 +433,7 @@ public class LexGenJava extends CodeGenerator
             if (lexer ().getCurRE ().canMatchAnyChar ())
             {
               if (lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()] == -1 ||
-                  lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()] > lexer ().getCurRE ().getOrdinal ())
+                lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()] > lexer ().getCurRE ().getOrdinal ())
                 lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()] = lexer ().getCurRE ().getOrdinal ();
             }
             else
@@ -493,7 +460,8 @@ public class LexGenJava extends CodeGenerator
 
           lexer ().getKinds ()[lexer ().getCurRE ().getOrdinal ()] = kind;
 
-          if (respec.nextState != null && !respec.nextState.equals (lexer ().getLexStateName ()[lexer ().getLexStateIndex ()]))
+          if (respec.nextState != null &&
+            !respec.nextState.equals (lexer ().getLexStateName ()[lexer ().getLexStateIndex ()]))
             lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] = respec.nextState;
 
           if (respec.act != null && respec.act.getActionTokens ().isNotEmpty ())
@@ -502,30 +470,45 @@ public class LexGenJava extends CodeGenerator
           switch (kind)
           {
             case SPECIAL:
-              lexer ().setHasSkipActions (lexer ().isHasSkipActions () | (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null) ||
-                                  (lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] != null));
+              lexer ().setHasSkipActions (lexer ().isHasSkipActions () |
+                                          (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null) ||
+                (lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] != null));
               lexer ().setHasSpecial (true);
-              lexer ().getToSpecial ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L << (lexer ().getCurRE ().getOrdinal () % 64);
-              lexer ().getToSkip ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L << (lexer ().getCurRE ().getOrdinal () % 64);
+              lexer ().getToSpecial ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L <<
+                                                                                   (lexer ().getCurRE ().getOrdinal () %
+                                                                                    64);
+              lexer ().getToSkip ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L <<
+                                                                                (lexer ().getCurRE ().getOrdinal () %
+                                                                                 64);
               break;
             case SKIP:
-              lexer ().setHasSkipActions (lexer ().isHasSkipActions () | (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null));
+              lexer ().setHasSkipActions (lexer ().isHasSkipActions () |
+                                          (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null));
               lexer ().setHasSkip (true);
-              lexer ().getToSkip ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L << (lexer ().getCurRE ().getOrdinal () % 64);
+              lexer ().getToSkip ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L <<
+                                                                                (lexer ().getCurRE ().getOrdinal () %
+                                                                                 64);
               break;
             case MORE:
-              lexer ().setHasMoreActions (lexer ().isHasMoreActions () | (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null));
+              lexer ().setHasMoreActions (lexer ().isHasMoreActions () |
+                                          (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null));
               lexer ().setHasMore (true);
-              lexer ().getToMore ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L << (lexer ().getCurRE ().getOrdinal () % 64);
+              lexer ().getToMore ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L <<
+                                                                                (lexer ().getCurRE ().getOrdinal () %
+                                                                                 64);
 
               if (lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] != null)
-                lexer ().getCanReachOnMore ()[_getIndex (lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()])] = true;
+                lexer ().getCanReachOnMore ()[_getIndex (lexer ().getNewLexState ()[lexer ().getCurRE ()
+                                                                                            .getOrdinal ()])] = true;
               else
                 lexer ().getCanReachOnMore ()[lexer ().getLexStateIndex ()] = true;
               break;
             case TOKEN:
-              lexer ().setHasTokenActions (lexer ().isHasTokenActions () | (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null));
-              lexer ().getToToken ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L << (lexer ().getCurRE ().getOrdinal () % 64);
+              lexer ().setHasTokenActions (lexer ().isHasTokenActions () |
+                                           (lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] != null));
+              lexer ().getToToken ()[lexer ().getCurRE ().getOrdinal () / 64] |= 1L <<
+                                                                                 (lexer ().getCurRE ().getOrdinal () %
+                                                                                  64);
               break;
             default:
               throw new IllegalStateException ();
@@ -548,16 +531,20 @@ public class LexGenJava extends CodeGenerator
 
       if (lexer ().getInitialState ().m_kind != Integer.MAX_VALUE && lexer ().getInitialState ().m_kind != 0)
       {
-        if ((lexer ().getToSkip ()[lexer ().getInitialState ().m_kind / 64] & (1L << lexer ().getInitialState ().m_kind)) != 0L ||
-            (lexer ().getToSpecial ()[lexer ().getInitialState ().m_kind / 64] & (1L << lexer ().getInitialState ().m_kind)) != 0L)
+        if ((lexer ().getToSkip ()[lexer ().getInitialState ().m_kind / 64] &
+             (1L << lexer ().getInitialState ().m_kind)) != 0L ||
+          (lexer ().getToSpecial ()[lexer ().getInitialState ().m_kind / 64] &
+           (1L << lexer ().getInitialState ().m_kind)) != 0L)
           lexer ().setHasSkipActions (true);
         else
-          if ((lexer ().getToMore ()[lexer ().getInitialState ().m_kind / 64] & (1L << lexer ().getInitialState ().m_kind)) != 0L)
+          if ((lexer ().getToMore ()[lexer ().getInitialState ().m_kind / 64] &
+               (1L << lexer ().getInitialState ().m_kind)) != 0L)
             lexer ().setHasMoreActions (true);
           else
             lexer ().setHasTokenActions (true);
 
-        if (lexer ().getInitMatch ()[lexer ().getLexStateIndex ()] == 0 || lexer ().getInitMatch ()[lexer ().getLexStateIndex ()] > lexer ().getInitialState ().m_kind)
+        if (lexer ().getInitMatch ()[lexer ().getLexStateIndex ()] == 0 ||
+          lexer ().getInitMatch ()[lexer ().getLexStateIndex ()] > lexer ().getInitialState ().m_kind)
         {
           lexer ().getInitMatch ()[lexer ().getLexStateIndex ()] = lexer ().getInitialState ().m_kind;
           lexer ().setHasEmptyMatch (true);
@@ -575,7 +562,10 @@ public class LexGenJava extends CodeGenerator
       if (lexer ().isGenerateDataOnly ())
       {
         ExpRStringLiteral.updateStringLiteralData (lexer ().getLexStateIndex ());
-        NfaState.updateNfaData (lexer ().getTotalNumStates (), startState, lexer ().getLexStateIndex (), lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()]);
+        NfaState.updateNfaData (lexer ().getTotalNumStates (),
+                                startState,
+                                lexer ().getLexStateIndex (),
+                                lexer ().getCanMatchAnyChar ()[lexer ().getLexStateIndex ()]);
       }
       else
       {
@@ -632,7 +622,13 @@ public class LexGenJava extends CodeGenerator
       }
       lexer ().getTokenizerData ().setDefaultLexState (lexer ().getDefaultLexState ());
       lexer ().getTokenizerData ().setLexStateNames (lexer ().getLexStateName ());
-      lexer ().getTokenizerData ().updateMatchInfo (actionStrings, newLexStateIndices, lexer ().getToSkip (), lexer ().getToSpecial (), lexer ().getToMore (), lexer ().getToToken ());
+      lexer ().getTokenizerData ()
+              .updateMatchInfo (actionStrings,
+                                newLexStateIndices,
+                                lexer ().getToSkip (),
+                                lexer ().getToSpecial (),
+                                lexer ().getToMore (),
+                                lexer ().getToToken ());
       return;
     }
 
@@ -683,7 +679,10 @@ public class LexGenJava extends CodeGenerator
 
     // TODO :: CBA -- Require Unification of output language specific processing
     // into a single Enum class
-    final String fileName = Options.getOutputDirectory () + File.separator + lexer ().getTokenMgrClassName () + getFileExtension ();
+    final String fileName = Options.getOutputDirectory () +
+                            File.separator +
+                            lexer ().getTokenMgrClassName () +
+                            getFileExtension ();
 
     if (Options.isBuildParser ())
     {
@@ -698,12 +697,15 @@ public class LexGenJava extends CodeGenerator
 
     Outer: for (int i = 0; i < lexer ().getMaxLexStates (); i++)
     {
-      if (done[i] || lexer ().getInitMatch ()[i] == 0 || lexer ().getInitMatch ()[i] == Integer.MAX_VALUE || lexer ().getCanMatchAnyChar ()[i] != -1)
+      if (done[i] ||
+        lexer ().getInitMatch ()[i] == 0 ||
+        lexer ().getInitMatch ()[i] == Integer.MAX_VALUE ||
+        lexer ().getCanMatchAnyChar ()[i] != -1)
         continue;
 
       done[i] = true;
       int len = 0;
-      String cycle = "";
+      final StringBuilder cycle = new StringBuilder ();
       String reList = "";
 
       for (int k = 0; k < lexer ().getMaxLexStates (); k++)
@@ -711,26 +713,31 @@ public class LexGenJava extends CodeGenerator
 
       int j = i;
       seen[i] = true;
-      cycle += lexer ().getLexStateName ()[j] + "-->";
+      cycle.append (lexer ().getLexStateName ()[j]).append ("-->");
       while (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]] != null)
       {
-        cycle += lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]];
+        cycle.append (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]]);
         if (seen[j = _getIndex (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]])])
           break;
 
-        cycle += "-->";
+        cycle.append ("-->");
         done[j] = true;
         seen[j] = true;
-        if (lexer ().getInitMatch ()[j] == 0 || lexer ().getInitMatch ()[j] == Integer.MAX_VALUE || lexer ().getCanMatchAnyChar ()[j] != -1)
+        if (lexer ().getInitMatch ()[j] == 0 ||
+          lexer ().getInitMatch ()[j] == Integer.MAX_VALUE ||
+          lexer ().getCanMatchAnyChar ()[j] != -1)
           continue Outer;
         if (len != 0)
           reList += "; ";
-        reList += "line " + lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getLine () + ", column " + lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getColumn ();
+        reList += "line " +
+                  lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getLine () +
+                  ", column " +
+                  lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getColumn ();
         len++;
       }
 
       if (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]] == null)
-        cycle += lexer ().getLexStateName ()[lexer ().getLexStates ()[lexer ().getInitMatch ()[j]]];
+        cycle.append (lexer ().getLexStateName ()[lexer ().getLexStates ()[lexer ().getInitMatch ()[j]]]);
 
       for (int k = 0; k < lexer ().getMaxLexStates (); k++)
         lexer ().getCanLoop ()[k] |= seen[k];
@@ -741,26 +748,30 @@ public class LexGenJava extends CodeGenerator
       {
         JavaCCErrors.warning (lexer ().getRexprs ()[lexer ().getInitMatch ()[i]],
                               "Regular expression" +
-                                                        (StringHelper.isEmpty (sLabel) ? "" : " for " + sLabel) +
-                                                        " can be matched by the empty string (\"\") in lexical state " +
-                                                        lexer ().getLexStateName ()[i] +
-                                                        ". This can result in an endless loop of " +
-                                                        "empty string matches.");
+                                                                                  (StringHelper.isEmpty (sLabel) ? ""
+                                                                                                                 : " for " +
+                                                                                                                   sLabel) +
+                                                                                  " can be matched by the empty string (\"\") in lexical state " +
+                                                                                  lexer ().getLexStateName ()[i] +
+                                                                                  ". This can result in an endless loop of " +
+                                                                                  "empty string matches.");
       }
       else
       {
         JavaCCErrors.warning (lexer ().getRexprs ()[lexer ().getInitMatch ()[i]],
                               "Regular expression" +
-                                                        (StringHelper.isEmpty (sLabel) ? "" : " for " + sLabel) +
-                                                        " can be matched by the empty string (\"\") in lexical state " +
-                                                        lexer ().getLexStateName ()[i] +
-                                                        ". This regular expression along with the " +
-                                                        "regular expressions at " +
-                                                        reList +
-                                                        " forms the cycle \n   " +
-                                                        cycle +
-                                                        "\ncontaining regular expressions with empty matches." +
-                                                        " This can result in an endless loop of empty string matches.");
+                                                                                  (StringHelper.isEmpty (sLabel) ? ""
+                                                                                                                 : " for " +
+                                                                                                                   sLabel) +
+                                                                                  " can be matched by the empty string (\"\") in lexical state " +
+                                                                                  lexer ().getLexStateName ()[i] +
+                                                                                  ". This regular expression along with the " +
+                                                                                  "regular expressions at " +
+                                                                                  reList +
+                                                                                  " forms the cycle \n   " +
+                                                                                  cycle.append ("\ncontaining regular expressions with empty matches.")
+                                                                                       .append (" This can result in an endless loop of empty string matches.")
+                                                                                       .toString ());
       }
     }
   }
@@ -1043,7 +1054,8 @@ public class LexGenJava extends CodeGenerator
         // added the backup(0) to make JIT happy
         genCodeLine (prefix + "try {");
         genCodeLine (prefix + "  input_stream.backup(0);");
-        if (lexer ().getSinglesToSkip ()[i].m_asciiMoves[0] != 0L && lexer ().getSinglesToSkip ()[i].m_asciiMoves[1] != 0L)
+        if (lexer ().getSinglesToSkip ()[i].m_asciiMoves[0] != 0L &&
+          lexer ().getSinglesToSkip ()[i].m_asciiMoves[1] != 0L)
         {
           genCodeLine (prefix +
                        "   while ((curChar < 64" +
@@ -1392,13 +1404,18 @@ public class LexGenJava extends CodeGenerator
 
         genCodeLine ("      case " + i + " :");
 
-        if (lexer ().getInitMatch ()[lexer ().getLexStates ()[i]] == i && lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
+        if (lexer ().getInitMatch ()[lexer ().getLexStates ()[i]] == i &&
+          lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
         {
           genCodeLine ("         if (jjmatchedPos == -1)");
           genCodeLine ("         {");
           genCodeLine ("            if (jjbeenHere[" + lexer ().getLexStates ()[i] + "] &&");
-          genCodeLine ("                jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginLine() &&");
-          genCodeLine ("                jjemptyColNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginColumn())");
+          genCodeLine ("                jjemptyLineNo[" +
+                       lexer ().getLexStates ()[i] +
+                       "] == input_stream.getBeginLine() &&");
+          genCodeLine ("                jjemptyColNo[" +
+                       lexer ().getLexStates ()[i] +
+                       "] == input_stream.getBeginColumn())");
           genCodeLine ("               throw new " +
                        lexer ().getErrorHandlingClass () +
                        "(" +
@@ -1408,7 +1425,9 @@ public class LexGenJava extends CodeGenerator
                        lexer ().getErrorHandlingClass () +
                        ".LOOP_DETECTED);");
           genCodeLine ("            jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginLine();");
-          genCodeLine ("            jjemptyColNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginColumn();");
+          genCodeLine ("            jjemptyColNo[" +
+                       lexer ().getLexStates ()[i] +
+                       "] = input_stream.getBeginColumn();");
           genCodeLine ("            jjbeenHere[" + lexer ().getLexStates ()[i] + "] = true;");
           genCodeLine ("         }");
         }
@@ -1470,13 +1489,18 @@ public class LexGenJava extends CodeGenerator
 
         genCodeLine ("      case " + i + " :");
 
-        if (lexer ().getInitMatch ()[lexer ().getLexStates ()[i]] == i && lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
+        if (lexer ().getInitMatch ()[lexer ().getLexStates ()[i]] == i &&
+          lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
         {
           genCodeLine ("         if (jjmatchedPos == -1)");
           genCodeLine ("         {");
           genCodeLine ("            if (jjbeenHere[" + lexer ().getLexStates ()[i] + "] &&");
-          genCodeLine ("                jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginLine() &&");
-          genCodeLine ("                jjemptyColNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginColumn())");
+          genCodeLine ("                jjemptyLineNo[" +
+                       lexer ().getLexStates ()[i] +
+                       "] == input_stream.getBeginLine() &&");
+          genCodeLine ("                jjemptyColNo[" +
+                       lexer ().getLexStates ()[i] +
+                       "] == input_stream.getBeginColumn())");
           genCodeLine ("               throw new " +
                        lexer ().getErrorHandlingClass () +
                        "(" +
@@ -1486,7 +1510,9 @@ public class LexGenJava extends CodeGenerator
                        lexer ().getErrorHandlingClass () +
                        ".LOOP_DETECTED);");
           genCodeLine ("            jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginLine();");
-          genCodeLine ("            jjemptyColNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginColumn();");
+          genCodeLine ("            jjemptyColNo[" +
+                       lexer ().getLexStates ()[i] +
+                       "] = input_stream.getBeginColumn();");
           genCodeLine ("            jjbeenHere[" + lexer ().getLexStates ()[i] + "] = true;");
           genCodeLine ("         }");
         }
@@ -1548,13 +1574,18 @@ public class LexGenJava extends CodeGenerator
 
         genCodeLine ("      case " + i + " :");
 
-        if (lexer ().getInitMatch ()[lexer ().getLexStates ()[i]] == i && lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
+        if (lexer ().getInitMatch ()[lexer ().getLexStates ()[i]] == i &&
+          lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
         {
           genCodeLine ("         if (jjmatchedPos == -1)");
           genCodeLine ("         {");
           genCodeLine ("            if (jjbeenHere[" + lexer ().getLexStates ()[i] + "] &&");
-          genCodeLine ("                jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginLine() &&");
-          genCodeLine ("                jjemptyColNo[" + lexer ().getLexStates ()[i] + "] == input_stream.getBeginColumn())");
+          genCodeLine ("                jjemptyLineNo[" +
+                       lexer ().getLexStates ()[i] +
+                       "] == input_stream.getBeginLine() &&");
+          genCodeLine ("                jjemptyColNo[" +
+                       lexer ().getLexStates ()[i] +
+                       "] == input_stream.getBeginColumn())");
           genCodeLine ("               throw new " +
                        lexer ().getErrorHandlingClass () +
                        "(" +
@@ -1564,7 +1595,9 @@ public class LexGenJava extends CodeGenerator
                        lexer ().getErrorHandlingClass () +
                        ".LOOP_DETECTED);");
           genCodeLine ("            jjemptyLineNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginLine();");
-          genCodeLine ("            jjemptyColNo[" + lexer ().getLexStates ()[i] + "] = input_stream.getBeginColumn();");
+          genCodeLine ("            jjemptyColNo[" +
+                       lexer ().getLexStates ()[i] +
+                       "] = input_stream.getBeginColumn();");
           genCodeLine ("            jjbeenHere[" + lexer ().getLexStates ()[i] + "] = true;");
           genCodeLine ("         }");
         }

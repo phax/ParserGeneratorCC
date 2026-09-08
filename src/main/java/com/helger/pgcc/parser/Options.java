@@ -31,36 +31,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
 package com.helger.pgcc.parser;
 
 import java.io.File;
@@ -166,7 +136,6 @@ public class Options
   public static final String USEROPTION__CPP_TOKEN_INCLUDE = "TOKEN_INCLUDE";
   public static final String USEROPTION__CPP_PARSER_INCLUDE = "PARSER_INCLUDE";
 
-
   /**
    * 2013/07/22 -- GWT Compliant Output -- no external dependencies on GWT, but generated code adds
    * loose coupling to IO, for 6.1 release, this is opt-in, moving forward to 7.0, after thorough
@@ -243,7 +212,9 @@ public class Options
     temp.add (new OptionInfo (USEROPTION__GRAMMAR_ENCODING, EOptionType.STRING, ""));
     temp.add (new OptionInfo (USEROPTION__OUTPUT_ENCODING, EOptionType.STRING, StandardCharsets.UTF_8.name ()));
     PGCCContext.current ().options ().setLanguage (EOutputLanguage.JAVA);
-    temp.add (new OptionInfo (USEROPTION__OUTPUT_LANGUAGE, EOptionType.STRING, PGCCContext.current ().options ().getLanguage ().getID ()));
+    temp.add (new OptionInfo (USEROPTION__OUTPUT_LANGUAGE,
+                              EOptionType.STRING,
+                              PGCCContext.current ().options ().getLanguage ().getID ()));
 
     temp.add (new OptionInfo (USEROPTION__JAVA_TEMPLATE_TYPE, EOptionType.STRING, JAVA_TEMPLATE_TYPE_CLASSIC));
     temp.add (new OptionInfo (USEROPTION__JAVA_CHAR_STREAM_TYPE, EOptionType.STRING, JAVA_CHAR_STREAM_TYPE_SIMPLE));
@@ -370,8 +341,7 @@ public class Options
    * @param interestingOptions
    *        the options of interest, eg {Options.USEROPTION__KEEP_LINE_COLUMN,
    *        Options.USEROPTION__CACHE_TOKENS}
-   * @return the string representation of the options, eg
-   *         "KEEP_LINE_COLUMN=true,CACHE_TOKENS=false"
+   * @return the string representation of the options, eg "KEEP_LINE_COLUMN=true,CACHE_TOKENS=false"
    */
   @NonNull
   public static String getOptionsString (final String [] interestingOptions)
@@ -432,7 +402,7 @@ public class Options
     }
 
     if (name.equalsIgnoreCase (USEROPTION__JDK_VERSION) &&
-        (value.getClass () == String.class || value.getClass () == Integer.class))
+      (value.getClass () == String.class || value.getClass () == Integer.class))
     {
       final EJavaVersion ret = JavaVersionHelper.getFromStringOrNull (value.toString ());
       if (ret != null)
@@ -634,9 +604,9 @@ public class Options
       }
       else
         if (sNameUC.length () > 2 &&
-            sNameUC.charAt (0) == 'N' &&
-            sNameUC.charAt (1) == 'O' &&
-            optionValues ().containsKey (sNameUC.substring (2)))
+          sNameUC.charAt (0) == 'N' &&
+          sNameUC.charAt (1) == 'O' &&
+          optionValues ().containsKey (sNameUC.substring (2)))
         {
           val = Boolean.FALSE;
           sNameUC = sNameUC.substring (2);
@@ -726,7 +696,7 @@ public class Options
     if (isDebugLookahead () && !isDebugParser ())
     {
       if (cmdLineSetting ().contains (USEROPTION__DEBUG_PARSER) ||
-          inputFileSetting ().contains (USEROPTION__DEBUG_PARSER))
+        inputFileSetting ().contains (USEROPTION__DEBUG_PARSER))
       {
         JavaCCErrors.warning ("True setting of option DEBUG_LOOKAHEAD overrides " +
                               "false setting of option DEBUG_PARSER.");

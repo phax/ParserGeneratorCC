@@ -31,9 +31,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
 package com.helger.pgcc.jjtree;
 
 import java.io.File;
@@ -73,11 +70,10 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
   {
     final JJTreeIO io = (JJTreeIO) data;
     /*
-     * Assume that this action requires an early node close, and then try to
-     * decide whether this assumption is false. Do this by looking outwards
-     * through the enclosing expansion units. If we ever find that we are
-     * enclosed in a unit which is not the final unit in a sequence we know that
-     * an early close is not required.
+     * Assume that this action requires an early node close, and then try to decide whether this
+     * assumption is false. Do this by looking outwards through the enclosing expansion units. If we
+     * ever find that we are enclosed in a unit which is not the final unit in a sequence we know
+     * that an early close is not required.
      */
 
     final NodeScope ns = NodeScope.getEnclosingNodeScope (node);
@@ -182,7 +178,11 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
         // If the parser and nodes are in separate packages (NODE_PACKAGE
         // specified in
         // OPTIONS), then generate an import for the node package.
-        if (StringHelper.isNotEmpty (PGCCContext.current ().jjtree ().getNodePackageName ()) && !PGCCContext.current ().jjtree ().getNodePackageName ().equals (PGCCContext.current ().jjtree ().getPackageName ()))
+        if (StringHelper.isNotEmpty (PGCCContext.current ().jjtree ().getNodePackageName ()) &&
+          !PGCCContext.current ()
+                      .jjtree ()
+                      .getNodePackageName ()
+                      .equals (PGCCContext.current ().jjtree ().getPackageName ()))
         {
           io.getOut ().println ();
           io.getOut ().println ("import " + PGCCContext.current ().jjtree ().getNodePackageName () + ".*;");
@@ -273,8 +273,8 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
     final NodeScope ns = NodeScope.getEnclosingNodeScope (node);
 
     /*
-     * Print out all the tokens, converting all references to `jjtThis' into the
-     * current node variable.
+     * Print out all the tokens, converting all references to `jjtThis' into the current node
+     * variable.
      */
     final Token first = node.getFirstToken ();
     final Token last = node.getLastToken ();
@@ -287,17 +287,17 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
   }
 
   /*
-   * This method prints the tokens corresponding to this node recursively
-   * calling the print methods of its children. Overriding this print method in
-   * appropriate nodes gives the output the added stuff not in the input.
+   * This method prints the tokens corresponding to this node recursively calling the print methods
+   * of its children. Overriding this print method in appropriate nodes gives the output the added
+   * stuff not in the input.
    */
 
   public Object visit (final JJTreeNode node, final Object data)
   {
     final JJTreeIO io = (JJTreeIO) data;
     /*
-     * Some productions do not consume any tokens. In that case their first and
-     * last tokens are a bit strange.
+     * Some productions do not consume any tokens. In that case their first and last tokens are a
+     * bit strange.
      */
     if (node.getLastToken ().next == node.getFirstToken ())
     {
@@ -391,7 +391,14 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
     if (JJTreeOptions.getNodeFactory ().equals ("*"))
     {
       // Old-style multiple-implementations.
-      io.println ("(" + nodeClass + ")" + nodeClass + ".jjtCreate(" + parserArg + ns.m_node_descriptor.getNodeId () + ");");
+      io.println ("(" +
+                  nodeClass +
+                  ")" +
+                  nodeClass +
+                  ".jjtCreate(" +
+                  parserArg +
+                  ns.m_node_descriptor.getNodeId () +
+                  ");");
     }
     else
       if (JJTreeOptions.getNodeFactory ().length () > 0)
@@ -461,7 +468,10 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
     io.println (indent + "}");
   }
 
-  private void insertCatchBlocks (final NodeScope ns, final JJTreeIO io, final Collection <String> thrown_names, final String indent)
+  private void insertCatchBlocks (final NodeScope ns,
+                                  final JJTreeIO io,
+                                  final Collection <String> thrown_names,
+                                  final String indent)
   {
     if (!thrown_names.isEmpty ())
     {
@@ -484,23 +494,25 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
         io.println (indent + "  }");
       }
       /*
-       * This is either an Error or an undeclared Exception. If it's an Error
-       * then the cast is good, otherwise we want to force the user to declare
-       * it by crashing on the bad cast.
+       * This is either an Error or an undeclared Exception. If it's an Error then the cast is good,
+       * otherwise we want to force the user to declare it by crashing on the bad cast.
        */
       io.println (indent + "  throw (Error)" + ns.m_exceptionVar + ";");
     }
-
   }
 
-  void tryTokenSequence (final NodeScope ns, final JJTreeIO io, final String indent, final Token first, final Token last)
+  void tryTokenSequence (final NodeScope ns,
+                         final JJTreeIO io,
+                         final String indent,
+                         final Token first,
+                         final Token last)
   {
     io.println (indent + "try {");
     closeJJTreeComment (io);
 
     /*
-     * Print out all the tokens, converting all references to `jjtThis' into the
-     * current node variable.
+     * Print out all the tokens, converting all references to `jjtThis' into the current node
+     * variable.
      */
     for (Token t = first; t != last.next; t = t.next)
     {
@@ -523,7 +535,9 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
     closeJJTreeComment (io);
   }
 
-  private static void findThrown (final NodeScope ns, final Map <String, String> thrown_set, final JJTreeNode expansion_unit)
+  private static void findThrown (final NodeScope ns,
+                                  final Map <String, String> thrown_set,
+                                  final JJTreeNode expansion_unit)
   {
     if (expansion_unit instanceof ASTBNFNonTerminal)
     {

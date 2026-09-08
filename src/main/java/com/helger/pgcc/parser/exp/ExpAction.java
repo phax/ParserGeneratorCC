@@ -48,8 +48,8 @@ import com.helger.pgcc.parser.Token;
 public class ExpAction extends Expansion
 {
   /**
-   * Contains the list of tokens that make up the action. This list does not
-   * include the surrounding braces.
+   * Contains the list of tokens that make up the action. This list does not include the surrounding
+   * braces.
    */
   private final ICommonsList <Token> m_aActionTokens = new CommonsArrayList <> ();
 

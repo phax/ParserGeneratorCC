@@ -31,42 +31,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
 package com.helger.pgcc.parser;
-
-import com.helger.pgcc.output.cpp.LexGenCpp;
-import com.helger.pgcc.output.cpp.ParseGenCPP;
-import com.helger.pgcc.output.java.LexGenJava;
-import com.helger.pgcc.output.java.ParseGenJava;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
@@ -82,8 +47,12 @@ import com.helger.io.file.FileHelper;
 import com.helger.pgcc.CPG;
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.output.EOutputLanguage;
+import com.helger.pgcc.output.cpp.LexGenCpp;
 import com.helger.pgcc.output.cpp.OtherFilesGenCPP;
+import com.helger.pgcc.output.cpp.ParseGenCPP;
+import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.output.java.OtherFilesGenJava;
+import com.helger.pgcc.output.java.ParseGenJava;
 import com.helger.pgcc.utils.EOptionType;
 import com.helger.pgcc.utils.OptionInfo;
 
@@ -118,7 +87,9 @@ public class Main
     _printOptions ();
 
     PGPrinter.info ("EXAMPLE:");
-    PGPrinter.info ("    " + CPG.CMDLINE_NAME + " -OUTPUT_DIRECTORY=target/code -LOOKAHEAD:2 -debug_parser mygrammar.jj");
+    PGPrinter.info ("    " +
+                    CPG.CMDLINE_NAME +
+                    " -OUTPUT_DIRECTORY=target/code -LOOKAHEAD:2 -debug_parser mygrammar.jj");
     PGPrinter.info ();
   }
 
@@ -139,7 +110,9 @@ public class Main
         case BOOLEAN -> maxLengthBool = Math.max (length, maxLengthBool);
         case STRING -> maxLengthString = Math.max (length, maxLengthString);
         // OTHER is not printed
-        default -> {}
+        default ->
+            {
+            }
       }
     }
 
@@ -207,15 +180,14 @@ public class Main
   }
 
   /**
-   * A main program that exercises the parser. Calls <code>System.exit</code>
-   * with return code 0 for success and 1 for error!
+   * A main program that exercises the parser. Calls <code>System.exit</code> with return code 0 for
+   * success and 1 for error!
    *
    * @param args
    *        arguments to main
    * @throws IOException
    *         on IO error
-   * @see #mainProgram(String...) for a version that does NOT call
-   *      <code>System.exit</code>
+   * @see #mainProgram(String...) for a version that does NOT call <code>System.exit</code>
    */
   public static void main (final String... args) throws IOException
   {
@@ -224,8 +196,8 @@ public class Main
   }
 
   /**
-   * The method to call to exercise the parser from other Java programs. It
-   * returns an error code. See how the main program above uses this method.
+   * The method to call to exercise the parser from other Java programs. It returns an error code.
+   * See how the main program above uses this method.
    *
    * @param args
    *        main arguments
@@ -279,7 +251,8 @@ public class Main
         return ESuccess.FAILURE;
       }
 
-      final Reader aReader = FileHelper.getBufferedReader (new File (args[args.length - 1]), Options.getGrammarEncoding ());
+      final Reader aReader = FileHelper.getBufferedReader (new File (args[args.length - 1]),
+                                                           Options.getGrammarEncoding ());
       if (aReader == null)
       {
         PGPrinter.info ("File " + args[args.length - 1] + " not found.");
@@ -309,7 +282,8 @@ public class Main
       final EOutputLanguage eOutputLanguage = Options.getOutputLanguage ();
 
       // 2013/07/22 Java Modern is a
-      final boolean isJavaModern = eOutputLanguage.isJava () && Options.getJavaTemplateType ().equals (Options.JAVA_TEMPLATE_TYPE_MODERN);
+      final boolean isJavaModern = eOutputLanguage.isJava () &&
+        Options.getJavaTemplateType ().equals (Options.JAVA_TEMPLATE_TYPE_MODERN);
 
       JavaCCGlobals.createOutputDir (Options.getOutputDirectory ());
 
@@ -381,11 +355,19 @@ public class Main
     }
     catch (final MetaParseException e)
     {
-      PGPrinter.error ("Detected " + JavaCCErrors.getErrorCount () + " errors and " + JavaCCErrors.getWarningCount () + " warnings.");
+      PGPrinter.error ("Detected " +
+                       JavaCCErrors.getErrorCount () +
+                       " errors and " +
+                       JavaCCErrors.getWarningCount () +
+                       " warnings.");
     }
     catch (final ParseException e)
     {
-      PGPrinter.error ("Detected " + (JavaCCErrors.getErrorCount () + 1) + " errors and " + JavaCCErrors.getWarningCount () + " warnings.",
+      PGPrinter.error ("Detected " +
+                       (JavaCCErrors.getErrorCount () + 1) +
+                       " errors and " +
+                       JavaCCErrors.getWarningCount () +
+                       " warnings.",
                        e);
     }
     return ESuccess.FAILURE;

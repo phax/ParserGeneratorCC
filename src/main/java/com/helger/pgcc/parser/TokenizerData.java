@@ -122,7 +122,11 @@ public class TokenizerData
     // Any lexical state transition specified.
     public final String m_action;
 
-    public MatchInfo (final String image, final int kind, final EMatchType matchType, final int newLexState, final String action)
+    public MatchInfo (final String image,
+                      final int kind,
+                      final EMatchType matchType,
+                      final int newLexState,
+                      final String action)
     {
       this.m_image = image;
       this.m_kind = kind;
@@ -233,7 +237,9 @@ public class TokenizerData
             assert (toToken.length > vectorIndex && (toToken[vectorIndex] & bits) != 0L);
             matchType = EMatchType.TOKEN;
           }
-      final MatchInfo matchInfo = new MatchInfo (Options.isIgnoreCase () ? null : ExpRStringLiteral.strLit ().getAllImages ()[i],
+      final MatchInfo matchInfo = new MatchInfo (Options.isIgnoreCase () ? null
+                                                                         : ExpRStringLiteral.strLit ()
+                                                                                            .getAllImages ()[i],
                                                  i,
                                                  matchType,
                                                  newLexStateIndices[i],

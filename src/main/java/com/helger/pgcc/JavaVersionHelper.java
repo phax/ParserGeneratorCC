@@ -104,8 +104,9 @@ public final class JavaVersionHelper
     // "1.8" is Java 8 and "1.9" is Java 9 - in both cases the part after the dot is the major
     // language version
     final int nDot = sTrimmed.indexOf ('.');
-    final String sMajor = nDot < 0 ? sTrimmed : sTrimmed.substring (0, nDot).equals ("1") ? sTrimmed.substring (nDot + 1)
-                                                                                         : sTrimmed.substring (0, nDot);
+    final String sMajor = nDot < 0 ? sTrimmed
+                                   : sTrimmed.substring (0, nDot).equals ("1") ? sTrimmed.substring (nDot + 1)
+                                                                               : sTrimmed.substring (0, nDot);
 
     final int nMajor = StringParser.parseInt (sMajor, -1);
     if (nMajor <= 0)

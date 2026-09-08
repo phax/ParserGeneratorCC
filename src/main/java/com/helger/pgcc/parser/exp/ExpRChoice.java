@@ -33,8 +33,6 @@
  */
 package com.helger.pgcc.parser.exp;
 
-import com.helger.pgcc.output.java.LexGenJava;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,20 +40,20 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonnegative;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.NfaState;
 
 /**
- * Describes regular expressions which are choices from from among included
- * regular expressions.
+ * Describes regular expressions which are choices from from among included regular expressions.
  */
 
 public class ExpRChoice extends AbstractExpRegularExpression
 {
   /**
-   * The list of choices of this regular expression. Each list component will
-   * narrow to RegularExpression.
+   * The list of choices of this regular expression. Each list component will narrow to
+   * RegularExpression.
    */
   private final List <AbstractExpRegularExpression> m_choices = new ArrayList <> ();
 
@@ -179,13 +177,17 @@ public class ExpRChoice extends AbstractExpRegularExpression
     for (final AbstractExpRegularExpression curRE : getChoices ())
     {
       if (!curRE.m_bPrivateRexp &&
-          // curRE instanceof RJustName &&
-          curRE.getOrdinal () > 0 &&
-          curRE.getOrdinal () < getOrdinal () &&
-          LexGenJava.lexer ().getLexStates ()[curRE.getOrdinal ()] == LexGenJava.lexer ().getLexStates ()[getOrdinal ()])
+        // curRE instanceof RJustName &&
+        curRE.getOrdinal () > 0 &&
+        curRE.getOrdinal () < getOrdinal () &&
+        LexGenJava.lexer ().getLexStates ()[curRE.getOrdinal ()] == LexGenJava.lexer ().getLexStates ()[getOrdinal ()])
       {
         if (hasLabel ())
-          JavaCCErrors.warning (this, "Regular Expression choice : " + curRE.getLabel () + " can never be matched as : " + getLabel ());
+          JavaCCErrors.warning (this,
+                                "Regular Expression choice : " +
+                                      curRE.getLabel () +
+                                      " can never be matched as : " +
+                                      getLabel ());
         else
           JavaCCErrors.warning (this,
                                 "Regular Expression choice : " +

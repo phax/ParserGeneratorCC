@@ -51,9 +51,8 @@ public class BNFProduction extends NormalProduction
   private final List <Token> m_aDeclarationTokens = new ArrayList <> ();
 
   /**
-   * This flag keeps track of whether or not return and throw statements have
-   * been patched within this production's actions to include a preceding "if
-   * (true)".
+   * This flag keeps track of whether or not return and throw statements have been patched within
+   * this production's actions to include a preceding "if (true)".
    */
   private boolean m_bJumpPatched = false;
 

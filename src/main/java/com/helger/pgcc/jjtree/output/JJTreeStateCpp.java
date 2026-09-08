@@ -31,9 +31,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
 package com.helger.pgcc.jjtree.output;
 
 import java.io.File;
@@ -65,7 +62,8 @@ public final class JJTreeStateCpp
     aOptions.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
 
     final String sFilePrefix = new File (JJTreeOptions.getJJTreeOutputDirectory (),
-                                         "JJT" + PGCCContext.current ().jjtree ().getParserName () + "State").getAbsolutePath ();
+                                         "JJT" + PGCCContext.current ().jjtree ().getParserName () + "State")
+                                                                                                             .getAbsolutePath ();
 
     OutputFile aOutputFile = new OutputFile (new File (sFilePrefix + ".h"),
                                              JJTStateVersion,

@@ -107,10 +107,6 @@ public final class JavaCCGlobals
     grammar ().setOtherLanguageDeclTokenEnd (t);
   }
 
-
-
-
-
   /**
    * This prints the banner line when the various tools are invoked. This takes as argument the
    * tool's full name and its version.
@@ -132,12 +128,6 @@ public final class JavaCCGlobals
   }
 
   // Some general purpose utilities follow.
-
-
-
-
-
-
 
   /**
    * Returns the identifying string for the file name, given a toolname used to generate it.
@@ -423,7 +413,8 @@ public final class JavaCCGlobals
       ostr.println ();
       grammar ().setCurrentColumn (1);
     }
-    for (; grammar ().getCurrentColumn () < t.beginColumn; grammar ().setCurrentColumn (grammar ().getCurrentColumn () + 1))
+    for (; grammar ().getCurrentColumn () < t.beginColumn; grammar ().setCurrentColumn (grammar ().getCurrentColumn () +
+                                                                                        1))
     {
       ostr.print (" ");
     }
@@ -499,7 +490,8 @@ public final class JavaCCGlobals
       aSB.append ('\n');
       grammar ().setCurrentColumn (1);
     }
-    for (; grammar ().getCurrentColumn () < t.beginColumn; grammar ().setCurrentColumn (grammar ().getCurrentColumn () + 1))
+    for (; grammar ().getCurrentColumn () < t.beginColumn; grammar ().setCurrentColumn (grammar ().getCurrentColumn () +
+                                                                                        1))
     {
       aSB.append (' ');
     }

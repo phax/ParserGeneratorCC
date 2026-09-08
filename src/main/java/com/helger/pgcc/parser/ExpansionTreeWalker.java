@@ -58,8 +58,8 @@ public final class ExpansionTreeWalker
   {}
 
   /**
-   * Visits the nodes of the tree rooted at "node" in pre-order. i.e., it
-   * executes opObj.action first and then visits the children.
+   * Visits the nodes of the tree rooted at "node" in pre-order. i.e., it executes opObj.action
+   * first and then visits the children.
    */
   static void preOrderWalk (final Expansion node, final ITreeWalkerOperation opObj)
   {
@@ -140,8 +140,8 @@ public final class ExpansionTreeWalker
   }
 
   /**
-   * Visits the nodes of the tree rooted at "node" in post-order. i.e., it
-   * visits the children first and then executes opObj.action.
+   * Visits the nodes of the tree rooted at "node" in post-order. i.e., it visits the children first
+   * and then executes opObj.action.
    */
   static void postOrderWalk (final Expansion node, final ITreeWalkerOperation opObj)
   {

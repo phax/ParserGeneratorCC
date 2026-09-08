@@ -49,8 +49,7 @@ import com.helger.pgcc.parser.Token;
 public class ExpSequence extends Expansion
 {
   /**
-   * The list of units in this expansion sequence. Each List component will
-   * narrow to Expansion.
+   * The list of units in this expansion sequence. Each List component will narrow to Expansion.
    */
   private final List <Expansion> m_units = new ArrayList <> ();
 

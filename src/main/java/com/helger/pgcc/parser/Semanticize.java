@@ -69,10 +69,9 @@ public class Semanticize
     }
 
     /*
-     * The following walks the entire parse tree to convert all LOOKAHEAD's that
-     * are not at choice points (but at beginning of sequences) and converts
-     * them to trivial choices. This way, their semantic lookahead specification
-     * can be evaluated during other lookahead evaluations.
+     * The following walks the entire parse tree to convert all LOOKAHEAD's that are not at choice
+     * points (but at beginning of sequences) and converts them to trivial choices. This way, their
+     * semantic lookahead specification can be evaluated during other lookahead evaluations.
      */
     for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
     {
@@ -91,8 +90,8 @@ public class Semanticize
     }
 
     /*
-     * The following walks the entire parse tree to make sure that all
-     * non-terminals on RHS's are defined on the LHS.
+     * The following walks the entire parse tree to make sure that all non-terminals on RHS's are
+     * defined on the LHS.
      */
     for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
     {
@@ -100,13 +99,11 @@ public class Semanticize
     }
 
     /*
-     * The following loop ensures that all target lexical states are defined.
-     * Also piggybacking on this loop is the detection of <EOF> and <name> in
-     * token productions. After reporting an error, these entries are removed.
-     * Also checked are definitions on inline private regular expressions. This
-     * loop works slightly differently when USER_TOKEN_MANAGER is set to true.
-     * In this case, <name> occurrences are OK, while regular expression specs
-     * generate a warning.
+     * The following loop ensures that all target lexical states are defined. Also piggybacking on
+     * this loop is the detection of <EOF> and <name> in token productions. After reporting an
+     * error, these entries are removed. Also checked are definitions on inline private regular
+     * expressions. This loop works slightly differently when USER_TOKEN_MANAGER is set to true. In
+     * this case, <name> occurrences are OK, while regular expression specs generate a warning.
      */
     for (final TokenProduction aTokenProduction : grammar ().rexprList ())
     {
@@ -126,9 +123,13 @@ public class Semanticize
         {
           // JavaCCErrors.semantic_error(res.rexp, "Badly placed <EOF>.");
           if (tp.m_lexStates != null)
-            JavaCCErrors.semantic_error (res.rexp, "EOF action/state change must be specified for all states, " + "i.e., <*>TOKEN:.");
+            JavaCCErrors.semantic_error (res.rexp,
+                                         "EOF action/state change must be specified for all states, " +
+                                                   "i.e., <*>TOKEN:.");
           if (tp.m_kind != ETokenKind.TOKEN)
-            JavaCCErrors.semantic_error (res.rexp, "EOF action/state change can be specified only in a " + "TOKEN specification.");
+            JavaCCErrors.semantic_error (res.rexp,
+                                         "EOF action/state change can be specified only in a " +
+                                                   "TOKEN specification.");
           if (grammar ().getNextStateForEof () != null || grammar ().getActionForEof () != null)
             JavaCCErrors.semantic_error (res.rexp, "Duplicate action/state change specification for <EOF>.");
           grammar ().setActionForEof (res.act);
@@ -139,7 +140,8 @@ public class Semanticize
           if (tp.m_isExplicit && Options.isUserTokenManager ())
           {
             JavaCCErrors.warning (res.rexp,
-                                  "Ignoring regular expression specification since " + "option USER_TOKEN_MANAGER has been set to true.");
+                                  "Ignoring regular expression specification since " +
+                                            "option USER_TOKEN_MANAGER has been set to true.");
           }
           else
             if (tp.m_isExplicit && !Options.isUserTokenManager () && res.rexp instanceof ExpRJustName)
@@ -154,7 +156,9 @@ public class Semanticize
             else
               if (!tp.m_isExplicit && res.rexp.m_bPrivateRexp)
               {
-                JavaCCErrors.semantic_error (res.rexp, "Private (#) regular expression cannot be defined within " + "grammar productions.");
+                JavaCCErrors.semantic_error (res.rexp,
+                                             "Private (#) regular expression cannot be defined within " +
+                                                       "grammar productions.");
               }
       }
     }
@@ -162,9 +166,8 @@ public class Semanticize
     removePreparedItems ();
 
     /*
-     * The following loop inserts all names of regular expressions into
-     * "named_tokens_table" and "ordered_named_tokens". Duplications are flagged
-     * as errors.
+     * The following loop inserts all names of regular expressions into "named_tokens_table" and
+     * "ordered_named_tokens". Duplications are flagged as errors.
      */
     for (final TokenProduction aTokenProduction : grammar ().rexprList ())
     {
@@ -187,21 +190,23 @@ public class Semanticize
           }
           if (grammar ().lexStateS2I ().get (s) != null)
           {
-            JavaCCErrors.semantic_error (res.rexp, "Lexical token name \"" + s + "\" is the same as " + "that of a lexical state.");
+            JavaCCErrors.semantic_error (res.rexp,
+                                         "Lexical token name \"" +
+                                                   s +
+                                                   "\" is the same as " +
+                                                   "that of a lexical state.");
           }
         }
       }
     }
 
     /*
-     * The following code merges multiple uses of the same string in the same
-     * lexical state and produces error messages when there are multiple
-     * explicit occurrences (outside the BNF) of the string in the same lexical
-     * state, or when within BNF occurrences of a string are duplicates of those
-     * that occur as non-TOKEN's (SKIP, MORE, SPECIAL_TOKEN) or private regular
-     * expressions. While doing this, this code also numbers all regular
-     * expressions (by setting their ordinal values), and populates the table
-     * "names_of_tokens".
+     * The following code merges multiple uses of the same string in the same lexical state and
+     * produces error messages when there are multiple explicit occurrences (outside the BNF) of the
+     * string in the same lexical state, or when within BNF occurrences of a string are duplicates
+     * of those that occur as non-TOKEN's (SKIP, MORE, SPECIAL_TOKEN) or private regular
+     * expressions. While doing this, this code also numbers all regular expressions (by setting
+     * their ordinal values), and populates the table "names_of_tokens".
      */
 
     grammar ().setTokenCount (1);
@@ -269,7 +274,10 @@ public class Semanticize
                 {
                   // give the standard error message.
                   JavaCCErrors.semantic_error (sl,
-                                               "Duplicate definition of string token \"" + sl.m_image + "\" " + "can never be matched.");
+                                               "Duplicate definition of string token \"" +
+                                                   sl.m_image +
+                                                   "\" " +
+                                                   "can never be matched.");
                 }
               }
               else
@@ -289,11 +297,13 @@ public class Semanticize
                   }
                   if (count == 1)
                   {
-                    JavaCCErrors.warning (sl, "String with IGNORE_CASE is partially superceded by string at" + pos + ".");
+                    JavaCCErrors.warning (sl,
+                                          "String with IGNORE_CASE is partially superceded by string at" + pos + ".");
                   }
                   else
                   {
-                    JavaCCErrors.warning (sl, "String with IGNORE_CASE is partially superceded by strings at" + pos + ".");
+                    JavaCCErrors.warning (sl,
+                                          "String with IGNORE_CASE is partially superceded by strings at" + pos + ".");
                   }
                   // This entry is legitimate. So insert it.
                   if (sl.getOrdinal () == 0)
@@ -324,7 +334,8 @@ public class Semanticize
                       // implicit.
                       if (tp.m_lexStates[i].equals ("DEFAULT"))
                       {
-                        JavaCCErrors.semantic_error (sl, "Duplicate definition of string token \"" + sl.m_image + "\".");
+                        JavaCCErrors.semantic_error (sl,
+                                                     "Duplicate definition of string token \"" + sl.m_image + "\".");
                       }
                       else
                       {
@@ -393,13 +404,12 @@ public class Semanticize
     removePreparedItems ();
 
     /*
-     * The following code performs a tree walk on all regular expressions
-     * attaching links to "RJustName"s. Error messages are given if undeclared
-     * names are used, or if "RJustNames" refer to private regular expressions
-     * or to regular expressions of any kind other than TOKEN. In addition, this
-     * loop also removes top level "RJustName"s from "rexprlist". This code is
-     * not executed if Options.getUserTokenManager() is set to true. Instead the
-     * following block of code is executed.
+     * The following code performs a tree walk on all regular expressions attaching links to
+     * "RJustName"s. Error messages are given if undeclared names are used, or if "RJustNames" refer
+     * to private regular expressions or to regular expressions of any kind other than TOKEN. In
+     * addition, this loop also removes top level "RJustName"s from "rexprlist". This code is not
+     * executed if Options.getUserTokenManager() is set to true. Instead the following block of code
+     * is executed.
      */
 
     if (!Options.isUserTokenManager ())
@@ -425,14 +435,12 @@ public class Semanticize
     removePreparedItems ();
 
     /*
-     * The following code is executed only if Options.getUserTokenManager() is
-     * set to true. This code visits all top-level "RJustName"s (ignores
-     * "RJustName"s nested within regular expressions). Since regular
-     * expressions are optional in this case, "RJustName"s without corresponding
-     * regular expressions are given ordinal values here. If "RJustName"s refer
-     * to a named regular expression, their ordinal values are set to reflect
-     * this. All but one "RJustName" node is removed from the lists by the end
-     * of execution of this code.
+     * The following code is executed only if Options.getUserTokenManager() is set to true. This
+     * code visits all top-level "RJustName"s (ignores "RJustName"s nested within regular
+     * expressions). Since regular expressions are optional in this case, "RJustName"s without
+     * corresponding regular expressions are given ordinal values here. If "RJustName"s refer to a
+     * named regular expression, their ordinal values are set to reflect this. All but one
+     * "RJustName" node is removed from the lists by the end of execution of this code.
      */
 
     if (Options.isUserTokenManager ())
@@ -467,10 +475,9 @@ public class Semanticize
     removePreparedItems ();
 
     /*
-     * The following code is executed only if Options.getUserTokenManager() is
-     * set to true. This loop labels any unlabeled regular expression and prints
-     * a warning that it is doing so. These labels are added to
-     * "ordered_named_tokens" so that they may be generated into the
+     * The following code is executed only if Options.getUserTokenManager() is set to true. This
+     * loop labels any unlabeled regular expression and prints a warning that it is doing so. These
+     * labels are added to "ordered_named_tokens" so that they may be generated into the
      * ...Constants file.
      */
     if (Options.isUserTokenManager ())
@@ -485,7 +492,9 @@ public class Semanticize
           final Integer ii = Integer.valueOf (res.rexp.getOrdinal ());
           if (grammar ().namesOfTokens ().get (ii) == null)
           {
-            JavaCCErrors.warning (res.rexp, "Unlabeled regular expression cannot be referred to by " + "user generated token manager.");
+            JavaCCErrors.warning (res.rexp,
+                                  "Unlabeled regular expression cannot be referred to by " +
+                                            "user generated token manager.");
           }
         }
       }
@@ -571,8 +580,16 @@ public class Semanticize
               rexp.setWalkStatus (-1);
               if (_rexpWalk (rexp))
               {
-                PGCCContext.current ().semanticize ().setLoopString ("..." + rexp.getLabel () + "... --> " + PGCCContext.current ().semanticize ().getLoopString ());
-                JavaCCErrors.semantic_error (rexp, "Loop in regular expression detected: \"" + PGCCContext.current ().semanticize ().getLoopString () + "\"");
+                PGCCContext.current ()
+                           .semanticize ()
+                           .setLoopString ("..." +
+                                           rexp.getLabel () +
+                                           "... --> " +
+                                           PGCCContext.current ().semanticize ().getLoopString ());
+                JavaCCErrors.semantic_error (rexp,
+                                             "Loop in regular expression detected: \"" +
+                                                   PGCCContext.current ().semanticize ().getLoopString () +
+                                                   "\"");
               }
               rexp.setWalkStatus (1);
             }
@@ -749,11 +766,16 @@ public class Semanticize
       if (prod.getLeftExpansions ()[i].getWalkStatus () == -1)
       {
         prod.getLeftExpansions ()[i].setWalkStatus (-2);
-        PGCCContext.current ().semanticize ().setLoopString (prod.getLhs () + "... --> " + prod.getLeftExpansions ()[i].getLhs () + "...");
+        PGCCContext.current ()
+                   .semanticize ()
+                   .setLoopString (prod.getLhs () + "... --> " + prod.getLeftExpansions ()[i].getLhs () + "...");
         if (prod.getWalkStatus () == -2)
         {
           prod.setWalkStatus (1);
-          JavaCCErrors.semantic_error (prod, "Left recursion detected: \"" + PGCCContext.current ().semanticize ().getLoopString () + "\"");
+          JavaCCErrors.semantic_error (prod,
+                                       "Left recursion detected: \"" +
+                                             PGCCContext.current ().semanticize ().getLoopString () +
+                                             "\"");
           return false;
         }
         prod.setWalkStatus (1);
@@ -764,11 +786,18 @@ public class Semanticize
         {
           if (_prodWalk (prod.getLeftExpansions ()[i]))
           {
-            PGCCContext.current ().semanticize ().setLoopString (prod.getLhs () + "... --> " + PGCCContext.current ().semanticize ().getLoopString ());
+            PGCCContext.current ()
+                       .semanticize ()
+                       .setLoopString (prod.getLhs () +
+                                       "... --> " +
+                                       PGCCContext.current ().semanticize ().getLoopString ());
             if (prod.getWalkStatus () == -2)
             {
               prod.setWalkStatus (1);
-              JavaCCErrors.semantic_error (prod, "Left recursion detected: \"" + PGCCContext.current ().semanticize ().getLoopString () + "\"");
+              JavaCCErrors.semantic_error (prod,
+                                           "Left recursion detected: \"" +
+                                                 PGCCContext.current ().semanticize ().getLoopString () +
+                                                 "\"");
               return false;
             }
             prod.setWalkStatus (1);
@@ -801,11 +830,19 @@ public class Semanticize
           jn.m_regexpr.setWalkStatus (-1);
           if (_rexpWalk (jn.m_regexpr))
           {
-            PGCCContext.current ().semanticize ().setLoopString ("..." + jn.m_regexpr.getLabel () + "... --> " + PGCCContext.current ().semanticize ().getLoopString ());
+            PGCCContext.current ()
+                       .semanticize ()
+                       .setLoopString ("..." +
+                                       jn.m_regexpr.getLabel () +
+                                       "... --> " +
+                                       PGCCContext.current ().semanticize ().getLoopString ());
             if (jn.m_regexpr.getWalkStatus () == -2)
             {
               jn.m_regexpr.setWalkStatus (1);
-              JavaCCErrors.semantic_error (jn.m_regexpr, "Loop in regular expression detected: \"" + PGCCContext.current ().semanticize ().getLoopString () + "\"");
+              JavaCCErrors.semantic_error (jn.m_regexpr,
+                                           "Loop in regular expression detected: \"" +
+                                                         PGCCContext.current ().semanticize ().getLoopString () +
+                                                         "\"");
               return false;
             }
             jn.m_regexpr.setWalkStatus (1);
@@ -856,8 +893,8 @@ public class Semanticize
   }
 
   /**
-   * Objects of this class are created from class Semanticize to work on
-   * references to regular expressions from RJustName's.
+   * Objects of this class are created from class Semanticize to work on references to regular
+   * expressions from RJustName's.
    */
   static final class FixRJustNames implements ITreeWalkerOperation
   {
@@ -881,7 +918,10 @@ public class Semanticize
           if (jn == m_root && !jn.m_aTpContext.m_isExplicit && rexp.m_bPrivateRexp)
           {
             JavaCCErrors.semantic_error (e,
-                                         "Token name \"" + jn.getLabel () + "\" refers to a private " + "(with a #) regular expression.");
+                                         "Token name \"" +
+                                            jn.getLabel () +
+                                            "\" refers to a private " +
+                                            "(with a #) regular expression.");
           }
           else
             if (jn == m_root && !jn.m_aTpContext.m_isExplicit && rexp.m_aTpContext.m_kind != ETokenKind.TOKEN)
@@ -916,9 +956,9 @@ public class Semanticize
       if (e instanceof ExpSequence)
       {
         if (e.getParent () instanceof ExpChoice ||
-            e.getParent () instanceof ExpZeroOrMore ||
-            e.getParent () instanceof ExpOneOrMore ||
-            e.getParent () instanceof ExpZeroOrOne)
+          e.getParent () instanceof ExpZeroOrMore ||
+          e.getParent () instanceof ExpOneOrMore ||
+          e.getParent () instanceof ExpZeroOrOne)
         {
           return;
         }

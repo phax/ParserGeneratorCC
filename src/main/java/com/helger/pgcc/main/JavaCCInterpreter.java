@@ -33,8 +33,6 @@
  */
 package com.helger.pgcc.main;
 
-import com.helger.pgcc.output.java.LexGenJava;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +40,7 @@ import java.util.Set;
 
 import com.helger.io.file.SimpleFileIO;
 import com.helger.pgcc.PGPrinter;
+import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCParser;
 import com.helger.pgcc.parser.Main;
@@ -107,11 +106,19 @@ public class JavaCCInterpreter
     }
     catch (final MetaParseException e)
     {
-      PGPrinter.error ("Detected " + JavaCCErrors.getErrorCount () + " errors and " + JavaCCErrors.getWarningCount () + " warnings.");
+      PGPrinter.error ("Detected " +
+                       JavaCCErrors.getErrorCount () +
+                       " errors and " +
+                       JavaCCErrors.getWarningCount () +
+                       " warnings.");
     }
     catch (final Exception e)
     {
-      PGPrinter.error ("Detected " + (JavaCCErrors.getErrorCount () + 1) + " errors and " + JavaCCErrors.getWarningCount () + " warnings.",
+      PGPrinter.error ("Detected " +
+                       (JavaCCErrors.getErrorCount () + 1) +
+                       " errors and " +
+                       JavaCCErrors.getWarningCount () +
+                       " warnings.",
                        e);
     }
   }

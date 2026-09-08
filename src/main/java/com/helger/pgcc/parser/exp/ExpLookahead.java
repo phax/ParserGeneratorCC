@@ -42,34 +42,29 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.pgcc.parser.Token;
 
 /**
- * Describes lookahead rule for a particular expansion or expansion sequence
- * (See Sequence.java). In case this describes the lookahead rule for a single
- * expansion unit, then a sequence is created with this node as the first
- * element, and the expansion unit as the second and last element.
+ * Describes lookahead rule for a particular expansion or expansion sequence (See Sequence.java). In
+ * case this describes the lookahead rule for a single expansion unit, then a sequence is created
+ * with this node as the first element, and the expansion unit as the second and last element.
  */
 public class ExpLookahead extends Expansion
 {
   /**
-   * Contains the list of tokens that make up the semantic lookahead if any. If
-   * this node represents a different kind of lookahead (other than semantic
-   * lookahead), then this list contains nothing. If this list contains
-   * something, then it is the boolean expression that forms the semantic
-   * lookahead. In this case, the following fields "amount" and "la_expansion"
-   * are ignored.
+   * Contains the list of tokens that make up the semantic lookahead if any. If this node represents
+   * a different kind of lookahead (other than semantic lookahead), then this list contains nothing.
+   * If this list contains something, then it is the boolean expression that forms the semantic
+   * lookahead. In this case, the following fields "amount" and "la_expansion" are ignored.
    */
   private final ICommonsList <Token> m_action_tokens = new CommonsArrayList <> ();
 
   /**
-   * The lookahead amount. Its default value essentially gives us infinite
-   * lookahead.
+   * The lookahead amount. Its default value essentially gives us infinite lookahead.
    */
   private int m_amount = Integer.MAX_VALUE;
 
   /**
-   * The expansion used to determine whether or not to choose the corresponding
-   * parse option. This expansion is parsed upto "amount" tokens of lookahead or
-   * until a complete match for it is found. Usually, this is the same as the
-   * expansion to be parsed.
+   * The expansion used to determine whether or not to choose the corresponding parse option. This
+   * expansion is parsed upto "amount" tokens of lookahead or until a complete match for it is
+   * found. Usually, this is the same as the expansion to be parsed.
    */
   private Expansion m_la_expansion;
 

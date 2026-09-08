@@ -37,8 +37,8 @@ import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.Token;
 
 /**
- * Describes regular expressions which are referred to just by their name. This
- * means that a regular expression with this name has been declared earlier.
+ * Describes regular expressions which are referred to just by their name. This means that a regular
+ * expression with this name has been declared earlier.
  */
 
 public class ExpRJustName extends AbstractExpRegularExpression

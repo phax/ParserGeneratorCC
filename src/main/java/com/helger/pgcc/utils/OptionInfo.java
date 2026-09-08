@@ -50,9 +50,9 @@ import com.helger.base.compare.IComparable;
  *        The value to use when nothing sets the option. May be <code>null</code>.
  * @author Philip Helger
  */
-public record OptionInfo (@NonNull String name,
-                          @NonNull EOptionType type,
-                          @Nullable Comparable <?> defaultValue) implements IComparable <OptionInfo>
+public record OptionInfo (@NonNull String name, @NonNull EOptionType type, @Nullable Comparable <?> defaultValue)
+                         implements
+                         IComparable <OptionInfo>
 {
   public int compareTo (final OptionInfo o)
   {
