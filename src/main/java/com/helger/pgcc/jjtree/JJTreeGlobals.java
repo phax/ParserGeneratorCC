@@ -49,6 +49,10 @@ public class JJTreeGlobals
    */
   /**
    * The JJTree specific options, which must not be passed down to JavaCC.
+   * <p>
+   * <code>NODE_STACK_SIZE</code> is in here so that setting it does not draw a complaint from
+   * JavaCC, but nothing reads it: the generated node stack is a {@code java.util.List} that grows
+   * as needed, so there is no size to configure. It is kept for grammars that still set it.
    */
   private static final Set <String> JJTREE_OPTIONS = Set.of ("JJTREE_OUTPUT_DIRECTORY",
                                                             "MULTI",

@@ -167,6 +167,15 @@ public final class GeneratedOutputGoldenTest
                                 "-VISITOR=true",
                                 "-VISITOR_RETURN_TYPE=String",
                                 "-VISITOR_DATA_TYPE=Object"));
+    // VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME renames visit to visitASTFoo in the visitor
+    // interface, the default visitor and every jjtAccept. It only does anything with MULTI, so it
+    // needs its own case rather than riding on the plain visitor one
+    aCases.add (new GoldenCase ("jjtree-opt-visitor-typed-names",
+                                aGrammar,
+                                true,
+                                "-MULTI=true",
+                                "-VISITOR=true",
+                                "-VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME=true"));
     aCases.add (new GoldenCase ("jjtree-opt-tracktokens", aGrammar, true, "-TRACK_TOKENS=true"));
     aCases.add (new GoldenCase ("jjtree-opt-defaultvoid", aGrammar, true, "-NODE_DEFAULT_VOID=true"));
     aCases.add (new GoldenCase ("jjtree-opt-prefix", aGrammar, true, "-NODE_PREFIX=Nd", "-MULTI=true"));
