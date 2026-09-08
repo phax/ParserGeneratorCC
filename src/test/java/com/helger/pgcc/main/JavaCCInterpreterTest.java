@@ -155,6 +155,20 @@ public final class JavaCCInterpreterTest
    * class next to any number of string literals works, but the moment a second one appears every
    * input fails to tokenize.
    * <p>
+   * The cause, for whoever picks this up. With one character class the initial epsilon move set has
+   * a single member, so {@code NfaState.generateInitMoves} returns that state's own name and
+   * {@code updateNfaData} finds it. With two, the set has two members and a <em>composite</em> state
+   * name is returned, which belongs to no {@code NfaState} object - so {@code updateNfaData} stores
+   * a <code>null</code> start state, {@code buildTokenizerData} writes -1 into
+   * {@code TokenizerData.m_initialStates}, and the interpreter's {@code if (nfaStartState != -1)}
+   * skips the NFA entirely.
+   * <p>
+   * A fix has to emit a synthetic NFA state for the composite start state. Note that
+   * {@code buildTokenizerData} also adds composite member names without applying the lexical state
+   * offset it applies to every other name, which only goes unnoticed because the offset is 0 for a
+   * single lexical state. Both belong to the same unfinished upstream feature - the removed table
+   * driven token manager had a stub that built exactly such a dummy state and then discarded it.
+   * <p>
    * If somebody fixes this, this test will fail and should be turned into a positive one.
    */
   @Test
