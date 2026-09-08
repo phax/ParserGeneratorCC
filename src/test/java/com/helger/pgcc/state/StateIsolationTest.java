@@ -52,10 +52,10 @@ import com.helger.pgcc.output.java.FilesJava;
 import com.helger.pgcc.parser.Main;
 
 /**
- * The generator keeps its whole state in static fields that are reset by
- * <code>Main.reInitAll</code>, so the result of a run can depend on what ran before it in the same
- * JVM. This test generates a grammar, generates something else in between, then generates the first
- * grammar again and requires both results to be identical byte for byte.
+ * The generator used to keep its whole state in static fields, so the result of a run could depend
+ * on what ran before it in the same JVM. This test generates a grammar, generates something else in
+ * between, then generates the first grammar again and requires both results to be identical byte
+ * for byte.
  * <p>
  * It is the guard rail for replacing the static state with a proper context: as long as it passes,
  * a generator run does not depend on its history.
@@ -126,6 +126,30 @@ public final class StateIsolationTest
                   aAfter.getDifferences (aBefore),
                   "",
                   aAfter.getDifferences (aBefore));
+  }
+
+  @Test
+  public void testJJTreeDoesNotCarryNodesIntoTheNextRun () throws Exception
+  {
+    // Alpha's only node type is Alfa, Beta's only node type is Bravo. NodeFilesCpp collected the
+    // node types to emit in a static set that nothing ever cleared, so running Alpha first made
+    // Beta's output contain ASTAlfa.h, ASTAlfa.cc and a reference to Alfa in BetaTree.h.
+    //
+    // Note why the two tests above cannot see this: they generate the same grammar twice and
+    // compare, and a leak that adds the same extra node to both runs cancels out.
+    _generate ("leak-alpha", new File ("src/test/resources/state/alpha.jjt"), true);
+    _generate ("leak-beta", new File ("src/test/resources/state/beta.jjt"), true);
+
+    final File aBetaDir = new File (WORK_DIR, "leak-beta");
+    for (final File aFile : aBetaDir.listFiles ())
+      assertTrue ("Beta's output must not contain " + aFile.getName () + ", which belongs to Alpha",
+                  !aFile.getName ().contains ("Alfa"));
+
+    final File aTreeHeader = new File (aBetaDir, "BetaTree.h");
+    assertTrue (aTreeHeader + " was not generated", aTreeHeader.isFile ());
+    final String sTreeHeader = java.nio.file.Files.readString (aTreeHeader.toPath (),
+                                                              java.nio.charset.StandardCharsets.UTF_8);
+    assertTrue ("BetaTree.h must not mention Alpha's node:\n" + sTreeHeader, !sTreeHeader.contains ("Alfa"));
   }
 
   @Test

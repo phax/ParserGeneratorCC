@@ -70,6 +70,11 @@ state NFA and string literal construction.
 Three mutable statics remain and are meant to: the two console printers in `PGPrinter` and the
 `FilesJava` test hook. `Main.reInitAll ()` is two lines.
 
+When hunting for state, grep for `static final` holding a collection as well as for plain mutable
+statics - eleven per run collections hid behind it and were found only after the migration had been
+called finished. One of them made a second JJTree run in the same JVM emit the first grammar's node
+classes.
+
 Three guard rails protect this: `StateIsolationTest` (generate, generate something else, generate
 again, byte-identical), `ConcurrentGenerationTest` (two grammars at once, matching their sequential
 output) and the golden files below. See `docs/internals/state.md`.

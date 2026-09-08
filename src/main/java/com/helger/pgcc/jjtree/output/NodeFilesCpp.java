@@ -63,19 +63,17 @@ public final class NodeFilesCpp
   private NodeFilesCpp ()
   {}
 
-  private static final List <String> s_headersForJJTreeH = new ArrayList <> ();
   /**
    * ID of the latest version (of JJTree) in which one of the Node classes was modified.
    */
   private static final String s_nodeVersion = PGVersion.MAJOR_DOT_MINOR;
 
-  private static final Set <String> s_nodesToGenerate = new HashSet <> ();
 
   public static void addType (@NonNull final String type)
   {
     if (!type.equals ("Node") && !type.equals ("SimpleNode"))
     {
-      s_nodesToGenerate.add (type);
+      PGCCContext.current ().jjtree ().nodesToGenerate ().add (type);
     }
   }
 
@@ -238,7 +236,7 @@ public final class NodeFilesCpp
                                                Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     try
     {
-      for (final String sNode : s_nodesToGenerate)
+      for (final String sNode : PGCCContext.current ().jjtree ().nodesToGenerate ())
       {
         final File aFile = new File (jjtreeIncludeFile (sNode));
         try (final OutputFile aOutputFile = new OutputFile (aFile, s_nodeVersion, aOptions))
@@ -273,7 +271,7 @@ public final class NodeFilesCpp
 
     try
     {
-      for (final String aString : s_nodesToGenerate)
+      for (final String aString : PGCCContext.current ().jjtree ().nodesToGenerate ())
       {
         final String node = aString;
         final File file = new File (jjtreeImplFile (node));
@@ -329,7 +327,7 @@ public final class NodeFilesCpp
           ostr.println ("#ifndef " + includeName);
           ostr.println ("#define " + includeName);
           ostr.println ("#include \"SimpleNode.h\"");
-          for (final String aString : s_nodesToGenerate)
+          for (final String aString : PGCCContext.current ().jjtree ().nodesToGenerate ())
           {
             final String s = aString;
             ostr.println ("#include \"" + s + ".h\"");
@@ -372,7 +370,7 @@ public final class NodeFilesCpp
         outputFile.getPrintWriter ().println ("namespace " + Options.stringValue ("NAMESPACE_OPEN"));
       }
 
-      for (final String aString : s_nodesToGenerate)
+      for (final String aString : PGCCContext.current ().jjtree ().nodesToGenerate ())
       {
         final String s = aString;
         optionMap.put ("NODE_TYPE", s);
@@ -406,7 +404,7 @@ public final class NodeFilesCpp
   {
     final String name = nodeConstants ();
     final File file = new File (JJTreeOptions.getJJTreeOutputDirectory (), name + ".h");
-    s_headersForJJTreeH.add (file.getName ());
+    PGCCContext.current ().jjtree ().headersForJJTreeH ().add (file.getName ());
 
     try (final OutputFile outputFile = new OutputFile (file))
     {

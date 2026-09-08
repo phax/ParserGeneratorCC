@@ -63,6 +63,7 @@ public final class LexerState
 
   private final NfaBuildState m_aNfa = new NfaBuildState ();
   private final StringLiteralBuildState m_aStringLiterals = new StringLiteralBuildState ();
+  private final TokenizerDataBuildState m_aTokenizerDataBuild = new TokenizerDataBuildState ();
 
   private String m_sTokenMgrClassName;
   private int m_nLexStateIndex = 0;
@@ -549,6 +550,17 @@ public final class LexerState
   public StringLiteralBuildState stringLiterals ()
   {
     return m_aStringLiterals;
+  }
+
+  /**
+   * @return The scratch space for the TokenizerData that JavaCCInterpreter consumes. Unlike
+   *         {@link #nfa()} and {@link #stringLiterals()} this lives for the whole run, because it
+   *         collects one entry per lexical state.
+   */
+  @NonNull
+  public TokenizerDataBuildState tokenizerDataBuild ()
+  {
+    return m_aTokenizerDataBuild;
   }
 
   /**

@@ -38,6 +38,35 @@ The old classes are still the API — `JavaCCGlobals.grammar ()`, `Options.getOu
 That is all of them: **117 mutable statics at the start of this work, 3 now**, and neither of the
 remaining classes holds anything about a generator run.
 
+### The `static final` trap
+
+Counting `static` fields that are not `final` misses a whole category, and eleven of these were
+found only after the migration was declared finished. A `static final Map` is a *constant reference
+to a mutable object*: it reads like `MAJOR_TO_VERSION` and behaves like a global variable.
+
+| Where | What | What it did |
+|---|---|---|
+| `NfaState` | 4 maps | tokenizer data for `JavaCCInterpreter`, never cleared |
+| `ExpRStringLiteral` | 4 maps | the literal tables for the same, never cleared |
+| `NodeFilesCpp` | 2 collections | the node types to emit and the headers to include |
+| `NodeFilesJava` | 1 set | the node files already written |
+
+The JJTree ones were not theoretical. Running `alpha.jjt` and then `beta.jjt` in one JVM put
+`ASTAlfa.h`, `ASTAlfa.cc` and a reference to `Alfa` into *Beta's* output directory, because
+`NodeFilesCpp` kept adding to the same set. `StateIsolationTest` could not see it: it generated one
+grammar twice and compared, and a leak that adds the same extra node to both runs cancels out. It
+takes two *different* grammars to expose, which is what
+`testJJTreeDoesNotCarryNodesIntoTheNextRun` now does.
+
+The eight tokenizer data maps moved into `TokenizerDataBuildState`, held by `LexerState`. Its
+lifetime is the run rather than the lexical state - it collects one entry per lexical state - so it
+sits beside `nfa ()` and `stringLiterals ()` rather than inside them, and it has no reset method
+because `Main.reInitAll ()` drops the whole context anyway. The three JJTree collections moved into
+`JJTreeState`.
+
+When looking for state, grep for `static final` holding a collection as well as for plain mutable
+statics.
+
 `NfaState` and `ExpRStringLiteral` needed one extra idea. Their state is not per run, it is per
 *lexical state* — `LexGenJava.start ()` walks the lexical states and rebuilds the NFA and the
 string literal trie for each. So `LexerState` holds a `NfaBuildState` and a

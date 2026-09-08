@@ -33,8 +33,12 @@
  */
 package com.helger.pgcc.context;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -54,12 +58,50 @@ public final class JJTreeState
 {
   private final Map <String, ASTProduction> m_aProductions = new HashMap <> ();
 
+  /*
+   * What the node file generators have already written, and what they still have to write. These
+   * were static in NodeFilesJava and NodeFilesCpp and were never cleared, so a second JJTree run in
+   * the same JVM emitted the node classes of the first grammar as well: running Alpha and then Beta
+   * produced ASTAlfa in Beta's output directory, and a reference to it in BetaTree.h.
+   */
+  private final Set <String> m_aNodesGenerated = new HashSet <> ();
+  private final Set <String> m_aNodesToGenerate = new HashSet <> ();
+  private final List <String> m_aHeadersForJJTreeH = new ArrayList <> ();
+
   private String m_sParserName;
   private String m_sPackageName = "";
   private String m_sNodePackageName = "";
   private Token m_aParserImplements;
   private Token m_aParserClassBodyStart;
   private Token m_aParserImports;
+
+  /**
+   * @return The names of the node files already written in this run. Never <code>null</code>.
+   */
+  @NonNull
+  public Set <String> nodesGenerated ()
+  {
+    return m_aNodesGenerated;
+  }
+
+  /**
+   * @return The node types the C++ backend still has to emit. Never <code>null</code>.
+   */
+  @NonNull
+  public Set <String> nodesToGenerate ()
+  {
+    return m_aNodesToGenerate;
+  }
+
+  /**
+   * @return The header file names to be included from the generated JJTree header. Never
+   *         <code>null</code>.
+   */
+  @NonNull
+  public List <String> headersForJJTreeH ()
+  {
+    return m_aHeadersForJJTreeH;
+  }
 
   /** @return Production name to the production that declares it */
   @NonNull
@@ -146,6 +188,9 @@ public final class JJTreeState
   public void reset ()
   {
     m_aProductions.clear ();
+    m_aNodesGenerated.clear ();
+    m_aNodesToGenerate.clear ();
+    m_aHeadersForJJTreeH.clear ();
     m_sParserName = null;
     m_sPackageName = "";
     m_sNodePackageName = "";

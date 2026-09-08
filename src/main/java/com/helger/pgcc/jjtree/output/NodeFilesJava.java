@@ -64,7 +64,6 @@ public final class NodeFilesJava
    */
   private static final String s_nodeVersion = PGVersion.MAJOR_DOT_MINOR;
 
-  private static final Set <String> s_nodesGenerated = new HashSet <> ();
 
   public static void ensure (final JJTreeIO io, final String nodeType)
   {
@@ -95,7 +94,7 @@ public final class NodeFilesJava
       return;
     }
 
-    if (file.exists () && s_nodesGenerated.contains (file.getName ()))
+    if (file.exists () && PGCCContext.current ().jjtree ().nodesGenerated ().contains (file.getName ()))
     {
       return;
     }
@@ -107,7 +106,7 @@ public final class NodeFilesJava
     {
       outputFile.setToolName ("JJTree");
 
-      s_nodesGenerated.add (file.getName ());
+      PGCCContext.current ().jjtree ().nodesGenerated ().add (file.getName ());
 
       if (!outputFile.needToWrite ())
         return;

@@ -48,6 +48,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.context.NfaBuildState;
+import com.helger.pgcc.context.TokenizerDataBuildState;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.output.java.LexGenJava;
@@ -61,6 +62,11 @@ public class NfaState
    * @return The build state of the lexical state that is currently being generated. Never
    *         <code>null</code>.
    */
+  public static TokenizerDataBuildState tokenizerBuild ()
+  {
+    return LexGenJava.lexer ().tokenizerDataBuild ();
+  }
+
   public static NfaBuildState nfa ()
   {
     return LexGenJava.lexer ().nfa ();
@@ -3460,11 +3466,6 @@ public class NfaState
     codeGenerator.switchToMainFile ();
   }
 
-  private static final Map <Integer, NfaState> s_initialStates = new HashMap <> ();
-  private static final Map <Integer, List <NfaState>> s_statesForLexicalState = new HashMap <> ();
-  private static final Map <Integer, Integer> s_nfaStateOffset = new HashMap <> ();
-  private static final Map <Integer, Integer> s_matchAnyChar = new HashMap <> ();
-
   public static void updateNfaData (final int maxState,
                                     final int startStateName,
                                     final int lexicalStateIndex,
@@ -3488,10 +3489,10 @@ public class NfaState
       }
     }
 
-    s_initialStates.put (Integer.valueOf (lexicalStateIndex), startState);
-    s_statesForLexicalState.put (Integer.valueOf (lexicalStateIndex), cleanStates);
-    s_nfaStateOffset.put (Integer.valueOf (lexicalStateIndex), Integer.valueOf (maxState));
-    s_matchAnyChar.put (Integer.valueOf (lexicalStateIndex),
+    tokenizerBuild ().initialStates ().put (Integer.valueOf (lexicalStateIndex), startState);
+    tokenizerBuild ().statesForLexicalState ().put (Integer.valueOf (lexicalStateIndex), cleanStates);
+    tokenizerBuild ().nfaStateOffset ().put (Integer.valueOf (lexicalStateIndex), Integer.valueOf (maxState));
+    tokenizerBuild ().matchAnyChar ().put (Integer.valueOf (lexicalStateIndex),
                         Integer.valueOf (matchAnyCharKind > 0 ? matchAnyCharKind : Integer.MAX_VALUE));
   }
 
@@ -3499,10 +3500,10 @@ public class NfaState
   {
     NfaState [] cleanStates;
     final List <NfaState> cleanStateList = new ArrayList <> ();
-    for (final int l : s_statesForLexicalState.keySet ())
+    for (final int l : tokenizerBuild ().statesForLexicalState ().keySet ())
     {
-      final int offset = s_nfaStateOffset.get (Integer.valueOf (l)).intValue ();
-      final List <NfaState> states = s_statesForLexicalState.get (Integer.valueOf (l));
+      final int offset = tokenizerBuild ().nfaStateOffset ().get (Integer.valueOf (l)).intValue ();
+      final List <NfaState> states = tokenizerBuild ().statesForLexicalState ().get (Integer.valueOf (l));
       for (final NfaState state : states)
       {
         if (state.m_stateName == -1)
@@ -3541,13 +3542,13 @@ public class NfaState
       tokenizerData.addNfaState (s.m_stateName, chars, nextStates, composite, s.m_kindToPrint);
     }
     final Map <Integer, Integer> initStates = new HashMap <> ();
-    for (final int l : s_initialStates.keySet ())
+    for (final int l : tokenizerBuild ().initialStates ().keySet ())
     {
-      final NfaState x = s_initialStates.get (Integer.valueOf (l));
+      final NfaState x = tokenizerBuild ().initialStates ().get (Integer.valueOf (l));
       initStates.put (Integer.valueOf (l), Integer.valueOf (x == null ? -1 : x.m_stateName));
     }
     tokenizerData.setInitialStates (initStates);
-    tokenizerData.setWildcardKind (s_matchAnyChar);
+    tokenizerData.setWildcardKind (tokenizerBuild ().matchAnyChar ());
   }
 
   @Nullable

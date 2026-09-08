@@ -73,6 +73,7 @@ v2.0.4 - work in progress
 * Removed the dead `test/` (upstream Ant build) and `docs/` directories, and trimmed `www/doc/` to the reference pages
 * Fixed `OUTPUT_LANGUAGE` (and every other option with an indirect effect) being ignored when set on the command line instead of in the grammar file
 * Fixed the JJDoc `-BNF` output dropping every terminal from the productions, so that `<NUMBER> ( <PLUS> <NUMBER> )* <EOF>` was written as `( )* <EOF>`
+* Fixed JJTree carrying node types from one run into the next when several grammars are processed in the same JVM, so that the second grammar's output contained the first grammar's node classes. The C++ node files were affected most visibly
 
 v2.0.3 - 2026-09-08
 * Added the new option `JAVA_CHAR_STREAM_TYPE` that allows to generate a `CharSequenceCharStream` that needs no internal buffer at all ([issue #21](https://github.com/tulipcc/ParserGeneratorCC/issues/21))
