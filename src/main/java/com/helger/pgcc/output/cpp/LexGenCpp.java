@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.output.cpp;
 
+import org.jspecify.annotations.NonNull;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
@@ -68,6 +70,46 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
  */
 public class LexGenCpp extends LexGenJava
 {
+  /**
+   * Emit a C++ string literal as a char array, which is how the generated C++ carries them.
+   *
+   * @param s
+   *        The literal content. May not be <code>null</code>.
+   */
+  private void _genStringLiteralInCpp (@NonNull final String s)
+  {
+    final StringBuilder aSB = new StringBuilder (s.length () * 6 + 4);
+    aSB.append ('{');
+    for (final char c : s.toCharArray ())
+      aSB.append ("0x").append (Integer.toHexString (c)).append (", ");
+    aSB.append ("0}");
+    genCode (aSB.toString ());
+  }
+
+  /**
+   * Emit an array of C++ string literals: one char array per entry, then an array of pointers to
+   * them.
+   *
+   * @param sVarName
+   *        The name of the generated variable. May not be <code>null</code>.
+   * @param aArr
+   *        The literals. May not be <code>null</code>.
+   */
+  private void _genStringLiteralArrayInCpp (@NonNull final String sVarName, @NonNull final String [] aArr)
+  {
+    for (int i = 0; i < aArr.length; i++)
+    {
+      genCodeLine ("static const JJChar " + sVarName + "_arr_" + i + "[] = ");
+      _genStringLiteralInCpp (aArr[i]);
+      genCodeLine (";");
+    }
+
+    genCodeLine ("static const JJString " + sVarName + "[] = {");
+    for (int i = 0; i < aArr.length; i++)
+      genCodeLine (sVarName + "_arr_" + i + ", ");
+    genCodeLine ("};");
+  }
+
   private void _printClassHead ()
   {
     final List <String> aTn = new ArrayList <> (grammar ().getToolNameList ());
@@ -593,7 +635,7 @@ public class LexGenCpp extends LexGenJava
     switchToStaticsFile ();
     genCodeNewLine ();
     genCodeLine ("/** Lexer state names. */");
-    genStringLiteralArrayCPP ("lexStateNames", lexer ().getLexStateName ());
+    _genStringLiteralArrayInCpp ("lexStateNames", lexer ().getLexStateName ());
 
     if (lexer ().getMaxLexStates () > 1)
     {

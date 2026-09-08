@@ -60,6 +60,9 @@ public class MatchInfo
   private int m_nFirstFreeLoc;
 
   /**
+   * The token kinds matched so far, in order. Only the first {@link #getFirstFreeLoc()} entries
+   * are meaningful.
+   *
    * @return The value of m_aMatch.
    */
   public int [] getMatch ()
@@ -68,6 +71,9 @@ public class MatchInfo
   }
 
   /**
+   * The token kinds matched so far, in order. Only the first {@link #getFirstFreeLoc()} entries
+   * are meaningful.
+   *
    * @param aValue
    *        The new value of m_aMatch.
    */
@@ -77,6 +83,8 @@ public class MatchInfo
   }
 
   /**
+   * How many entries of the match array are in use, which is also where the next kind goes.
+   *
    * @return The value of m_nFirstFreeLoc.
    */
   public int getFirstFreeLoc ()
@@ -85,6 +93,8 @@ public class MatchInfo
   }
 
   /**
+   * How many entries of the match array are in use, which is also where the next kind goes.
+   *
    * @param aValue
    *        The new value of m_nFirstFreeLoc.
    */

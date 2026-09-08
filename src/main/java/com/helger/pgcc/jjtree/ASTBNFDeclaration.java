@@ -44,6 +44,8 @@ public class ASTBNFDeclaration extends JJTreeNode
   private NodeScope m_aNodeScope;
 
   /**
+   * The node scope.
+   *
    * @return The value of m_aNodeScope.
    */
   public NodeScope getNodeScope ()
@@ -52,6 +54,8 @@ public class ASTBNFDeclaration extends JJTreeNode
   }
 
   /**
+   * The node scope.
+   *
    * @param aValue
    *        The new value of m_aNodeScope.
    */

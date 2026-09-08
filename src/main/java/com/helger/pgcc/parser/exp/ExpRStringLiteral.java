@@ -51,7 +51,7 @@ import com.helger.pgcc.context.StringLiteralBuildState;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.output.java.LexGenJava;
-import com.helger.pgcc.parser.CodeGenerator;
+import com.helger.pgcc.parser.AbstractCodeGenerator;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.Nfa;
@@ -114,6 +114,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   }
 
   /**
+   * The image.
+   *
    * @return The value of m_sImage.
    */
   public String getImage ()
@@ -122,6 +124,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   }
 
   /**
+   * The image.
+   *
    * @param aValue
    *        The new value of m_sImage.
    */
@@ -147,7 +151,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     strLit ().resetForLexicalState ();
   }
 
-  public static void dumpStrLiteralImages (@NonNull final CodeGenerator aCodeGenerator)
+  public static void dumpStrLiteralImages (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     switch (eOutputLanguage)
@@ -244,7 +248,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     }
   }
 
-  public static void dumpStrLiteralImagesForJava (@NonNull final CodeGenerator aCodeGenerator)
+  public static void dumpStrLiteralImagesForJava (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     String sImage;
@@ -485,7 +489,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return new Nfa (aTheStartState, aFinalState);
   }
 
-  static void dumpNullStrLiterals (@NonNull final CodeGenerator aCodeGenerator)
+  static void dumpNullStrLiterals (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     aCodeGenerator.genCodeLine ("{");
 
@@ -617,7 +621,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     }
   }
 
-  static void dumpStartWithStates (@NonNull final CodeGenerator aCodeGenerator)
+  static void dumpStartWithStates (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     switch (eOutputLanguage)
@@ -694,7 +698,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     aCodeGenerator.genCodeLine ("}");
   }
 
-  static void dumpBoilerPlate (@NonNull final CodeGenerator aCodeGenerator)
+  static void dumpBoilerPlate (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     switch (eOutputLanguage)
@@ -773,7 +777,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return "'" + c + "'";
   }
 
-  public static void dumpDfaCode (@NonNull final CodeGenerator aCodeGenerator)
+  public static void dumpDfaCode (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     Map <String, KindInfo> aTab;
     String sKey;
@@ -1531,7 +1535,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return Integer.MAX_VALUE;
   }
 
-  public static void generateNfaStartStates (final CodeGenerator aCodeGenerator, @NonNull final NfaState aInitialState)
+  public static void generateNfaStartStates (final AbstractCodeGenerator aCodeGenerator, @NonNull final NfaState aInitialState)
   {
     final boolean [] aSeen = new boolean [NfaState.nfa ().getGeneratedStates ()];
     final Map <String, String> aStateSets = new HashMap <> ();
@@ -1661,7 +1665,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   }
 
   static void dumpNfaStartStatesCode (@NonNull final Map <String, long []> [] aStatesForPos,
-                                      @NonNull final CodeGenerator aCodeGenerator)
+                                      @NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     if (strLit ().getMaxStrKind () == 0)
     {

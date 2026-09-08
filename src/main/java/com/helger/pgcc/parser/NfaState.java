@@ -298,6 +298,8 @@ public class NfaState
   // From hereon down all the functions are used for code generation
 
   /**
+   * The ascii moves.
+   *
    * @return The value of m_aAsciiMoves.
    */
   public long [] getAsciiMoves ()
@@ -306,6 +308,8 @@ public class NfaState
   }
 
   /**
+   * The ascii moves.
+   *
    * @param aValue
    *        The new value of m_aAsciiMoves.
    */
@@ -315,6 +319,8 @@ public class NfaState
   }
 
   /**
+   * The char moves.
+   *
    * @return The value of m_aCharMoves.
    */
   public char [] getCharMoves ()
@@ -323,6 +329,8 @@ public class NfaState
   }
 
   /**
+   * The char moves.
+   *
    * @param aValue
    *        The new value of m_aCharMoves.
    */
@@ -332,6 +340,8 @@ public class NfaState
   }
 
   /**
+   * The next.
+   *
    * @return The value of m_aNext.
    */
   public NfaState getNext ()
@@ -340,6 +350,8 @@ public class NfaState
   }
 
   /**
+   * The next.
+   *
    * @param aValue
    *        The new value of m_aNext.
    */
@@ -349,6 +361,8 @@ public class NfaState
   }
 
   /**
+   * The epsilon moves.
+   *
    * @return The value of m_aEpsilonMoves.
    */
   public List <NfaState> getEpsilonMoves ()
@@ -357,6 +371,8 @@ public class NfaState
   }
 
   /**
+   * The state name.
+   *
    * @return The value of m_nStateName.
    */
   public int getStateName ()
@@ -365,6 +381,8 @@ public class NfaState
   }
 
   /**
+   * The state name.
+   *
    * @param aValue
    *        The new value of m_nStateName.
    */
@@ -374,6 +392,8 @@ public class NfaState
   }
 
   /**
+   * The kind.
+   *
    * @return The value of m_nKind.
    */
   public int getKind ()
@@ -382,6 +402,8 @@ public class NfaState
   }
 
   /**
+   * The kind.
+   *
    * @param aValue
    *        The new value of m_nKind.
    */
@@ -391,6 +413,8 @@ public class NfaState
   }
 
   /**
+   * The in next of.
+   *
    * @return The value of m_nInNextOf.
    */
   public int getInNextOf ()
@@ -399,6 +423,8 @@ public class NfaState
   }
 
   /**
+   * The in next of.
+   *
    * @param aValue
    *        The new value of m_nInNextOf.
    */
@@ -408,6 +434,8 @@ public class NfaState
   }
 
   /**
+   * The dummy.
+   *
    * @return The value of m_bDummy.
    */
   public boolean isDummy ()
@@ -416,6 +444,8 @@ public class NfaState
   }
 
   /**
+   * The dummy.
+   *
    * @param aValue
    *        The new value of m_bDummy.
    */
@@ -425,6 +455,8 @@ public class NfaState
   }
 
   /**
+   * The is final.
+   *
    * @return The value of m_bIsFinal.
    */
   public boolean isFinal ()
@@ -433,6 +465,8 @@ public class NfaState
   }
 
   /**
+   * The is final.
+   *
    * @param aValue
    *        The new value of m_bIsFinal.
    */
@@ -1006,7 +1040,7 @@ public class NfaState
    * generates code to match a char with the common bit vectors. (Need a better comment).
    */
 
-  private void _generateNonAsciiMoves (@NonNull final CodeGenerator aCodeGenerator)
+  private void _generateNonAsciiMoves (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
@@ -1368,7 +1402,7 @@ public class NfaState
     return aRet;
   }
 
-  public static void dumpStateSets (@NonNull final CodeGenerator aCodeGenerator)
+  public static void dumpStateSets (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
@@ -1755,7 +1789,7 @@ public class NfaState
     return false;
   }
 
-  private static void _dumpHeadForCase (@NonNull final CodeGenerator aCodeGenerator, final int nByteNum)
+  private static void _dumpHeadForCase (@NonNull final AbstractCodeGenerator aCodeGenerator, final int nByteNum)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     if (nByteNum == 0)
@@ -1877,7 +1911,7 @@ public class NfaState
     return aPartition;
   }
 
-  private String _printNoBreak (@NonNull final CodeGenerator aCodeGenerator,
+  private String _printNoBreak (@NonNull final AbstractCodeGenerator aCodeGenerator,
                                 final int nByteNum,
                                 @NonNull final boolean [] aDumped)
   {
@@ -1906,7 +1940,7 @@ public class NfaState
     return ("               case " + m_nStateName + ":\n");
   }
 
-  private static void _dumpCompositeStatesAsciiMoves (@NonNull final CodeGenerator aCodeGenerator,
+  private static void _dumpCompositeStatesAsciiMoves (@NonNull final AbstractCodeGenerator aCodeGenerator,
                                                       final String sKey,
                                                       final int nByteNum,
                                                       @NonNull final boolean [] aDumped)
@@ -2011,7 +2045,7 @@ public class NfaState
     return _elemOccurs (m_nStateName, aSet) >= 0;
   }
 
-  private void _dumpAsciiMoveForCompositeState (@NonNull final CodeGenerator aCodeGenerator,
+  private void _dumpAsciiMoveForCompositeState (@NonNull final AbstractCodeGenerator aCodeGenerator,
                                                 final int nByteNum,
                                                 final boolean bElseNeeded)
   {
@@ -2125,7 +2159,7 @@ public class NfaState
       aCodeGenerator.genCodeLine ("                  }");
   }
 
-  private void _dumpAsciiMove (@NonNull final CodeGenerator aCodeGenerator, final int nByteNum, final boolean dumped[])
+  private void _dumpAsciiMove (@NonNull final AbstractCodeGenerator aCodeGenerator, final int nByteNum, final boolean dumped[])
   {
     final NfaBuildState aNfa = nfa ();
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
@@ -2305,7 +2339,7 @@ public class NfaState
       aCodeGenerator.genCodeLine ("                  break;");
   }
 
-  private static void _dumpAsciiMoves (@NonNull final CodeGenerator aCodeGenerator, final int nByteNum)
+  private static void _dumpAsciiMoves (@NonNull final AbstractCodeGenerator aCodeGenerator, final int nByteNum)
   {
     final NfaBuildState aNfa = nfa ();
     final boolean [] aDumped = new boolean [Math.max (aNfa.getGeneratedStates (), aNfa.getDummyStateIndex () + 1)];
@@ -2371,7 +2405,7 @@ public class NfaState
     aCodeGenerator.genCodeLine ("         } while(i != startsAt);");
   }
 
-  private static void _dumpCompositeStatesNonAsciiMoves (@NonNull final CodeGenerator aCodeGenerator,
+  private static void _dumpCompositeStatesNonAsciiMoves (@NonNull final AbstractCodeGenerator aCodeGenerator,
                                                          final String sKey,
                                                          @NonNull final boolean [] aDumped)
   {
@@ -2463,7 +2497,7 @@ public class NfaState
       aCodeGenerator.genCodeLine ("                  break;");
   }
 
-  private final void _dumpNonAsciiMoveForCompositeState (@NonNull final CodeGenerator aCodeGenerator)
+  private final void _dumpNonAsciiMoveForCompositeState (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     boolean bNextIntersects = _selfLoop ();
@@ -2555,7 +2589,7 @@ public class NfaState
       aCodeGenerator.genCodeLine ("                  }");
   }
 
-  private final void _dumpNonAsciiMove (@NonNull final CodeGenerator aCodeGenerator, final boolean dumped[])
+  private final void _dumpNonAsciiMove (@NonNull final AbstractCodeGenerator aCodeGenerator, final boolean dumped[])
   {
     final NfaBuildState aNfa = nfa ();
     boolean bNextIntersects = _selfLoop () && m_bIsComposite;
@@ -2710,7 +2744,7 @@ public class NfaState
     aCodeGenerator.genCodeLine ("                  break;");
   }
 
-  public static void dumpCharAndRangeMoves (@NonNull final CodeGenerator aCodeGenerator)
+  public static void dumpCharAndRangeMoves (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     final boolean [] aDumped = new boolean [Math.max (aNfa.getGeneratedStates (), aNfa.getDummyStateIndex () + 1)];
@@ -2774,7 +2808,7 @@ public class NfaState
     aCodeGenerator.genCodeLine ("         } while(i != startsAt);");
   }
 
-  public static void dumpNonAsciiMoveMethods (final CodeGenerator aCodeGenerator)
+  public static void dumpNonAsciiMoveMethods (final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     if (!Options.isJavaUnicodeEscape () && !aNfa.isUnicodeWarningGiven ())
@@ -2789,7 +2823,7 @@ public class NfaState
     }
   }
 
-  private void _dumpNonAsciiMoveMethod (@NonNull final CodeGenerator aCodeGenerator)
+  private void _dumpNonAsciiMoveMethod (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
@@ -2881,7 +2915,7 @@ public class NfaState
   }
 
   // private static boolean boilerPlateDumped = false;
-  public static void printBoilerPlateJava (@NonNull final CodeGenerator aCodeGenerator)
+  public static void printBoilerPlateJava (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     aCodeGenerator.genCodeLine ("private void jjCheckNAdd(int state)");
@@ -2930,7 +2964,7 @@ public class NfaState
   }
 
   // private static boolean boilerPlateDumped = false;
-  public static void printBoilerPlateCPP (@NonNull final CodeGenerator aCodeGenerator)
+  public static void printBoilerPlateCPP (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     aCodeGenerator.switchToIncludeFile ();
@@ -3081,7 +3115,7 @@ public class NfaState
     }
   }
 
-  public static void dumpMoveNfa (@NonNull final CodeGenerator aCodeGenerator)
+  public static void dumpMoveNfa (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     // if (!boilerPlateDumped)
@@ -3408,7 +3442,7 @@ public class NfaState
     aNfa.getAllStates ().clear ();
   }
 
-  public static void dumpStatesForStateCPP (@NonNull final CodeGenerator aCodeGenerator)
+  public static void dumpStatesForStateCPP (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     if (aNfa.getStatesForState () == null)
@@ -3480,7 +3514,7 @@ public class NfaState
     aCodeGenerator.switchToMainFile ();
   }
 
-  public static void dumpStatesForStateJava (@NonNull final CodeGenerator aCodeGenerator)
+  public static void dumpStatesForStateJava (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     aCodeGenerator.genCodeLine ("protected static final class States {");
@@ -3528,7 +3562,7 @@ public class NfaState
     aCodeGenerator.genCodeLine ("}");
   }
 
-  public static void dumpStatesForKind (@NonNull final CodeGenerator aCodeGenerator)
+  public static void dumpStatesForKind (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();

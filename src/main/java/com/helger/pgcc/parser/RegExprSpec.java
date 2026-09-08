@@ -63,6 +63,8 @@ public class RegExprSpec
   private Token m_aNsTok;
 
   /**
+   * The rexp.
+   *
    * @return The value of m_aRexp.
    */
   public AbstractExpRegularExpression getRexp ()
@@ -71,6 +73,8 @@ public class RegExprSpec
   }
 
   /**
+   * The rexp.
+   *
    * @param aValue
    *        The new value of m_aRexp.
    */
@@ -80,6 +84,8 @@ public class RegExprSpec
   }
 
   /**
+   * The act.
+   *
    * @return The value of m_aAct.
    */
   public ExpAction getAct ()
@@ -88,6 +94,8 @@ public class RegExprSpec
   }
 
   /**
+   * The act.
+   *
    * @param aValue
    *        The new value of m_aAct.
    */
@@ -97,6 +105,8 @@ public class RegExprSpec
   }
 
   /**
+   * The next state.
+   *
    * @return The value of m_sNextState.
    */
   public String getNextState ()
@@ -105,6 +115,8 @@ public class RegExprSpec
   }
 
   /**
+   * The next state.
+   *
    * @param aValue
    *        The new value of m_sNextState.
    */
@@ -114,6 +126,8 @@ public class RegExprSpec
   }
 
   /**
+   * The ns tok.
+   *
    * @return The value of m_aNsTok.
    */
   public Token getNsTok ()
@@ -122,6 +136,8 @@ public class RegExprSpec
   }
 
   /**
+   * The ns tok.
+   *
    * @param aValue
    *        The new value of m_aNsTok.
    */

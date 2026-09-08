@@ -40,6 +40,8 @@ public class ASTJavacode extends ASTProduction
   private Token m_aStmBeginLoc;
 
   /**
+   * The stm begin loc.
+   *
    * @return The value of m_aStmBeginLoc.
    */
   public Token getStmBeginLoc ()
@@ -48,6 +50,8 @@ public class ASTJavacode extends ASTProduction
   }
 
   /**
+   * The stm begin loc.
+   *
    * @param aValue
    *        The new value of m_aStmBeginLoc.
    */

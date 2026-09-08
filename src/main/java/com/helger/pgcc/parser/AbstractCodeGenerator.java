@@ -53,7 +53,7 @@ import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.utils.OutputFileGenerator;
 
-public class CodeGenerator
+public abstract class AbstractCodeGenerator
 {
   private final StringBuilder m_aMainBuffer = new StringBuilder ();
   private final StringBuilder m_aIncludeBuffer = new StringBuilder ();
@@ -63,7 +63,7 @@ public class CodeGenerator
   private int m_nLine;
   private int m_nCol;
 
-  public CodeGenerator ()
+  protected AbstractCodeGenerator ()
   {}
 
   @NonNull
@@ -112,35 +112,6 @@ public class CodeGenerator
   {
     m_nLine = nLine;
     m_nCol = nCol;
-  }
-
-  public final void genStringLiteralArrayCPP (final String sVarName, @NonNull final String [] aArr)
-  {
-    // First generate char array vars
-    for (int i = 0; i < aArr.length; i++)
-    {
-      genCodeLine ("static const JJChar " + sVarName + "_arr_" + i + "[] = ");
-      genStringLiteralInCPP (aArr[i]);
-      genCodeLine (";");
-    }
-
-    genCodeLine ("static const JJString " + sVarName + "[] = {");
-    for (int i = 0; i < aArr.length; i++)
-    {
-      genCodeLine (sVarName + "_arr_" + i + ", ");
-    }
-    genCodeLine ("};");
-  }
-
-  public final void genStringLiteralInCPP (@NonNull final String s)
-  {
-    // String literals in CPP become char arrays
-    m_aOutputBuffer.append ("{");
-    for (final char c : s.toCharArray ())
-    {
-      m_aOutputBuffer.append ("0x").append (Integer.toHexString (c)).append (", ");
-    }
-    m_aOutputBuffer.append ("0}");
   }
 
   public final void genCode (final char c)

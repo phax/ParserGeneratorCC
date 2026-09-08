@@ -42,6 +42,8 @@ public final class Container
   private Object m_aMember;
 
   /**
+   * The member.
+   *
    * @return The value of m_aMember.
    */
   public Object getMember ()
@@ -50,6 +52,8 @@ public final class Container
   }
 
   /**
+   * The member.
+   *
    * @param aValue
    *        The new value of m_aMember.
    */

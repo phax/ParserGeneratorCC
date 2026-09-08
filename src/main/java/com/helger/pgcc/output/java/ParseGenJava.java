@@ -44,7 +44,7 @@ import java.util.List;
 import com.helger.base.system.EJavaVersion;
 import com.helger.pgcc.CPG;
 import com.helger.pgcc.output.EOutputLanguage;
-import com.helger.pgcc.parser.CodeGenerator;
+import com.helger.pgcc.parser.AbstractCodeGenerator;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.JavaCCParserConstants;
@@ -56,7 +56,7 @@ import com.helger.pgcc.parser.Token;
 /**
  * Generate the parser.
  */
-public class ParseGenJava extends CodeGenerator
+public class ParseGenJava extends AbstractCodeGenerator
 {
   /**
    * Generate everything of a parser constructor that comes after the assignment of the

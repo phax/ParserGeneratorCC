@@ -61,6 +61,8 @@ public class TextGenerator implements IDocGenerator
   private Writer m_aPW;
 
   /**
+   * The p w.
+   *
    * @return The value of m_aPW.
    */
   public Writer getPW ()
@@ -69,6 +71,8 @@ public class TextGenerator implements IDocGenerator
   }
 
   /**
+   * The p w.
+   *
    * @param aValue
    *        The new value of m_aPW.
    */

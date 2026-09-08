@@ -78,6 +78,8 @@ public class TokenizerData
   private int m_nDefaultLexState;
 
   /**
+   * The parser name.
+   *
    * @return The value of m_sParserName.
    */
   public String getParserName ()
@@ -91,6 +93,8 @@ public class TokenizerData
   }
 
   /**
+   * The decls.
+   *
    * @return The value of m_sDecls.
    */
   public String getDecls ()
@@ -104,6 +108,8 @@ public class TokenizerData
   }
 
   /**
+   * The literal sequence.
+   *
    * @return The value of m_aLiteralSequence.
    */
   public Map <Integer, List <String>> getLiteralSequence ()
@@ -117,6 +123,8 @@ public class TokenizerData
   }
 
   /**
+   * The literal kinds.
+   *
    * @return The value of m_aLiteralKinds.
    */
   public Map <Integer, List <Integer>> getLiteralKinds ()
@@ -130,6 +138,8 @@ public class TokenizerData
   }
 
   /**
+   * The kind to nfa start state.
+   *
    * @return The value of m_aKindToNfaStartState.
    */
   public Map <Integer, Integer> getKindToNfaStartState ()
@@ -143,6 +153,8 @@ public class TokenizerData
   }
 
   /**
+   * The nfa.
+   *
    * @return The value of m_aNfa.
    */
   public Map <Integer, NfaState> getNfa ()
@@ -161,6 +173,8 @@ public class TokenizerData
   }
 
   /**
+   * The all matches.
+   *
    * @return The value of m_aAllMatches.
    */
   public Map <Integer, MatchInfo> getAllMatches ()
@@ -211,6 +225,8 @@ public class TokenizerData
   }
 
   /**
+   * The initial states.
+   *
    * @return The value of m_aInitialStates.
    */
   public Map <Integer, Integer> getInitialStates ()
@@ -224,6 +240,8 @@ public class TokenizerData
   }
 
   /**
+   * The wildcard kind.
+   *
    * @return The value of m_aWildcardKind.
    */
   public Map <Integer, Integer> getWildcardKind ()
@@ -237,6 +255,8 @@ public class TokenizerData
   }
 
   /**
+   * The lex state names.
+   *
    * @return The value of m_aLexStateNames.
    */
   public String [] getLexStateNames ()
@@ -250,6 +270,8 @@ public class TokenizerData
   }
 
   /**
+   * The default lex state.
+   *
    * @return The value of m_nDefaultLexState.
    */
   public int getDefaultLexState ()

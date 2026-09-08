@@ -113,6 +113,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The lex states.
+   *
    * @return The value of m_aLexStates.
    */
   public String [] getLexStates ()
@@ -121,6 +123,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The lex states.
+   *
    * @param aValue
    *        The new value of m_aLexStates.
    */
@@ -130,6 +134,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The kind.
+   *
    * @return The value of m_eKind.
    */
   public ETokenKind getKind ()
@@ -138,6 +144,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The kind.
+   *
    * @param aValue
    *        The new value of m_eKind.
    */
@@ -147,6 +155,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The respecs.
+   *
    * @return The value of m_aRespecs.
    */
   public List <RegExprSpec> getRespecs ()
@@ -155,6 +165,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The respecs.
+   *
    * @param aValue
    *        The new value of m_aRespecs.
    */
@@ -164,6 +176,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The is explicit.
+   *
    * @return The value of m_bIsExplicit.
    */
   public boolean isExplicit ()
@@ -172,6 +186,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The is explicit.
+   *
    * @param aValue
    *        The new value of m_bIsExplicit.
    */
@@ -181,6 +197,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The ignore case.
+   *
    * @return The value of m_bIgnoreCase.
    */
   public boolean isIgnoreCase ()
@@ -189,6 +207,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The ignore case.
+   *
    * @param aValue
    *        The new value of m_bIgnoreCase.
    */
@@ -198,6 +218,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The first token.
+   *
    * @return The value of m_aFirstToken.
    */
   public Token getFirstToken ()
@@ -206,6 +228,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The first token.
+   *
    * @param aValue
    *        The new value of m_aFirstToken.
    */
@@ -215,6 +239,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The last token.
+   *
    * @return The value of m_aLastToken.
    */
   public Token getLastToken ()
@@ -223,6 +249,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * The last token.
+   *
    * @param aValue
    *        The new value of m_aLastToken.
    */

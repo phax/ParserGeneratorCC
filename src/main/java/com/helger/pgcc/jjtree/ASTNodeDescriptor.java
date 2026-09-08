@@ -67,6 +67,8 @@ public class ASTNodeDescriptor extends JJTreeNode
   private String m_sName;
 
   /**
+   * The name.
+   *
    * @return The value of m_sName.
    */
   public String getName ()
@@ -75,6 +77,8 @@ public class ASTNodeDescriptor extends JJTreeNode
   }
 
   /**
+   * The name.
+   *
    * @param aValue
    *        The new value of m_sName.
    */
@@ -86,6 +90,8 @@ public class ASTNodeDescriptor extends JJTreeNode
   private boolean m_bIsGT;
 
   /**
+   * The is g t.
+   *
    * @return The value of m_bIsGT.
    */
   public boolean isGT ()
@@ -94,6 +100,8 @@ public class ASTNodeDescriptor extends JJTreeNode
   }
 
   /**
+   * The is g t.
+   *
    * @param aValue
    *        The new value of m_bIsGT.
    */
@@ -105,6 +113,8 @@ public class ASTNodeDescriptor extends JJTreeNode
   private ASTNodeDescriptorExpression m_aExpression;
 
   /**
+   * The expression.
+   *
    * @return The value of m_aExpression.
    */
   public ASTNodeDescriptorExpression getExpression ()
@@ -113,6 +123,8 @@ public class ASTNodeDescriptor extends JJTreeNode
   }
 
   /**
+   * The expression.
+   *
    * @param aValue
    *        The new value of m_aExpression.
    */

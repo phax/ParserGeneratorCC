@@ -76,7 +76,7 @@ public class ParseEngine
   private int m_nGenSymbolIndex = 0;
   private int m_nIndentCount = 0;
   private boolean m_bJJ2LA = false;
-  private CodeGenerator m_aCodeGenerator;
+  private AbstractCodeGenerator m_aCodeGenerator;
 
   /**
    * These lists are used to maintain expansions for which code generation in phase 2 and phase 3 is
@@ -1890,7 +1890,7 @@ public class ParseEngine
     }
   }
 
-  public void build (@NonNull final CodeGenerator aCodeGenerator)
+  public void build (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     m_aCodeGenerator = aCodeGenerator;
     final EOutputLanguage eOutputLanguage = m_aCodeGenerator.getOutputLanguage ();

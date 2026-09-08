@@ -56,7 +56,7 @@ import com.helger.pgcc.context.LexerState;
 import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.OutputHelper;
-import com.helger.pgcc.parser.CodeGenerator;
+import com.helger.pgcc.parser.AbstractCodeGenerator;
 import com.helger.pgcc.parser.ETokenKind;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCParserConstants;
@@ -74,7 +74,7 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
 /**
  * Generate lexer.
  */
-public class LexGenJava extends CodeGenerator
+public class LexGenJava extends AbstractCodeGenerator
 {
   /**
    * @return The token manager generation state of the current run. Never <code>null</code>. This
@@ -667,7 +667,7 @@ public class LexGenJava extends CodeGenerator
 
     NfaState.printBoilerPlateJava (this);
 
-    final String sCharStreamName = CodeGenerator.getCharStreamName ();
+    final String sCharStreamName = AbstractCodeGenerator.getCharStreamName ();
 
     final Map <String, Object> aOpts = new HashMap <> ();
     aOpts.put ("charStreamName", sCharStreamName);

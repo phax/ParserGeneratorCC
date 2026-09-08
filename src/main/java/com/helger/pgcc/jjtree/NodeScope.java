@@ -42,6 +42,8 @@ public class NodeScope
   private ASTProduction m_aProduction;
 
   /**
+   * The production.
+   *
    * @return The value of m_aProduction.
    */
   public ASTProduction getProduction ()
@@ -50,6 +52,8 @@ public class NodeScope
   }
 
   /**
+   * The production.
+   *
    * @param aValue
    *        The new value of m_aProduction.
    */
@@ -61,6 +65,8 @@ public class NodeScope
   private ASTNodeDescriptor m_aNodeDescriptor;
 
   /**
+   * The node descriptor.
+   *
    * @param aValue
    *        The new value of m_aNodeDescriptor.
    */
@@ -72,6 +78,8 @@ public class NodeScope
   private String m_sClosedVar;
 
   /**
+   * The closed var.
+   *
    * @return The value of m_sClosedVar.
    */
   public String getClosedVar ()
@@ -80,6 +88,8 @@ public class NodeScope
   }
 
   /**
+   * The closed var.
+   *
    * @param aValue
    *        The new value of m_sClosedVar.
    */
@@ -91,6 +101,8 @@ public class NodeScope
   private String m_sExceptionVar;
 
   /**
+   * The exception var.
+   *
    * @return The value of m_sExceptionVar.
    */
   public String getExceptionVar ()
@@ -99,6 +111,8 @@ public class NodeScope
   }
 
   /**
+   * The exception var.
+   *
    * @param aValue
    *        The new value of m_sExceptionVar.
    */
@@ -110,6 +124,8 @@ public class NodeScope
   private String m_sNodeVar;
 
   /**
+   * The node var.
+   *
    * @return The value of m_sNodeVar.
    */
   public String getNodeVar ()
@@ -118,6 +134,8 @@ public class NodeScope
   }
 
   /**
+   * The node var.
+   *
    * @param aValue
    *        The new value of m_sNodeVar.
    */
@@ -129,6 +147,8 @@ public class NodeScope
   private int m_nScopeNumber;
 
   /**
+   * The scope number.
+   *
    * @return The value of m_nScopeNumber.
    */
   public int getScopeNumber ()
@@ -137,6 +157,8 @@ public class NodeScope
   }
 
   /**
+   * The scope number.
+   *
    * @param aValue
    *        The new value of m_nScopeNumber.
    */

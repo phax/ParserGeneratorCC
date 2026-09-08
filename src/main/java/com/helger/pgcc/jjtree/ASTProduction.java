@@ -47,6 +47,8 @@ public class ASTProduction extends JJTreeNode
   private String m_sName;
 
   /**
+   * The name.
+   *
    * @return The value of m_sName.
    */
   public String getName ()
@@ -55,6 +57,8 @@ public class ASTProduction extends JJTreeNode
   }
 
   /**
+   * The name.
+   *
    * @param aValue
    *        The new value of m_sName.
    */
@@ -66,6 +70,8 @@ public class ASTProduction extends JJTreeNode
   private List <String> m_aThrowsList = new ArrayList <> ();
 
   /**
+   * The throws list.
+   *
    * @return The value of m_aThrowsList.
    */
   public List <String> getThrowsList ()
@@ -74,6 +80,8 @@ public class ASTProduction extends JJTreeNode
   }
 
   /**
+   * The throws list.
+   *
    * @param aValue
    *        The new value of m_aThrowsList.
    */

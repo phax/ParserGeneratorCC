@@ -90,6 +90,7 @@ v3.0.0 - work in progress
 * The generated `CharStream` and `AbstractCharStream` are fully documented. `javadoc` reported 28 warnings on them and now reports none, so a project that runs `javadoc` over its generated parser no longer inherits them. The parameter `newCol` of `adjustBeginLineColumn` is `nNewCol`
 * Generation of grammars whose tokens are built from character classes is about three times faster. The NFA construction was resolving the `ThreadLocal` that holds the run's state once per element rather than once per call - in one case for every state, for every state
 * **Breaking API change** Method names use camel case throughout: `JavaCCErrors.parse_error` is `parseError`, `semantic_error` is `semanticError`, `FilesJava.gen_Token` is `genToken` and so on for 27 names. The `jj_` and `trace_` methods of *generated* parsers keep their names - grammar action code calls them
+* **Breaking API change** `CodeGenerator` is `AbstractCodeGenerator` and is abstract - nothing outside the tests ever instantiated it. The two C++ only methods it carried, `genStringLiteralArrayCPP` and `genStringLiteralInCPP`, moved into `LexGenCpp` where the only caller is
 * **Breaking API change** Removed `JavaCCErrors.reInit ()`, deprecated since the error counters moved into `PGCCContext`
 
 v2.0.3 - 2026-09-08

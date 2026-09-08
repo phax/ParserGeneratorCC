@@ -71,6 +71,8 @@ public final class ExpTryBlock extends Expansion
   private List <Token> m_aFinallyblk;
 
   /**
+   * The exp.
+   *
    * @return The value of m_aExp.
    */
   public Expansion getExp ()
@@ -79,6 +81,8 @@ public final class ExpTryBlock extends Expansion
   }
 
   /**
+   * The exp.
+   *
    * @param aValue
    *        The new value of m_aExp.
    */
@@ -99,6 +103,8 @@ public final class ExpTryBlock extends Expansion
   }
 
   /**
+   * The types.
+   *
    * @return The value of m_aTypes.
    */
   public List <List <Token>> getTypes ()
@@ -107,6 +113,8 @@ public final class ExpTryBlock extends Expansion
   }
 
   /**
+   * The types.
+   *
    * @param aValue
    *        The new value of m_aTypes.
    */
@@ -116,6 +124,8 @@ public final class ExpTryBlock extends Expansion
   }
 
   /**
+   * The ids.
+   *
    * @return The value of m_aIds.
    */
   public List <Token> getIds ()
@@ -124,6 +134,8 @@ public final class ExpTryBlock extends Expansion
   }
 
   /**
+   * The ids.
+   *
    * @param aValue
    *        The new value of m_aIds.
    */
@@ -133,6 +145,8 @@ public final class ExpTryBlock extends Expansion
   }
 
   /**
+   * The catchblks.
+   *
    * @return The value of m_aCatchblks.
    */
   public List <List <Token>> getCatchblks ()
@@ -141,6 +155,8 @@ public final class ExpTryBlock extends Expansion
   }
 
   /**
+   * The catchblks.
+   *
    * @param aValue
    *        The new value of m_aCatchblks.
    */
@@ -150,6 +166,8 @@ public final class ExpTryBlock extends Expansion
   }
 
   /**
+   * The finallyblk.
+   *
    * @return The value of m_aFinallyblk.
    */
   public List <Token> getFinallyblk ()
@@ -158,6 +176,8 @@ public final class ExpTryBlock extends Expansion
   }
 
   /**
+   * The finallyblk.
+   *
    * @param aValue
    *        The new value of m_aFinallyblk.
    */

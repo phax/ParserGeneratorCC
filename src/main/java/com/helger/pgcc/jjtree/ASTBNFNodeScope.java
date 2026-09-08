@@ -40,6 +40,8 @@ public class ASTBNFNodeScope extends JJTreeNode
   private NodeScope m_aNodeScope;
 
   /**
+   * The node scope.
+   *
    * @return The value of m_aNodeScope.
    */
   public NodeScope getNodeScope ()
@@ -48,6 +50,8 @@ public class ASTBNFNodeScope extends JJTreeNode
   }
 
   /**
+   * The node scope.
+   *
    * @param aValue
    *        The new value of m_aNodeScope.
    */
@@ -59,6 +63,8 @@ public class ASTBNFNodeScope extends JJTreeNode
   private JJTreeNode m_aExpansionUnit;
 
   /**
+   * The expansion unit.
+   *
    * @return The value of m_aExpansionUnit.
    */
   public JJTreeNode getExpansionUnit ()
@@ -67,6 +73,8 @@ public class ASTBNFNodeScope extends JJTreeNode
   }
 
   /**
+   * The expansion unit.
+   *
    * @param aValue
    *        The new value of m_aExpansionUnit.
    */

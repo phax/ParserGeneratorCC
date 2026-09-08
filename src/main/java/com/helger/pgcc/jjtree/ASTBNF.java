@@ -50,6 +50,8 @@ public class ASTBNF extends ASTProduction
   private Token m_aDeclBeginLoc;
 
   /**
+   * The decl begin loc.
+   *
    * @return The value of m_aDeclBeginLoc.
    */
   public Token getDeclBeginLoc ()
@@ -58,6 +60,8 @@ public class ASTBNF extends ASTProduction
   }
 
   /**
+   * The decl begin loc.
+   *
    * @param aValue
    *        The new value of m_aDeclBeginLoc.
    */

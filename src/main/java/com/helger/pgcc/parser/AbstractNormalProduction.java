@@ -110,6 +110,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   private int m_nLeIndex = 0;
 
   /**
+   * How many entries of the left expansion array are in use. Left recursion detection fills it.
+   *
    * @return The value of m_nLeIndex.
    */
   public int getLeIndex ()
@@ -118,6 +120,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * How many entries of the left expansion array are in use. Left recursion detection fills it.
+   *
    * @param aValue
    *        The new value of m_nLeIndex.
    */

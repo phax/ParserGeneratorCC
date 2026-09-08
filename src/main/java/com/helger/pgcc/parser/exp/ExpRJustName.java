@@ -51,6 +51,8 @@ public final class ExpRJustName extends AbstractExpRegularExpression
   private AbstractExpRegularExpression m_aRegexpr;
 
   /**
+   * The regexpr.
+   *
    * @return The value of m_aRegexpr.
    */
   public AbstractExpRegularExpression getRegexpr ()
@@ -59,6 +61,8 @@ public final class ExpRJustName extends AbstractExpRegularExpression
   }
 
   /**
+   * The regexpr.
+   *
    * @param aValue
    *        The new value of m_aRegexpr.
    */
