@@ -201,18 +201,10 @@ public abstract class AbstractCodeGenerator
    */
   public final void genStaticArrayDeclaration (@NonNull final String sType, @NonNull final String sName)
   {
-    switch (getOutputLanguage ())
-    {
-      case JAVA:
-        genCode ("static final " + sType + "[] " + sName + " = ");
-        break;
-      case CPP:
-        switchToStaticsFile ();
-        genCode ("static const " + sType + " " + sName + "[] = ");
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (getOutputLanguage ());
-    }
+    // C++ keeps its constants in a file of their own
+    if (getOutputLanguage ().hasStaticsFile ())
+      switchToStaticsFile ();
+    genCode (getOutputLanguage ().getStaticArrayDeclaration (sType, sName));
   }
 
   public final void saveOutput (@NonNull final String sFileName)
@@ -431,19 +423,7 @@ public abstract class AbstractCodeGenerator
    */
   public final void genAnnotation (final String sAnn)
   {
-    final EOutputLanguage eOutputLanguage = getOutputLanguage ();
-    switch (eOutputLanguage)
-    {
-      case JAVA:
-        genCode ("@" + sAnn);
-        break;
-      case CPP:
-        // For now, it's only C++ for now
-        genCode ("/*" + sAnn + "*/");
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    genCode (getOutputLanguage ().getAnnotation (sAnn));
   }
 
   /**
@@ -454,21 +434,7 @@ public abstract class AbstractCodeGenerator
    */
   public final void genModifier (@NonNull final String sMod)
   {
-    final EOutputLanguage eOutputLanguage = getOutputLanguage ();
-    switch (eOutputLanguage)
-    {
-      case JAVA:
-        genCode (sMod);
-        break;
-      case CPP:
-        // For now, it's only C++ for now
-        final String sOrigMod = sMod.trim ().toLowerCase (Locale.US);
-        if (sOrigMod.equals ("public") || sOrigMod.equals ("protected") || sOrigMod.equals ("private"))
-          genCode (sOrigMod + ": ");
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    genCode (getOutputLanguage ().getModifier (sMod));
   }
 
   /**
@@ -489,43 +455,9 @@ public abstract class AbstractCodeGenerator
                                    @NonNull final String [] aSuperClasses,
                                    @NonNull final String [] aSuperInterfaces)
   {
-    final EOutputLanguage eOutputLanguage = getOutputLanguage ();
-    switch (eOutputLanguage)
-    {
-      case JAVA:
-        if (sMod != null)
-          genModifier (sMod);
-        genCode ("class " + sName);
-        if (aSuperClasses.length == 1 && aSuperClasses[0] != null)
-          genCode (" extends " + aSuperClasses[0]);
-        if (aSuperInterfaces.length != 0)
-          genCode (" implements ");
-        _genCommaSeperatedString (aSuperInterfaces);
-        genCodeLine (" {");
-        break;
-      case CPP:
-        genCode ("class " + sName);
-        if (aSuperClasses.length > 0 || aSuperInterfaces.length > 0)
-          genCode (" : ");
-        _genCommaSeperatedString (aSuperClasses);
-        _genCommaSeperatedString (aSuperInterfaces);
-        genCodeLine (" {");
-        genCodeLine ("public:");
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    genCode (getOutputLanguage ().getClassStart (sMod, sName, aSuperClasses, aSuperInterfaces));
   }
 
-  private void _genCommaSeperatedString (@NonNull final String [] aStrings)
-  {
-    for (int i = 0; i < aStrings.length; i++)
-    {
-      if (i > 0)
-        genCode (", ");
-      genCode (aStrings[i]);
-    }
-  }
 
   public final void generateMethodDefHeader (final String sModsAndRetType,
                                              final String sClassName,

@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.output;
 
+import java.util.Locale;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -86,6 +88,43 @@ public enum EOutputLanguage implements IHasID <String>
           aRetVal.append (ch);
       return aRetVal.toString ();
     }
+
+    @Override
+    public String getAnnotation (final String sAnnotation)
+    {
+      return "@" + sAnnotation;
+    }
+
+    @Override
+    public String getModifier (final String sModifier)
+    {
+      return sModifier;
+    }
+
+    @Override
+    public String getStaticArrayDeclaration (final String sType, final String sName)
+    {
+      return "static final " + sType + "[] " + sName + " = ";
+    }
+
+    @Override
+    public String getClassStart (final String sModifier,
+                                 final String sName,
+                                 final String [] aSuperClasses,
+                                 final String [] aSuperInterfaces)
+    {
+      final StringBuilder aSB = new StringBuilder ();
+      if (sModifier != null)
+        aSB.append (getModifier (sModifier));
+      aSB.append ("class ").append (sName);
+      if (aSuperClasses.length == 1 && aSuperClasses[0] != null)
+        aSB.append (" extends ").append (aSuperClasses[0]);
+      if (aSuperInterfaces.length != 0)
+        aSB.append (" implements ");
+      _appendCommaSeparated (aSB, aSuperInterfaces);
+      aSB.append (" {\n");
+      return aSB.toString ();
+    }
   },
   CPP ("c++")
   {
@@ -118,6 +157,45 @@ public enum EOutputLanguage implements IHasID <String>
     {
       // C++ source is written as it is
       return sStr;
+    }
+
+    @Override
+    public String getAnnotation (final String sAnnotation)
+    {
+      // C++ has no annotations, so it becomes a comment
+      return "/*" + sAnnotation + "*/";
+    }
+
+    @Override
+    public String getModifier (final String sModifier)
+    {
+      // Only the access modifiers exist, and they are a label rather than a prefix
+      final String sLower = sModifier.trim ().toLowerCase (Locale.US);
+      if (sLower.equals ("public") || sLower.equals ("protected") || sLower.equals ("private"))
+        return sLower + ": ";
+      return "";
+    }
+
+    @Override
+    public String getStaticArrayDeclaration (final String sType, final String sName)
+    {
+      return "static const " + sType + " " + sName + "[] = ";
+    }
+
+    @Override
+    public String getClassStart (final String sModifier,
+                                 final String sName,
+                                 final String [] aSuperClasses,
+                                 final String [] aSuperInterfaces)
+    {
+      final StringBuilder aSB = new StringBuilder ();
+      aSB.append ("class ").append (sName);
+      if (aSuperClasses.length > 0 || aSuperInterfaces.length > 0)
+        aSB.append (" : ");
+      _appendCommaSeparated (aSB, aSuperClasses);
+      _appendCommaSeparated (aSB, aSuperInterfaces);
+      aSB.append (" {\npublic:\n");
+      return aSB.toString ();
     }
   };
 
@@ -191,6 +269,61 @@ public enum EOutputLanguage implements IHasID <String>
    */
   @NonNull
   public abstract String addUnicodeEscapes (@NonNull String sStr);
+
+  /**
+   * @param sAnnotation
+   *        The annotation name, without the marker. May not be <code>null</code>.
+   * @return How this language writes that annotation. Never <code>null</code>.
+   */
+  @NonNull
+  public abstract String getAnnotation (@NonNull String sAnnotation);
+
+  /**
+   * @param sModifier
+   *        The modifier as written in the grammar. May not be <code>null</code>.
+   * @return How this language writes it, empty if it has no equivalent. Never <code>null</code>.
+   */
+  @NonNull
+  public abstract String getModifier (@NonNull String sModifier);
+
+  /**
+   * @param sType
+   *        The element type. May not be <code>null</code>.
+   * @param sName
+   *        The variable name. May not be <code>null</code>.
+   * @return The declaration of a static array constant up to and including the "=", without a
+   *         newline. Never <code>null</code>.
+   */
+  @NonNull
+  public abstract String getStaticArrayDeclaration (@NonNull String sType, @NonNull String sName);
+
+  /**
+   * @param sModifier
+   *        The access modifier, or <code>null</code> for none.
+   * @param sName
+   *        The class name. May not be <code>null</code>.
+   * @param aSuperClasses
+   *        The classes it extends. May not be <code>null</code>.
+   * @param aSuperInterfaces
+   *        The interfaces it implements. May not be <code>null</code>.
+   * @return The class header, up to and including the opening brace and its newline. Never
+   *         <code>null</code>.
+   */
+  @NonNull
+  public abstract String getClassStart (@Nullable String sModifier,
+                                        @NonNull String sName,
+                                        @NonNull String [] aSuperClasses,
+                                        @NonNull String [] aSuperInterfaces);
+
+  private static void _appendCommaSeparated (@NonNull final StringBuilder aSB, @NonNull final String [] aStrings)
+  {
+    for (int i = 0; i < aStrings.length; i++)
+    {
+      if (i > 0)
+        aSB.append (", ");
+      aSB.append (aStrings[i]);
+    }
+  }
 
   public boolean isJava ()
   {
