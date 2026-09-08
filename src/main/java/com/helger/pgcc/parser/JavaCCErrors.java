@@ -43,14 +43,11 @@ import com.helger.pgcc.parser.exp.Expansion;
 import com.helger.pgcc.parser.exp.SingleCharacter;
 
 /**
- * Output error messages and keep track of totals.
+ * Output error messages and keep track of totals. The totals live in
+ * {@link com.helger.pgcc.context.ErrorCollector}, one per generator run.
  */
 public final class JavaCCErrors
 {
-  private static int s_parse_error_count = 0;
-  private static int s_semantic_error_count = 0;
-  private static int s_warning_count = 0;
-
   private JavaCCErrors ()
   {}
 

@@ -63,6 +63,8 @@
  */
 package com.helger.pgcc.parser;
 
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -294,10 +296,10 @@ public class Main
     try
     {
       PGPrinter.info ("Reading from file " + args[args.length - 1] + " ...");
-      JavaCCGlobals.s_fileName = args[args.length - 1];
-      JavaCCGlobals.s_origFileName = JavaCCGlobals.s_fileName;
-      JavaCCGlobals.s_jjtreeGenerated = JavaCCGlobals.isGeneratedBy ("JJTree", args[args.length - 1]);
-      JavaCCGlobals.s_toolNames = JavaCCGlobals.getToolNames (args[args.length - 1]);
+      grammar ().setFileName (args[args.length - 1]);
+      grammar ().setOrigFileName (grammar ().getFileName ());
+      grammar ().setJJTreeGenerated (JavaCCGlobals.isGeneratedBy ("JJTree", args[args.length - 1]));
+      grammar ().setToolNameList (JavaCCGlobals.getToolNames (args[args.length - 1]));
       parser.javacc_input ();
 
       // 2012/05/02 - Moved this here as cannot evaluate output language
@@ -337,7 +339,7 @@ public class Main
           // Must always create the lexer object even if not building a parser.
           new LexGenJava ().start ();
 
-          Options.setStringOption (Options.NONUSER_OPTION__PARSER_NAME, JavaCCGlobals.s_cu_name);
+          Options.setStringOption (Options.NONUSER_OPTION__PARSER_NAME, grammar ().getParserName ());
           OtherFilesGenJava.start (isJavaModern);
           break;
         case CPP:
@@ -350,7 +352,7 @@ public class Main
           {
             new LexGenCpp ().start ();
           }
-          Options.setStringOption (Options.NONUSER_OPTION__PARSER_NAME, JavaCCGlobals.s_cu_name);
+          Options.setStringOption (Options.NONUSER_OPTION__PARSER_NAME, grammar ().getParserName ());
           OtherFilesGenCPP.start ();
           break;
         default:
@@ -395,7 +397,6 @@ public class Main
     com.helger.pgcc.context.PGCCContext.reset ();
 
     com.helger.pgcc.parser.exp.Expansion.reInit ();
-    com.helger.pgcc.parser.JavaCCGlobals.reInitStatic ();
     com.helger.pgcc.parser.Options.init ();
     com.helger.pgcc.parser.JavaCCParserInternals.reInit ();
     com.helger.pgcc.parser.exp.ExpRStringLiteral.reInit ();

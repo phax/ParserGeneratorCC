@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -58,8 +60,8 @@ public final class JJDoc
   {
     JJDocGlobals.s_generator = JJDocGlobals.getGenerator ();
     JJDocGlobals.s_generator.documentStart ();
-    _emitTokenProductions (JJDocGlobals.s_generator, JavaCCGlobals.REXPR_LIST);
-    _emitNormalProductions (JJDocGlobals.s_generator, JavaCCGlobals.BNF_PRODUCTIONS);
+    _emitTokenProductions (JJDocGlobals.s_generator, grammar ().rexprList ());
+    _emitNormalProductions (JJDocGlobals.s_generator, grammar ().bnfProductions ());
     JJDocGlobals.s_generator.documentEnd ();
   }
 
@@ -84,8 +86,8 @@ public final class JJDoc
     String s = "";
     if (tok != null)
     {
-      JavaCCGlobals.s_cline = tok.beginLine;
-      JavaCCGlobals.s_ccol = tok.beginColumn;
+      grammar ().setCurrentLine (tok.beginLine);
+      grammar ().setCurrentColumn (tok.beginColumn);
       while (tok != null)
       {
         s += JavaCCGlobals.printTokenOnly (tok);

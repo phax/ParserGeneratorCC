@@ -33,6 +33,9 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.context.GrammarState;
+import com.helger.pgcc.context.PGCCContext;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -69,25 +72,50 @@ import com.helger.pgcc.parser.exp.ExpAction;
 public final class JavaCCGlobals
 {
   /**
-   * The name of the grammar file being processed.
+   * @return The grammar that is being processed by the current run. Never <code>null</code>. This
+   *         replaces the pile of static fields this class used to be.
    */
-  public static String s_fileName;
+  @NonNull
+  public static GrammarState grammar ()
+  {
+    return PGCCContext.current ().grammar ();
+  }
 
-  /**
-   * The name of the original file (before processing by JJTree). Currently this is the same as
-   * fileName.
-   */
-  public static String s_origFileName;
+  public static boolean isLookAheadNeeded ()
+  {
+    return grammar ().isLookAheadNeeded ();
+  }
 
-  /**
-   * Set to true if this file has been processed by JJTree.
-   */
-  public static boolean s_jjtreeGenerated;
+  public static void setLookAheadNeeded (final boolean bLookAheadNeeded)
+  {
+    grammar ().setLookAheadNeeded (bLookAheadNeeded);
+  }
 
-  /**
-   * The list of tools that have participated in generating the input grammar file.
-   */
-  public static List <String> s_toolNames;
+  @Nullable
+  public static Token getOtherLanguageDeclTokenBegin ()
+  {
+    return grammar ().getOtherLanguageDeclTokenBegin ();
+  }
+
+  public static void setOtherLanguageDeclTokenBegin (@Nullable final Token t)
+  {
+    grammar ().setOtherLanguageDeclTokenBegin (t);
+  }
+
+  @Nullable
+  public static Token getOtherLanguageDeclTokenEnd ()
+  {
+    return grammar ().getOtherLanguageDeclTokenEnd ();
+  }
+
+  public static void setOtherLanguageDeclTokenEnd (@Nullable final Token t)
+  {
+    grammar ().setOtherLanguageDeclTokenEnd (t);
+  }
+
+
+
+
 
   /**
    * This prints the banner line when the various tools are invoked. This takes as argument the
@@ -109,153 +137,13 @@ public final class JavaCCGlobals
                     ")");
   }
 
-  /**
-   * The name of the parser class (what appears in PARSER_BEGIN and PARSER_END).
-   */
-  public static String s_cu_name;
-
-  /**
-   * This is a list of tokens that appear after "PARSER_BEGIN(name)" all the way until (but not
-   * including) the opening brace "{" of the class "name".
-   */
-  public static final ICommonsList <Token> CU_TO_INSERTION_POINT_1 = new CommonsArrayList <> ();
-
-  /**
-   * This is the list of all tokens that appear after the tokens in "cu_to_insertion_point_1" and
-   * until (but not including) the closing brace "}" of the class "name".
-   */
-  public static final ICommonsList <Token> CU_TO_INSERTION_POINT_2 = new CommonsArrayList <> ();
-
-  /**
-   * This is the list of all tokens that appear after the tokens in "cu_to_insertion_point_2" and
-   * until "PARSER_END(name)".
-   */
-  public static final ICommonsList <Token> CU_FROM_INSERTION_POINT_2 = new CommonsArrayList <> ();
-
-  /**
-   * A list of all grammar productions - normal and JAVACODE - in the order they appear in the input
-   * file. Each entry here will be a subclass of "NormalProduction".
-   */
-  public static final List <NormalProduction> BNF_PRODUCTIONS = new ArrayList <> ();
-
-  /**
-   * A symbol table of all grammar productions - normal and JAVACODE. The symbol table is indexed by
-   * the name of the left hand side non-terminal. Its contents are of type "NormalProduction".
-   */
-  public static final Map <String, NormalProduction> PRODUCTION_TABLE = new HashMap <> ();
-
-  /**
-   * A mapping of lexical state strings to their integer internal representation. Integers are
-   * stored as java.lang.Integer's.
-   */
-  public static final Map <String, Integer> LEXSTATE_S2I = new HashMap <> ();
-
-  /**
-   * A mapping of the internal integer representations of lexical states to their strings. Integers
-   * are stored as java.lang.Integer's.
-   */
-  public static final Map <Integer, String> LEXSTATE_I2S = new HashMap <> ();
-
-  /**
-   * The declarations to be inserted into the TokenManager class.
-   */
-  public static ICommonsList <Token> s_token_mgr_decls;
-
-  /**
-   * The list of all TokenProductions from the input file. This list includes implicit
-   * TokenProductions that are created for uses of regular expressions within BNF productions.
-   */
-  public static final List <TokenProduction> REXPR_LIST = new ArrayList <> ();
-
-  /**
-   * The total number of distinct tokens. This is therefore one more than the largest assigned token
-   * ordinal.
-   */
-  public static int s_tokenCount;
-
-  /**
-   * This is a symbol table that contains all named tokens (those that are defined with a label).
-   * The index to the table is the image of the label and the contents of the table are of type
-   * "RegularExpression".
-   */
-  public static final Map <String, AbstractExpRegularExpression> NAMED_TOKENS_TABLE = new HashMap <> ();
-
-  /**
-   * Contains the same entries as "named_tokens_table", but this is an ordered list which is ordered
-   * by the order of appearance in the input file.
-   */
-  public static final List <AbstractExpRegularExpression> ORDERED_NAME_TOKENS = new ArrayList <> ();
-
-  /**
-   * A mapping of ordinal values (represented as objects of type "Integer") to the corresponding
-   * labels (of type "String"). An entry exists for an ordinal value only if there is a labeled
-   * token corresponding to this entry. If there are multiple labels representing the same ordinal
-   * value, then only one label is stored.
-   */
-  public static final Map <Integer, String> NAMES_OF_TOKENS = new HashMap <> ();
-
-  /**
-   * A mapping of ordinal values (represented as objects of type "Integer") to the corresponding
-   * RegularExpression's.
-   */
-  public static final Map <Integer, AbstractExpRegularExpression> REXPS_OF_TOKENS = new HashMap <> ();
-
-  /**
-   * This is a three-level symbol table that contains all simple tokens (those that are defined
-   * using a single string (with or without a label). The index to the first level table is a
-   * lexical state which maps to a second level hashtable. The index to the second level hashtable
-   * is the string of the simple token converted to upper case, and this maps to a third level
-   * hashtable. This third level hashtable contains the actual string of the simple token and maps
-   * it to its RegularExpression.
-   */
-  public static final Map <String, Map <String, Map <String, AbstractExpRegularExpression>>> SIMPLE_TOKENS_TABLE = new HashMap <> ();
-
-  /**
-   * maskindex, jj2index, maskVals are variables that are shared between ParseEngine and ParseGen.
-   */
-  protected static int s_maskindex = 0;
-  protected static int s_jj2index = 0;
-  private static boolean s_bLookAheadNeeded = false;
-  protected static final List <int []> MASK_VALS = new ArrayList <> ();
-
-  static ExpAction s_aActForEof;
-  static String s_sNextStateForEof;
-  private static Token s_aOtherLanguageDeclTokenBeg;
-  private static Token s_aOtherLanguageDeclTokenEnd;
-
   // Some general purpose utilities follow.
 
-  public static boolean isLookAheadNeeded ()
-  {
-    return s_bLookAheadNeeded;
-  }
 
-  public static void setLookAheadNeeded (final boolean bLookAheadNeeded)
-  {
-    s_bLookAheadNeeded = bLookAheadNeeded;
-  }
 
-  @Nullable
-  public static Token getOtherLanguageDeclTokenBegin ()
-  {
-    return s_aOtherLanguageDeclTokenBeg;
-  }
 
-  public static void setOtherLanguageDeclTokenBegin (@Nullable final Token t)
-  {
-    s_aOtherLanguageDeclTokenBeg = t;
-  }
 
-  @Nullable
-  public static Token getOtherLanguageDeclTokenEnd ()
-  {
-    return s_aOtherLanguageDeclTokenEnd;
-  }
 
-  public static void setOtherLanguageDeclTokenEnd (@Nullable final Token t)
-  {
-    s_aOtherLanguageDeclTokenEnd = t;
-  }
 
   /**
    * Returns the identifying string for the file name, given a toolname used to generate it.
@@ -518,26 +406,23 @@ public final class JavaCCGlobals
     }
   }
 
-  public static int s_cline;
-  public static int s_ccol;
-
   public static void printTokenSetup (final Token t)
   {
     Token tt = t;
     while (tt.specialToken != null)
       tt = tt.specialToken;
-    s_cline = tt.beginLine;
-    s_ccol = tt.beginColumn;
+    grammar ().setCurrentLine (tt.beginLine);
+    grammar ().setCurrentColumn (tt.beginColumn);
   }
 
   protected static void printTokenOnly (@NonNull final Token t, @NonNull final PrintWriter ostr)
   {
-    for (; s_cline < t.beginLine; s_cline++)
+    for (; grammar ().getCurrentLine () < t.beginLine; grammar ().setCurrentLine (grammar ().getCurrentLine () + 1))
     {
       ostr.println ();
-      s_ccol = 1;
+      grammar ().setCurrentColumn (1);
     }
-    for (; s_ccol < t.beginColumn; s_ccol++)
+    for (; grammar ().getCurrentColumn () < t.beginColumn; grammar ().setCurrentColumn (grammar ().getCurrentColumn () + 1))
     {
       ostr.print (" ");
     }
@@ -545,13 +430,13 @@ public final class JavaCCGlobals
       ostr.print (addUnicodeEscapes (t.image));
     else
       ostr.print (t.image);
-    s_cline = t.endLine;
-    s_ccol = t.endColumn + 1;
+    grammar ().setCurrentLine (t.endLine);
+    grammar ().setCurrentColumn (t.endColumn + 1);
     final char last = t.image.charAt (t.image.length () - 1);
     if (last == '\n' || last == '\r')
     {
-      s_cline++;
-      s_ccol = 1;
+      grammar ().setCurrentLine (grammar ().getCurrentLine () + 1);
+      grammar ().setCurrentColumn (1);
     }
   }
 
@@ -596,11 +481,11 @@ public final class JavaCCGlobals
       printTokenOnly (tt, ostr);
       tt = tt.next;
     }
-    if (s_ccol != 1 && s_cline != t.beginLine)
+    if (grammar ().getCurrentColumn () != 1 && grammar ().getCurrentLine () != t.beginLine)
     {
       ostr.println ();
-      s_cline++;
-      s_ccol = 1;
+      grammar ().setCurrentLine (grammar ().getCurrentLine () + 1);
+      grammar ().setCurrentColumn (1);
     }
   }
 
@@ -608,12 +493,12 @@ public final class JavaCCGlobals
   public static String printTokenOnly (@NonNull final Token t)
   {
     final StringBuilder aSB = new StringBuilder (t.image.length () * 2);
-    for (; s_cline < t.beginLine; s_cline++)
+    for (; grammar ().getCurrentLine () < t.beginLine; grammar ().setCurrentLine (grammar ().getCurrentLine () + 1))
     {
       aSB.append ('\n');
-      s_ccol = 1;
+      grammar ().setCurrentColumn (1);
     }
-    for (; s_ccol < t.beginColumn; s_ccol++)
+    for (; grammar ().getCurrentColumn () < t.beginColumn; grammar ().setCurrentColumn (grammar ().getCurrentColumn () + 1))
     {
       aSB.append (' ');
     }
@@ -621,13 +506,13 @@ public final class JavaCCGlobals
       aSB.append (addUnicodeEscapes (t.image));
     else
       aSB.append (t.image);
-    s_cline = t.endLine;
-    s_ccol = t.endColumn + 1;
+    grammar ().setCurrentLine (t.endLine);
+    grammar ().setCurrentColumn (t.endColumn + 1);
     final char last = t.image.charAt (t.image.length () - 1);
     if (last == '\n' || last == '\r')
     {
-      s_cline++;
-      s_ccol = 1;
+      grammar ().setCurrentLine (grammar ().getCurrentLine () + 1);
+      grammar ().setCurrentColumn (1);
     }
     return aSB.toString ();
   }
@@ -666,11 +551,11 @@ public final class JavaCCGlobals
       aSB.append (printTokenOnly (tt));
       tt = tt.next;
     }
-    if (s_ccol != 1 && s_cline != t.beginLine)
+    if (grammar ().getCurrentColumn () != 1 && grammar ().getCurrentLine () != t.beginLine)
     {
       aSB.append ('\n');
-      s_cline++;
-      s_ccol = 1;
+      grammar ().setCurrentLine (grammar ().getCurrentLine () + 1);
+      grammar ().setCurrentColumn (1);
     }
     return aSB.toString ();
   }
@@ -681,38 +566,6 @@ public final class JavaCCGlobals
     if (t.next == null)
       return "";
     return printLeadingComments (t.next);
-  }
-
-  public static void reInitStatic ()
-  {
-    s_fileName = null;
-    s_origFileName = null;
-    s_jjtreeGenerated = false;
-    s_toolNames = null;
-    s_cu_name = null;
-    CU_TO_INSERTION_POINT_1.clear ();
-    CU_TO_INSERTION_POINT_2.clear ();
-    CU_FROM_INSERTION_POINT_2.clear ();
-    BNF_PRODUCTIONS.clear ();
-    PRODUCTION_TABLE.clear ();
-    LEXSTATE_S2I.clear ();
-    LEXSTATE_I2S.clear ();
-    s_token_mgr_decls = null;
-    REXPR_LIST.clear ();
-    s_tokenCount = 0;
-    NAMED_TOKENS_TABLE.clear ();
-    ORDERED_NAME_TOKENS.clear ();
-    NAMES_OF_TOKENS.clear ();
-    REXPS_OF_TOKENS.clear ();
-    SIMPLE_TOKENS_TABLE.clear ();
-    s_maskindex = 0;
-    s_jj2index = 0;
-    s_bLookAheadNeeded = false;
-    MASK_VALS.clear ();
-    s_cline = 0;
-    s_ccol = 0;
-    s_aActForEof = null;
-    s_sNextStateForEof = null;
   }
 
   @NonNull

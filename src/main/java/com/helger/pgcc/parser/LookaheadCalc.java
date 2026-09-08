@@ -33,9 +33,10 @@
  */
 package com.helger.pgcc.parser;
 
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import com.helger.pgcc.context.LookaheadState;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.REXPS_OF_TOKENS;
 import static com.helger.pgcc.parser.JavaCCGlobals.addEscapes;
 
 import java.util.ArrayList;
@@ -118,7 +119,7 @@ public final class LookaheadCalc
       }
       else
       {
-        final AbstractExpRegularExpression re = REXPS_OF_TOKENS.get (Integer.valueOf (m.m_match[i]));
+        final AbstractExpRegularExpression re = grammar ().rexpsOfTokens ().get (Integer.valueOf (m.m_match[i]));
         if (re instanceof ExpRStringLiteral)
         {
           ret += " \"" + addEscapes (((ExpRStringLiteral) re).m_image) + "\"";

@@ -36,9 +36,9 @@
 
 package com.helger.pgcc.parser;
 
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.addUnicodeEscapes;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_cu_name;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_jjtreeGenerated;
 
 import java.io.File;
 import java.io.IOException;
@@ -188,12 +188,12 @@ public class CodeGenerator
         m_aIncludeBuffer.append (Options.stringValue ("NAMESPACE_CLOSE") + "\n");
       }
 
-      if (s_jjtreeGenerated)
+      if (grammar ().isJJTreeGenerated ())
       {
         m_aMainBuffer.insert (0, "#include \"SimpleNode.h\"\n");
       }
       if (Options.isTokenManagerUsesParser ())
-        m_aMainBuffer.insert (0, "#include \"" + s_cu_name + ".h\"\n");
+        m_aMainBuffer.insert (0, "#include \"" + grammar ().getParserName () + ".h\"\n");
       m_aMainBuffer.insert (0, "#include \"TokenMgrError.h\"\n");
       m_aMainBuffer.insert (0, "#include \"" + incfileName + "\"\n");
       m_aIncludeBuffer.append ("#endif\n");

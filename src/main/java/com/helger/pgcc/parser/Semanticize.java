@@ -33,21 +33,10 @@
  */
 package com.helger.pgcc.parser;
 
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import org.jspecify.annotations.Nullable;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.BNF_PRODUCTIONS;
-import static com.helger.pgcc.parser.JavaCCGlobals.LEXSTATE_I2S;
-import static com.helger.pgcc.parser.JavaCCGlobals.LEXSTATE_S2I;
-import static com.helger.pgcc.parser.JavaCCGlobals.NAMED_TOKENS_TABLE;
-import static com.helger.pgcc.parser.JavaCCGlobals.NAMES_OF_TOKENS;
-import static com.helger.pgcc.parser.JavaCCGlobals.ORDERED_NAME_TOKENS;
-import static com.helger.pgcc.parser.JavaCCGlobals.PRODUCTION_TABLE;
-import static com.helger.pgcc.parser.JavaCCGlobals.REXPR_LIST;
-import static com.helger.pgcc.parser.JavaCCGlobals.REXPS_OF_TOKENS;
-import static com.helger.pgcc.parser.JavaCCGlobals.SIMPLE_TOKENS_TABLE;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_aActForEof;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_sNextStateForEof;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_tokenCount;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,7 +85,7 @@ public class Semanticize
      * them to trivial choices. This way, their semantic lookahead specification
      * can be evaluated during other lookahead evaluations.
      */
-    for (final NormalProduction aNormalProduction : BNF_PRODUCTIONS)
+    for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
     {
       ExpansionTreeWalker.postOrderWalk (aNormalProduction.getExpansion (), new LookaheadFixer ());
     }
@@ -104,9 +93,9 @@ public class Semanticize
     /*
      * The following loop populates "production_table"
      */
-    for (final NormalProduction p : BNF_PRODUCTIONS)
+    for (final NormalProduction p : grammar ().bnfProductions ())
     {
-      if (JavaCCGlobals.PRODUCTION_TABLE.put (p.getLhs (), p) != null)
+      if (grammar ().productionTable ().put (p.getLhs (), p) != null)
       {
         JavaCCErrors.semantic_error (p, p.getLhs () + " occurs on the left hand side of more than one production.");
       }
@@ -116,7 +105,7 @@ public class Semanticize
      * The following walks the entire parse tree to make sure that all
      * non-terminals on RHS's are defined on the LHS.
      */
-    for (final NormalProduction aNormalProduction : BNF_PRODUCTIONS)
+    for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
     {
       ExpansionTreeWalker.preOrderWalk ((aNormalProduction).getExpansion (), new ProductionDefinedChecker ());
     }
@@ -130,7 +119,7 @@ public class Semanticize
      * In this case, <name> occurrences are OK, while regular expression specs
      * generate a warning.
      */
-    for (final TokenProduction aTokenProduction : REXPR_LIST)
+    for (final TokenProduction aTokenProduction : grammar ().rexprList ())
     {
       final TokenProduction tp = (aTokenProduction);
       final List <RegExprSpec> respecs = tp.m_respecs;
@@ -139,7 +128,7 @@ public class Semanticize
         final RegExprSpec res = (aRegExprSpec);
         if (res.nextState != null)
         {
-          if (LEXSTATE_S2I.get (res.nextState) == null)
+          if (grammar ().lexStateS2I ().get (res.nextState) == null)
           {
             JavaCCErrors.semantic_error (res.nsTok, "Lexical state \"" + res.nextState + "\" has not been defined.");
           }
@@ -151,10 +140,10 @@ public class Semanticize
             JavaCCErrors.semantic_error (res.rexp, "EOF action/state change must be specified for all states, " + "i.e., <*>TOKEN:.");
           if (tp.m_kind != ETokenKind.TOKEN)
             JavaCCErrors.semantic_error (res.rexp, "EOF action/state change can be specified only in a " + "TOKEN specification.");
-          if (s_sNextStateForEof != null || s_aActForEof != null)
+          if (grammar ().getNextStateForEof () != null || grammar ().getActionForEof () != null)
             JavaCCErrors.semantic_error (res.rexp, "Duplicate action/state change specification for <EOF>.");
-          s_aActForEof = res.act;
-          s_sNextStateForEof = res.nextState;
+          grammar ().setActionForEof (res.act);
+          grammar ().setNextStateForEof (res.nextState);
           prepareToRemove (respecs, res);
         }
         else
@@ -188,7 +177,7 @@ public class Semanticize
      * "named_tokens_table" and "ordered_named_tokens". Duplications are flagged
      * as errors.
      */
-    for (final TokenProduction aTokenProduction : REXPR_LIST)
+    for (final TokenProduction aTokenProduction : grammar ().rexprList ())
     {
       final TokenProduction tp = (aTokenProduction);
       final List <RegExprSpec> respecs = tp.m_respecs;
@@ -198,16 +187,16 @@ public class Semanticize
         if (!(res.rexp instanceof ExpRJustName) && res.rexp.hasLabel ())
         {
           final String s = res.rexp.getLabel ();
-          final AbstractExpRegularExpression obj = NAMED_TOKENS_TABLE.put (s, res.rexp);
+          final AbstractExpRegularExpression obj = grammar ().namedTokensTable ().put (s, res.rexp);
           if (obj != null)
           {
             JavaCCErrors.semantic_error (res.rexp, "Multiply defined lexical token name \"" + s + "\".");
           }
           else
           {
-            ORDERED_NAME_TOKENS.add (res.rexp);
+            grammar ().orderedNameTokens ().add (res.rexp);
           }
-          if (LEXSTATE_S2I.get (s) != null)
+          if (grammar ().lexStateS2I ().get (s) != null)
           {
             JavaCCErrors.semantic_error (res.rexp, "Lexical token name \"" + s + "\" is the same as " + "that of a lexical state.");
           }
@@ -226,21 +215,21 @@ public class Semanticize
      * "names_of_tokens".
      */
 
-    s_tokenCount = 1;
-    for (final TokenProduction tp : REXPR_LIST)
+    grammar ().setTokenCount (1);
+    for (final TokenProduction tp : grammar ().rexprList ())
     {
       final List <RegExprSpec> respecs = tp.m_respecs;
       if (tp.m_lexStates == null)
       {
-        tp.m_lexStates = new String [LEXSTATE_I2S.size ()];
-        LEXSTATE_I2S.values ().toArray (tp.m_lexStates);
+        tp.m_lexStates = new String [grammar ().lexStateI2S ().size ()];
+        grammar ().lexStateI2S ().values ().toArray (tp.m_lexStates);
       }
 
       @SuppressWarnings ("unchecked")
       final Map <String, Map <String, AbstractExpRegularExpression>> table[] = new Map [tp.m_lexStates.length];
       for (int i = 0; i < tp.m_lexStates.length; i++)
       {
-        table[i] = SIMPLE_TOKENS_TABLE.get (tp.m_lexStates[i]);
+        table[i] = grammar ().simpleTokensTable ().get (tp.m_lexStates[i]);
       }
 
       for (final RegExprSpec aRegExprSpec : respecs)
@@ -262,7 +251,7 @@ public class Semanticize
               // So go ahead and insert this item.
               if (sl.getOrdinal () == 0)
               {
-                sl.setOrdinal (s_tokenCount++);
+                sl.setOrdinal (grammar ().getAndIncTokenCount ());
               }
               table2 = new HashMap <> ();
               table2.put (sl.m_image, sl);
@@ -321,7 +310,7 @@ public class Semanticize
                   // This entry is legitimate. So insert it.
                   if (sl.getOrdinal () == 0)
                   {
-                    sl.setOrdinal (s_tokenCount++);
+                    sl.setOrdinal (grammar ().getAndIncTokenCount ());
                   }
                   table2.put (sl.m_image, sl);
                   // The above "put" may override an existing entry (that is not
@@ -336,7 +325,7 @@ public class Semanticize
                   {
                     if (sl.getOrdinal () == 0)
                     {
-                      sl.setOrdinal (s_tokenCount++);
+                      sl.setOrdinal (grammar ().getAndIncTokenCount ());
                     }
                     table2.put (sl.m_image, sl);
                   }
@@ -400,15 +389,15 @@ public class Semanticize
         else
           if (!(res.rexp instanceof ExpRJustName))
           {
-            res.rexp.setOrdinal (s_tokenCount++);
+            res.rexp.setOrdinal (grammar ().getAndIncTokenCount ());
           }
         if (!(res.rexp instanceof ExpRJustName) && res.rexp.hasLabel ())
         {
-          NAMES_OF_TOKENS.put (Integer.valueOf (res.rexp.getOrdinal ()), res.rexp.getLabel ());
+          grammar ().namesOfTokens ().put (Integer.valueOf (res.rexp.getOrdinal ()), res.rexp.getLabel ());
         }
         if (!(res.rexp instanceof ExpRJustName))
         {
-          REXPS_OF_TOKENS.put (Integer.valueOf (res.rexp.getOrdinal ()), res.rexp);
+          grammar ().rexpsOfTokens ().put (Integer.valueOf (res.rexp.getOrdinal ()), res.rexp);
         }
       }
     }
@@ -428,7 +417,7 @@ public class Semanticize
     if (!Options.isUserTokenManager ())
     {
       final FixRJustNames frjn = new FixRJustNames ();
-      for (final TokenProduction aTokenProduction : REXPR_LIST)
+      for (final TokenProduction aTokenProduction : grammar ().rexprList ())
       {
         final TokenProduction tp = (aTokenProduction);
         final List <RegExprSpec> respecs = tp.m_respecs;
@@ -460,7 +449,7 @@ public class Semanticize
 
     if (Options.isUserTokenManager ())
     {
-      for (final TokenProduction aTokenProduction : REXPR_LIST)
+      for (final TokenProduction aTokenProduction : grammar ().rexprList ())
       {
         final TokenProduction tp = (aTokenProduction);
         final List <RegExprSpec> respecs = tp.m_respecs;
@@ -470,13 +459,13 @@ public class Semanticize
           if (res.rexp instanceof ExpRJustName)
           {
             final ExpRJustName jn = (ExpRJustName) res.rexp;
-            final AbstractExpRegularExpression rexp = NAMED_TOKENS_TABLE.get (jn.getLabel ());
+            final AbstractExpRegularExpression rexp = grammar ().namedTokensTable ().get (jn.getLabel ());
             if (rexp == null)
             {
-              jn.setOrdinal (s_tokenCount++);
-              NAMED_TOKENS_TABLE.put (jn.getLabel (), jn);
-              ORDERED_NAME_TOKENS.add (jn);
-              NAMES_OF_TOKENS.put (Integer.valueOf (jn.getOrdinal ()), jn.getLabel ());
+              jn.setOrdinal (grammar ().getAndIncTokenCount ());
+              grammar ().namedTokensTable ().put (jn.getLabel (), jn);
+              grammar ().orderedNameTokens ().add (jn);
+              grammar ().namesOfTokens ().put (Integer.valueOf (jn.getOrdinal ()), jn.getLabel ());
             }
             else
             {
@@ -499,7 +488,7 @@ public class Semanticize
      */
     if (Options.isUserTokenManager ())
     {
-      for (final TokenProduction aTokenProduction : REXPR_LIST)
+      for (final TokenProduction aTokenProduction : grammar ().rexprList ())
       {
         final TokenProduction tp = (aTokenProduction);
         final List <RegExprSpec> respecs = tp.m_respecs;
@@ -507,7 +496,7 @@ public class Semanticize
         {
           final RegExprSpec res = (aRegExprSpec);
           final Integer ii = Integer.valueOf (res.rexp.getOrdinal ());
-          if (NAMES_OF_TOKENS.get (ii) == null)
+          if (grammar ().namesOfTokens ().get (ii) == null)
           {
             JavaCCErrors.warning (res.rexp, "Unlabeled regular expression cannot be referred to by " + "user generated token manager.");
           }
@@ -527,7 +516,7 @@ public class Semanticize
     while (emptyUpdate)
     {
       emptyUpdate = false;
-      for (final NormalProduction aNormalProduction : BNF_PRODUCTIONS)
+      for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
       {
         final NormalProduction prod = aNormalProduction;
         if (emptyExpansionExists (prod.getExpansion ()))
@@ -546,7 +535,7 @@ public class Semanticize
       // The following code checks that all ZeroOrMore, ZeroOrOne, and OneOrMore
       // nodes
       // do not contain expansions that can expand to the empty token list.
-      for (final NormalProduction aNormalProduction : BNF_PRODUCTIONS)
+      for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
       {
         ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new EmptyChecker ());
       }
@@ -556,7 +545,7 @@ public class Semanticize
       // productions that it can expand to without consuming any tokens. Once
       // this is
       // done, a left-recursion check can be performed.
-      for (final NormalProduction prod : BNF_PRODUCTIONS)
+      for (final NormalProduction prod : grammar ().bnfProductions ())
       {
         _addLeftMost (prod, prod.getExpansion ());
       }
@@ -566,7 +555,7 @@ public class Semanticize
       // been determined to participate in a left recursive loop, it is not
       // tried
       // in any other loop.
-      for (final NormalProduction prod : BNF_PRODUCTIONS)
+      for (final NormalProduction prod : grammar ().bnfProductions ())
       {
         if (prod.getWalkStatus () == 0)
         {
@@ -582,7 +571,7 @@ public class Semanticize
       // This is not done if option USER_TOKEN_MANAGER is set to true.
       if (!Options.isUserTokenManager ())
       {
-        for (final TokenProduction aTokenProduction : REXPR_LIST)
+        for (final TokenProduction aTokenProduction : grammar ().rexprList ())
         {
           final TokenProduction tp = (aTokenProduction);
           final List <RegExprSpec> respecs = tp.m_respecs;
@@ -609,7 +598,7 @@ public class Semanticize
        */
       if (JavaCCErrors.getErrorCount () == 0)
       {
-        for (final NormalProduction aNormalProduction : BNF_PRODUCTIONS)
+        for (final NormalProduction aNormalProduction : grammar ().bnfProductions ())
         {
           ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new LookaheadChecker ());
         }
@@ -899,7 +888,7 @@ public class Semanticize
       if (e instanceof ExpRJustName)
       {
         final ExpRJustName jn = (ExpRJustName) e;
-        final AbstractExpRegularExpression rexp = NAMED_TOKENS_TABLE.get (jn.getLabel ());
+        final AbstractExpRegularExpression rexp = grammar ().namedTokensTable ().get (jn.getLabel ());
         if (rexp == null)
         {
           JavaCCErrors.semantic_error (e, "Undefined lexical token name \"" + jn.getLabel () + "\".");
@@ -1021,7 +1010,7 @@ public class Semanticize
       if (e instanceof ExpNonTerminal)
       {
         final ExpNonTerminal nt = (ExpNonTerminal) e;
-        final NormalProduction np = PRODUCTION_TABLE.get (nt.getName ());
+        final NormalProduction np = grammar ().productionTable ().get (nt.getName ());
         if (np == null)
         {
           JavaCCErrors.semantic_error (e, "Non-terminal " + nt.getName () + " has not been defined.");

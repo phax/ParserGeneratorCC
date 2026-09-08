@@ -36,16 +36,9 @@
 
 package com.helger.pgcc.parser;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.CU_FROM_INSERTION_POINT_2;
-import static com.helger.pgcc.parser.JavaCCGlobals.CU_TO_INSERTION_POINT_2;
-import static com.helger.pgcc.parser.JavaCCGlobals.MASK_VALS;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_cu_name;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_jj2index;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_jjtreeGenerated;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_maskindex;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_tokenCount;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_toolNames;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -64,7 +57,7 @@ public class ParseGenCPP extends ParseGenJava
     if (JavaCCErrors.getErrorCount () != 0)
       throw new MetaParseException ("Error count is already present!");
 
-    final List <String> tn = new ArrayList <> (s_toolNames);
+    final List <String> tn = new ArrayList <> (grammar ().getToolNameList ());
     tn.add (CPG.APP_NAME);
     switchToStaticsFile ();
 
@@ -102,18 +95,18 @@ public class ParseGenCPP extends ParseGenJava
           }
       }
 
-    genCodeLine ("#include \"" + s_cu_name + "Constants.h\"");
+    genCodeLine ("#include \"" + grammar ().getParserName () + "Constants.h\"");
 
-    if (s_jjtreeGenerated)
+    if (grammar ().isJJTreeGenerated ())
     {
-      genCodeLine ("#include \"JJT" + s_cu_name + "State.h\"");
+      genCodeLine ("#include \"JJT" + grammar ().getParserName () + "State.h\"");
     }
 
     genCodeLine ("#include \"ErrorHandler.h\"");
 
-    if (s_jjtreeGenerated)
+    if (grammar ().isJJTreeGenerated ())
     {
-      genCodeLine ("#include \"" + s_cu_name + "Tree.h\"");
+      genCodeLine ("#include \"" + grammar ().getParserName () + "Tree.h\"");
     }
 
     if (Options.stringValue (Options.USEROPTION__CPP_NAMESPACE).length () > 0)
@@ -132,12 +125,12 @@ public class ParseGenCPP extends ParseGenJava
     genCodeNewLine ();
 
     final String superClass = Options.stringValue (Options.USEROPTION__PARSER_SUPER_CLASS);
-    genClassStart ("", s_cu_name, new String [] {}, superClass == null ? new String [0] : new String [] { "public " + superClass });
+    genClassStart ("", grammar ().getParserName (), new String [] {}, superClass == null ? new String [0] : new String [] { "public " + superClass });
     switchToMainFile ();
-    if (CU_TO_INSERTION_POINT_2.size () != 0)
+    if (grammar ().cuToInsertionPoint2 ().size () != 0)
     {
-      printTokenSetup (CU_TO_INSERTION_POINT_2.get (0));
-      for (final Token t : CU_TO_INSERTION_POINT_2)
+      printTokenSetup (grammar ().cuToInsertionPoint2 ().get (0));
+      for (final Token t : grammar ().cuToInsertionPoint2 ())
         printToken (t);
     }
 
@@ -172,7 +165,7 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("private: ");
     genCodeLine ("  int           jj_ntk;");
 
-    genCodeLine ("  JJCalls       jj_2_rtns[" + (s_jj2index + 1) + "];");
+    genCodeLine ("  JJCalls       jj_2_rtns[" + (grammar ().getJJ2Index () + 1) + "];");
     genCodeLine ("  bool          jj_rescan;");
     genCodeLine ("  int           jj_gc;");
     genCodeLine ("  Token        *jj_scanpos, *jj_lastpos;");
@@ -182,23 +175,23 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("  bool          jj_semLA;");
 
     genCodeLine ("  int           jj_gen;");
-    genCodeLine ("  int           jj_la1[" + (s_maskindex + 1) + "];");
+    genCodeLine ("  int           jj_la1[" + (grammar ().getMaskIndex () + 1) + "];");
     genCodeLine ("  ErrorHandler *errorHandler = nullptr;");
     genCodeNewLine ();
     genCodeLine ("protected: ");
     genCodeLine ("  bool          hasError;");
     genCodeNewLine ();
-    final int tokenMaskSize = (s_tokenCount - 1) / 32 + 1;
+    final int tokenMaskSize = (grammar ().getTokenCount () - 1) / 32 + 1;
 
     if (Options.isErrorReporting () && tokenMaskSize > 0)
     {
       switchToStaticsFile ();
       for (int i = 0; i < tokenMaskSize; i++)
       {
-        if (MASK_VALS.size () > 0)
+        if (grammar ().maskVals ().size () > 0)
         {
           genCodeLine ("  unsigned int jj_la1_" + i + "[] = {");
-          for (final int [] tokenMask : MASK_VALS)
+          for (final int [] tokenMask : grammar ().maskVals ())
           {
             genCode ("0x" + Integer.toHexString (tokenMask[i]) + ",");
           }
@@ -213,8 +206,8 @@ public class ParseGenCPP extends ParseGenJava
       genCodeLine ("  private: bool jj_depth_error;");
       genCodeLine ("  friend class __jj_depth_inc;");
       genCodeLine ("  class __jj_depth_inc {public:");
-      genCodeLine ("    " + s_cu_name + "* parent;");
-      genCodeLine ("    __jj_depth_inc(" + s_cu_name + "* p): parent(p) { parent->jj_depth++; };");
+      genCodeLine ("    " + grammar ().getParserName () + "* parent;");
+      genCodeLine ("    __jj_depth_inc(" + grammar ().getParserName () + "* p): parent(p) { parent->jj_depth++; };");
       genCodeLine ("    ~__jj_depth_inc(){ parent->jj_depth--; }");
       genCodeLine ("  };");
     }
@@ -232,7 +225,7 @@ public class ParseGenCPP extends ParseGenJava
     switchToIncludeFile (); // TEMP
     genCodeLine ("  Token *head; ");
     genCodeLine ("public: ");
-    generateMethodDefHeader (" ", s_cu_name, s_cu_name + "(TokenManager *tokenManager)");
+    generateMethodDefHeader (" ", grammar ().getParserName (), grammar ().getParserName () + "(TokenManager *tokenManager)");
     if (superClass != null)
     {
       genCodeLine (" : " + superClass + "()");
@@ -245,13 +238,13 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("}");
 
     switchToIncludeFile ();
-    genCodeLine ("  virtual ~" + s_cu_name + "();");
+    genCodeLine ("  virtual ~" + grammar ().getParserName () + "();");
     switchToMainFile ();
-    genCodeLine (s_cu_name + "::~" + s_cu_name + "()");
+    genCodeLine (grammar ().getParserName () + "::~" + grammar ().getParserName () + "()");
     genCodeLine ("{");
     genCodeLine ("  clear();");
     genCodeLine ("}");
-    generateMethodDefHeader ("void", s_cu_name, "ReInit(TokenManager* tokenManager)");
+    generateMethodDefHeader ("void", grammar ().getParserName (), "ReInit(TokenManager* tokenManager)");
     genCodeLine ("{");
     genCodeLine ("    clear();");
     genCodeLine ("    errorHandler = new ErrorHandler();");
@@ -282,7 +275,7 @@ public class ParseGenCPP extends ParseGenJava
     {
       genCodeLine ("    jj_ntk = -1;");
     }
-    if (s_jjtreeGenerated)
+    if (grammar ().isJJTreeGenerated ())
     {
       genCodeLine ("    jjtree.reset();");
     }
@@ -294,15 +287,15 @@ public class ParseGenCPP extends ParseGenJava
     if (Options.isErrorReporting ())
     {
       genCodeLine ("    jj_gen = 0;");
-      if (s_maskindex > 0)
+      if (grammar ().getMaskIndex () > 0)
       {
-        genCodeLine ("    for (int i = 0; i < " + s_maskindex + "; i++) jj_la1[i] = -1;");
+        genCodeLine ("    for (int i = 0; i < " + grammar ().getMaskIndex () + "; i++) jj_la1[i] = -1;");
       }
     }
     genCodeLine ("  }");
     genCodeNewLine ();
 
-    generateMethodDefHeader ("void", s_cu_name, "clear()");
+    generateMethodDefHeader ("void", grammar ().getParserName (), "clear()");
     genCodeLine ("{");
     genCodeLine ("  //Since token manager was generate from outside,");
     genCodeLine ("  //parser should not take care of deleting");
@@ -331,7 +324,7 @@ public class ParseGenCPP extends ParseGenJava
       switchToIncludeFile ();
       genCodeLine (" virtual");
       switchToMainFile ();
-      generateMethodDefHeader ("bool ", s_cu_name, "jj_stack_check(bool init)");
+      generateMethodDefHeader ("bool ", grammar ().getParserName (), "jj_stack_check(bool init)");
       genCodeLine ("  {");
       genCodeLine ("     if(init) {");
       genCodeLine ("       jj_stack_base = nullptr;");
@@ -350,7 +343,7 @@ public class ParseGenCPP extends ParseGenJava
       genCodeLine ("  }");
     }
 
-    generateMethodDefHeader ("Token *", s_cu_name, "jj_consume_token(int kind)", "ParseException");
+    generateMethodDefHeader ("Token *", grammar ().getParserName (), "jj_consume_token(int kind)", "ParseException");
     genCodeLine ("  {");
     if (Options.hasCPPStackLimit ())
     {
@@ -379,11 +372,11 @@ public class ParseGenCPP extends ParseGenJava
     if (Options.isErrorReporting ())
     {
       genCodeLine ("      jj_gen++;");
-      if (s_jj2index != 0)
+      if (grammar ().getJJ2Index () != 0)
       {
         genCodeLine ("      if (++jj_gc > 100) {");
         genCodeLine ("        jj_gc = 0;");
-        genCodeLine ("        for (int i = 0; i < " + s_jj2index + "; i++) {");
+        genCodeLine ("        for (int i = 0; i < " + grammar ().getJJ2Index () + "; i++) {");
         genCodeLine ("          JJCalls *c = &jj_2_rtns[i];");
         genCodeLine ("          while (c != nullptr) {");
         genCodeLine ("            if (c->gen < jj_gen) c->first = nullptr;");
@@ -424,10 +417,10 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("  }");
     genCodeNewLine ();
 
-    if (s_jj2index != 0)
+    if (grammar ().getJJ2Index () != 0)
     {
       switchToMainFile ();
-      generateMethodDefHeader ("bool ", s_cu_name, "jj_scan_token(int kind)");
+      generateMethodDefHeader ("bool ", grammar ().getParserName (), "jj_scan_token(int kind)");
       genCodeLine ("{");
       if (Options.hasCPPStackLimit ())
       {
@@ -477,7 +470,7 @@ public class ParseGenCPP extends ParseGenJava
     }
     genCodeNewLine ();
     genCodeLine ("/** Get the next Token. */");
-    generateMethodDefHeader ("Token *", s_cu_name, "getNextToken()");
+    generateMethodDefHeader ("Token *", grammar ().getParserName (), "getNextToken()");
     genCodeLine ("{");
     if (Options.isCacheTokens ())
     {
@@ -502,7 +495,7 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("  }");
     genCodeNewLine ();
     genCodeLine ("/** Get the specific Token. */");
-    generateMethodDefHeader ("Token *", s_cu_name, "getToken(int index)");
+    generateMethodDefHeader ("Token *", grammar ().getParserName (), "getToken(int index)");
     genCodeLine ("{");
     if (JavaCCGlobals.isLookAheadNeeded ())
     {
@@ -521,7 +514,7 @@ public class ParseGenCPP extends ParseGenJava
     genCodeNewLine ();
     if (!Options.isCacheTokens ())
     {
-      generateMethodDefHeader ("int", s_cu_name, "jj_ntk_f()");
+      generateMethodDefHeader ("int", grammar ().getParserName (), "jj_ntk_f()");
       genCodeLine ("{");
 
       genCodeLine ("    if ((jj_nt=token->next) == nullptr)");
@@ -539,7 +532,7 @@ public class ParseGenCPP extends ParseGenJava
     {
       genCodeLine ("  int **jj_expentries;");
       genCodeLine ("  int *jj_expentry;");
-      if (s_jj2index != 0)
+      if (grammar ().getJJ2Index () != 0)
       {
         switchToStaticsFile ();
         // For now we don't support ERROR_REPORTING in the C++ version.
@@ -547,7 +540,7 @@ public class ParseGenCPP extends ParseGenJava
         // genCodeLine(" static int jj_endpos;");
         genCodeNewLine ();
 
-        generateMethodDefHeader ("  void", s_cu_name, "jj_add_error_token(int kind, int pos)");
+        generateMethodDefHeader ("  void", grammar ().getParserName (), "jj_add_error_token(int kind, int pos)");
         genCodeLine ("  {");
         // For now we don't support ERROR_REPORTING in the C++ version.
 
@@ -582,7 +575,7 @@ public class ParseGenCPP extends ParseGenJava
       switchToIncludeFile ();
       genCodeLine ("protected:");
       genCodeLine ("  /** Generate ParseException. */");
-      generateMethodDefHeader ("  virtual void ", s_cu_name, "parseError()");
+      generateMethodDefHeader ("  virtual void ", grammar ().getParserName (), "parseError()");
       genCodeLine ("   {");
       if (Options.isErrorReporting ())
       {
@@ -628,7 +621,7 @@ public class ParseGenCPP extends ParseGenJava
     {
       genCodeLine ("protected:");
       genCodeLine ("  /** Generate ParseException. */");
-      generateMethodDefHeader ("virtual void ", s_cu_name, "parseError()");
+      generateMethodDefHeader ("virtual void ", grammar ().getParserName (), "parseError()");
       genCodeLine ("   {");
       if (Options.isErrorReporting ())
       {
@@ -660,7 +653,7 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("  bool trace = " + Options.isDebugParser () + "; // trace enabled if true");
     genCodeNewLine ();
     genCodeLine ("public:");
-    generateMethodDefHeader ("  bool", s_cu_name, "trace_enabled()");
+    generateMethodDefHeader ("  bool", grammar ().getParserName (), "trace_enabled()");
     genCodeLine ("  {");
     genCodeLine ("    return trace;");
     genCodeLine ("  }");
@@ -668,21 +661,21 @@ public class ParseGenCPP extends ParseGenJava
     if (Options.isDebugParser ())
     {
       switchToIncludeFile ();
-      generateMethodDefHeader ("  void", s_cu_name, "enable_tracing()");
+      generateMethodDefHeader ("  void", grammar ().getParserName (), "enable_tracing()");
       genCodeLine ("{");
       genCodeLine ("    trace = true;");
       genCodeLine ("}");
       genCodeNewLine ();
 
       switchToIncludeFile ();
-      generateMethodDefHeader ("  void", s_cu_name, "disable_tracing()");
+      generateMethodDefHeader ("  void", grammar ().getParserName (), "disable_tracing()");
       genCodeLine ("{");
       genCodeLine ("    trace = false;");
       genCodeLine ("}");
       genCodeNewLine ();
 
       switchToIncludeFile ();
-      generateMethodDefHeader ("  void", s_cu_name, "trace_call(const char *s)");
+      generateMethodDefHeader ("  void", grammar ().getParserName (), "trace_call(const char *s)");
       genCodeLine ("  {");
       genCodeLine ("    if (trace_enabled()) {");
       genCodeLine ("      for (int i = 0; i < indent; i++) { printf(\" \"); }");
@@ -693,7 +686,7 @@ public class ParseGenCPP extends ParseGenJava
       genCodeNewLine ();
 
       switchToIncludeFile ();
-      generateMethodDefHeader ("  void", s_cu_name, "trace_return(const char *s)");
+      generateMethodDefHeader ("  void", grammar ().getParserName (), "trace_return(const char *s)");
       genCodeLine ("  {");
       genCodeLine ("    indent = indent - 2;");
       genCodeLine ("    if (trace_enabled()) {");
@@ -704,7 +697,7 @@ public class ParseGenCPP extends ParseGenJava
       genCodeNewLine ();
 
       switchToIncludeFile ();
-      generateMethodDefHeader ("  void", s_cu_name, "trace_token(Token *t, const char *where)");
+      generateMethodDefHeader ("  void", grammar ().getParserName (), "trace_token(Token *t, const char *where)");
       genCodeLine ("  {");
       genCodeLine ("    if (trace_enabled()) {");
       genCodeLine ("      for (int i = 0; i < indent; i++) { printf(\" \"); }");
@@ -719,7 +712,7 @@ public class ParseGenCPP extends ParseGenJava
       genCodeNewLine ();
 
       switchToIncludeFile ();
-      generateMethodDefHeader ("  void", s_cu_name, "trace_scan(Token *t1, int t2)");
+      generateMethodDefHeader ("  void", grammar ().getParserName (), "trace_scan(Token *t1, int t2)");
       genCodeLine ("  {");
       genCodeLine ("    if (trace_enabled()) {");
       genCodeLine ("      for (int i = 0; i < indent; i++) { printf(\" \"); }");
@@ -736,29 +729,29 @@ public class ParseGenCPP extends ParseGenJava
     else
     {
       switchToIncludeFile ();
-      generateMethodDefHeader ("  void", s_cu_name, "enable_tracing()");
+      generateMethodDefHeader ("  void", grammar ().getParserName (), "enable_tracing()");
       genCodeLine ("  {");
       genCodeLine ("  }");
       switchToIncludeFile ();
-      generateMethodDefHeader ("  void", s_cu_name, "disable_tracing()");
+      generateMethodDefHeader ("  void", grammar ().getParserName (), "disable_tracing()");
       genCodeLine ("  {");
       genCodeLine ("  }");
       genCodeNewLine ();
     }
 
-    if (s_jj2index != 0 && Options.isErrorReporting ())
+    if (grammar ().getJJ2Index () != 0 && Options.isErrorReporting ())
     {
-      generateMethodDefHeader ("  void", s_cu_name, "jj_rescan_token()");
+      generateMethodDefHeader ("  void", grammar ().getParserName (), "jj_rescan_token()");
       genCodeLine ("{");
       genCodeLine ("    jj_rescan = true;");
-      genCodeLine ("    for (int i = 0; i < " + s_jj2index + "; i++) {");
+      genCodeLine ("    for (int i = 0; i < " + grammar ().getJJ2Index () + "; i++) {");
       // genCodeLine(" try {");
       genCodeLine ("      JJCalls *p = &jj_2_rtns[i];");
       genCodeLine ("      do {");
       genCodeLine ("        if (p->gen > jj_gen) {");
       genCodeLine ("          jj_la = p->arg; jj_lastpos = jj_scanpos = p->first;");
       genCodeLine ("          switch (i) {");
-      for (int i = 0; i < s_jj2index; i++)
+      for (int i = 0; i < grammar ().getJJ2Index (); i++)
       {
         genCodeLine ("            case " + i + ": jj_3_" + (i + 1) + "(); break;");
       }
@@ -772,7 +765,7 @@ public class ParseGenCPP extends ParseGenJava
       genCodeLine ("  }");
       genCodeNewLine ();
 
-      generateMethodDefHeader ("  void", s_cu_name, "jj_save(int index, int xla)");
+      generateMethodDefHeader ("  void", grammar ().getParserName (), "jj_save(int index, int xla)");
       genCodeLine ("{");
       genCodeLine ("    JJCalls *p = &jj_2_rtns[index];");
       genCodeLine ("    while (p->gen > jj_gen) {");
@@ -784,12 +777,12 @@ public class ParseGenCPP extends ParseGenJava
       genCodeNewLine ();
     }
 
-    if (CU_FROM_INSERTION_POINT_2.isNotEmpty ())
+    if (grammar ().cuFromInsertionPoint2 ().isNotEmpty ())
     {
-      printTokenSetup (CU_FROM_INSERTION_POINT_2.get (0));
+      printTokenSetup (grammar ().cuFromInsertionPoint2 ().get (0));
       setColToStart ();
       Token t = null;
-      for (final Token name : CU_FROM_INSERTION_POINT_2)
+      for (final Token name : grammar ().cuFromInsertionPoint2 ())
       {
         t = name;
         printToken (t);
@@ -810,16 +803,16 @@ public class ParseGenCPP extends ParseGenJava
       t1 = t1.next;
     }
     genCodeLine ("\n");
-    if (s_jjtreeGenerated)
+    if (grammar ().isJJTreeGenerated ())
     {
-      genCodeLine ("  JJT" + s_cu_name + "State jjtree;");
+      genCodeLine ("  JJT" + grammar ().getParserName () + "State jjtree;");
     }
     genCodeLine ("private:");
     genCodeLine ("  bool jj_done;");
 
     genCodeLine ("};");
 
-    saveOutput (Options.getOutputDirectory () + File.separator + s_cu_name + getFileExtension ());
+    saveOutput (Options.getOutputDirectory () + File.separator + grammar ().getParserName () + getFileExtension ());
   }
 
   public static void reInit ()

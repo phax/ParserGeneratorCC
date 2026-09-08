@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser.test;
 
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -84,9 +86,10 @@ public class NfaStateTest extends AbstractJavaCCTestCase
       final JavaCCParser parser = new JavaCCParser (new StreamProvider (FileHelper.getBufferedReader (new File (sParserInputFile),
                                                                                                       Options.getGrammarEncoding ())));
       parser.javacc_input ();
-      JavaCCGlobals.s_fileName = JavaCCGlobals.s_origFileName = sParserInputFile;
-      JavaCCGlobals.s_jjtreeGenerated = JavaCCGlobals.isGeneratedBy ("JJTree", sParserInputFile);
-      JavaCCGlobals.s_toolNames = JavaCCGlobals.getToolNames (sParserInputFile);
+      grammar ().setFileName (sParserInputFile);
+      grammar ().setOrigFileName (sParserInputFile);
+      grammar ().setJJTreeGenerated (JavaCCGlobals.isGeneratedBy ("JJTree", sParserInputFile));
+      grammar ().setToolNameList (JavaCCGlobals.getToolNames (sParserInputFile));
       Semanticize.start ();
       new LexGenJava ().start ();
     }

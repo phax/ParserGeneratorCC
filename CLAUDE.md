@@ -61,10 +61,15 @@ The generator historically kept everything in static fields. That state is movin
 `com.helger.pgcc.context.PGCCContext`, one piece at a time:
 
 - already migrated: the error/warning counters (`ErrorCollector`), every option value
-  (`OptionState`, which includes the output language), and the lookahead analysis scratch state
-  (`LookaheadState`, formerly `MatchInfo.s_laLimit` and the two `LookaheadWalk` fields)
-- still static: `JavaCCGlobals`, `NfaState`, `LexGenJava`, `ExpRStringLiteral`, `Semanticize`,
-  `Expansion`, `JJTreeGlobals`, `JJDocGlobals`
+  (`OptionState`, which includes the output language), the lookahead analysis scratch state
+  (`LookaheadState`), and the whole parsed grammar (`GrammarState` - what `JavaCCGlobals` used to
+  hold). `JavaCCGlobals` is now a facade whose `grammar ()` returns that model.
+- still static: `LexGenJava`, `NfaState`, `ExpRStringLiteral`, `JavaCCParserInternals`,
+  `Semanticize`, `Expansion`, `JJTreeGlobals`, `JJDocGlobals`
+
+`LexGenJava` and `NfaState` are deliberately last: their statics are the working set of a single
+`LexGenJava.start ()` call, so they belong as instance fields of the lexer backend once the target
+languages are separated, not as context state.
 
 Where a static is really a scratch variable rather than state, prefer removing it over moving it -
 `Semanticize.other` became the return value of `findIgnoreCase`.

@@ -64,14 +64,9 @@
 
 package com.helger.pgcc.parser;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.LEXSTATE_I2S;
-import static com.helger.pgcc.parser.JavaCCGlobals.REXPR_LIST;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_aActForEof;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_cu_name;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_sNextStateForEof;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_token_mgr_decls;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_toolNames;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +92,7 @@ public class LexGenCpp extends LexGenJava
 {
   private void _printClassHead ()
   {
-    final List <String> tn = new ArrayList <> (s_toolNames);
+    final List <String> tn = new ArrayList <> (grammar ().getToolNameList ());
     tn.add (CPG.APP_NAME);
 
     switchToStaticsFile ();
@@ -110,7 +105,7 @@ public class LexGenCpp extends LexGenJava
     genCodeLine ("#include \"Token.h\"");
     genCodeLine ("#include \"ErrorHandler.h\"");
     genCodeLine ("#include \"TokenManager.h\"");
-    genCodeLine ("#include \"" + s_cu_name + "Constants.h\"");
+    genCodeLine ("#include \"" + grammar ().getParserName () + "Constants.h\"");
 
     if (Options.stringValue (Options.USEROPTION__CPP_TOKEN_MANAGER_INCLUDES).length () > 0)
     {
@@ -124,7 +119,7 @@ public class LexGenCpp extends LexGenJava
       genCodeLine ("namespace " + Options.stringValue ("NAMESPACE_OPEN"));
     }
 
-    genCodeLine ("class " + s_cu_name + ";");
+    genCodeLine ("class " + grammar ().getParserName () + ";");
 
     /*
      * final int l = 0, kind; i = 1; namespace? for (;;) { if
@@ -147,24 +142,24 @@ public class LexGenCpp extends LexGenJava
                    new String [] {},
                    new String [] { "public TokenManager" + (superClass == null ? "" : ", public " + superClass) });
 
-    if (s_token_mgr_decls != null && s_token_mgr_decls.isNotEmpty ())
+    if (grammar ().getTokenMgrDecls () != null && grammar ().getTokenMgrDecls ().isNotEmpty ())
     {
-      Token t = s_token_mgr_decls.get (0);
+      Token t = grammar ().getTokenMgrDecls ().get (0);
       boolean bCommonTokenActionSeen = false;
       final boolean bCommonTokenActionNeeded = Options.isCommonTokenAction ();
 
-      printTokenSetup (s_token_mgr_decls.get (0));
+      printTokenSetup (grammar ().getTokenMgrDecls ().get (0));
       setColToStart ();
 
       switchToMainFile ();
-      for (final Token s_token_mgr_decl : s_token_mgr_decls)
+      for (final Token s_token_mgr_decl : grammar ().getTokenMgrDecls ())
       {
         t = s_token_mgr_decl;
         if (t.kind == JavaCCParserConstants.IDENTIFIER && bCommonTokenActionNeeded && !bCommonTokenActionSeen)
         {
           bCommonTokenActionSeen = t.image.equals ("CommonTokenAction");
           if (bCommonTokenActionSeen)
-            t.image = s_cu_name + "TokenManager::" + t.image;
+            t.image = grammar ().getParserName () + "TokenManager::" + t.image;
         }
 
         printToken (t);
@@ -176,7 +171,7 @@ public class LexGenCpp extends LexGenJava
       if (Options.isTokenManagerUsesParser ())
       {
         genCodeLine ("  void setParser(void* parser) {");
-        genCodeLine ("      this->parser = (" + s_cu_name + "*) parser;");
+        genCodeLine ("      this->parser = (" + grammar ().getParserName () + "*) parser;");
         genCodeLine ("  }");
       }
       genCodeNewLine ();
@@ -211,7 +206,7 @@ public class LexGenCpp extends LexGenJava
     {
       genCodeNewLine ();
       genCodeLine ("private:");
-      genCodeLine ("  " + s_cu_name + "* parser = nullptr;");
+      genCodeLine ("  " + grammar ().getParserName () + "* parser = nullptr;");
     }
     switchToMainFile ();
   }
@@ -226,11 +221,11 @@ public class LexGenCpp extends LexGenJava
 
   private static void _buildLexStatesTable ()
   {
-    final Iterator <TokenProduction> it = REXPR_LIST.iterator ();
+    final Iterator <TokenProduction> it = grammar ().rexprList ().iterator ();
     TokenProduction tp;
     int i;
 
-    final String [] tmpLexStateName = new String [LEXSTATE_I2S.size ()];
+    final String [] tmpLexStateName = new String [grammar ().lexStateI2S ().size ()];
     while (it.hasNext ())
     {
       tp = it.next ();
@@ -268,8 +263,8 @@ public class LexGenCpp extends LexGenJava
     s_toToken = new long [s_maxOrdinal / 64 + 1];
     s_toToken[0] = 1L;
     s_actions = new ExpAction [s_maxOrdinal];
-    s_actions[0] = s_aActForEof;
-    s_hasTokenActions = s_aActForEof != null;
+    s_actions[0] = grammar ().getActionForEof ();
+    s_hasTokenActions = grammar ().getActionForEof () != null;
     s_initStates.clear ();
     s_canMatchAnyChar = new int [s_maxLexStates];
     s_canLoop = new boolean [s_maxLexStates];
@@ -286,7 +281,7 @@ public class LexGenCpp extends LexGenJava
     s_maxLongsReqd = new int [s_maxLexStates];
     s_initMatch = new int [s_maxLexStates];
     s_newLexState = new String [s_maxOrdinal];
-    s_newLexState[0] = s_sNextStateForEof;
+    s_newLexState[0] = grammar ().getNextStateForEof ();
     s_hasEmptyMatch = false;
     s_lexStates = new int [s_maxOrdinal];
     s_ignoreCase = new boolean [s_maxOrdinal];
@@ -313,7 +308,7 @@ public class LexGenCpp extends LexGenJava
     s_keepLineCol = Options.isKeepLineColumn ();
     final List <ExpRChoice> choices = new ArrayList <> ();
 
-    s_tokMgrClassName = s_cu_name + "TokenManager";
+    s_tokMgrClassName = grammar ().getParserName () + "TokenManager";
 
     _printClassHead ();
     _buildLexStatesTable ();
@@ -525,7 +520,7 @@ public class LexGenCpp extends LexGenJava
     {
       final Map <String, Object> aOpts = new HashMap <> ();
       aOpts.put ("charStreamName", "CharStream");
-      aOpts.put ("parserClassName", s_cu_name);
+      aOpts.put ("parserClassName", grammar ().getParserName ());
       aOpts.put ("defaultLexState", "defaultLexState");
       aOpts.put ("lexStateNameLength", Integer.toString (s_lexStateName.length));
       writeTemplate ("/templates/cpp/TokenManagerBoilerPlateMethods.template", aOpts);
@@ -804,7 +799,7 @@ public class LexGenCpp extends LexGenJava
     if (s_hasSpecial)
       genCodeLine ("      matchedToken->specialToken = specialToken;");
 
-    if (s_sNextStateForEof != null || s_aActForEof != null)
+    if (grammar ().getNextStateForEof () != null || grammar ().getActionForEof () != null)
       genCodeLine ("      TokenLexicalActions(matchedToken);");
 
     if (Options.isCommonTokenAction ())

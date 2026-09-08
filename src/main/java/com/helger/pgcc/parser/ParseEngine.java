@@ -63,16 +63,8 @@
  */
 package com.helger.pgcc.parser;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.BNF_PRODUCTIONS;
-import static com.helger.pgcc.parser.JavaCCGlobals.MASK_VALS;
-import static com.helger.pgcc.parser.JavaCCGlobals.NAMES_OF_TOKENS;
-import static com.helger.pgcc.parser.JavaCCGlobals.PRODUCTION_TABLE;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_ccol;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_cline;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_cu_name;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_jj2index;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_maskindex;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_tokenCount;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 
 import java.util.HashSet;
 import java.util.List;
@@ -347,11 +339,11 @@ public class ParseEngine
     // The state variables.
     EState eState = EState.NOOPENSTM;
     int indentAmt = 0;
-    final boolean [] casedValues = new boolean [s_tokenCount];
+    final boolean [] casedValues = new boolean [grammar ().getTokenCount ()];
     String retval = "";
     ExpLookahead la;
     Token t = null;
-    final int tokenMaskSize = (s_tokenCount - 1) / 32 + 1;
+    final int tokenMaskSize = (grammar ().getTokenCount () - 1) / 32 + 1;
     int [] tokenMask = null;
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
 
@@ -397,10 +389,10 @@ public class ParseEngine
             retval += INDENT_DEC + "\n" + "default:" + INDENT_INC;
             if (Options.isErrorReporting ())
             {
-              retval += "\njj_la1[" + s_maskindex + "] = jj_gen;";
-              s_maskindex++;
+              retval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
+              grammar ().incMaskIndex ();
             }
-            MASK_VALS.add (tokenMask);
+            grammar ().maskVals ().add (tokenMask);
             retval += "\n" + "if (";
             indentAmt++;
             break;
@@ -426,9 +418,9 @@ public class ParseEngine
            */
           if (m_firstSet == null)
           {
-            m_firstSet = new boolean [s_tokenCount];
+            m_firstSet = new boolean [grammar ().getTokenCount ()];
           }
-          for (int i = 0; i < s_tokenCount; i++)
+          for (int i = 0; i < grammar ().getTokenCount (); i++)
           {
             m_firstSet[i] = false;
           }
@@ -473,7 +465,7 @@ public class ParseEngine
                 else
                   retval += "jj_ntk == -1 ? jj_ntk_f() : jj_ntk";
                 retval += ") {" + INDENT_INC;
-                for (int i = 0; i < s_tokenCount; i++)
+                for (int i = 0; i < grammar ().getTokenCount (); i++)
                 {
                   casedValues[i] = false;
                 }
@@ -490,7 +482,7 @@ public class ParseEngine
               default:
                 throw new IllegalStateException ();
             }
-            for (int i = 0; i < s_tokenCount; i++)
+            for (int i = 0; i < grammar ().getTokenCount (); i++)
             {
               if (m_firstSet[i] && !casedValues[i])
               {
@@ -500,7 +492,7 @@ public class ParseEngine
                 final int j1 = i / 32;
                 final int j2 = i % 32;
                 tokenMask[j1] |= 1 << j2;
-                final String s = NAMES_OF_TOKENS.get (Integer.valueOf (i));
+                final String s = grammar ().namesOfTokens ().get (Integer.valueOf (i));
                 if (s == null)
                   retval += i;
                 else
@@ -539,10 +531,10 @@ public class ParseEngine
             retval += INDENT_DEC + "\ndefault:" + INDENT_INC;
             if (Options.isErrorReporting ())
             {
-              retval += "\njj_la1[" + s_maskindex + "] = jj_gen;";
-              s_maskindex++;
+              retval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
+              grammar ().incMaskIndex ();
             }
-            MASK_VALS.add (tokenMask);
+            grammar ().maskVals ().add (tokenMask);
             retval += "\nif (";
             indentAmt++;
             break;
@@ -550,7 +542,7 @@ public class ParseEngine
             throw new IllegalStateException ();
         }
 
-        final int nInternalIndex = ++s_jj2index;
+        final int nInternalIndex = grammar ().incAndGetJJ2Index ();
         // At this point, la.la_expansion.internal_name must be "".
         assert la.getLaExpansion ().getInternalName ().equals ("");
         la.getLaExpansion ().setInternalName ("_", nInternalIndex);
@@ -594,9 +586,9 @@ public class ParseEngine
         retval += INDENT_DEC + "\n" + "default:" + INDENT_INC;
         if (Options.isErrorReporting ())
         {
-          retval += "\njj_la1[" + s_maskindex + "] = jj_gen;";
-          MASK_VALS.add (tokenMask);
-          s_maskindex++;
+          retval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
+          grammar ().maskVals ().add (tokenMask);
+          grammar ().incMaskIndex ();
         }
         retval += actions[index];
         break;
@@ -674,10 +666,10 @@ public class ParseEngine
     if (false)
     {
       m_codeGenerator.printTokenSetup (t);
-      s_ccol = 1;
+      grammar ().setCurrentColumn (1);
       final String comment1 = m_codeGenerator.getLeadingComments (t);
-      s_cline = t.beginLine;
-      s_ccol = t.beginColumn;
+      grammar ().setCurrentLine (t.beginLine);
+      grammar ().setCurrentColumn (t.beginColumn);
       sig.append (t.image);
     }
 
@@ -710,7 +702,7 @@ public class ParseEngine
     params = sig.toString ();
 
     // For now, just ignore comments
-    m_codeGenerator.generateMethodDefHeader (ret, s_cu_name, p.getLhs () + params, sig.toString ());
+    m_codeGenerator.generateMethodDefHeader (ret, grammar ().getParserName (), p.getLhs () + params, sig.toString ());
 
     return "";
   }
@@ -726,10 +718,10 @@ public class ParseEngine
     boolean ptr_ret = false;
 
     m_codeGenerator.printTokenSetup (t);
-    s_ccol = 1;
+    grammar ().setCurrentColumn (1);
     final String comment1 = m_codeGenerator.getLeadingComments (t);
-    s_cline = t.beginLine;
-    s_ccol = t.beginColumn;
+    grammar ().setCurrentLine (t.beginLine);
+    grammar ().setCurrentColumn (t.beginColumn);
     sig.append (t.image);
     if (t.kind == JavaCCParserConstants.VOID)
       void_ret = true;
@@ -765,7 +757,7 @@ public class ParseEngine
     final String params = sig.toString ();
 
     // For now, just ignore comments
-    m_codeGenerator.generateMethodDefHeader (ret, s_cu_name, p.getLhs () + params, sig.toString ());
+    m_codeGenerator.generateMethodDefHeader (ret, grammar ().getParserName (), p.getLhs () + params, sig.toString ());
 
     // Generate a default value for error return.
     String default_return;
@@ -875,11 +867,11 @@ public class ParseEngine
     {
       case JAVA:
         m_codeGenerator.printTokenSetup (t);
-        s_ccol = 1;
+        grammar ().setCurrentColumn (1);
         m_codeGenerator.printLeadingComments (t);
         m_codeGenerator.genCode ("  final " + (p.getAccessMod () != null ? p.getAccessMod () : "public") + " ");
-        s_cline = t.beginLine;
-        s_ccol = t.beginColumn;
+        grammar ().setCurrentLine (t.beginLine);
+        grammar ().setCurrentColumn (t.beginColumn);
         m_codeGenerator.printTokenOnly (t);
         for (int i = 1; i < p.getReturnTypeTokens ().size (); i++)
         {
@@ -965,7 +957,7 @@ public class ParseEngine
     if (!Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) && p.getDeclarationTokens ().size () != 0)
     {
       m_codeGenerator.printTokenSetup (p.getDeclarationTokens ().get (0));
-      s_cline--;
+      grammar ().decCurrentLine ();
       for (final Token aElement : p.getDeclarationTokens ())
       {
         t = aElement;
@@ -1085,7 +1077,7 @@ public class ParseEngine
       }
       else
       {
-        final String label = NAMES_OF_TOKENS.get (Integer.valueOf (e_nrw.getOrdinal ()));
+        final String label = grammar ().namesOfTokens ().get (Integer.valueOf (e_nrw.getOrdinal ()));
         if (label != null)
         {
           retval += "jj_consume_token(" + label + tail;
@@ -1162,7 +1154,7 @@ public class ParseEngine
           if (!Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) && e_nrw.getActionTokens ().size () != 0)
           {
             m_codeGenerator.printTokenSetup (e_nrw.getActionTokens ().get (0));
-            s_ccol = 1;
+            grammar ().setCurrentColumn (1);
             for (final Token aElement : e_nrw.getActionTokens ())
             {
               t = aElement;
@@ -1221,7 +1213,7 @@ public class ParseEngine
                 // all the
                 // expansion choices with if (!error)
                 boolean wrap_in_block = false;
-                if (!JavaCCGlobals.s_jjtreeGenerated)
+                if (!grammar ().isJJTreeGenerated ())
                 {
                   switch (eOutputLanguage)
                   {
@@ -1440,7 +1432,7 @@ public class ParseEngine
                         if (list.size () != 0)
                         {
                           m_codeGenerator.printTokenSetup (list.get (0));
-                          s_ccol = 1;
+                          grammar ().setCurrentColumn (1);
                           for (final Token aElement : list)
                           {
                             t = aElement;
@@ -1467,7 +1459,7 @@ public class ParseEngine
                         if (e_nrw.m_finallyblk.size () != 0)
                         {
                           m_codeGenerator.printTokenSetup (e_nrw.m_finallyblk.get (0));
-                          s_ccol = 1;
+                          grammar ().setCurrentColumn (1);
                           for (final Token aElement : e_nrw.m_finallyblk)
                           {
                             t = aElement;
@@ -1579,7 +1571,7 @@ public class ParseEngine
           if (seq instanceof ExpNonTerminal)
           {
             final ExpNonTerminal e_nrw = (ExpNonTerminal) seq;
-            final NormalProduction ntprod = (PRODUCTION_TABLE.get (e_nrw.getName ()));
+            final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
             if (ntprod instanceof AbstractCodeProduction)
             {
               break; // nothing to do here
@@ -1623,7 +1615,7 @@ public class ParseEngine
         // fact, we rely here on the fact that the "name" fields of both these
         // variables are the same.
         final ExpNonTerminal e_nrw = (ExpNonTerminal) e;
-        final NormalProduction ntprod = (PRODUCTION_TABLE.get (e_nrw.getName ()));
+        final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (ntprod instanceof AbstractCodeProduction)
         {
           // nothing to do here
@@ -1774,7 +1766,7 @@ public class ParseEngine
       }
       else
       {
-        final Object label = NAMES_OF_TOKENS.get (Integer.valueOf (e_nrw.getOrdinal ()));
+        final Object label = grammar ().namesOfTokens ().get (Integer.valueOf (e_nrw.getOrdinal ()));
         if (label != null)
         {
           m_codeGenerator.genCodeLine ("    if (jj_scan_token(" + (String) label + ")) " + _genReturn (true));
@@ -1795,7 +1787,7 @@ public class ParseEngine
         // fact, we rely here on the fact that the "name" fields of both these
         // variables are the same.
         final ExpNonTerminal e_nrw = (ExpNonTerminal) e;
-        final NormalProduction ntprod = (PRODUCTION_TABLE.get (e_nrw.getName ()));
+        final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (ntprod instanceof AbstractCodeProduction)
         {
           m_codeGenerator.genCodeLine ("    if (true) { jj_la = 0; jj_scanpos = jj_lastpos; " +
@@ -2016,7 +2008,7 @@ public class ParseEngine
       if (e instanceof ExpNonTerminal)
       {
         final ExpNonTerminal e_nrw = (ExpNonTerminal) e;
-        final NormalProduction ntprod = (PRODUCTION_TABLE.get (e_nrw.getName ()));
+        final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (ntprod instanceof AbstractCodeProduction)
         {
           return Integer.MAX_VALUE;
@@ -2108,7 +2100,7 @@ public class ParseEngine
   {
     m_codeGenerator = codeGenerator;
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
-    for (final NormalProduction p : BNF_PRODUCTIONS)
+    for (final NormalProduction p : grammar ().bnfProductions ())
     {
       if (p instanceof CodeProductionCpp)
       {
@@ -2126,11 +2118,11 @@ public class ParseEngine
         {
           Token t = (cp.getReturnTypeTokens ().get (0));
           codeGenerator.printTokenSetup (t);
-          s_ccol = 1;
+          grammar ().setCurrentColumn (1);
           codeGenerator.printLeadingComments (t);
           codeGenerator.genCode (" " + (p.getAccessMod () != null ? p.getAccessMod () + " " : ""));
-          s_cline = t.beginLine;
-          s_ccol = t.beginColumn;
+          grammar ().setCurrentLine (t.beginLine);
+          grammar ().setCurrentColumn (t.beginColumn);
           codeGenerator.printTokenOnly (t);
           for (int i = 1; i < cp.getReturnTypeTokens ().size (); i++)
           {
@@ -2188,7 +2180,7 @@ public class ParseEngine
         if (cp.getCodeTokens ().size () != 0)
         {
           codeGenerator.printTokenSetup (cp.getCodeTokens ().get (0));
-          s_cline--;
+          grammar ().decCurrentLine ();
           codeGenerator.printTokenList (cp.getCodeTokens ());
         }
         codeGenerator.genCodeNewLine ();
@@ -2210,11 +2202,11 @@ public class ParseEngine
           final CodeProductionJava jp = (CodeProductionJava) p;
           Token t = jp.getReturnTypeTokens ().get (0);
           codeGenerator.printTokenSetup (t);
-          s_ccol = 1;
+          grammar ().setCurrentColumn (1);
           codeGenerator.printLeadingComments (t);
           codeGenerator.genCode ("  " + (p.getAccessMod () != null ? p.getAccessMod () + " " : ""));
-          s_cline = t.beginLine;
-          s_ccol = t.beginColumn;
+          grammar ().setCurrentLine (t.beginLine);
+          grammar ().setCurrentColumn (t.beginColumn);
           codeGenerator.printTokenOnly (t);
           for (int i = 1; i < jp.getReturnTypeTokens ().size (); i++)
           {
@@ -2264,7 +2256,7 @@ public class ParseEngine
           if (jp.getCodeTokens ().size () != 0)
           {
             codeGenerator.printTokenSetup ((jp.getCodeTokens ().get (0)));
-            s_cline--;
+            grammar ().decCurrentLine ();
             codeGenerator.printTokenList (jp.getCodeTokens ());
           }
           codeGenerator.genCodeNewLine ();
@@ -2345,7 +2337,7 @@ public class ParseEngine
       if (e instanceof ExpNonTerminal)
       {
         final ExpNonTerminal e_nrw = (ExpNonTerminal) e;
-        final NormalProduction ntprod = (PRODUCTION_TABLE.get (e_nrw.getName ()));
+        final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (ntprod instanceof AbstractCodeProduction)
         {
           // javacode, true - always (warn?)
@@ -2406,7 +2398,7 @@ public class ParseEngine
               Expansion tmp = e_nrw.getUnitAt (1);
               while (tmp instanceof ExpNonTerminal)
               {
-                final NormalProduction ntprod = (PRODUCTION_TABLE.get (((ExpNonTerminal) tmp).getName ()));
+                final NormalProduction ntprod = (grammar ().productionTable ().get (((ExpNonTerminal) tmp).getName ()));
                 if (ntprod instanceof AbstractCodeProduction)
                   break;
                 tmp = ntprod.getExpansion ();

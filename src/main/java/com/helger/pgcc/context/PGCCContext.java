@@ -60,6 +60,7 @@ public final class PGCCContext
   private final ErrorCollector m_aErrors = new ErrorCollector ();
   private final OptionState m_aOptions = new OptionState ();
   private final LookaheadState m_aLookahead = new LookaheadState ();
+  private final GrammarState m_aGrammar = new GrammarState ();
 
   private PGCCContext ()
   {}
@@ -99,5 +100,11 @@ public final class PGCCContext
   public LookaheadState lookahead ()
   {
     return m_aLookahead;
+  }
+
+  @NonNull
+  public GrammarState grammar ()
+  {
+    return m_aGrammar;
   }
 }

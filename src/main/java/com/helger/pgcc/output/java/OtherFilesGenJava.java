@@ -63,16 +63,13 @@
  */
 package com.helger.pgcc.output.java;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.CU_TO_INSERTION_POINT_1;
-import static com.helger.pgcc.parser.JavaCCGlobals.ORDERED_NAME_TOKENS;
-import static com.helger.pgcc.parser.JavaCCGlobals.REXPR_LIST;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.addEscapes;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
 import static com.helger.pgcc.parser.JavaCCGlobals.printToken;
 import static com.helger.pgcc.parser.JavaCCGlobals.printTokenSetup;
 import static com.helger.pgcc.parser.JavaCCGlobals.printTrailingComments;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_cu_name;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_toolNames;
 import static com.helger.pgcc.parser.JavaCCParserConstants.PACKAGE;
 import static com.helger.pgcc.parser.JavaCCParserConstants.SEMICOLON;
 
@@ -156,32 +153,32 @@ public class OtherFilesGenJava
         }
       }
 
-    final Writer w = FileHelper.getBufferedWriter (new File (Options.getOutputDirectory (), s_cu_name + CONSTANTS_FILENAME_SUFFIX),
+    final Writer w = FileHelper.getBufferedWriter (new File (Options.getOutputDirectory (), grammar ().getParserName () + CONSTANTS_FILENAME_SUFFIX),
                                                    Options.getOutputEncoding ());
     if (w == null)
     {
-      JavaCCErrors.semantic_error ("Could not open file " + s_cu_name + CONSTANTS_FILENAME_SUFFIX + " for writing.");
+      JavaCCErrors.semantic_error ("Could not open file " + grammar ().getParserName () + CONSTANTS_FILENAME_SUFFIX + " for writing.");
       return;
     }
 
     try (final PrintWriter ostr = new PrintWriter (w))
     {
-      final List <String> tn = new ArrayList <> (s_toolNames);
+      final List <String> tn = new ArrayList <> (grammar ().getToolNameList ());
       tn.add (CPG.APP_NAME);
 
-      ostr.println ("/* " + getIdString (tn, s_cu_name + CONSTANTS_FILENAME_SUFFIX) + " */");
+      ostr.println ("/* " + getIdString (tn, grammar ().getParserName () + CONSTANTS_FILENAME_SUFFIX) + " */");
 
-      if (CU_TO_INSERTION_POINT_1.isNotEmpty () && CU_TO_INSERTION_POINT_1.get (0).kind == PACKAGE)
+      if (grammar ().cuToInsertionPoint1 ().isNotEmpty () && grammar ().cuToInsertionPoint1 ().get (0).kind == PACKAGE)
       {
-        for (int i = 1; i < CU_TO_INSERTION_POINT_1.size (); i++)
+        for (int i = 1; i < grammar ().cuToInsertionPoint1 ().size (); i++)
         {
-          if (CU_TO_INSERTION_POINT_1.get (i).kind == SEMICOLON)
+          if (grammar ().cuToInsertionPoint1 ().get (i).kind == SEMICOLON)
           {
-            t = CU_TO_INSERTION_POINT_1.get (0);
+            t = grammar ().cuToInsertionPoint1 ().get (0);
             printTokenSetup (t);
             for (int j = 0; j <= i; j++)
             {
-              t = CU_TO_INSERTION_POINT_1.get (j);
+              t = grammar ().cuToInsertionPoint1 ().get (j);
               printToken (t, ostr);
             }
             printTrailingComments (t);
@@ -201,12 +198,12 @@ public class OtherFilesGenJava
       {
         ostr.print ("public ");
       }
-      ostr.println ("interface " + s_cu_name + "Constants {");
+      ostr.println ("interface " + grammar ().getParserName () + "Constants {");
       ostr.println ();
 
       ostr.println ("  /** End of File. */");
       ostr.println ("  int EOF = 0;");
-      for (final AbstractExpRegularExpression re : ORDERED_NAME_TOKENS)
+      for (final AbstractExpRegularExpression re : grammar ().orderedNameTokens ())
       {
         ostr.println ("  /** RegularExpression Id. */");
         ostr.println ("  int " + re.getLabel () + " = " + re.getOrdinal () + ";");
@@ -225,7 +222,7 @@ public class OtherFilesGenJava
       ostr.println ("  String[] tokenImage = {");
       ostr.println ("    \"<EOF>\",");
 
-      for (final TokenProduction aTokenProduction : REXPR_LIST)
+      for (final TokenProduction aTokenProduction : grammar ().rexprList ())
       {
         final TokenProduction tp = (aTokenProduction);
         final List <RegExprSpec> respecs = tp.m_respecs;

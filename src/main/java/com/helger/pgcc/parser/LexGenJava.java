@@ -64,16 +64,10 @@
 
 package com.helger.pgcc.parser;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.CU_TO_INSERTION_POINT_1;
-import static com.helger.pgcc.parser.JavaCCGlobals.LEXSTATE_I2S;
-import static com.helger.pgcc.parser.JavaCCGlobals.REXPR_LIST;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_aActForEof;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_cu_name;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_sNextStateForEof;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_token_mgr_decls;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_toolNames;
 
 import java.io.File;
 import java.io.IOException;
@@ -153,7 +147,7 @@ public class LexGenJava extends CodeGenerator
 
   private void _printClassHead ()
   {
-    final List <String> tn = new ArrayList <> (s_toolNames);
+    final List <String> tn = new ArrayList <> (grammar ().getToolNameList ());
     tn.add (CPG.APP_NAME);
     // TODO :: CBA -- Require Unification of output language specific processing
     // into a single Enum class
@@ -164,18 +158,18 @@ public class LexGenJava extends CodeGenerator
     int i = 1;
     for (;;)
     {
-      if (CU_TO_INSERTION_POINT_1.size () <= nIndex)
+      if (grammar ().cuToInsertionPoint1 ().size () <= nIndex)
         break;
 
-      int nKind = CU_TO_INSERTION_POINT_1.get (nIndex).kind;
+      int nKind = grammar ().cuToInsertionPoint1 ().get (nIndex).kind;
       if (nKind == JavaCCParserConstants.PACKAGE || nKind == JavaCCParserConstants.IMPORT)
       {
         if (nKind == JavaCCParserConstants.IMPORT)
           bHasImport = true;
 
-        for (; i < CU_TO_INSERTION_POINT_1.size (); i++)
+        for (; i < grammar ().cuToInsertionPoint1 ().size (); i++)
         {
-          nKind = CU_TO_INSERTION_POINT_1.get (i).kind;
+          nKind = grammar ().cuToInsertionPoint1 ().get (i).kind;
           if (nKind == JavaCCParserConstants.SEMICOLON ||
               nKind == JavaCCParserConstants.ABSTRACT ||
               nKind == JavaCCParserConstants.FINAL ||
@@ -186,15 +180,15 @@ public class LexGenJava extends CodeGenerator
               nKind == JavaCCParserConstants.INTERFACE ||
               nKind == JavaCCParserConstants.ENUM)
           {
-            setLineAndCol (CU_TO_INSERTION_POINT_1.get (nIndex).beginLine,
-                           CU_TO_INSERTION_POINT_1.get (nIndex).beginColumn);
+            setLineAndCol (grammar ().cuToInsertionPoint1 ().get (nIndex).beginLine,
+                           grammar ().cuToInsertionPoint1 ().get (nIndex).beginColumn);
             int j = nIndex;
             for (; j < i; j++)
             {
-              printToken (CU_TO_INSERTION_POINT_1.get (j));
+              printToken (grammar ().cuToInsertionPoint1 ().get (j));
             }
             if (nKind == JavaCCParserConstants.SEMICOLON)
-              printToken (CU_TO_INSERTION_POINT_1.get (j));
+              printToken (grammar ().cuToInsertionPoint1 ().get (j));
             genCodeNewLine ();
             break;
           }
@@ -224,19 +218,19 @@ public class LexGenJava extends CodeGenerator
     // cu_name + "Constants");
     // String superClass =
     // Options.stringValue(Options.USEROPTION__TOKEN_MANAGER_SUPER_CLASS);
-    genClassStart (null, s_tokMgrClassName, new String [] {}, new String [] { s_cu_name + "Constants" });
+    genClassStart (null, s_tokMgrClassName, new String [] {}, new String [] { grammar ().getParserName () + "Constants" });
     // genCodeLine("{"); // }
 
-    if (s_token_mgr_decls != null && s_token_mgr_decls.isNotEmpty ())
+    if (grammar ().getTokenMgrDecls () != null && grammar ().getTokenMgrDecls ().isNotEmpty ())
     {
       boolean bCommonTokenActionSeen = false;
       final boolean bCommonTokenActionNeeded = Options.isCommonTokenAction ();
-      Token t = s_token_mgr_decls.getFirstOrNull ();
+      Token t = grammar ().getTokenMgrDecls ().getFirstOrNull ();
 
       printTokenSetup (t);
       setColToStart ();
 
-      for (final Token s_token_mgr_decl : s_token_mgr_decls)
+      for (final Token s_token_mgr_decl : grammar ().getTokenMgrDecls ())
       {
         t = s_token_mgr_decl;
         if (t.kind == JavaCCParserConstants.IDENTIFIER && bCommonTokenActionNeeded && !bCommonTokenActionSeen)
@@ -290,7 +284,7 @@ public class LexGenJava extends CodeGenerator
     if (Options.isTokenManagerUsesParser ())
     {
       genCodeNewLine ();
-      genCodeLine ("  public " + s_cu_name + " parser = null;");
+      genCodeLine ("  public " + grammar ().getParserName () + " parser = null;");
     }
   }
 
@@ -314,7 +308,7 @@ public class LexGenJava extends CodeGenerator
     for (final int l : s_maxLongsReqd)
       x = Math.max (x, l);
     options.put ("maxLongs", Integer.valueOf (x));
-    options.put ("cu_name", s_cu_name);
+    options.put ("cu_name", grammar ().getParserName ());
 
     // options.put("", .valueOf(maxOrdinal));
     if (additionalOptions != null)
@@ -330,11 +324,11 @@ public class LexGenJava extends CodeGenerator
 
   private static void _buildLexStatesTable ()
   {
-    final Iterator <TokenProduction> it = REXPR_LIST.iterator ();
+    final Iterator <TokenProduction> it = grammar ().rexprList ().iterator ();
     TokenProduction tp;
     int i;
 
-    final String [] tmpLexStateName = new String [LEXSTATE_I2S.size ()];
+    final String [] tmpLexStateName = new String [grammar ().lexStateI2S ().size ()];
     while (it.hasNext ())
     {
       tp = it.next ();
@@ -370,8 +364,8 @@ public class LexGenJava extends CodeGenerator
     s_toToken = new long [s_maxOrdinal / 64 + 1];
     s_toToken[0] = 1L;
     s_actions = new ExpAction [s_maxOrdinal];
-    s_actions[0] = s_aActForEof;
-    s_hasTokenActions = s_aActForEof != null;
+    s_actions[0] = grammar ().getActionForEof ();
+    s_hasTokenActions = grammar ().getActionForEof () != null;
     s_initStates.clear ();
     s_canMatchAnyChar = new int [s_maxLexStates];
     s_canLoop = new boolean [s_maxLexStates];
@@ -388,7 +382,7 @@ public class LexGenJava extends CodeGenerator
     s_maxLongsReqd = new int [s_maxLexStates];
     s_initMatch = new int [s_maxLexStates];
     s_newLexState = new String [s_maxOrdinal];
-    s_newLexState[0] = s_sNextStateForEof;
+    s_newLexState[0] = grammar ().getNextStateForEof ();
     s_hasEmptyMatch = false;
     s_lexStates = new int [s_maxOrdinal];
     s_ignoreCase = new boolean [s_maxOrdinal];
@@ -421,7 +415,7 @@ public class LexGenJava extends CodeGenerator
     s_errorHandlingClass = Options.getTokenMgrErrorClass ();
     final List <ExpRChoice> choices = new ArrayList <> ();
 
-    s_tokMgrClassName = s_cu_name + "TokenManager";
+    s_tokMgrClassName = grammar ().getParserName () + "TokenManager";
 
     if (!s_generateDataOnly)
       _printClassHead ();
@@ -619,14 +613,14 @@ public class LexGenJava extends CodeGenerator
 
     if (s_generateDataOnly)
     {
-      s_tokenizerData.setParserName (s_cu_name);
+      s_tokenizerData.setParserName (grammar ().getParserName ());
       NfaState.buildTokenizerData (s_tokenizerData);
       ExpRStringLiteral.BuildTokenizerData (s_tokenizerData);
       final int [] newLexStateIndices = new int [s_maxOrdinal];
 
       final StringBuilder tokenMgrDecls = new StringBuilder ();
-      if (s_token_mgr_decls != null)
-        for (final Token t : s_token_mgr_decls)
+      if (grammar ().getTokenMgrDecls () != null)
+        for (final Token t : grammar ().getTokenMgrDecls ())
           tokenMgrDecls.append (t.image).append (' ');
       s_tokenizerData.setDecls (tokenMgrDecls.toString ());
 
@@ -1016,7 +1010,7 @@ public class LexGenJava extends CodeGenerator
     if (s_hasSpecial)
       genCodeLine ("      matchedToken.specialToken = specialToken;");
 
-    if (s_sNextStateForEof != null || s_aActForEof != null)
+    if (grammar ().getNextStateForEof () != null || grammar ().getActionForEof () != null)
       genCodeLine ("      TokenLexicalActions(matchedToken);");
 
     if (Options.isCommonTokenAction ())
