@@ -51,7 +51,7 @@ import com.helger.pgcc.parser.Options;
 @Immutable
 public final class JJTreeStateCpp
 {
-  private static final String JJTStateVersion = PGVersion.MAJOR_DOT_MINOR;
+  private static final String JJT_STATE_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
   private JJTreeStateCpp ()
   {}
@@ -66,11 +66,11 @@ public final class JJTreeStateCpp
                                                                                                              .getAbsolutePath ();
 
     OutputFile aOutputFile = new OutputFile (new File (sFilePrefix + ".h"),
-                                             JJTStateVersion,
+                                             JJT_STATE_VERSION,
                                              CGlobal.EMPTY_STRING_ARRAY);
     NodeFilesCpp.generateFile (aOutputFile, "/templates/cpp/jjtree/JJTTreeState.h.template", aOptions, true);
 
-    aOutputFile = new OutputFile (new File (sFilePrefix + ".cc"), JJTStateVersion, CGlobal.EMPTY_STRING_ARRAY);
+    aOutputFile = new OutputFile (new File (sFilePrefix + ".cc"), JJT_STATE_VERSION, CGlobal.EMPTY_STRING_ARRAY);
     NodeFilesCpp.generateFile (aOutputFile, "/templates/cpp/jjtree/JJTTreeState.cc.template", aOptions, true);
   }
 }

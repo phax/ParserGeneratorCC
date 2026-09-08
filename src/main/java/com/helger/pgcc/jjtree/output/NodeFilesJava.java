@@ -60,7 +60,7 @@ public final class NodeFilesJava
   /**
    * ID of the latest version (of JJTree) in which one of the Node classes was modified.
    */
-  private static final String s_nodeVersion = PGVersion.MAJOR_DOT_MINOR;
+  private static final String NODE_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
   public static void ensure (final JJTreeIO io, final String nodeType)
   {
@@ -98,7 +98,7 @@ public final class NodeFilesJava
 
     final String [] options = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
                                 "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
-    try (final OutputFile outputFile = new OutputFile (file, s_nodeVersion, options))
+    try (final OutputFile outputFile = new OutputFile (file, NODE_VERSION, options))
     {
       outputFile.setToolName ("JJTree");
 

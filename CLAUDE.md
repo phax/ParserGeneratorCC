@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 `com.helger:parser-generator-cc` — a maintained fork of JavaCC 7.0.3, base package renamed
-`net.javacc` -> `com.helger.pgcc`. Single Maven module, currently `2.0.2-SNAPSHOT`, parent POM
+`net.javacc` -> `com.helger.pgcc`. Single Maven module, currently `2.1.0-SNAPSHOT`, parent POM
 `com.helger:parent-pom:3.1.0`. Java baseline 17. Maintenance mode: changes are made mainly when
 something breaks, primarily for its main consumer [ph-css](https://github.com/phax/ph-css).
 
@@ -160,7 +160,7 @@ Test naming: `*FuncTest` for slow generate-compile-run functional tests, `*Test`
 
 - Work directly on `main`; no feature branch, no PR.
 - Update the `# News and noteworthy` section of `README.md` for every library change. There is no
-  `../ParserGeneratorCC.wiki` checkout. The current entry is `v2.0.2 - work in progress`; append a
+  `../ParserGeneratorCC.wiki` checkout. The current entry is `v2.1.0 - work in progress`; append a
   bullet to it in the existing style.
 
 ## Grammar corpus

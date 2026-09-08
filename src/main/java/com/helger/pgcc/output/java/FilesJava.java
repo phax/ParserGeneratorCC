@@ -65,27 +65,27 @@ public class FilesJava
    * ID of the latest version (of JavaCC) in which one of the CharStream classes or the CharStream
    * interface is modified.
    */
-  private static final String charStreamVersion = PGVersion.MAJOR_DOT_MINOR;
+  private static final String CHAR_STREAM_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
   /**
    * ID of the latest version (of JavaCC) in which the TokenManager interface is modified.
    */
-  private static final String tokenManagerVersion = PGVersion.MAJOR_DOT_MINOR;
+  private static final String TOKEN_MANAGER_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
   /**
    * ID of the latest version (of JavaCC) in which the Token class is modified.
    */
-  private static final String tokenVersion = PGVersion.MAJOR_DOT_MINOR;
+  private static final String TOKEN_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
   /**
    * ID of the latest version (of JavaCC) in which the ParseException class is modified.
    */
-  private static final String parseExceptionVersion = PGVersion.MAJOR_DOT_MINOR;
+  private static final String PARSE_EXCEPTION_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
   /**
    * ID of the latest version (of JavaCC) in which the TokenMgrError class is modified.
    */
-  private static final String tokenMgrErrorVersion = PGVersion.MAJOR_DOT_MINOR;
+  private static final String TOKEN_MGR_ERROR_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
   private FilesJava ()
   {}
@@ -131,7 +131,7 @@ public class FilesJava
   {
     final File file = new File (Options.getOutputDirectory (), "CharStream.java");
     try (final OutputFile outputFile = new OutputFile (file,
-                                                       charStreamVersion,
+                                                       CHAR_STREAM_VERSION,
                                                        new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC }))
     {
       if (!outputFile.needToWrite ())
@@ -159,7 +159,7 @@ public class FilesJava
   {
     final File file = new File (Options.getOutputDirectory (), "AbstractCharStream.java");
     try (final OutputFile outputFile = new OutputFile (file,
-                                                       charStreamVersion,
+                                                       CHAR_STREAM_VERSION,
                                                        new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC }))
     {
       if (!outputFile.needToWrite ())
@@ -188,7 +188,7 @@ public class FilesJava
   {
     final File file = new File (Options.getOutputDirectory (), "JavaCharStream.java");
     try (final OutputFile outputFile = new OutputFile (file,
-                                                       charStreamVersion,
+                                                       CHAR_STREAM_VERSION,
                                                        new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC }))
     {
       if (!outputFile.needToWrite ())
@@ -217,7 +217,7 @@ public class FilesJava
   {
     final File file = new File (Options.getOutputDirectory (), "SimpleCharStream.java");
     try (final OutputFile outputFile = new OutputFile (file,
-                                                       charStreamVersion,
+                                                       CHAR_STREAM_VERSION,
                                                        new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC }))
     {
       if (!outputFile.needToWrite ())
@@ -245,7 +245,7 @@ public class FilesJava
   {
     final File file = new File (Options.getOutputDirectory (), "CharSequenceCharStream.java");
     try (final OutputFile outputFile = new OutputFile (file,
-                                                       charStreamVersion,
+                                                       CHAR_STREAM_VERSION,
                                                        new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC }))
     {
       if (!outputFile.needToWrite ())
@@ -281,7 +281,7 @@ public class FilesJava
   {
     final File file = new File (Options.getOutputDirectory (), fileName);
     try (final OutputFile outputFile = new OutputFile (file,
-                                                       parseExceptionVersion,
+                                                       PARSE_EXCEPTION_VERSION,
                                                        new String [] { Options.USEROPTION__KEEP_LINE_COLUMN }))
     {
       if (!outputFile.needToWrite ())
@@ -308,7 +308,7 @@ public class FilesJava
   {
     final File file = new File (Options.getOutputDirectory (), "ParseException.java");
     try (final OutputFile outputFile = new OutputFile (file,
-                                                       parseExceptionVersion,
+                                                       PARSE_EXCEPTION_VERSION,
                                                        new String [] { Options.USEROPTION__KEEP_LINE_COLUMN }))
     {
       if (!outputFile.needToWrite ())
@@ -337,7 +337,7 @@ public class FilesJava
     final String filename = Options.getTokenMgrErrorClass () + ".java";
     final File file = new File (Options.getOutputDirectory (), filename);
 
-    try (final OutputFile outputFile = new OutputFile (file, tokenMgrErrorVersion, new String [0]))
+    try (final OutputFile outputFile = new OutputFile (file, TOKEN_MGR_ERROR_VERSION, new String [0]))
     {
       if (!outputFile.needToWrite ())
         return;
@@ -364,7 +364,7 @@ public class FilesJava
   {
     final File file = new File (Options.getOutputDirectory (), "Token.java");
     try (final OutputFile outputFile = new OutputFile (file,
-                                                       tokenVersion,
+                                                       TOKEN_VERSION,
                                                        new String [] { Options.USEROPTION__TOKEN_EXTENDS,
                                                                        Options.USEROPTION__KEEP_LINE_COLUMN,
                                                                        Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC }))
@@ -394,7 +394,7 @@ public class FilesJava
   {
     final File file = new File (Options.getOutputDirectory (), "TokenManager.java");
     try (final OutputFile outputFile = new OutputFile (file,
-                                                       tokenManagerVersion,
+                                                       TOKEN_MANAGER_VERSION,
                                                        new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC }))
     {
       if (!outputFile.needToWrite ())

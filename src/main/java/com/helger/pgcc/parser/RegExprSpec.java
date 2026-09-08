@@ -46,24 +46,24 @@ public class RegExprSpec
   /**
    * The regular expression of this specification.
    */
-  public AbstractExpRegularExpression rexp;
+  public AbstractExpRegularExpression m_aRexp;
 
   /**
    * The action corresponding to this specification.
    */
-  public ExpAction act;
+  public ExpAction m_aAct;
 
   /**
    * The next state corresponding to this specification. If no next state has been specified, this
    * field is set to "null".
    */
-  public String nextState;
+  public String m_sNextState;
 
   /**
    * If the next state specification was explicit in the previous case, then this token is that of
    * the identifier denoting the next state. This is used for location information, etc. in error
    * reporting.
    */
-  public Token nsTok;
+  public Token m_aNsTok;
 
 }

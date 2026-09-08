@@ -66,13 +66,33 @@ public final class GoldenManifest
     m_aLines = aLines;
   }
 
+  /**
+   * Take the version stamp out of a generated file before hashing it.
+   * <p>
+   * Every generated file carries the generator version in its header, and a checksum of its own
+   * content underneath. Hashing those means a version bump rewrites all 560 manifest lines and the
+   * diff no longer says which files really changed, which is the whole point of the harness.
+   * {@code SelfGenerateFuncTest} has always done this; this did not.
+   *
+   * @param sContent
+   *        The file content. May not be <code>null</code>.
+   * @return The content with the version and the checksum blanked out. Never <code>null</code>.
+   */
+  @NonNull
+  private static String _normalize (@NonNull final String sContent)
+  {
+    return sContent.replaceAll ("Version [0-9][^ ]* \\*/", "Version <version> */")
+                   .replaceAll ("OriginalChecksum=[0-9a-f]+", "OriginalChecksum=<checksum>");
+  }
+
   @NonNull
   private static String _sha256 (@NonNull final Path aFile)
   {
     try
     {
       final MessageDigest aDigest = MessageDigest.getInstance ("SHA-256");
-      final byte [] aHash = aDigest.digest (Files.readAllBytes (aFile));
+      final byte [] aHash = aDigest.digest (_normalize (Files.readString (aFile, StandardCharsets.UTF_8))
+                                                       .getBytes (StandardCharsets.UTF_8));
       final StringBuilder ret = new StringBuilder (aHash.length * 2);
       for (final byte b : aHash)
         ret.append (Character.forDigit ((b >> 4) & 0xf, 16)).append (Character.forDigit (b & 0xf, 16));

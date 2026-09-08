@@ -40,30 +40,30 @@ import org.jspecify.annotations.NonNull;
  */
 public final class Nfa
 {
-  private final NfaState start;
-  private final NfaState end;
+  private final NfaState m_aStart;
+  private final NfaState m_aEnd;
 
   public Nfa ()
   {
-    start = new NfaState ();
-    end = new NfaState ();
+    m_aStart = new NfaState ();
+    m_aEnd = new NfaState ();
   }
 
   public Nfa (@NonNull final NfaState startGiven, @NonNull final NfaState finalGiven)
   {
-    start = startGiven;
-    end = finalGiven;
+    m_aStart = startGiven;
+    m_aEnd = finalGiven;
   }
 
   @NonNull
   public NfaState start ()
   {
-    return start;
+    return m_aStart;
   }
 
   @NonNull
   public NfaState end ()
   {
-    return end;
+    return m_aEnd;
   }
 }

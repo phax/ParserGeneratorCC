@@ -286,11 +286,11 @@ public abstract class JavaCCParserInternals
       p.m_lexStates = new String [] { "DEFAULT" };
       p.m_kind = ETokenKind.TOKEN;
       final RegExprSpec res = new RegExprSpec ();
-      res.rexp = r;
-      res.rexp.m_aTpContext = p;
-      res.act = new ExpAction ();
-      res.nextState = null;
-      res.nsTok = null;
+      res.m_aRexp = r;
+      res.m_aRexp.m_aTpContext = p;
+      res.m_aAct = new ExpAction ();
+      res.m_sNextState = null;
+      res.m_aNsTok = null;
       p.m_respecs.add (res);
       grammar ().rexprList ().add (p);
     }
@@ -488,14 +488,14 @@ public abstract class JavaCCParserInternals
     final ExpTryBlock tblk = new ExpTryBlock ();
     tblk.setLine (tryLoc.beginLine);
     tblk.setColumn (tryLoc.beginColumn);
-    tblk.m_exp = (Expansion) nestedExp.member;
+    tblk.m_exp = (Expansion) nestedExp.m_aMember;
     tblk.m_exp.setParent (tblk);
     tblk.m_exp.setOrdinalBase (0);
     tblk.m_types = types;
     tblk.m_ids = ids;
     tblk.m_catchblks = catchblks;
     tblk.m_finallyblk = finallyblk;
-    result.member = tblk;
+    result.m_aMember = tblk;
   }
 
 }

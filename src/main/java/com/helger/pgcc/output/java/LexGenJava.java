@@ -303,7 +303,7 @@ public class LexGenJava extends CodeGenerator
 
       AbstractExpRegularExpression re;
       for (i = 0; i < respecs.size (); i++)
-        if (lexer ().getMaxOrdinal () <= (re = respecs.get (i).rexp).getOrdinal ())
+        if (lexer ().getMaxOrdinal () <= (re = respecs.get (i).m_aRexp).getOrdinal ())
           lexer ().setMaxOrdinal (re.getOrdinal () + 1);
     }
 
@@ -406,7 +406,7 @@ public class LexGenJava extends CodeGenerator
 
         for (final RegExprSpec respec : rexps)
         {
-          lexer ().setCurRE (respec.rexp);
+          lexer ().setCurRE (respec.m_aRexp);
 
           lexer ().setCurKind (lexer ().getCurRE ().getOrdinal ());
           lexer ().getRexprs ()[lexer ().getCurKind ()] = lexer ().getCurRE ();
@@ -460,12 +460,12 @@ public class LexGenJava extends CodeGenerator
 
           lexer ().getKinds ()[lexer ().getCurRE ().getOrdinal ()] = kind;
 
-          if (respec.nextState != null &&
-            !respec.nextState.equals (lexer ().getLexStateName ()[lexer ().getLexStateIndex ()]))
-            lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] = respec.nextState;
+          if (respec.m_sNextState != null &&
+            !respec.m_sNextState.equals (lexer ().getLexStateName ()[lexer ().getLexStateIndex ()]))
+            lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] = respec.m_sNextState;
 
-          if (respec.act != null && respec.act.getActionTokens ().isNotEmpty ())
-            lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] = respec.act;
+          if (respec.m_aAct != null && respec.m_aAct.getActionTokens ().isNotEmpty ())
+            lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] = respec.m_aAct;
 
           switch (kind)
           {
@@ -874,8 +874,8 @@ public class LexGenJava extends CodeGenerator
 
   private void _dumpFillToken ()
   {
-    final double tokenVersion = OutputHelper.getVersionDashStar ("Token.java");
-    final boolean hasBinaryNewToken = tokenVersion > 4.09;
+    final double TOKEN_VERSION = OutputHelper.getVersionDashStar ("Token.java");
+    final boolean hasBinaryNewToken = TOKEN_VERSION > 4.09;
 
     genCodeLine ("protected Token jjFillToken()");
     genCodeLine ("{");

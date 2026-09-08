@@ -228,7 +228,7 @@ public class LexGenCpp extends LexGenJava
 
       for (i = 0; i < respecs.size (); i++)
       {
-        final AbstractExpRegularExpression re = respecs.get (i).rexp;
+        final AbstractExpRegularExpression re = respecs.get (i).m_aRexp;
         if (lexer ().getMaxOrdinal () <= re.getOrdinal ())
           lexer ().setMaxOrdinal (re.getOrdinal () + 1);
       }
@@ -325,7 +325,7 @@ public class LexGenCpp extends LexGenJava
 
         for (final RegExprSpec respec : rexps)
         {
-          lexer ().setCurRE (respec.rexp);
+          lexer ().setCurRE (respec.m_aRexp);
 
           lexer ().setCurKind (lexer ().getCurRE ().getOrdinal ());
           lexer ().getRexprs ()[lexer ().getCurKind ()] = lexer ().getCurRE ();
@@ -376,12 +376,12 @@ public class LexGenCpp extends LexGenJava
 
           lexer ().getKinds ()[lexer ().getCurRE ().getOrdinal ()] = kind;
 
-          if (respec.nextState != null &&
-            !respec.nextState.equals (lexer ().getLexStateName ()[lexer ().getLexStateIndex ()]))
-            lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] = respec.nextState;
+          if (respec.m_sNextState != null &&
+            !respec.m_sNextState.equals (lexer ().getLexStateName ()[lexer ().getLexStateIndex ()]))
+            lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] = respec.m_sNextState;
 
-          if (respec.act != null && respec.act.getActionTokens () != null && respec.act.getActionTokens ().size () > 0)
-            lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] = respec.act;
+          if (respec.m_aAct != null && respec.m_aAct.getActionTokens () != null && respec.m_aAct.getActionTokens ().size () > 0)
+            lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] = respec.m_aAct;
 
           switch (kind)
           {
@@ -667,8 +667,8 @@ public class LexGenCpp extends LexGenJava
 
   private void _dumpFillToken ()
   {
-    final double tokenVersion = OutputHelper.getVersionDashStar ("Token.java");
-    final boolean hasBinaryNewToken = tokenVersion > 4.09;
+    final double TOKEN_VERSION = OutputHelper.getVersionDashStar ("Token.java");
+    final boolean hasBinaryNewToken = TOKEN_VERSION > 4.09;
 
     generateMethodDefHeader ("Token *", lexer ().getTokenMgrClassName (), "jjFillToken()");
     genCodeLine ("{");

@@ -158,11 +158,11 @@ public final class JJDoc
       {
         final RegExprSpec res = it2.next ();
 
-        token += emitRE (res.rexp);
+        token += emitRE (res.m_aRexp);
 
-        if (res.nsTok != null)
+        if (res.m_aNsTok != null)
         {
-          token += " : " + res.nsTok.image;
+          token += " : " + res.m_aNsTok.image;
         }
 
         token += "\n";

@@ -60,7 +60,7 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 
 # News and noteworthy
 
-v2.0.4 - work in progress
+v2.1.0 - work in progress
 * **Breaking API change** Replaced the internal `EJDKVersion` enum with `EJavaVersion` from ph-commons, so that `JDK_VERSION` values above 14 are supported. `Options.getJdkVersion ()` returns `com.helger.base.system.EJavaVersion` now
 * **Potentially breaking** The default value of `JDK_VERSION` moved from `1.5` to `1.8`, so that generated code uses the `Charset` based constructors and the diamond operator unless configured otherwise
 * **Breaking API change** `LexGenJava`, `ParseGenJava`, `LexGenCpp` and `ParseGenCPP` moved from `com.helger.pgcc.parser` to `com.helger.pgcc.output.java` and `com.helger.pgcc.output.cpp`, so that the package says which target language a class writes. `com.helger.pgcc.parser` no longer contains anything that writes a file

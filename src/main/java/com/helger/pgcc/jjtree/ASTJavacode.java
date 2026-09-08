@@ -35,7 +35,7 @@ package com.helger.pgcc.jjtree;
 
 public class ASTJavacode extends ASTProduction
 {
-  Token stmBeginLoc;
+  Token m_aStmBeginLoc;
 
   ASTJavacode (final int nID)
   {

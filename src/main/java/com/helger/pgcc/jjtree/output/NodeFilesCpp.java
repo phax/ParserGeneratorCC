@@ -63,7 +63,7 @@ public final class NodeFilesCpp
   /**
    * ID of the latest version (of JJTree) in which one of the Node classes was modified.
    */
-  private static final String s_nodeVersion = PGVersion.MAJOR_DOT_MINOR;
+  private static final String NODE_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
   public static void addType (@NonNull final String type)
   {
@@ -145,7 +145,7 @@ public final class NodeFilesCpp
     final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
                                  "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
 
-    try (final OutputFile aOutputFile = new OutputFile (aFile, s_nodeVersion, aOptions))
+    try (final OutputFile aOutputFile = new OutputFile (aFile, NODE_VERSION, aOptions))
     {
       aOutputFile.setToolName ("JJTree");
 
@@ -173,7 +173,7 @@ public final class NodeFilesCpp
     final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
                                  "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
 
-    try (final OutputFile aOutputFile = new OutputFile (aFile, s_nodeVersion, aOptions))
+    try (final OutputFile aOutputFile = new OutputFile (aFile, NODE_VERSION, aOptions))
     {
       aOutputFile.setToolName ("JJTree");
 
@@ -201,7 +201,7 @@ public final class NodeFilesCpp
     final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
                                  "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
 
-    try (final OutputFile aOutputFile = new OutputFile (aFile, s_nodeVersion, aOptions))
+    try (final OutputFile aOutputFile = new OutputFile (aFile, NODE_VERSION, aOptions))
     {
       aOutputFile.setToolName ("JJTree");
 
@@ -231,7 +231,7 @@ public final class NodeFilesCpp
       for (final String sNode : PGCCContext.current ().jjtree ().nodesToGenerate ())
       {
         final File aFile = new File (jjtreeIncludeFile (sNode));
-        try (final OutputFile aOutputFile = new OutputFile (aFile, s_nodeVersion, aOptions))
+        try (final OutputFile aOutputFile = new OutputFile (aFile, NODE_VERSION, aOptions))
         {
           aOutputFile.setToolName ("JJTree");
 
@@ -266,7 +266,7 @@ public final class NodeFilesCpp
       {
         final String node = aString;
         final File file = new File (jjtreeImplFile (node));
-        try (final OutputFile outputFile = new OutputFile (file, s_nodeVersion, aOptions))
+        try (final OutputFile outputFile = new OutputFile (file, NODE_VERSION, aOptions))
         {
           outputFile.setToolName ("JJTree");
 
@@ -299,7 +299,7 @@ public final class NodeFilesCpp
       final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX",
                                    "NODE_EXTENDS", "NODE_FACTORY",
                                    Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
-      try (OutputFile outputFile = new OutputFile (file, s_nodeVersion, aOptions))
+      try (OutputFile outputFile = new OutputFile (file, NODE_VERSION, aOptions))
       {
         outputFile.setToolName ("JJTree");
 
@@ -340,7 +340,7 @@ public final class NodeFilesCpp
     final String [] aOptions = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
                                  "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
 
-    try (final OutputFile outputFile = new OutputFile (file, s_nodeVersion, aOptions))
+    try (final OutputFile outputFile = new OutputFile (file, NODE_VERSION, aOptions))
     {
       outputFile.setToolName ("JJTree");
 

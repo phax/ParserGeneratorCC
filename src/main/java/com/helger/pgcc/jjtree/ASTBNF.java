@@ -42,7 +42,7 @@ public class ASTBNF extends ASTProduction
     m_throws_list.add ("RuntimeException");
   }
 
-  Token declBeginLoc;
+  Token m_aDeclBeginLoc;
 
   @Override
   public String toString ()

@@ -512,7 +512,7 @@ void javacode_production() #Javacode :
     t2="{"
         {
 	  prod.m_name = t1.image;
-	  prod.stmBeginLoc = t2;
+	  prod.m_aStmBeginLoc = t2;
           if (!isJavaLanguage) {
             eatUptoCloseBrace();
           }
@@ -568,7 +568,7 @@ void bnf_production() #BNF :
   t2="{"
         {
 	  prod.m_name = t1.image;
-	  prod.declBeginLoc = t2;
+	  prod.m_aDeclBeginLoc = t2;
 	  ns = new NodeScope(prod, nd);
           if (!isJavaLanguage) {
             eatUptoCloseBrace();

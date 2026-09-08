@@ -201,7 +201,7 @@ public class OtherFilesGenJava
         for (final RegExprSpec aRegExprSpec : respecs)
         {
           final RegExprSpec res = (aRegExprSpec);
-          final AbstractExpRegularExpression re = res.rexp;
+          final AbstractExpRegularExpression re = res.m_aRexp;
           ostr.print ("    ");
           if (re instanceof final ExpRStringLiteral aRStringLiteral)
           {

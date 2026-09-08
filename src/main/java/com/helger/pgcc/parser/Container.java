@@ -39,5 +39,5 @@ package com.helger.pgcc.parser;
 
 public final class Container
 {
-  public Object member;
+  public Object m_aMember;
 }

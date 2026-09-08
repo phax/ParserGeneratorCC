@@ -175,7 +175,7 @@ public class OtherFilesGenCPP
         final List <RegExprSpec> respecs = tp.m_respecs;
         for (final RegExprSpec res : respecs)
         {
-          re = res.rexp;
+          re = res.m_aRexp;
           s_ostr.println ("  static const JJChar tokenImage_arr_" + ++cnt + "[] = ");
           if (re instanceof final ExpRStringLiteral aRStringLiteral)
           {

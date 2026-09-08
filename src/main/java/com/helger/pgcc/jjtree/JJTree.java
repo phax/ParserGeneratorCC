@@ -49,7 +49,7 @@ import com.helger.pgcc.parser.Options;
 
 public class JJTree
 {
-  private JJTreeIO io;
+  private JJTreeIO m_aIO;
 
   private void help_message ()
   {
@@ -125,7 +125,7 @@ public class JJTree
 
     JavaCCGlobals.bannerLine ("Tree Builder", "");
 
-    io = new JJTreeIO ();
+    m_aIO = new JJTreeIO ();
     try
     {
 
@@ -158,14 +158,14 @@ public class JJTree
 
       try
       {
-        io.setInput (fn);
+        m_aIO.setInput (fn);
       }
       catch (final IOException ioe)
       {
         PGPrinter.info ("Error setting input: " + ioe.getMessage ());
         return ESuccess.FAILURE;
       }
-      PGPrinter.info ("Reading from file " + io.getInputFilename () + " . . .");
+      PGPrinter.info ("Reading from file " + m_aIO.getInputFilename () + " . . .");
 
       PGCCContext.current ().jjtree ().toolList ().clear ();
       PGCCContext.current ().jjtree ().toolList ().addAll (JavaCCGlobals.getToolNames (fn));
@@ -173,7 +173,7 @@ public class JJTree
 
       try
       {
-        final JJTreeParser parser = new JJTreeParser (new StreamProvider (io.getIn ()));
+        final JJTreeParser parser = new JJTreeParser (new StreamProvider (m_aIO.getIn ()));
         parser.javacc_input ();
 
         final ASTGrammar root = (ASTGrammar) parser.jjtree.rootNode ();
@@ -183,15 +183,15 @@ public class JJTree
         }
         try
         {
-          io.setOutput ();
+          m_aIO.setOutput ();
         }
         catch (final IOException ioe)
         {
           PGPrinter.info ("Error setting output: " + ioe.getMessage ());
           return ESuccess.FAILURE;
         }
-        root.generate (io);
-        io.getOut ().close ();
+        root.generate (m_aIO);
+        m_aIO.getOut ().close ();
 
         // TODO :: Not yet tested this in GWT/Modern mode (disabled by default
         // in 6.1)
@@ -213,7 +213,7 @@ public class JJTree
             return ESuccess.FAILURE;
         }
 
-        PGPrinter.info ("Annotated grammar generated successfully in " + io.getOutputFilename ());
+        PGPrinter.info ("Annotated grammar generated successfully in " + m_aIO.getOutputFilename ());
         return ESuccess.SUCCESS;
       }
       catch (final ParseException pe)
@@ -228,7 +228,7 @@ public class JJTree
     }
     finally
     {
-      io.closeAll ();
+      m_aIO.closeAll ();
     }
   }
 
