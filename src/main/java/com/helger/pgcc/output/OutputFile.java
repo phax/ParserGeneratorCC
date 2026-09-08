@@ -143,6 +143,11 @@ public class OutputFile implements AutoCloseable
             }
           }
 
+          // The PrintWriter and the OutputStreamWriter below it buffer, so the digest is only
+          // complete once both have been flushed. Without this, a short file digested to whatever
+          // happened to have been flushed already - usually nothing - so it never matched the
+          // stored checksum and the generator refused to rebuild its own untouched output.
+          pw.flush ();
           final String calculatedDigest = StringHex.getHexEncoded (digestStream.getMessageDigest ().digest ());
 
           if (existingMD5 == null || !existingMD5.equals (calculatedDigest))
