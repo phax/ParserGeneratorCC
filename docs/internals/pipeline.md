@@ -114,6 +114,34 @@ Which char stream that is:
 
 `USER_CHAR_STREAM=true` skips all of them and generates only the interface.
 
+## JJDoc
+
+`JJDoc` is a separate entry point that reads the same grammar model and writes documentation
+instead of code. It walks the productions and pushes events at an `IDocGenerator` -
+`productionStart`, `expansionStart`, `nonTerminalStart`, `reStart` and their `…End` counterparts,
+with the actual text arriving through `text`. Four implementations exist and they are not in equal
+shape:
+
+| `-OUTPUT_FORMAT` | Class | State |
+|---|---|---|
+| html (default) | `HTMLGenerator` | works |
+| text | `TextGenerator` | works |
+| bnf | `BNFGenerator` | works |
+| xtext | `XTextGenerator` | does not produce valid Xtext, see below |
+
+`BNFGenerator` used to switch printing off in `reStart` for `ExpRJustName` and `ExpRCharacterList`,
+which are exactly the two shapes a terminal takes inside a production. The result was a BNF with no
+terminals in it - `sum ::= ( )* <EOF>` for a production reading `<NUMBER> ( <PLUS> <NUMBER> )*
+<EOF>`. Fixed. Note that the `.bnf` format lists productions only; token definitions are suppressed
+by `handleTokenProduction`, which is a separate path that never reaches `reStart`.
+
+`XTextGenerator` is unfinished and is left that way deliberately. Its `productionStart` is empty, so
+rules are emitted as bare bodies with no name; its `nonTerminalStart` / `nonTerminalEnd` wrap a name
+that `JJDoc` has already emitted, so a reference to `sum` comes out as `terminal sum;`; and token
+productions produce no terminal rules at all. Making it correct is not a bug fix but a mapping from
+JavaCC to Xtext that has to be validated against Xtext itself. `JJDocOutputTest` pins the current
+output so that the extent of it is visible.
+
 ## Where the code lives
 
 ```

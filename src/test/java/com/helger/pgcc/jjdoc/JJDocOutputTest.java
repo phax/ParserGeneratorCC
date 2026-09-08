@@ -74,7 +74,11 @@ public final class JJDocOutputTest
                   "}\n" +
                   "\n" +
                   "void sum() : {}\n" +
-                  "{ <NUMBER> ( <PLUS> <NUMBER> )* <EOF> }\n").getBytes (StandardCharsets.UTF_8));
+                  "{ <NUMBER> ( <PLUS> <NUMBER> )* <EOF> }\n" +
+                  "\n" +
+                  // A second production, so that a reference to a non terminal is covered too
+                  "void expr() : {}\n" +
+                  "{ sum() ( <PLUS> sum() )* }\n").getBytes (StandardCharsets.UTF_8));
   }
 
   /**
@@ -148,9 +152,20 @@ public final class JJDocOutputTest
     final String s = _run ("sample.xtext", "-XTEXT:true");
     assertTrue (s, s.contains ("grammar "));
     assertTrue (s, s.contains ("org.eclipse.xtext.common.Terminals"));
-    // The rule body is emitted, but without the rule name in front of it - pinned as the current
-    // behaviour
     assertTrue (s, s.contains ("<NUMBER>"));
+
+    // Pinned as the current behaviour, and it is not valid Xtext. Three things are wrong and none
+    // of them is a small fix:
+    // - XTextGenerator.productionStart is empty, so a rule is emitted as a bare body with no name
+    // in front of it
+    // - nonTerminalStart prints "terminal " and nonTerminalEnd prints ";" around a name that JJDoc
+    // has already emitted through text (), so a reference to sum comes out as "terminal sum;"
+    // - token productions produce no terminal rules at all, and token references keep the JavaCC
+    // angle brackets
+    // Making this correct means designing a JavaCC to Xtext mapping and validating it against
+    // Xtext, which is a different job from fixing a bug. Whoever picks it up should start here
+    assertTrue (s, !s.contains ("sum:"));
+    assertTrue (s, s.contains ("terminal sum;"));
   }
 
   @Test
