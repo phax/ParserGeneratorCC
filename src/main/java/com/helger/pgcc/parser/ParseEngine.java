@@ -646,7 +646,7 @@ public class ParseEngine
 
     aSig.setLength (0);
     aSig.append ("(");
-    if (p.getParameterListTokens ().size () != 0)
+    if (!p.getParameterListTokens ().isEmpty ())
     {
       m_aCodeGenerator.printTokenSetup (p.getParameterListTokens ().get (0));
       for (final Token aElement : p.getParameterListTokens ())
@@ -701,7 +701,7 @@ public class ParseEngine
 
     aSig.setLength (0);
     aSig.append ("(");
-    if (p.getParameterListTokens ().size () != 0)
+    if (!p.getParameterListTokens ().isEmpty ())
     {
       m_aCodeGenerator.printTokenSetup (p.getParameterListTokens ().get (0));
       for (final Token aElement : p.getParameterListTokens ())
@@ -838,7 +838,7 @@ public class ParseEngine
         }
         m_aCodeGenerator.printTrailingComments (t);
         m_aCodeGenerator.genCode (" " + p.getLhs () + "(");
-        if (p.getParameterListTokens ().size () != 0)
+        if (!p.getParameterListTokens ().isEmpty ())
         {
           m_aCodeGenerator.printTokenSetup ((p.getParameterListTokens ().get (0)));
           for (final Token aElement : p.getParameterListTokens ())
@@ -898,7 +898,7 @@ public class ParseEngine
       m_nIndentCount += 2;
     }
 
-    if (!Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) && p.getDeclarationTokens ().size () != 0)
+    if (!Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) && !p.getDeclarationTokens ().isEmpty ())
     {
       m_aCodeGenerator.printTokenSetup (p.getDeclarationTokens ().get (0));
       grammar ().decCurrentLine ();
@@ -1058,7 +1058,7 @@ public class ParseEngine
         if (e instanceof final ExpAction e_nrw)
         {
           sRetval += INDENT_OFF + "\n";
-          if (!Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) && e_nrw.getActionTokens ().size () != 0)
+          if (!Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) && !e_nrw.getActionTokens ().isEmpty ())
           {
             m_aCodeGenerator.printTokenSetup (e_nrw.getActionTokens ().get (0));
             grammar ().setCurrentColumn (1);
@@ -1249,7 +1249,7 @@ public class ParseEngine
                       {
                         sRetval += " catch (";
                         aList = e_nrw.getTypes ().get (i);
-                        if (aList.size () != 0)
+                        if (!aList.isEmpty ())
                         {
                           m_aCodeGenerator.printTokenSetup (aList.get (0));
                           for (final Token aElement : aList)
@@ -1266,7 +1266,7 @@ public class ParseEngine
                         sRetval += m_aCodeGenerator.getTrailingComments (t);
                         sRetval += ") {" + INDENT_OFF + "\n";
                         aList = e_nrw.getCatchblks ().get (i);
-                        if (aList.size () != 0)
+                        if (!aList.isEmpty ())
                         {
                           m_aCodeGenerator.printTokenSetup (aList.get (0));
                           grammar ().setCurrentColumn (1);
@@ -1285,7 +1285,7 @@ public class ParseEngine
                         // that its own runtime header defines
                         sRetval += " finally {" + INDENT_OFF + "\n";
 
-                        if (e_nrw.getFinallyblk ().size () != 0)
+                        if (!e_nrw.getFinallyblk ().isEmpty ())
                         {
                           m_aCodeGenerator.printTokenSetup (e_nrw.getFinallyblk ().get (0));
                           grammar ().setCurrentColumn (1);
@@ -1911,7 +1911,7 @@ public class ParseEngine
           }
           aCodeGenerator.printTrailingComments (t);
           aCodeGenerator.genCode (" " + cp.getLhs () + "(");
-          if (cp.getParameterListTokens ().size () != 0)
+          if (!cp.getParameterListTokens ().isEmpty ())
           {
             aCodeGenerator.printTokenSetup (cp.getParameterListTokens ().get (0));
             for (final Token aElement : cp.getParameterListTokens ())
@@ -1943,7 +1943,7 @@ public class ParseEngine
           aCodeGenerator.genCodeLine ("    try {");
 
         }
-        if (cp.getCodeTokens ().size () != 0)
+        if (!cp.getCodeTokens ().isEmpty ())
         {
           aCodeGenerator.printTokenSetup (cp.getCodeTokens ().get (0));
           grammar ().decCurrentLine ();
@@ -1980,7 +1980,7 @@ public class ParseEngine
           }
           aCodeGenerator.printTrailingComments (t);
           aCodeGenerator.genCode (" " + jp.getLhs () + "(");
-          if (jp.getParameterListTokens ().size () != 0)
+          if (!jp.getParameterListTokens ().isEmpty ())
           {
             aCodeGenerator.printTokenSetup (jp.getParameterListTokens ().get (0));
             for (final Token aElement2 : jp.getParameterListTokens ())
@@ -2008,7 +2008,7 @@ public class ParseEngine
             aCodeGenerator.genCodeLine ("    trace_call(\"" + JavaCCGlobals.addUnicodeEscapes (jp.getLhs ()) + "\");");
             aCodeGenerator.genCode ("    try {");
           }
-          if (jp.getCodeTokens ().size () != 0)
+          if (!jp.getCodeTokens ().isEmpty ())
           {
             aCodeGenerator.printTokenSetup ((jp.getCodeTokens ().get (0)));
             grammar ().decCurrentLine ();

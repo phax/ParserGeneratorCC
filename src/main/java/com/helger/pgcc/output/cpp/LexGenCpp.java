@@ -223,7 +223,7 @@ public class LexGenCpp extends LexGenJava
         aTps.add (aTp);
       }
 
-      if (aRespecs == null || aRespecs.size () == 0)
+      if (aRespecs == null || aRespecs.isEmpty ())
         continue;
 
       for (i = 0; i < aRespecs.size (); i++)
@@ -380,7 +380,7 @@ public class LexGenCpp extends LexGenJava
             !respec.getNextState ().equals (lexer ().getLexStateName ()[lexer ().getLexStateIndex ()]))
             lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] = respec.getNextState ();
 
-          if (respec.getAct () != null && respec.getAct ().getActionTokens () != null && respec.getAct ().getActionTokens ().size () > 0)
+          if (respec.getAct () != null && respec.getAct ().getActionTokens () != null && !respec.getAct ().getActionTokens ().isEmpty ())
             lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] = respec.getAct ();
 
           switch (eKind)
@@ -1176,7 +1176,7 @@ public class LexGenCpp extends LexGenJava
       {
         if (((aAct = lexer ().getActions ()[i]) == null ||
           aAct.getActionTokens () == null ||
-          aAct.getActionTokens ().size () == 0) && !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
+          aAct.getActionTokens ().isEmpty ()) && !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
           continue Outer;
 
         genCodeLine ("      case " + i + " : {");
@@ -1204,7 +1204,7 @@ public class LexGenCpp extends LexGenJava
           genCodeLine ("         }");
         }
 
-        if ((aAct = lexer ().getActions ()[i]) == null || aAct.getActionTokens ().size () == 0)
+        if ((aAct = lexer ().getActions ()[i]) == null || aAct.getActionTokens ().isEmpty ())
           break;
 
         genCode ("         image.append");
@@ -1257,7 +1257,7 @@ public class LexGenCpp extends LexGenJava
       {
         if (((aAct = lexer ().getActions ()[i]) == null ||
           aAct.getActionTokens () == null ||
-          aAct.getActionTokens ().size () == 0) && !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
+          aAct.getActionTokens ().isEmpty ()) && !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
           continue Outer;
 
         genCodeLine ("      case " + i + " : {");
@@ -1285,7 +1285,7 @@ public class LexGenCpp extends LexGenJava
           genCodeLine ("         }");
         }
 
-        if ((aAct = lexer ().getActions ()[i]) == null || aAct.getActionTokens ().size () == 0)
+        if ((aAct = lexer ().getActions ()[i]) == null || aAct.getActionTokens ().isEmpty ())
         {
           break;
         }
@@ -1338,7 +1338,7 @@ public class LexGenCpp extends LexGenJava
       {
         if (((aAct = lexer ().getActions ()[i]) == null ||
           aAct.getActionTokens () == null ||
-          aAct.getActionTokens ().size () == 0) && !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
+          aAct.getActionTokens ().isEmpty ()) && !lexer ().getCanLoop ()[lexer ().getLexStates ()[i]])
           continue Outer;
 
         genCodeLine ("      case " + i + " : {");
@@ -1368,7 +1368,7 @@ public class LexGenCpp extends LexGenJava
           genCodeLine ("         }");
         }
 
-        if ((aAct = lexer ().getActions ()[i]) == null || aAct.getActionTokens ().size () == 0)
+        if ((aAct = lexer ().getActions ()[i]) == null || aAct.getActionTokens ().isEmpty ())
           break;
 
         if (i == 0)

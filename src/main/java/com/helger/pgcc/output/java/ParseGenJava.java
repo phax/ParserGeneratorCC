@@ -179,7 +179,7 @@ public class ParseGenJava extends CodeGenerator
 
     boolean bImplementsExists = false;
 
-    if (grammar ().cuToInsertionPoint1 ().size () != 0)
+    if (!grammar ().cuToInsertionPoint1 ().isEmpty ())
     {
       final Token aFirstToken = grammar ().cuToInsertionPoint1 ().get (0);
       printTokenSetup (aFirstToken);

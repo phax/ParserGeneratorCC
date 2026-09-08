@@ -132,7 +132,7 @@ public class ParseGenCPP extends ParseGenJava
                    new String [] {},
                    sSuperClass == null ? new String [0] : new String [] { "public " + sSuperClass });
     switchToMainFile ();
-    if (grammar ().cuToInsertionPoint2 ().size () != 0)
+    if (!grammar ().cuToInsertionPoint2 ().isEmpty ())
     {
       printTokenSetup (grammar ().cuToInsertionPoint2 ().get (0));
       for (final Token t : grammar ().cuToInsertionPoint2 ())
@@ -191,7 +191,7 @@ public class ParseGenCPP extends ParseGenJava
       switchToStaticsFile ();
       for (int i = 0; i < nTokenMaskSize; i++)
       {
-        if (grammar ().maskVals ().size () > 0)
+        if (!grammar ().maskVals ().isEmpty ())
         {
           genCodeLine ("  unsigned int jj_la1_" + i + "[] = {");
           for (final int [] tokenMask : grammar ().maskVals ())

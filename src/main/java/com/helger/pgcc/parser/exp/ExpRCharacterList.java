@@ -446,7 +446,7 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
         sortDescriptors ();
     }
 
-    if (m_aDescriptors.size () == 0 && !m_bNegatedList)
+    if (m_aDescriptors.isEmpty () && !m_bNegatedList)
     {
       JavaCCErrors.semantic_error (this, "Empty character set is not allowed as it will not match any character.");
       return new Nfa ();
@@ -702,7 +702,7 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
   public boolean canMatchAnyChar ()
   {
     // Return true only if it is ~[]
-    return m_bNegatedList && (m_aDescriptors == null || m_aDescriptors.size () == 0);
+    return m_bNegatedList && (m_aDescriptors == null || m_aDescriptors.isEmpty ());
   }
 
   public final boolean isNegatedList ()

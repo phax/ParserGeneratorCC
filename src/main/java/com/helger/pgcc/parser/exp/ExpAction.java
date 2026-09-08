@@ -71,7 +71,7 @@ public final class ExpAction extends Expansion
   {
     final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
     aAlreadyDumped.add (this);
-    if (getActionTokens ().size () > 0)
+    if (!getActionTokens ().isEmpty ())
     {
       aSB.append (' ').append (getActionTokens ().get (0));
     }

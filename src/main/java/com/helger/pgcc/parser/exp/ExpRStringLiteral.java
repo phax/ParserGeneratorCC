@@ -1566,7 +1566,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       try
       {
         aOldStates = new ArrayList <> (aInitialState.getEpsilonMoves ());
-        if (aOldStates.size () == 0)
+        if (aOldStates.isEmpty ())
         {
           dumpNfaStartStatesCode (strLit ().getStatesForPos (), aCodeGenerator);
           return;
@@ -1584,7 +1584,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
       for (j = 0; j < sImage.length (); j++)
       {
-        if (aOldStates == null || aOldStates.size () <= 0)
+        if (aOldStates == null || aOldStates.isEmpty ())
         {
           // Here, j > 0
           kind = strLit ().getIntermediateKinds ()[i][j] = strLit ().getIntermediateKinds ()[i][j - 1];
@@ -1626,7 +1626,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           sStateSetString = NfaState.getStateSetString (aNewStates);
         }
 
-        if (kind == Integer.MAX_VALUE && (aNewStates == null || aNewStates.size () == 0))
+        if (kind == Integer.MAX_VALUE && (aNewStates == null || aNewStates.isEmpty ()))
           continue;
 
         int p;

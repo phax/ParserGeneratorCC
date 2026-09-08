@@ -554,7 +554,7 @@ public abstract class AbstractJavaCCParserInternals
                                       @NonNull final List <List <Token>> catchblks,
                                       @Nullable final List <Token> aFinallyblk)
   {
-    if (catchblks.size () == 0 && aFinallyblk == null)
+    if (catchblks.isEmpty () && aFinallyblk == null)
     {
       JavaCCErrors.parse_error (aTryLoc, "Try block must contain at least one catch or finally block.");
       return;

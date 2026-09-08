@@ -772,7 +772,7 @@ public class NfaState
     // End Warning
 
     // Generate an array of states for epsilon moves (not vector)
-    if (m_aEpsilonMoves.size () > 0)
+    if (!m_aEpsilonMoves.isEmpty ())
     {
       for (int i = 0; i < m_aEpsilonMoves.size (); i++)
         // Since we are doing a closure, just epsilon moves are unnecessary
@@ -1369,7 +1369,7 @@ public class NfaState
 
     aCodeGenerator.genStaticArrayDeclaration ("int", "jjnextStates");
     aCodeGenerator.genCode ("{");
-    if (nfa ().orderedStateSet ().size () > 0)
+    if (!nfa ().orderedStateSet ().isEmpty ())
     {
       int nCnt = 0;
       for (final int [] set : nfa ().orderedStateSet ())
@@ -1408,7 +1408,7 @@ public class NfaState
 
   public static String getStateSetString (@Nullable final List <NfaState> aStates)
   {
-    if (aStates == null || aStates.size () == 0)
+    if (aStates == null || aStates.isEmpty ())
       return "null;";
 
     final int [] aSet = new int [aStates.size ()];
@@ -2762,7 +2762,7 @@ public class NfaState
     if (!Options.isJavaUnicodeEscape () && !nfa ().isUnicodeWarningGiven ())
       return;
 
-    if (nfa ().nonAsciiTableForMethod ().size () <= 0)
+    if (nfa ().nonAsciiTableForMethod ().isEmpty ())
       return;
 
     for (final NfaState tmp : nfa ().nonAsciiTableForMethod ())
@@ -2800,7 +2800,7 @@ public class NfaState
     aCodeGenerator.genCodeLine ("   switch(hiByte)");
     aCodeGenerator.genCodeLine ("   {");
 
-    if (m_aLoByteVec != null && m_aLoByteVec.size () > 0)
+    if (m_aLoByteVec != null && !m_aLoByteVec.isEmpty ())
     {
       for (int j = 0; j < m_aLoByteVec.size (); j += 2)
       {
@@ -3110,7 +3110,7 @@ public class NfaState
         nfa ().getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()][nState] = nfa ().allNextStates ().get (s);
     }
 
-    if (nfa ().stateSetsToFix ().size () != 0)
+    if (!nfa ().stateSetsToFix ().isEmpty ())
       _fixStateSets ();
 
     nfa ().getKinds ()[LexGenJava.lexer ().getLexStateIndex ()] = aKindsForStates;
