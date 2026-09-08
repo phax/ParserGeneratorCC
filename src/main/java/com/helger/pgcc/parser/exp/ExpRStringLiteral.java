@@ -296,27 +296,16 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       for (int j = 0; j < sImage.length (); j++)
       {
         final char c = sImage.charAt (j);
-        switch (eOutputLanguage)
+        // Escape everything, printable or not - this is a generated array of token images, not
+        // something anybody reads
+        if (c <= 0xff)
+          aToPrint.append ('\\').append (Integer.toOctalString (c));
+        else
         {
-          case JAVA:
-            if (c <= 0xff)
-              aToPrint.append ('\\').append (Integer.toOctalString (c));
-            else
-            {
-              String sHexVal = Integer.toHexString (c);
-              if (sHexVal.length () == 3)
-                sHexVal = "0" + sHexVal;
-              aToPrint.append ("\\u").append (sHexVal);
-            }
-            break;
-          case CPP:
-            String sHexVal = Integer.toHexString (c);
-            if (sHexVal.length () == 3)
-              sHexVal = "0" + sHexVal;
-            aToPrint.append ("\\u").append (sHexVal);
-            break;
-          default:
-            throw new UnsupportedOutputLanguageException (eOutputLanguage);
+          String sHexVal = Integer.toHexString (c);
+          if (sHexVal.length () == 3)
+            sHexVal = "0" + sHexVal;
+          aToPrint.append ("\\u").append (sHexVal);
         }
       }
 
@@ -747,19 +736,22 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return aRet;
   }
 
+  /**
+   * @param c
+   *        The character to use as a <code>switch</code> case label.
+   * @return The label, as a character literal where that is readable and as the plain code point
+   *         otherwise. Never <code>null</code>.
+   */
   @NonNull
-  private static String _getCaseChar (final char c, @NonNull final EOutputLanguage eOutputLanguage)
+  private static String _getCaseChar (final char c)
   {
-    if (false)
-      return Integer.toString (c);
-
-    // Just for better readability
+    // Anything outside printable ASCII goes out as a number - a literal would only be harder to read
     if (c < 0x20 || c >= 0x7f)
       return Integer.toString (c);
 
-    if (eOutputLanguage.isJava ())
-      if (c == '\'' || c == '\\')
-        return "'\\" + c + "'";
+    // Java and C++ agree on both of these
+    if (c == '\'' || c == '\\')
+      return "'\\" + c + "'";
 
     return "'" + c + "'";
   }
@@ -1166,16 +1158,16 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         {
           if (c != Character.toUpperCase (c))
             aCodeGenerator.genCodeLine ("      case " +
-                                        _getCaseChar (Character.toUpperCase (c), eOutputLanguage) +
+                                        _getCaseChar (Character.toUpperCase (c)) +
                                         ":");
 
           if (c != Character.toLowerCase (c))
             aCodeGenerator.genCodeLine ("      case " +
-                                        _getCaseChar (Character.toLowerCase (c), eOutputLanguage) +
+                                        _getCaseChar (Character.toLowerCase (c)) +
                                         ":");
         }
 
-        aCodeGenerator.genCodeLine ("      case " + _getCaseChar (c, eOutputLanguage) + ":");
+        aCodeGenerator.genCodeLine ("      case " + _getCaseChar (c) + ":");
 
         long nMatchedKind;
         final String sPrefix = (i == 0) ? "         " : "            ";

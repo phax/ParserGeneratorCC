@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,5 +128,37 @@ public final class CppRoundTripFuncTest
     final String sOutput = _run (aOutDir, "./calc");
     // 1+2+39, 2*3 + 4*10, 7
     assertEquals ("42\n46\n7\n", sOutput.replace ("\r\n", "\n"));
+  }
+
+  /**
+   * A string literal containing a quote or a backslash becomes the label of a case in the generated
+   * switch over the current character. Both have to be escaped there, and for a long time only the
+   * Java backend did it - the C++ token manager came out with an empty and an unterminated character
+   * literal in its switch and did not compile.
+   *
+   * @throws Exception
+   *         on any failure
+   */
+  @Test
+  public void testCharacterLiteralsInCaseLabelsAreEscaped () throws Exception
+  {
+    final String sCompiler = _findCompiler ();
+    Assume.assumeTrue ("No C++ compiler on the PATH", sCompiler != null);
+
+    final File aOutDir = new File ("target/cpp-escapes");
+    FileOperationManager.INSTANCE.deleteDirRecursiveIfExisting (aOutDir);
+    aOutDir.mkdirs ();
+
+    final ESuccess eSuccess = Main.mainProgram ("-OUTPUT_DIRECTORY=" + aOutDir.getAbsolutePath (),
+                                                new File ("src/test/resources/cpp/escapes.jj").getAbsolutePath ());
+    assertTrue ("Failed to generate the C++ parser", eSuccess.isSuccess ());
+
+    final String sTokenManager = Files.readString (new File (aOutDir, "EscapesTokenManager.cc").toPath (),
+                                                   StandardCharsets.UTF_8);
+    assertTrue ("The quote was not escaped", sTokenManager.contains ("case '\\'':"));
+    assertTrue ("The backslash was not escaped", sTokenManager.contains ("case '\\\\':"));
+
+    // Compiling it is what really matters - the assertions above only say where to look
+    _run (aOutDir, sCompiler, "-std=c++17", "-w", "-fsyntax-only", "EscapesTokenManager.cc");
   }
 }
