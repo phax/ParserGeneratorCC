@@ -948,28 +948,9 @@ public class NfaState
 
           if (!allBitsSet (tmp))
           {
-            switch (eOutputLanguage)
-            {
-              case JAVA:
-                codeGenerator.genCodeLine ("static final " +
-                                           eOutputLanguage.getTypeLong () +
-                                           "[] jjbitVec" +
-                                           nfa ().getLoHiByteCnt () +
-                                           " = " +
-                                           tmp);
-                break;
-              case CPP:
-                codeGenerator.switchToStaticsFile ();
-                codeGenerator.genCodeLine ("static const " +
-                                           eOutputLanguage.getTypeLong () +
-                                           " jjbitVec" +
-                                           nfa ().getLoHiByteCnt () +
-                                           "[] = " +
-                                           tmp);
-                break;
-              default:
-                throw new UnsupportedOutputLanguageException (eOutputLanguage);
-            }
+            codeGenerator.genStaticArrayDeclaration (eOutputLanguage.getTypeLong (),
+                                                     "jjbitVec" + nfa ().getLoHiByteCnt ());
+            codeGenerator.genCodeLine (tmp);
           }
           ind = Integer.valueOf (nfa ().getAndIncLoHiByteCnt ());
           nfa ().loHiByteTab ().put (tmp, ind);
@@ -992,29 +973,14 @@ public class NfaState
           nfa ().getAllBitVectors ().add (tmp);
 
           if (!allBitsSet (tmp))
-            switch (eOutputLanguage)
-            {
-              case JAVA:
-                codeGenerator.genCodeLine ("static final " +
-                                           eOutputLanguage.getTypeLong () +
-                                           "[] jjbitVec" +
-                                           nfa ().getLoHiByteCnt () +
-                                           " = " +
-                                           tmp);
-                break;
-              case CPP:
-                codeGenerator.switchToStaticsFile ();
-                codeGenerator.genCodeLine ("static const " +
-                                           eOutputLanguage.getTypeLong () +
-                                           " jjbitVec" +
-                                           nfa ().getLoHiByteCnt () +
-                                           "[] = " +
-                                           tmp);
-                codeGenerator.switchToMainFile ();
-                break;
-              default:
-                throw new UnsupportedOutputLanguageException (eOutputLanguage);
-            }
+          {
+            codeGenerator.genStaticArrayDeclaration (eOutputLanguage.getTypeLong (),
+                                                     "jjbitVec" + nfa ().getLoHiByteCnt ());
+            codeGenerator.genCodeLine (tmp);
+            // This one, unlike the other two, returns to the main file afterwards
+            if (!eOutputLanguage.isJava ())
+              codeGenerator.switchToMainFile ();
+          }
           ind = Integer.valueOf (nfa ().getAndIncLoHiByteCnt ());
           nfa ().loHiByteTab ().put (tmp, ind);
         }
@@ -1057,28 +1023,9 @@ public class NfaState
           nfa ().getAllBitVectors ().add (tmp);
 
           if (!allBitsSet (tmp))
-            switch (eOutputLanguage)
-            {
-              case JAVA:
-                codeGenerator.genCodeLine ("static final " +
-                                           eOutputLanguage.getTypeLong () +
-                                           "[] jjbitVec" +
-                                           nfa ().getLoHiByteCnt () +
-                                           " = " +
-                                           tmp);
-                break;
-              case CPP:
-                codeGenerator.switchToStaticsFile ();
-                codeGenerator.genCodeLine ("static const " +
-                                           eOutputLanguage.getTypeLong () +
-                                           " jjbitVec" +
-                                           nfa ().getLoHiByteCnt () +
-                                           "[] = " +
-                                           tmp);
-                break;
-              default:
-                throw new UnsupportedOutputLanguageException (eOutputLanguage);
-            }
+            codeGenerator.genStaticArrayDeclaration (eOutputLanguage.getTypeLong (),
+                                                     "jjbitVec" + nfa ().getLoHiByteCnt ());
+            codeGenerator.genCodeLine (tmp);
           nfa ().loHiByteTab ().put (tmp, ind = Integer.valueOf (nfa ().getAndIncLoHiByteCnt ()));
         }
 
@@ -1276,18 +1223,8 @@ public class NfaState
   {
     final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
 
-    switch (eOutputLanguage)
-    {
-      case JAVA:
-        codeGenerator.genCode ("static final int[] jjnextStates = {");
-        break;
-      case CPP:
-        codeGenerator.switchToStaticsFile ();
-        codeGenerator.genCode ("static const int jjnextStates[] = {");
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    codeGenerator.genStaticArrayDeclaration ("int", "jjnextStates");
+    codeGenerator.genCode ("{");
     if (nfa ().orderedStateSet ().size () > 0)
     {
       int cnt = 0;
@@ -3280,29 +3217,21 @@ public class NfaState
       codeGenerator.genCodeLine ("   if (jjmatchedPos > strPos)");
       codeGenerator.genCodeLine ("      return curPos;");
       codeGenerator.genCodeNewLine ();
-      switch (eOutputLanguage)
-      {
-        case JAVA:
-          codeGenerator.genCodeLine ("   int toRet = Math.max(curPos, seenUpto);");
-          break;
-        case CPP:
-          codeGenerator.genCodeLine ("   int toRet = MAX(curPos, seenUpto);");
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      codeGenerator.genCodeLine ("   int toRet = " + eOutputLanguage.getMax ("curPos", "seenUpto") + ";");
       codeGenerator.genCodeNewLine ();
       codeGenerator.genCodeLine ("   if (curPos < toRet)");
+      codeGenerator.genCodeLine ("      for (i = toRet - " +
+                                 eOutputLanguage.getMin ("curPos", "seenUpto") +
+                                 "; i-- > 0; )");
+      // Reading the next char: Java catches the end of input, C++ asserts against it
       switch (eOutputLanguage)
       {
         case JAVA:
-          codeGenerator.genCodeLine ("      for (i = toRet - Math.min(curPos, seenUpto); i-- > 0; )");
           codeGenerator.genCodeLine ("         try { curChar = input_stream.readChar(); }");
           // TODO do not throw error
           codeGenerator.genCodeLine ("         catch(final java.io.IOException e) { throw new Error(\"Internal Error : Please send a bug report.\"); }");
           break;
         case CPP:
-          codeGenerator.genCodeLine ("      for (i = toRet - MIN(curPos, seenUpto); i-- > 0; )");
           codeGenerator.genCodeLine ("        {  assert(!input_stream->endOfInput());");
           codeGenerator.genCodeLine ("           curChar = input_stream->readChar(); }");
           break;

@@ -162,6 +162,32 @@ public class CodeGenerator
     genCodeNewLine ();
   }
 
+  /**
+   * Emit the declaration of a static array constant, up to and including the "=", without a
+   * newline. The two languages spell this differently - Java puts the brackets on the type and C++
+   * on the name - and C++ additionally wants it in the statics file.
+   *
+   * @param sType
+   *        The element type as the target language spells it. May not be <code>null</code>.
+   * @param sName
+   *        The name of the constant. May not be <code>null</code>.
+   */
+  public final void genStaticArrayDeclaration (@NonNull final String sType, @NonNull final String sName)
+  {
+    switch (getOutputLanguage ())
+    {
+      case JAVA:
+        genCode ("static final " + sType + "[] " + sName + " = ");
+        break;
+      case CPP:
+        switchToStaticsFile ();
+        genCode ("static const " + sType + " " + sName + "[] = ");
+        break;
+      default:
+        throw new UnsupportedOutputLanguageException (getOutputLanguage ());
+    }
+  }
+
   public final void saveOutput (final String fileName)
   {
     if (getOutputLanguage ().hasIncludeFile ())

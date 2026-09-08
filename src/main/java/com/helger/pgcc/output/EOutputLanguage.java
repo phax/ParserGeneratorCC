@@ -140,6 +140,36 @@ public enum EOutputLanguage implements IHasID <String>
     return this == JAVA;
   }
 
+  /**
+   * @param sA
+   *        First expression. May not be <code>null</code>.
+   * @param sB
+   *        Second expression. May not be <code>null</code>.
+   * @return An expression for the larger of the two, as this language spells it. Never
+   *         <code>null</code>.
+   */
+  @NonNull
+  @Nonempty
+  public String getMax (@NonNull final String sA, @NonNull final String sB)
+  {
+    return (this == JAVA ? "Math.max(" : "MAX(") + sA + ", " + sB + ")";
+  }
+
+  /**
+   * @param sA
+   *        First expression. May not be <code>null</code>.
+   * @param sB
+   *        Second expression. May not be <code>null</code>.
+   * @return An expression for the smaller of the two, as this language spells it. Never
+   *         <code>null</code>.
+   */
+  @NonNull
+  @Nonempty
+  public String getMin (@NonNull final String sA, @NonNull final String sB)
+  {
+    return (this == JAVA ? "Math.min(" : "MIN(") + sA + ", " + sB + ")";
+  }
+
   public boolean hasStaticsFile ()
   {
     return this == CPP;
