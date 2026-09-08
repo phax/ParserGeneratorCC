@@ -56,6 +56,9 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 # News and noteworthy
 
 v2.0.4 - work in progress
+* **Breaking API change** Replaced the internal `EJDKVersion` enum with `EJavaVersion` from ph-commons, so that `JDK_VERSION` values above 14 are supported. `Options.getJdkVersion ()` returns `com.helger.base.system.EJavaVersion` now
+* **Potentially breaking** The default value of `JDK_VERSION` moved from `1.5` to `1.8`, so that generated code uses the `Charset` based constructors and the diamond operator unless configured otherwise
+* Fixed `JDK_VERSION` values above 14 silently falling back to the default
 * Fixed `OUTPUT_LANGUAGE` (and every other option with an indirect effect) being ignored when set on the command line instead of in the grammar file
 
 v2.0.3 - 2026-09-08

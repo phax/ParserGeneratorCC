@@ -49,7 +49,8 @@ import java.util.Map;
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.WillNotClose;
-import com.helger.pgcc.EJDKVersion;
+import com.helger.base.system.EJavaVersion;
+import com.helger.pgcc.JavaVersionHelper;
 import com.helger.pgcc.PGVersion;
 import com.helger.pgcc.output.OutputFile;
 import com.helger.pgcc.parser.JavaCCErrors;
@@ -102,11 +103,11 @@ public class FilesJava
 
   private static Map <String, Object> _getDefaultOptions ()
   {
-    final EJDKVersion eJDKVersion = Options.getJdkVersion ();
+    final EJavaVersion eJDKVersion = Options.getJdkVersion ();
     final Map <String, Object> ret = Options.getAllOptions ();
-    ret.put ("AT_LEAST_JDK6", Boolean.valueOf (eJDKVersion.isNewerOrEqualsThan (EJDKVersion.JDK_1_6)));
-    ret.put ("AT_LEAST_JDK7", Boolean.valueOf (eJDKVersion.isNewerOrEqualsThan (EJDKVersion.JDK_1_7)));
-    ret.put ("BEFORE_JDK7", Boolean.valueOf (eJDKVersion.isOlderThan (EJDKVersion.JDK_1_7)));
+    ret.put ("AT_LEAST_JDK6", Boolean.valueOf (eJDKVersion.isNewerOrEqualsThan (EJavaVersion.JDK_1_6)));
+    ret.put ("AT_LEAST_JDK7", Boolean.valueOf (eJDKVersion.isNewerOrEqualsThan (EJavaVersion.JDK_1_7)));
+    ret.put ("BEFORE_JDK7", Boolean.valueOf (JavaVersionHelper.isOlderThan (eJDKVersion, EJavaVersion.JDK_1_7)));
     return ret;
   }
 

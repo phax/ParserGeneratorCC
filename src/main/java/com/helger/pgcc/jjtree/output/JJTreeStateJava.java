@@ -42,7 +42,7 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
-import com.helger.pgcc.EJDKVersion;
+import com.helger.base.system.EJavaVersion;
 import com.helger.pgcc.jjtree.JJTreeGlobals;
 import com.helger.pgcc.jjtree.JJTreeIO;
 import com.helger.pgcc.jjtree.JJTreeOptions;
@@ -89,8 +89,8 @@ public final class JJTreeStateJava
 
   private static void _insertState (@NonNull final PrintWriter ostr)
   {
-    final EJDKVersion eJavaVersion = Options.getJdkVersion ();
-    final boolean bEmptyImplType = eJavaVersion.isNewerOrEqualsThan (EJDKVersion.JDK_1_7);
+    final EJavaVersion eJavaVersion = Options.getJdkVersion ();
+    final boolean bEmptyImplType = eJavaVersion.isNewerOrEqualsThan (EJavaVersion.JDK_1_7);
 
     ostr.println ("public class " + _nameState () + " implements java.io.Serializable {");
 

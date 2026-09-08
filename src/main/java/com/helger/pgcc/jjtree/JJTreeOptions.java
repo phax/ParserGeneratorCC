@@ -67,7 +67,7 @@ package com.helger.pgcc.jjtree;
 import java.io.File;
 
 import com.helger.base.string.StringHelper;
-import com.helger.pgcc.EJDKVersion;
+
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.Options;
 
@@ -115,7 +115,7 @@ public class JJTreeOptions extends Options
 
     // TODO :: 2013/07/23 -- This appears to be a duplicate from the parent
     // class
-    Options.s_optionValues.put (Options.USEROPTION__JDK_VERSION, EJDKVersion.DEFAULT);
+    Options.s_optionValues.put (Options.USEROPTION__JDK_VERSION, Options.DEFAULT_JDK_VERSION);
 
     // Also appears to be a duplicate
     Options.s_optionValues.put (Options.USEROPTION__CPP_NAMESPACE, "");

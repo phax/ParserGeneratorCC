@@ -86,7 +86,8 @@ import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.string.StringHelper;
 import com.helger.base.string.StringImplode;
 import com.helger.base.system.SystemHelper;
-import com.helger.pgcc.EJDKVersion;
+import com.helger.base.system.EJavaVersion;
+import com.helger.pgcc.JavaVersionHelper;
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
@@ -194,6 +195,12 @@ public class Options
    */
   public static final String JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE = "charsequence";
 
+  /**
+   * The default value of the <code>JDK_VERSION</code> option. Moved from 1.5 to 1.8 in v2.0.4, so
+   * that generated code uses the Charset based constructors and the diamond operator by default.
+   */
+  public static final EJavaVersion DEFAULT_JDK_VERSION = EJavaVersion.JDK_1_8;
+
   private static final Set <OptionInfo> s_userOptions;
 
   static
@@ -234,7 +241,7 @@ public class Options
 
     temp.add (new OptionInfo (USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC, EOptionType.BOOLEAN, Boolean.TRUE));
     temp.add (new OptionInfo (USEROPTION__OUTPUT_DIRECTORY, EOptionType.STRING, "."));
-    temp.add (new OptionInfo (USEROPTION__JDK_VERSION, EOptionType.OTHER, EJDKVersion.DEFAULT));
+    temp.add (new OptionInfo (USEROPTION__JDK_VERSION, EOptionType.OTHER, DEFAULT_JDK_VERSION));
 
     temp.add (new OptionInfo (USEROPTION__TOKEN_EXTENDS, EOptionType.STRING, ""));
     temp.add (new OptionInfo (USEROPTION__TOKEN_FACTORY, EOptionType.STRING, ""));
@@ -420,11 +427,11 @@ public class Options
     if (name.equalsIgnoreCase (USEROPTION__JDK_VERSION) &&
         (value.getClass () == String.class || value.getClass () == Integer.class))
     {
-      final EJDKVersion ret = EJDKVersion.getFromStringOrNull (value.toString ());
+      final EJavaVersion ret = JavaVersionHelper.getFromStringOrNull (value.toString ());
       if (ret != null)
       {
         // Only values >= JDK 1.5 are accepted per PGCC 1.1.0
-        if (ret.isNewerOrEqualsThan (EJDKVersion.JDK_1_5))
+        if (ret.isNewerOrEqualsThan (EJavaVersion.JDK_1_5))
           return ret;
       }
 
@@ -957,9 +964,9 @@ public class Options
    *
    * @return The requested jdk version.
    */
-  public static EJDKVersion getJdkVersion ()
+  public static EJavaVersion getJdkVersion ()
   {
-    return (EJDKVersion) objectValue (USEROPTION__JDK_VERSION);
+    return (EJavaVersion) objectValue (USEROPTION__JDK_VERSION);
   }
 
   public static boolean isGenerateJavaBoilerplateCode ()

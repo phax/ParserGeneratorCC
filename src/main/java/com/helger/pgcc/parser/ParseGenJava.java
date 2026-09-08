@@ -81,7 +81,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.helger.pgcc.CPG;
-import com.helger.pgcc.EJDKVersion;
+import com.helger.base.system.EJavaVersion;
 import com.helger.pgcc.output.EOutputLanguage;
 
 /**
@@ -197,9 +197,9 @@ public class ParseGenJava extends CodeGenerator
       return;
 
     final EOutputLanguage eOutputLanguage = getOutputLanguage ();
-    final EJDKVersion eJavaVersion = Options.getJdkVersion ();
-    final boolean bHasCharset = eJavaVersion.isNewerOrEqualsThan (EJDKVersion.JDK_1_6);
-    final boolean bEmptyTypeVar = eJavaVersion.isNewerOrEqualsThan (EJDKVersion.JDK_1_7);
+    final EJavaVersion eJavaVersion = Options.getJdkVersion ();
+    final boolean bHasCharset = eJavaVersion.isNewerOrEqualsThan (EJavaVersion.JDK_1_6);
+    final boolean bEmptyTypeVar = eJavaVersion.isNewerOrEqualsThan (EJavaVersion.JDK_1_7);
 
     final List <String> tn = new ArrayList <> (s_toolNames);
     tn.add (CPG.APP_NAME);
