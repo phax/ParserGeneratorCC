@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +49,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.context.NfaBuildState;
+import com.helger.pgcc.context.TokenizerDataBuildState.CompositeStartState;
 import com.helger.pgcc.context.TokenizerDataBuildState;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
@@ -3466,6 +3468,26 @@ public class NfaState
     codeGenerator.switchToMainFile ();
   }
 
+  /**
+   * Find what a composite state name stands for.
+   *
+   * @param nStateName
+   *        The name to look for.
+   * @return The member states of that composite set, or <code>null</code> if the name is not a
+   *         composite one.
+   */
+  @Nullable
+  public static int [] memberStatesOfComposite (final int nStateName)
+  {
+    for (final Map.Entry <String, int []> aEntry : nfa ().compositeStateTable ().entrySet ())
+    {
+      final Integer aName = nfa ().stateNameForComposite ().get (aEntry.getKey ());
+      if (aName != null && aName.intValue () == nStateName)
+        return aEntry.getValue ();
+    }
+    return null;
+  }
+
   public static void updateNfaData (final int maxState,
                                     final int startStateName,
                                     final int lexicalStateIndex,
@@ -3489,6 +3511,20 @@ public class NfaState
       }
     }
 
+    if (startState == null && startStateName != -1)
+    {
+      // The start state is composite and carries a name that no NfaState object has:
+      // _addCompositeStateSet ran out of member states whose name it could reuse and allocated a
+      // dummy one past the end instead. The generated token manager copes, because it only ever
+      // switches on the name, but the TokenizerData the interpreter reads needs a state to start
+      // in. Remember what the name stands for so that buildTokenizerData can synthesize one.
+      final int [] aMembers = memberStatesOfComposite (startStateName);
+      if (aMembers != null)
+        tokenizerBuild ().compositeStartStates ()
+                         .put (Integer.valueOf (lexicalStateIndex),
+                               new CompositeStartState (startStateName, aMembers));
+    }
+
     tokenizerBuild ().initialStates ().put (Integer.valueOf (lexicalStateIndex), startState);
     tokenizerBuild ().statesForLexicalState ().put (Integer.valueOf (lexicalStateIndex), cleanStates);
     tokenizerBuild ().nfaStateOffset ().put (Integer.valueOf (lexicalStateIndex), Integer.valueOf (maxState));
@@ -3496,10 +3532,26 @@ public class NfaState
                         Integer.valueOf (matchAnyCharKind > 0 ? matchAnyCharKind : Integer.MAX_VALUE));
   }
 
+  /**
+   * Add a state that stands for a composite set and matches nothing itself, unless the state is
+   * already there.
+   *
+   * @param tokenizerData
+   *        Where to add it. May not be <code>null</code>.
+   * @param nName
+   *        The name of the composite state, already shifted by the lexical state offset.
+   * @param aMemberStates
+   *        The member state names, not yet shifted.
+   * @param nOffset
+   *        The lexical state offset to shift the member names by.
+   */
   public static void buildTokenizerData (final TokenizerData tokenizerData)
   {
     NfaState [] cleanStates;
     final List <NfaState> cleanStateList = new ArrayList <> ();
+    // Which lexical state a state came from is needed further down, to shift its composite members
+    // by the same offset as its own name
+    final Map <NfaState, Integer> aOffsetOfState = new IdentityHashMap <> ();
     for (final int l : tokenizerBuild ().statesForLexicalState ().keySet ())
     {
       final int offset = tokenizerBuild ().nfaStateOffset ().get (Integer.valueOf (l)).intValue ();
@@ -3509,6 +3561,7 @@ public class NfaState
         if (state.m_stateName == -1)
           continue;
         state.m_stateName += offset;
+        aOffsetOfState.put (state, Integer.valueOf (offset));
       }
       cleanStateList.addAll (states);
     }
@@ -3536,16 +3589,47 @@ public class NfaState
       final SortedSet <Integer> composite = new TreeSet <> ();
       if (s.m_isComposite)
       {
+        // The member names are the ones from before the shift above, so they need the same offset
+        final int nOffset = aOffsetOfState.getOrDefault (s, Integer.valueOf (0)).intValue ();
         for (final int c : s.m_compositeStates)
-          composite.add (Integer.valueOf (c));
+          composite.add (Integer.valueOf (c + nOffset));
       }
       tokenizerData.addNfaState (s.m_stateName, chars, nextStates, composite, s.m_kindToPrint);
     }
     final Map <Integer, Integer> initStates = new HashMap <> ();
+    int nNextFreeStateName = cleanStateList.size ();
     for (final int l : tokenizerBuild ().initialStates ().keySet ())
     {
       final NfaState x = tokenizerBuild ().initialStates ().get (Integer.valueOf (l));
-      initStates.put (Integer.valueOf (l), Integer.valueOf (x == null ? -1 : x.m_stateName));
+      if (x != null)
+      {
+        initStates.put (Integer.valueOf (l), Integer.valueOf (x.m_stateName));
+        continue;
+      }
+
+      // No NfaState object for the start state, so emit one that only stands for its members. It
+      // matches nothing itself - the interpreter adds the composite members to the current set and
+      // moves on from those.
+      //
+      // The name has to be a fresh one past every real state. The dummy index the NFA construction
+      // handed out is one past the last state of *its* lexical state, which is exactly where the
+      // next lexical state's names start after the shift above, so reusing it would land on that
+      // state instead.
+      final CompositeStartState aComposite = tokenizerBuild ().compositeStartStates ()
+                                                              .get (Integer.valueOf (l));
+      if (aComposite == null)
+      {
+        initStates.put (Integer.valueOf (l), Integer.valueOf (-1));
+        continue;
+      }
+
+      final int nOffset = tokenizerBuild ().nfaStateOffset ().get (Integer.valueOf (l)).intValue ();
+      final int nName = nNextFreeStateName++;
+      final SortedSet <Integer> aMembers = new TreeSet <> ();
+      for (final int c : aComposite.aMemberStates ())
+        aMembers.add (Integer.valueOf (c + nOffset));
+      tokenizerData.addNfaState (nName, new TreeSet <> (), new TreeSet <> (), aMembers, Integer.MAX_VALUE);
+      initStates.put (Integer.valueOf (l), Integer.valueOf (nName));
     }
     tokenizerData.setInitialStates (initStates);
     tokenizerData.setWildcardKind (tokenizerBuild ().matchAnyChar ());

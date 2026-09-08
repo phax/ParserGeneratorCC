@@ -106,6 +106,22 @@ public final class JavaCCInterpreterTest
     PGPrinter.init (new PSPrinter (System.out, false), new PSPrinter (System.err, false));
   }
 
+  /**
+   * Pick the token images out of what the interpreter printed.
+   *
+   * @param aLines
+   *        The collected output. May not be <code>null</code>.
+   * @return One entry per token, in order. Never <code>null</code>.
+   */
+  private static List <String> _imagesOf (final List <String> aLines)
+  {
+    final List <String> aImages = new ArrayList <> ();
+    for (final String sLine : aLines)
+      if (sLine.startsWith ("Token: "))
+        aImages.add (sLine.substring (sLine.indexOf ("image: ") + "image: ".length ()));
+    return aImages;
+  }
+
   private List <String> _tokenize (final String sInput)
   {
     // runTokenizer needs a started run, exactly like JavaCCInterpreter.main does it
@@ -118,13 +134,7 @@ public final class JavaCCInterpreterTest
   public void testTokenizesAgainstTheGrammar ()
   {
     final List <String> aLines = _tokenize ("ab + cd");
-
-    final List <String> aImages = new ArrayList <> ();
-    for (final String sLine : aLines)
-      if (sLine.startsWith ("Token: "))
-        aImages.add (sLine.substring (sLine.indexOf ("image: ") + "image: ".length ()));
-
-    assertEquals (aLines.toString (), List.of ("\"ab\"", "\"+\"", "\"cd\""), aImages);
+    assertEquals (aLines.toString (), List.of ("\"ab\"", "\"+\"", "\"cd\""), _imagesOf (aLines));
     assertTrue (aLines.toString (), aLines.contains ("Matched EOF"));
   }
 
@@ -150,43 +160,68 @@ public final class JavaCCInterpreterTest
   }
 
   /**
-   * A characterization test for a defect, not an endorsement of it: the interpreter cannot handle a
-   * grammar with two or more character class tokens. One character class works, and one character
-   * class next to any number of string literals works, but the moment a second one appears every
-   * input fails to tokenize.
+   * Several character class tokens in one lexical state.
    * <p>
-   * The cause, for whoever picks this up. With one character class the initial epsilon move set has
-   * a single member, so {@code NfaState.generateInitMoves} returns that state's own name and
-   * {@code updateNfaData} finds it. With two, the set has two members and a <em>composite</em> state
-   * name is returned, which belongs to no {@code NfaState} object - so {@code updateNfaData} stores
-   * a <code>null</code> start state, {@code buildTokenizerData} writes -1 into
+   * This used to fail outright, and it is worth recording why. The initial epsilon move set has one
+   * member per character class. With one member {@code _addCompositeStateSet} returns that state's
+   * own name, which an {@code NfaState} object carries. With more it returns the name of one of the
+   * members - unless every member is already used elsewhere, in which case it allocates a name one
+   * past the end that belongs to no object at all. {@code updateNfaData} then stored a
+   * <code>null</code> start state, {@code buildTokenizerData} wrote -1 into
    * {@code TokenizerData.m_initialStates}, and the interpreter's {@code if (nfaStartState != -1)}
-   * skips the NFA entirely.
+   * skipped the NFA entirely - so every input failed on its first character.
    * <p>
-   * A fix has to emit a synthetic NFA state for the composite start state. Note that
-   * {@code buildTokenizerData} also adds composite member names without applying the lexical state
-   * offset it applies to every other name, which only goes unnoticed because the offset is 0 for a
-   * single lexical state. Both belong to the same unfinished upstream feature - the removed table
-   * driven token manager had a stub that built exactly such a dummy state and then discarded it.
-   * <p>
-   * If somebody fixes this, this test will fail and should be turned into a positive one.
+   * {@code buildTokenizerData} now emits a state for that name which matches nothing itself and
+   * only carries the composite members, which is what the interpreter expands on entry.
    */
   @Test
-  public void testTwoCharacterClassesAreBroken ()
+  public void testSeveralCharacterClassesInOneLexicalState ()
   {
-    final String sTwoClasses = "PARSER_BEGIN(S)\npublic class S {}\nPARSER_END(S)\n" +
-                               "SKIP : { \" \" }\n" +
-                               "TOKEN : { < A : ([\"a\"-\"z\"])+ > | < B : ([\"0\"-\"9\"])+ > }\n" +
-                               "void start() : {} { ( <A> | <B> )* <EOF> }\n";
+    final String sFour = "PARSER_BEGIN(S)\npublic class S {}\nPARSER_END(S)\n" +
+                         "SKIP : { \" \" }\n" +
+                         "TOKEN : { < A : ([\"a\"-\"c\"])+ > | < B : ([\"0\"-\"9\"])+ >" +
+                         " | < C : ([\"x\"-\"z\"])+ > | < D : ([\"A\"-\"Z\"])+ > }\n" +
+                         "void start() : {} { ( <A> | <B> | <C> | <D> )* <EOF> }\n";
     Main.reInitAll ();
-    new JavaCCInterpreter ().runTokenizer (sTwoClasses, "ab");
+    new JavaCCInterpreter ().runTokenizer (sFour, "abc 123 xyz ABC");
 
-    boolean bFailed = false;
-    for (final String sLine : m_aPrinter.m_aLines)
-      if (sLine.contains ("Encountered token error"))
-        bFailed = true;
-    assertTrue ("The two character class defect appears to be fixed - make this a positive test",
-                bFailed);
+    assertEquals (m_aPrinter.m_aLines.toString (),
+                  List.of ("\"abc\"", "\"123\"", "\"xyz\"", "\"ABC\""),
+                  _imagesOf (m_aPrinter.m_aLines));
+    assertTrue (m_aPrinter.m_aLines.toString (), m_aPrinter.m_aLines.contains ("Matched EOF"));
+  }
+
+  /**
+   * The same, across two lexical states, which is what catches the naming of the synthesized state.
+   * <p>
+   * State names are shifted per lexical state so that all of them fit into one array, and the name
+   * the NFA construction hands out for a composite state is one past the last state of its own
+   * lexical state - which is exactly where the next lexical state's names begin after the shift.
+   * Reusing it points the first lexical state at the second one's states. The synthesized state
+   * therefore gets a fresh name past every real one.
+   * <p>
+   * The image of the STRING token is <code>"</code> rather than the whole string, and that is a
+   * separate unfixed gap: the interpreter never accumulates the characters a MORE production
+   * consumed, because it takes the image from the start of the last match rather than the start of
+   * the token. Pinned here as current behaviour.
+   */
+  @Test
+  public void testTwoLexicalStates ()
+  {
+    final String sTwoStates = "PARSER_BEGIN(M)\npublic class M {}\nPARSER_END(M)\n" +
+                              "SKIP : { \" \" }\n" +
+                              "TOKEN : { < NUM : ([\"0\"-\"9\"])+ > | < ID : ([\"a\"-\"z\"])+ > | < PLUS : \"+\" > }\n" +
+                              "MORE : { \"\\\"\" : IN_STR }\n" +
+                              "<IN_STR> MORE : { < ~[\"\\\"\"] > }\n" +
+                              "<IN_STR> TOKEN : { < STR : \"\\\"\" > : DEFAULT }\n" +
+                              "void start() : {} { ( <NUM> | <ID> | <PLUS> | <STR> )* <EOF> }\n";
+    Main.reInitAll ();
+    new JavaCCInterpreter ().runTokenizer (sTwoStates, "12 + ab \"hello\" xy");
+
+    assertEquals (m_aPrinter.m_aLines.toString (),
+                  List.of ("\"12\"", "\"+\"", "\"ab\"", "\"\"\"", "\"xy\""),
+                  _imagesOf (m_aPrinter.m_aLines));
+    assertTrue (m_aPrinter.m_aLines.toString (), m_aPrinter.m_aLines.contains ("Matched EOF"));
   }
 
   @Test

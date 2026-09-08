@@ -61,6 +61,18 @@ import com.helger.pgcc.parser.TokenizerData;
  */
 public final class TokenizerDataBuildState
 {
+  /**
+   * A start state that is composite and got a name no {@code NfaState} object carries.
+   *
+   * @param nStateName
+   *        The name the composite set was given.
+   * @param aMemberStates
+   *        The states the composite set stands for.
+   */
+  public record CompositeStartState (int nStateName, int [] aMemberStates)
+  {}
+
+  private final Map <Integer, CompositeStartState> m_aCompositeStartStates = new HashMap <> ();
   private final Map <Integer, NfaState> m_aInitialStates = new HashMap <> ();
   private final Map <Integer, List <NfaState>> m_aStatesForLexicalState = new HashMap <> ();
   private final Map <Integer, Integer> m_aNfaStateOffset = new HashMap <> ();
@@ -70,6 +82,16 @@ public final class TokenizerDataBuildState
   private final Map <Integer, List <Integer>> m_aLiteralKinds = new HashMap <> ();
   private final Map <Integer, Integer> m_aKindToLexicalState = new HashMap <> ();
   private final Map <Integer, NfaState> m_aNfaStateMap = new HashMap <> ();
+
+  /**
+   * @return Lexical state index to its composite start state, for the lexical states whose start
+   *         state has no {@code NfaState} of its own. Never <code>null</code>.
+   */
+  @NonNull
+  public Map <Integer, CompositeStartState> compositeStartStates ()
+  {
+    return m_aCompositeStartStates;
+  }
 
   /**
    * @return Lexical state index to the NFA state the tokenizer starts in. Never <code>null</code>.

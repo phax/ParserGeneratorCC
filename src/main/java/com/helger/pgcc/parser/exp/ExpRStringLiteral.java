@@ -1949,14 +1949,9 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       l.add (j, s);
       kinds.add (j, Integer.valueOf (actualKind));
       final int stateIndex = _getStateSetForKind (s.length () - 1, kind);
-      if (stateIndex != -1)
-      {
-        NfaState.tokenizerBuild ().nfaStateMap ().put (Integer.valueOf (actualKind), NfaState.getNfaState (stateIndex));
-      }
-      else
-      {
-        NfaState.tokenizerBuild ().nfaStateMap ().put (Integer.valueOf (actualKind), null);
-      }
+      NfaState.tokenizerBuild ()
+              .nfaStateMap ()
+              .put (Integer.valueOf (actualKind), stateIndex == -1 ? null : NfaState.getNfaState (stateIndex));
     }
   }
 
@@ -1965,15 +1960,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     final Map <Integer, Integer> nfaStateIndices = new HashMap <> ();
     for (final int kind : NfaState.tokenizerBuild ().nfaStateMap ().keySet ())
     {
-      if (NfaState.tokenizerBuild ().nfaStateMap ().get (Integer.valueOf (kind)) != null)
-      {
-        nfaStateIndices.put (Integer.valueOf (kind),
-                             Integer.valueOf (NfaState.tokenizerBuild ().nfaStateMap ().get (Integer.valueOf (kind)).m_stateName));
-      }
-      else
-      {
-        nfaStateIndices.put (Integer.valueOf (kind), Integer.valueOf (-1));
-      }
+      final NfaState aState = NfaState.tokenizerBuild ().nfaStateMap ().get (Integer.valueOf (kind));
+      nfaStateIndices.put (Integer.valueOf (kind), Integer.valueOf (aState == null ? -1 : aState.m_stateName));
     }
     tokenizerData.setLiteralSequence (NfaState.tokenizerBuild ().literalsByLength ());
     tokenizerData.setLiteralKinds (NfaState.tokenizerBuild ().literalKinds ());
