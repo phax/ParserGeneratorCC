@@ -96,4 +96,16 @@ final class JavaParserSyntax implements IParserSyntax
   {
     return List.of ("    } finally {", "      trace_return(\"" + sProductionName + "\");", "    }");
   }
+
+  @NonNull
+  public String getLookaheadEntryDeclaration (@NonNull final String sInternalName)
+  {
+    return "  private boolean jj_2" + sInternalName + "(int xla)";
+  }
+
+  @NonNull
+  public String getLookaheadScanDeclaration (@NonNull final String sInternalName)
+  {
+    return "  private boolean jj_3" + sInternalName + "()";
+  }
 }

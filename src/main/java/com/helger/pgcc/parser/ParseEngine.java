@@ -1307,17 +1307,7 @@ public class ParseEngine
   {
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
     final Expansion e = la.getLaExpansion ();
-    switch (eOutputLanguage)
-    {
-      case JAVA:
-        m_codeGenerator.genCodeLine ("  private boolean jj_2" + e.getInternalName () + "(int xla)");
-        break;
-      case CPP:
-        m_codeGenerator.genCodeLine (" inline bool jj_2" + e.getInternalName () + "(int xla)");
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    m_codeGenerator.genCodeLine (_syntax ().getLookaheadEntryDeclaration (e.getInternalName ()));
     m_codeGenerator.genCodeLine (" {");
     m_codeGenerator.genCodeLine ("    jj_la = xla;");
     m_codeGenerator.genCodeLine ("    jj_scanpos = token;");
@@ -1528,21 +1518,7 @@ public class ParseEngine
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
     if (!recursive_call)
     {
-      switch (eOutputLanguage)
-      {
-        case JAVA:
-          m_codeGenerator.genCodeLine ("  private " +
-                                       eOutputLanguage.getTypeBoolean () +
-                                       " jj_3" +
-                                       e.getInternalName () +
-                                       "()");
-          break;
-        case CPP:
-          m_codeGenerator.genCodeLine (" inline bool jj_3" + e.getInternalName () + "()");
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      m_codeGenerator.genCodeLine (_syntax ().getLookaheadScanDeclaration (e.getInternalName ()));
 
       m_codeGenerator.genCodeLine (" {");
       switch (eOutputLanguage)

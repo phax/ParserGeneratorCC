@@ -129,6 +129,26 @@ public interface IParserSyntax
   List <String> getTraceExitLines (@NonNull String sProductionName);
 
   /**
+   * @param sInternalName
+   *        The generated suffix of the lookahead routine. May not be <code>null</code>.
+   * @return The declaration of the {@code jj_2} entry point, which takes the lookahead limit.
+   *         Never <code>null</code>.
+   */
+  @NonNull
+  @Nonempty
+  String getLookaheadEntryDeclaration (@NonNull String sInternalName);
+
+  /**
+   * @param sInternalName
+   *        The generated suffix of the lookahead routine. May not be <code>null</code>.
+   * @return The declaration of the {@code jj_3} routine that does the actual scan. Never
+   *         <code>null</code>.
+   */
+  @NonNull
+  @Nonempty
+  String getLookaheadScanDeclaration (@NonNull String sInternalName);
+
+  /**
    * @param eLanguage
    *        The output language. May not be <code>null</code>.
    * @return The syntax for that language. Never <code>null</code>.

@@ -102,4 +102,16 @@ final class CppParserSyntax implements IParserSyntax
   {
     return List.of ("    } catch(...) { }");
   }
+
+  @NonNull
+  public String getLookaheadEntryDeclaration (@NonNull final String sInternalName)
+  {
+    return " inline bool jj_2" + sInternalName + "(int xla)";
+  }
+
+  @NonNull
+  public String getLookaheadScanDeclaration (@NonNull final String sInternalName)
+  {
+    return " inline bool jj_3" + sInternalName + "()";
+  }
 }

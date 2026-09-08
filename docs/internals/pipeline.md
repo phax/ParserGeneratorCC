@@ -137,6 +137,14 @@ loop constructs, the member access operator, the missing-return statement and th
 instead of switching on the language at each spot, so adding a target language means implementing
 the interface rather than finding every branch.
 
-The branches that remain there are not syntax but whole emission strategies - the C++ side of
-`STOP_ON_FIRST_ERROR`, the depth limit guards, the error handler calls and the tracing wrappers -
-and they want methods designed for what they do rather than a mechanical extraction.
+`ParseEngine` went from 30 output language switches to 14 this way. What is behind the interface now
+is everything of the form "how does this language spell X": the loop that generated code leaves from
+the inside, the member access operator, the missing return statement, the throws clause, the
+declarations of the two lookahead routines, and the tracing that `DEBUG_PARSER` adds.
+
+The 14 that remain are a different kind of thing and were left alone deliberately. They are not
+syntax but what the C++ backend *does*: the three `STOP_ON_FIRST_ERROR` sites, the depth limit
+guards, the `jj_done` lookahead protocol that C++ uses instead of an exception, the error handler
+call where Java throws `ParseException`, and the C++ method header generation. Those belong in a
+backend object that owns the strategy, not in an interface of syntax fragments - pulling them into
+`IParserSyntax` would only turn it into a list of "emit this C++ thing".
