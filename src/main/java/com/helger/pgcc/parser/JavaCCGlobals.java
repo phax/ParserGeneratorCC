@@ -56,7 +56,6 @@ import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.PGVersion;
 import com.helger.pgcc.context.GrammarState;
 import com.helger.pgcc.context.PGCCContext;
-import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 
 /**
  * This package contains data created as a result of parsing and semanticizing a JavaCC input file.

@@ -34,7 +34,6 @@
 package com.helger.pgcc.jjdoc;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.pgcc.parser.CodeProductionCpp;
@@ -51,7 +50,7 @@ import com.helger.pgcc.parser.exp.Expansion;
  * @author timp
  * @since 11-Dec-2006
  */
-public interface IDocGenerator extends Serializable
+public interface IDocGenerator
 {
   /**
    * Output string with entity substitution for brackets and ampersands.

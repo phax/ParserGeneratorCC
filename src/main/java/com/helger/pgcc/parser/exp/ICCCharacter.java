@@ -35,14 +35,13 @@ package com.helger.pgcc.parser.exp;
 
 import com.helger.pgcc.parser.IGrammarLocation;
 
-import java.io.Serializable;
 
 /**
  * Marker interface
  *
  * @author Philip Helger
  */
-public interface ICCCharacter extends Serializable, IGrammarLocation
+public interface ICCCharacter extends IGrammarLocation
 {
   // empty
 }
