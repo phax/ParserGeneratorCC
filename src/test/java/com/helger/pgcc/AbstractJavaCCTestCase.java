@@ -36,6 +36,8 @@
  */
 package com.helger.pgcc;
 
+import java.io.File;
+
 /**
  * An ancestor class to enable transition to a different directory structure.
  *
@@ -45,12 +47,14 @@ package com.helger.pgcc;
 public abstract class AbstractJavaCCTestCase
 {
   /**
-   * @return the documentation output directory name String relative to the root
+   * @return the documentation output directory name String relative to the root. This is below
+   *         "target", so that a test run does not modify anything that is under version control.
    */
   public String getJJDocOutputDirectory ()
   {
-    return "www/doc/";
-    // return "src/site/resources/";
+    final File aDir = new File ("target/jjdoc");
+    aDir.mkdirs ();
+    return "target/jjdoc/";
   }
 
   /**

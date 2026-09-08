@@ -25,17 +25,6 @@ mvn license:format         # fix missing/outdated headers
 There is no formatter, linter or build CI in this project — `mvn license:check` is the only
 automated style gate. PMD/SpotBugs exist only in the parent's `<reporting>` (`mvn site`).
 
-### Test side effects — always clean up
-
-`mvn test` dirties the working tree. After a test run:
-
-```
-git checkout -- www/doc/            # JJDocMainTest overwrites JavaCC.html + JavaCC.txt
-rm -f JavaCCParserTokenManager.java # stray root output (gitignored, but noisy)
-```
-
-Never commit the regenerated `www/doc/JavaCC.html` / `JavaCC.txt` — they are test noise.
-
 ## Code generation and the bootstrap footgun
 
 The `ph-javacc-maven-plugin` runs at `generate-sources` and produces the parser from

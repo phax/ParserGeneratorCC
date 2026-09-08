@@ -1,9 +1,9 @@
 ---
 name: pgcc-verify
-description: Run the full ParserGeneratorCC verification — mvn clean test from the repo root, clean up the working-tree noise the tests leave behind, then check BSD license headers. Use after changing anything under src/, and before reporting that a change works.
+description: Run the full ParserGeneratorCC verification — mvn clean test from the repo root, then check BSD license headers, then confirm the working tree is clean. Use after changing anything under src/, and before reporting that a change works.
 ---
 
-Run every step. Do not skip the cleanup — `mvn test` dirties tracked files.
+Run every step.
 
 ## 1. Test
 
@@ -16,17 +16,7 @@ mvn clean test
 If a single area changed, a targeted run first is fine (`mvn test -Dtest=<Name>`), but finish with
 the full `mvn clean test` before reporting success.
 
-## 2. Clean up test side effects
-
-```
-git checkout -- www/doc/
-rm -f JavaCCParserTokenManager.java
-```
-
-`JJDocMainTest` rewrites the tracked `www/doc/JavaCC.html` and `www/doc/JavaCC.txt`; those are test
-noise and must never be committed. `JavaCCParserTokenManager.java` is stray root output.
-
-## 3. License headers
+## 2. License headers
 
 ```
 mvn license:check
@@ -34,6 +24,16 @@ mvn license:check
 
 New or moved `.java` files need the BSD header from `src/etc/license-template.txt` (Philip Helger
 2017-2026 + Google 2011 + Sun Microsystems 2006) — not Apache 2.0. `mvn license:format` applies it.
+
+## 3. Working tree
+
+```
+git status --porcelain
+```
+
+A test run must leave the working tree untouched. If a tracked file changed or a new file appeared
+in the repository root, that is a bug in the test, not something to clean up by hand — fix the test
+to write below `target/`.
 
 ## 4. Report
 

@@ -69,6 +69,12 @@ public class NfaStateTest extends AbstractJavaCCTestCase
   {
     Options.init ();
     Main.reInitAll ();
+
+    // LexGenJava.start writes the token manager to the output directory, which defaults to the
+    // current directory - keep that out of the repository
+    final File aOutDir = new File ("target/nfastate");
+    aOutDir.mkdirs ();
+    Options.setCmdLineOption ("-OUTPUT_DIRECTORY=" + aOutDir.getAbsolutePath ());
   }
 
   private void _setupState ()
