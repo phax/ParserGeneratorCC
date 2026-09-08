@@ -36,19 +36,15 @@ package com.helger.pgcc.main;
 /**
  * Command line entry point for the parser generator.
  *
- * @deprecated Use {@link JavaCCLauncher} instead. This class only exists because its lower case name is
- *             what the upstream command line used, and renaming it would break anyone who invokes
- *             it directly.
  * @author Philip Helger
  */
-@Deprecated (forRemoval = false)
-public final class javacc
+public final class JavaCCLauncher
 {
-  private javacc ()
+  private JavaCCLauncher ()
   {}
 
   public static void main (final String [] args) throws Exception
   {
-    JavaCCLauncher.main (args);
+    com.helger.pgcc.parser.Main.main (args);
   }
 }

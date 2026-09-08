@@ -63,6 +63,7 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 v2.0.4 - work in progress
 * **Breaking API change** Replaced the internal `EJDKVersion` enum with `EJavaVersion` from ph-commons, so that `JDK_VERSION` values above 14 are supported. `Options.getJdkVersion ()` returns `com.helger.base.system.EJavaVersion` now
 * **Potentially breaking** The default value of `JDK_VERSION` moved from `1.5` to `1.8`, so that generated code uses the `Charset` based constructors and the diamond operator unless configured otherwise
+* Added `JavaCCLauncher`, `JJTreeLauncher` and `JJDocLauncher` as properly named command line entry points; the lower case `javacc`, `jjtree` and `jjdoc` classes remain as deprecated aliases
 * Fixed `JavaCCGlobals.getToolNames` throwing a `NullPointerException` instead of returning an empty list when the file does not exist
 * Fixed `JDK_VERSION` values above 14 silently falling back to the default
 * **Breaking** Removed the undocumented and untested `TOKEN_MANAGER_CODE_GENERATOR` and `PARSER_CODE_GENERATOR` options together with the table driven token manager behind them
