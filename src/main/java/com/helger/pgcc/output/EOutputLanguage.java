@@ -180,6 +180,10 @@ public enum EOutputLanguage implements IHasID <String>
   /**
    * Escape everything that is not printable ASCII, the way a string literal in this language wants
    * it.
+   * <p>
+   * Note that {@code com.helger.pgcc.jjtree.TokenUtils.addUnicodeEscapes} deliberately does
+   * something else: it leaves tab, newline, carriage return and form feed alone, because it
+   * escapes into source text being copied through rather than into a string literal.
    *
    * @param sStr
    *        The string to escape. May not be <code>null</code>.

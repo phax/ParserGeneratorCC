@@ -150,7 +150,9 @@ public class Main
     }
   }
 
-  private static void _printOptionInfo (final EOptionType eFilter, @NonNull final OptionInfo aOptionInfo, final int nPadLength)
+  private static void _printOptionInfo (final EOptionType eFilter,
+                                        @NonNull final OptionInfo aOptionInfo,
+                                        final int nPadLength)
   {
     if (aOptionInfo.type () == eFilter)
     {
@@ -321,9 +323,6 @@ public class Main
           if (bIsBuildParser)
           {
             new ParseGenCPP ().start ();
-          }
-          if (bIsBuildParser)
-          {
             new LexGenCpp ().start ();
           }
           Options.setStringOption (Options.NONUSER_OPTION__PARSER_NAME, grammar ().getParserName ());

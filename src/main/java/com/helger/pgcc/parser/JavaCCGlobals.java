@@ -307,6 +307,165 @@ public final class JavaCCGlobals
   }
 
   @NonNull
+  private static boolean _isHexchar (final char cCh)
+  {
+    if (cCh >= '0' && cCh <= '9')
+      return true;
+    if (cCh >= 'A' && cCh <= 'F')
+      return true;
+    if (cCh >= 'a' && cCh <= 'f')
+      return true;
+    return false;
+  }
+
+  private static int _getHexVal (final char cCh)
+  {
+    if (cCh >= '0' && cCh <= '9')
+      return (cCh) - ('0');
+    if (cCh >= 'A' && cCh <= 'F')
+      return (cCh) - ('A') + 10;
+    return (cCh) - ('a') + 10;
+  }
+
+  /**
+   * Turn a string literal as written in a grammar into the characters it stands for: strip the
+   * quotes and resolve every escape.
+   * <p>
+   * JJTree needs exactly the same thing for its own grammars, which is why this takes an
+   * {@link IGrammarLocation} rather than one of the two Token classes.
+   *
+   * @param aLocation
+   *        Where to report a bad escape. May be <code>null</code>.
+   * @param sStr
+   *        The literal including its quotes. May not be <code>null</code>.
+   * @return The characters the literal denotes. Never <code>null</code>.
+   */
+  public static String removeEscapesAndQuotes (@Nullable final IGrammarLocation aLocation, @NonNull final String sStr)
+  {
+    String sRetval = "";
+    int nIndex = 1;
+    char cCh, cCh1;
+    int nOrdinal;
+    while (nIndex < sStr.length () - 1)
+    {
+      if (sStr.charAt (nIndex) != '\\')
+      {
+        sRetval += sStr.charAt (nIndex);
+        nIndex++;
+        continue;
+      }
+      nIndex++;
+      cCh = sStr.charAt (nIndex);
+      if (cCh == 'b')
+      {
+        sRetval += '\b';
+        nIndex++;
+        continue;
+      }
+      if (cCh == 't')
+      {
+        sRetval += '\t';
+        nIndex++;
+        continue;
+      }
+      if (cCh == 'n')
+      {
+        sRetval += '\n';
+        nIndex++;
+        continue;
+      }
+      if (cCh == 'f')
+      {
+        sRetval += '\f';
+        nIndex++;
+        continue;
+      }
+      if (cCh == 'r')
+      {
+        sRetval += '\r';
+        nIndex++;
+        continue;
+      }
+      if (cCh == '"')
+      {
+        sRetval += '\"';
+        nIndex++;
+        continue;
+      }
+      if (cCh == '\'')
+      {
+        sRetval += '\'';
+        nIndex++;
+        continue;
+      }
+      if (cCh == '\\')
+      {
+        sRetval += '\\';
+        nIndex++;
+        continue;
+      }
+      if (cCh >= '0' && cCh <= '7')
+      {
+        nOrdinal = (cCh) - ('0');
+        nIndex++;
+        cCh1 = sStr.charAt (nIndex);
+        if (cCh1 >= '0' && cCh1 <= '7')
+        {
+          nOrdinal = nOrdinal * 8 + (cCh1) - ('0');
+          nIndex++;
+          cCh1 = sStr.charAt (nIndex);
+          if (cCh <= '3' && cCh1 >= '0' && cCh1 <= '7')
+          {
+            nOrdinal = nOrdinal * 8 + (cCh1) - ('0');
+            nIndex++;
+          }
+        }
+        sRetval += (char) nOrdinal;
+        continue;
+      }
+      if (cCh == 'u')
+      {
+        nIndex++;
+        cCh = sStr.charAt (nIndex);
+        if (_isHexchar (cCh))
+        {
+          nOrdinal = _getHexVal (cCh);
+          nIndex++;
+          cCh = sStr.charAt (nIndex);
+          if (_isHexchar (cCh))
+          {
+            nOrdinal = nOrdinal * 16 + _getHexVal (cCh);
+            nIndex++;
+            cCh = sStr.charAt (nIndex);
+            if (_isHexchar (cCh))
+            {
+              nOrdinal = nOrdinal * 16 + _getHexVal (cCh);
+              nIndex++;
+              cCh = sStr.charAt (nIndex);
+              if (_isHexchar (cCh))
+              {
+                nOrdinal = nOrdinal * 16 + _getHexVal (cCh);
+                nIndex++;
+                continue;
+              }
+            }
+          }
+        }
+        JavaCCErrors.parse_error (aLocation,
+                                  "Encountered non-hex character '" +
+                                     cCh +
+                                     "' at position " +
+                                     nIndex +
+                                     " of string " +
+                                     "- Unicode escape must have 4 hex digits after it.");
+        return sRetval;
+      }
+      JavaCCErrors.parse_error (aLocation, "Illegal escape sequence '\\" + cCh + "' at position " + nIndex + " of string.");
+      return sRetval;
+    }
+    return sRetval;
+  }
+
   public static String addEscapes (@NonNull final String sStr)
   {
     final StringBuilder aRetVal = new StringBuilder (sStr.length () * 2);
