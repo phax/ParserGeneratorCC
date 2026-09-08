@@ -587,7 +587,8 @@ public class LexGenCpp extends LexGenJava
     int i;
 
     final EOutputLanguage eOutputLanguage = getOutputLanguage ();
-    switchToStaticsFile (); // remaining variables
+    // remaining variables
+    switchToStaticsFile ();
     genCodeNewLine ();
     genCodeLine ("/** Lexer state names. */");
     genStringLiteralArrayCPP ("lexStateNames", lexer ().getLexStateName ());
@@ -651,7 +652,8 @@ public class LexGenCpp extends LexGenJava
     }
 
     if (false)
-      if (lexer ().isHasMore ()) // Not needed as we just use else
+      // Not needed as we just use else
+      if (lexer ().isHasMore ())
       {
         // Bit vector for MORE
         genCode ("static const " + eOutputLanguage.getTypeLong () + " jjtoMore[] = {");
@@ -1371,7 +1373,8 @@ public class LexGenCpp extends LexGenJava
 
         if (i == 0)
         {
-          genCodeLine ("      image.setLength(0);"); // For EOF no image is
+          // For EOF no image is
+          genCodeLine ("      image.setLength(0);");
                                                      // there
         }
         else

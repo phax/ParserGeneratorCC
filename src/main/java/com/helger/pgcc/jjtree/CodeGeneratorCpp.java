@@ -427,7 +427,8 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
   private void insertCatchBlocks (final NodeScope aNs, final JJTreeIO aIo, final String sIndent)
   {
     // if (thrown_names.hasMoreElements()) {
-    aIo.println (sIndent + "} catch (...) {"); // " + ns.exceptionVar + ") {");
+    // " + ns.exceptionVar + ") {");
+    aIo.println (sIndent + "} catch (...) {");
 
     if (aNs.usesCloseNodeVar ())
     {

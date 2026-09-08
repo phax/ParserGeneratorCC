@@ -328,7 +328,8 @@ public class OutputFileGenerator
 
     if (_peekLine (aIn) != null && _peekLine (aIn).trim ().startsWith ("#else"))
     {
-      _getLine (aIn); // Discard the #else line
+      // Discard the #else line
+      _getLine (aIn);
       _process (aIn, aOut, bIgnoring || bFoundTrueCondition);
     }
 

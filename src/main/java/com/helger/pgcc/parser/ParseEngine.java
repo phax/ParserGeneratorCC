@@ -1392,7 +1392,8 @@ public class ParseEngine
             final AbstractNormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
             if (aNtprod instanceof AbstractCodeProduction)
             {
-              break; // nothing to do here
+              // nothing to do here
+              break;
             }
             aSeq = aNtprod.getExpansion ();
           }
@@ -1831,7 +1832,8 @@ public class ParseEngine
           final int nMineseq = minimumSize (aEseq);
           if (nMin == Integer.MAX_VALUE || nMineseq == Integer.MAX_VALUE)
           {
-            nMin = Integer.MAX_VALUE; // Adding infinity to something
+            // Adding infinity to something
+            nMin = Integer.MAX_VALUE;
                                      // results
                                      // in infinity.
           }

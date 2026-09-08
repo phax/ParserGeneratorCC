@@ -141,7 +141,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         // For C++
         String sImage;
         int i;
-        strLit ().setCharCnt (0); // Set to zero in reInit() but just to be sure
+        // Set to zero in reInit() but just to be sure
+        strLit ().setCharCnt (0);
 
         aCodeGenerator.genCodeNewLine ();
         aCodeGenerator.genCodeLine ("/** Token literal values. */");
@@ -229,7 +230,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     String sImage;
     int i;
-    strLit ().setCharCnt (0); // Set to zero in reInit() but just to be sure
+    // Set to zero in reInit() but just to be sure
+    strLit ().setCharCnt (0);
 
     aCodeGenerator.genCodeNewLine ();
     aCodeGenerator.genCodeLine ("/** Token literal values. */");
@@ -358,7 +360,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
                                                                "one that can handle your character set.");
       }
 
-      if (i >= strLit ().getCharPosKind ().size ()) // Kludge, but OK
+      // Kludge, but OK
+      if (i >= strLit ().getCharPosKind ().size ())
       {
         aTemp = new HashMap <> ();
         strLit ().getCharPosKind ().add (aTemp);
@@ -379,7 +382,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       {
         s = Character.toString (Character.toLowerCase (c));
 
-        if (i >= strLit ().getCharPosKind ().size ()) // Kludge, but OK
+        // Kludge, but OK
+        if (i >= strLit ().getCharPosKind ().size ())
         {
           aTemp = new HashMap <> ();
           strLit ().getCharPosKind ().add (aTemp);
@@ -1397,7 +1401,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
               aCodeGenerator.genCodeLine ("         return 1;");
           }
           else
-            if (i != 0) // No more str literals to look for
+            // No more str literals to look for
+            if (i != 0)
             {
               aCodeGenerator.genCodeLine ("         break;");
               bStartNfaNeeded = true;
@@ -1652,7 +1657,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   static void dumpNfaStartStatesCode (final Map <String, long []> [] aStatesForPos, final CodeGenerator aCodeGenerator)
   {
     if (strLit ().getMaxStrKind () == 0)
-    { // No need to generate this function
+    {
+      // No need to generate this function
       return;
     }
 

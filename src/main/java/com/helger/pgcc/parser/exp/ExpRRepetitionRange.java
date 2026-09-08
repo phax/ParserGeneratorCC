@@ -101,7 +101,8 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
       aUnits.add (m_aRegexpr);
     }
 
-    if (m_bHasMax && m_nMax == -1) // Unlimited
+    // Unlimited
+    if (m_bHasMax && m_nMax == -1)
     {
       aUnits.add (new ExpRZeroOrMore (m_aRegexpr));
     }

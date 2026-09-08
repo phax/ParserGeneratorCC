@@ -225,7 +225,8 @@ public class ParseGenCPP extends ParseGenJava
 
     genCodeLine ("  /** Constructor with user supplied TokenManager. */");
 
-    switchToIncludeFile (); // TEMP
+    // TEMP
+    switchToIncludeFile ();
     genCodeLine ("  Token *head; ");
     genCodeLine ("public: ");
     generateMethodDefHeader (" ",

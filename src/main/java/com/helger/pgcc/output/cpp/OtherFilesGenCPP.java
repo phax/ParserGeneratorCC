@@ -84,7 +84,8 @@ public class OtherFilesGenCPP
 
     FilesCpp.gen_JavaCCDefs ();
     FilesCpp.gen_CharStream ();
-    FilesCpp.gen_Token (); // TODO(theov): issued twice??
+    // TODO(theov): issued twice??
+    FilesCpp.gen_Token ();
     FilesCpp.gen_TokenManager ();
     FilesCpp.gen_TokenMgrError ();
     FilesCpp.gen_ParseException ();

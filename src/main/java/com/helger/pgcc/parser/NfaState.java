@@ -173,7 +173,8 @@ public class NfaState
     m_nOnlyChar++;
     m_cMatchSingleChar = c;
 
-    if (c < 128) // ASCII char
+    // ASCII char
+    if (c < 128)
     {
       _addASCIIMove (c);
       return;

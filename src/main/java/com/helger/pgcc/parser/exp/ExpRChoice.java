@@ -112,7 +112,8 @@ public final class ExpRChoice extends AbstractExpRegularExpression
 
   void compressCharLists ()
   {
-    compressChoices (); // Unroll nested choices
+    // Unroll nested choices
+    compressChoices ();
     AbstractExpRegularExpression aCurRE;
     ExpRCharacterList aCurCharList = null;
 

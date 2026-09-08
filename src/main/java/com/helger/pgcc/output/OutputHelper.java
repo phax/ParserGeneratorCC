@@ -75,7 +75,8 @@ public class OutputHelper
       }
       catch (final NumberFormatException e)
       {
-        return 0.0; // Should never happen
+        // Should never happen
+        return 0.0;
       }
     }
 

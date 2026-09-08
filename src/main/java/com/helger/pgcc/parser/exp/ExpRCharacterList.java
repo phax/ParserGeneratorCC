@@ -440,7 +440,8 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
       }
 
       if (m_bNegatedList)
-        removeNegation (); // This also sorts the list
+        // This also sorts the list
+        removeNegation ();
       else
         sortDescriptors ();
     }
@@ -462,7 +463,8 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
       final ICCCharacter aTmp = m_aDescriptors.get (i);
       if (aTmp instanceof SingleCharacter)
         aStartState.addChar (((SingleCharacter) aTmp).getChar ());
-      else // if (descriptors.get(i) instanceof CharacterRange)
+      // if (descriptors.get(i) instanceof CharacterRange)
+      else
       {
         final CharacterRange aCr = (CharacterRange) aTmp;
 

@@ -607,7 +607,8 @@ public class Semanticize
           ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new LookaheadChecker ());
         }
       }
-    } // matches "if (Options.getSanityCheck()) {"
+    // matches "if (Options.getSanityCheck()) {"
+    }
 
     if (JavaCCErrors.getErrorCount () != 0)
       throw new MetaParseException ("Error count is already present!");
