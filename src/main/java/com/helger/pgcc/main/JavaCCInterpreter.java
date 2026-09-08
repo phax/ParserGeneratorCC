@@ -77,6 +77,18 @@ public class JavaCCInterpreter
     PGPrinter.error ("Tokenized in: " + (System.currentTimeMillis () - l));
   }
 
+  /**
+   * Tokenize an input against a grammar, printing every token, without generating any code.
+   * <p>
+   * The caller has to have started a run first - {@link com.helger.pgcc.parser.Main#reInitAll()},
+   * then whatever options apply. {@link #main(String[])} does that; a direct caller must do it too,
+   * or the option lookups fail.
+   *
+   * @param grammar
+   *        The grammar source. May not be <code>null</code>.
+   * @param input
+   *        The text to tokenize. May not be <code>null</code>.
+   */
   public void runTokenizer (final String grammar, final String input)
   {
     try
