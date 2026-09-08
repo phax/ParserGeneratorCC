@@ -43,7 +43,6 @@ import com.helger.pgcc.parser.IGrammarLocation;
 /**
  * Describes the input token stream.
  */
-@SuppressWarnings ("hiding")
 /**
  * Describes the input token stream.
  * <p>
@@ -52,6 +51,7 @@ import com.helger.pgcc.parser.IGrammarLocation;
  * the hottest path of every parse. This is the one class in the project that is exempt from the
  * rule that members are private.
  */
+@SuppressWarnings ("hiding")
 public class Token implements IGrammarLocation
 {
   /**

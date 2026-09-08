@@ -71,11 +71,17 @@ public class NfaState
     return LexGenJava.lexer ().tokenizerDataBuild ();
   }
 
+  /**
+   * {@return the automaton being built for the lexical state that is currently being generated}
+   */
   public static NfaBuildState nfa ()
   {
     return LexGenJava.lexer ().nfa ();
   }
 
+  /**
+   * Reset the parts of the automaton that outlive one lexical state.
+   */
   public static void reInitStatic ()
   {
     nfa ().resetForLexicalState ();
@@ -113,6 +119,10 @@ public class NfaState
   private char m_cMatchSingleChar;
   private boolean m_bClosureDone = false;
 
+  /**
+   * Create a state and register it with the automaton of the lexical state that is currently
+   * being built. The state's id is its position in {@link NfaBuildState#getAllStates()}.
+   */
   public NfaState ()
   {
     final NfaBuildState aNfa = nfa ();
@@ -160,6 +170,12 @@ public class NfaState
     return aRet;
   }
 
+  /**
+   * Add an epsilon move from this state to another one.
+   *
+   * @param aNewState
+   *        The target of the move. May not be <code>null</code>.
+   */
   public void addMove (@NonNull final NfaState aNewState)
   {
     if (!m_aEpsilonMoves.contains (aNewState))
@@ -171,6 +187,12 @@ public class NfaState
     m_aAsciiMoves[c / 64] |= (1L << (c % 64));
   }
 
+  /**
+   * Make this state match one more character.
+   *
+   * @param c
+   *        The character to add.
+   */
   public void addChar (final char c)
   {
     final NfaBuildState aNfa = nfa ();
@@ -226,6 +248,14 @@ public class NfaState
     }
   }
 
+  /**
+   * Make this state match one more range of characters, both ends included.
+   *
+   * @param cPleft
+   *        The first character of the range.
+   * @param cRight
+   *        The last character of the range.
+   */
   public void addRange (final char cPleft, final char cRight)
   {
     final NfaBuildState aNfa = nfa ();
@@ -519,6 +549,10 @@ public class NfaState
     return m_bIsFinal || hasTransitions ();
   }
 
+  /**
+   * {@return <code>true</code> if this state matches any character at all - a state with only
+   * epsilon moves does not}
+   */
   public boolean hasTransitions ()
   {
     return m_aAsciiMoves[0] != 0L ||
@@ -632,6 +666,10 @@ public class NfaState
   }
 
   // generates code (without outputting it) and returns the name used.
+  /**
+   * Give this state and everything reachable from it a state number, which is what turns the NFA
+   * into something that can be written out. A state that already has one is left alone.
+   */
   public void generateCode ()
   {
     final NfaBuildState aNfa = nfa ();
@@ -665,6 +703,11 @@ public class NfaState
     }
   }
 
+  /**
+   * Work out the epsilon closure of every state and merge the states that turn out to be
+   * equivalent. This is the optimisation pass that decides how large the generated automaton ends
+   * up.
+   */
   public static void computeClosures ()
   {
     final NfaBuildState aNfa = nfa ();
@@ -890,6 +933,13 @@ public class NfaState
     return m_sEpsilonMovesString;
   }
 
+  /**
+   * {@return <code>true</code> if the given character can begin a match in the current lexical
+   * state}
+   *
+   * @param c
+   *        The character to test. Must be below 128.
+   */
   public static boolean canStartNfaUsingAscii (final char c)
   {
     final NfaBuildState aNfa = nfa ();
@@ -948,6 +998,18 @@ public class NfaState
     return false;
   }
 
+  /**
+   * Find the first position at or after nPos where this state matches, used by the interpreter
+   * rather than by the code generator.
+   *
+   * @param s
+   *        The input being scanned. May not be <code>null</code>.
+   * @param nPos
+   *        The position to start looking at.
+   * @param nLen
+   *        The position to stop before.
+   * @return The position of the first match, or nLen if there is none.
+   */
   public int getFirstValidPos (@NonNull final String s, final int nPos, final int nLen)
   {
     int i = nPos;
@@ -968,6 +1030,15 @@ public class NfaState
     return i;
   }
 
+  /**
+   * Follow this state's transition for one character, adding everything it leads to.
+   *
+   * @param c
+   *        The character being consumed.
+   * @param aNewStates
+   *        Collects the states reached. May not be <code>null</code>.
+   * @return The kind matched here, or {@link Integer#MAX_VALUE} if the character does not move.
+   */
   public int moveFrom (final char c, final List <NfaState> aNewStates)
   {
     if (_canMoveUsingChar (c))
@@ -981,6 +1052,17 @@ public class NfaState
     return Integer.MAX_VALUE;
   }
 
+  /**
+   * Follow the transition of every state in a set for one character.
+   *
+   * @param c
+   *        The character being consumed.
+   * @param states
+   *        The states to move from. May not be <code>null</code>.
+   * @param aNewStates
+   *        Collects the states reached. May not be <code>null</code>.
+   * @return The lowest kind matched, or {@link Integer#MAX_VALUE} if nothing matched.
+   */
   public static int moveFromSet (final char c, @NonNull final List <NfaState> states, final List <NfaState> aNewStates)
   {
     int nRetVal = Integer.MAX_VALUE;
@@ -995,6 +1077,20 @@ public class NfaState
     return nRetVal;
   }
 
+  /**
+   * The same as {@link #moveFromSet(char, List, List)} for the interpreter, which keeps its state
+   * sets in arrays and marks visited states with a round number rather than clearing them.
+   *
+   * @param c
+   *        The character being consumed.
+   * @param aStates
+   *        The states to move from. May not be <code>null</code>.
+   * @param aNewStates
+   *        Collects the states reached. May not be <code>null</code>.
+   * @param nRound
+   *        The current round, used to tell a stale entry from a fresh one.
+   * @return The number of states written to aNewStates.
+   */
   public static int moveFromSetForRegEx (final char c,
                                          @NonNull final NfaState [] aStates,
                                          @NonNull final NfaState [] aNewStates,
@@ -1283,6 +1379,14 @@ public class NfaState
     return sBitVec.equals (nfa ().getAllBits ());
   }
 
+  /**
+   * Register a set of states as the start of a match and hand back the single state number that
+   * stands for it.
+   *
+   * @param sStateSetString
+   *        The set in its string form. May be <code>null</code>.
+   * @return The composite state number.
+   */
   public static int addStartStateSet (final String sStateSetString)
   {
     return _addCompositeStateSet (sStateSetString, true);
@@ -1364,6 +1468,10 @@ public class NfaState
     return nfa ().stateNameForComposite ().get (sStateSetString).intValue ();
   }
 
+  /**
+   * {@return the state number the generated automaton starts a match in, or -1 if the lexical
+   * state has no NFA at all}
+   */
   public static int initStateName ()
   {
     final String s = LexGenJava.lexer ().getInitialState ()._getEpsilonMovesString ();
@@ -1373,6 +1481,10 @@ public class NfaState
     return -1;
   }
 
+  /**
+   * {@return the state number that stands for everything reachable from this state without
+   * consuming a character}
+   */
   public int generateInitMoves ()
   {
     _getEpsilonMovesString ();
@@ -1403,6 +1515,13 @@ public class NfaState
     return aRet;
   }
 
+  /**
+   * Write the jjnextStates array, which holds every state set the generated automaton moves into,
+   * one after the other.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void dumpStateSets (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
@@ -1447,6 +1566,14 @@ public class NfaState
     return sRetVal;
   }
 
+  /**
+   * Turn a set of states into the string that identifies it in the tables of {@link
+   * com.helger.pgcc.context.NfaBuildState}, registering the set on the way.
+   *
+   * @param aStates
+   *        The states. May be <code>null</code>.
+   * @return The string form, "null;" for an empty set. Never <code>null</code>.
+   */
   public static String getStateSetString (@Nullable final List <NfaState> aStates)
   {
     if (aStates == null || aStates.isEmpty ())
@@ -2745,6 +2872,13 @@ public class NfaState
     aCodeGenerator.genCodeLine ("                  break;");
   }
 
+  /**
+   * Write the character tests of every state of the current lexical state that matches above
+   * ASCII.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void dumpCharAndRangeMoves (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
@@ -2809,6 +2943,13 @@ public class NfaState
     aCodeGenerator.genCodeLine ("         } while(i != startsAt);");
   }
 
+  /**
+   * Write the jjCanMove_ methods, one per state whose non ASCII character test was too large to
+   * inline.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void dumpNonAsciiMoveMethods (final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
@@ -2904,6 +3045,12 @@ public class NfaState
   }
 
   // private static boolean boilerPlateDumped = false;
+  /**
+   * Write the Java helper methods every generated token manager shares - jjCheckNAdd and friends.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void printBoilerPlateJava (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
@@ -2953,6 +3100,12 @@ public class NfaState
   }
 
   // private static boolean boilerPlateDumped = false;
+  /**
+   * Write the C++ helper methods every generated token manager shares - jjCheckNAdd and friends.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void printBoilerPlateCpp (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
@@ -3104,6 +3257,13 @@ public class NfaState
     }
   }
 
+  /**
+   * Write the jjMoveNfa method of the current lexical state, the loop that runs the automaton
+   * over the input.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void dumpMoveNfa (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
@@ -3404,6 +3564,13 @@ public class NfaState
     aNfa.getAllStates ().clear ();
   }
 
+  /**
+   * Write the C++ form of the table that maps a state number to the composite state set it stands
+   * for.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void dumpStatesForStateCpp (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
@@ -3476,6 +3643,13 @@ public class NfaState
     aCodeGenerator.switchToMainFile ();
   }
 
+  /**
+   * Write the Java form of the table that maps a state number to the composite state set it
+   * stands for.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void dumpStatesForStateJava (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
@@ -3524,6 +3698,13 @@ public class NfaState
     aCodeGenerator.genCodeLine ("}");
   }
 
+  /**
+   * Write the table that maps a state number to the token kind it matches, for every lexical
+   * state.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public static void dumpStatesForKind (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
@@ -3629,6 +3810,19 @@ public class NfaState
     return null;
   }
 
+  /**
+   * Hand the finished automaton of one lexical state over to the TokenizerData that
+   * JavaCCInterpreter runs, dropping the states that the optimisation passes left behind.
+   *
+   * @param nMaxState
+   *        One past the highest state number in use.
+   * @param nStartStateName
+   *        The state a match starts in.
+   * @param nLexicalStateIndex
+   *        The lexical state this automaton belongs to.
+   * @param nMatchAnyCharKind
+   *        The kind that matches any character, or -1 if there is none.
+   */
   public static void updateNfaData (final int nMaxState,
                                     final int nStartStateName,
                                     final int nLexicalStateIndex,
@@ -3775,6 +3969,13 @@ public class NfaState
     aTokenizerData.setWildcardKind (tokenizerBuild ().matchAnyChar ());
   }
 
+  /**
+   * Look a state up by its state number.
+   *
+   * @param nIndex
+   *        The state number, or -1.
+   * @return The state, or <code>null</code> if nIndex is -1.
+   */
   @Nullable
   public static NfaState getNfaState (final int nIndex)
   {

@@ -99,7 +99,7 @@ public interface IParserSyntax
   String getMissingReturnStatement ();
 
   /**
-   * {@return what follows a production's parameter list to declare that it can fail - " throws
+   * {@return what follows a production's parameter list to declare that it can fail - " throws.
    *         ParseException" in Java, nothing in C++, which reports through its error handler. Never
    *         <code>null</code>, but maybe empty.}
    */

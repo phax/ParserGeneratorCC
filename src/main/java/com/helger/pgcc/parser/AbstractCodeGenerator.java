@@ -81,19 +81,6 @@ public abstract class AbstractCodeGenerator
   {}
 
   /**
-   * The token manager generation of the current run.
-   * <p>
-   * This lives here rather than on one of the two lexer generators because both of them need it
-   * and neither is a kind of the other.
-   *
-   * @return The lexer state of the current run. Never <code>null</code>.
-   */
-  @NonNull
-
-
-
-
-  /**
    * {@return the language being generated. Never <code>null</code>}
    */
   public final EOutputLanguage getOutputLanguage ()
@@ -101,11 +88,18 @@ public abstract class AbstractCodeGenerator
     return Options.getOutputLanguage ();
   }
 
+  /**
+   * Send everything written from now on to the main output file. Java only ever has this one.
+   */
   public final void switchToMainFile ()
   {
     m_aOutputBuffer = m_aMainBuffer;
   }
 
+  /**
+   * Send everything written from now on to the file that holds the constants. C++ keeps them
+   * separate; in Java this does nothing.
+   */
   public final void switchToStaticsFile ()
   {
     if (getOutputLanguage ().hasStaticsFile ())
@@ -114,6 +108,9 @@ public abstract class AbstractCodeGenerator
     }
   }
 
+  /**
+   * Send everything written from now on to the header file. C++ only; in Java this does nothing.
+   */
   public final void switchToIncludeFile ()
   {
     if (getOutputLanguage ().hasIncludeFile ())
@@ -138,11 +135,23 @@ public abstract class AbstractCodeGenerator
     return m_nLine;
   }
 
+  /**
+   * Put the copying position back at the first column, after a line break was emitted.
+   */
   protected final void setColToStart ()
   {
     m_nCol = 1;
   }
 
+  /**
+   * Move the copying position, so that the next stretch of grammar text reproduces its original
+   * layout.
+   *
+   * @param nLine
+   *        The line to continue at, 1 based.
+   * @param nCol
+   *        The column to continue at, 1 based.
+   */
   protected final void setLineAndCol (final int nLine, final int nCol)
   {
     m_nLine = nLine;
@@ -207,6 +216,13 @@ public abstract class AbstractCodeGenerator
     genCode (getOutputLanguage ().getStaticArrayDeclaration (sType, sName));
   }
 
+  /**
+   * Write everything generated so far. For C++ this also assembles the header file, wraps both in
+   * the namespace and prepends the includes.
+   *
+   * @param sFileName
+   *        The main output file. May not be <code>null</code>.
+   */
   public final void saveOutput (@NonNull final String sFileName)
   {
     if (getOutputLanguage ().hasIncludeFile ())
@@ -245,6 +261,14 @@ public abstract class AbstractCodeGenerator
     saveOutput (sFileName, m_aMainBuffer);
   }
 
+  /**
+   * Write one buffer to one file, reporting a fatal error rather than throwing if it cannot.
+   *
+   * @param sFileName
+   *        The file to write. May not be <code>null</code>.
+   * @param aSB
+   *        What to write. May not be <code>null</code>.
+   */
   public final void saveOutput (final String sFileName, @NonNull final StringBuilder aSB)
   {
     try (final NonBlockingBufferedWriter aFw = FileHelper.getBufferedWriter (new File (sFileName),
@@ -258,6 +282,13 @@ public abstract class AbstractCodeGenerator
     }
   }
 
+  /**
+   * Point the copying position at a token, so that the text copied after it reproduces the blank
+   * lines and indentation of the grammar.
+   *
+   * @param t
+   *        The token to start copying at. May not be <code>null</code>.
+   */
   protected final void printTokenSetup (final Token t)
   {
     Token aTt = t;
@@ -271,6 +302,13 @@ public abstract class AbstractCodeGenerator
     m_nCol = aTt.beginColumn;
   }
 
+  /**
+   * Copy a run of grammar tokens into the output, ending with the comments that trail the last
+   * one.
+   *
+   * @param aList
+   *        The tokens to copy. May not be <code>null</code>.
+   */
   protected final void printTokenList (final List <Token> aList)
   {
     Token t = null;
@@ -284,6 +322,13 @@ public abstract class AbstractCodeGenerator
       printTrailingComments (t);
   }
 
+  /**
+   * Copy one grammar token and the whitespace in front of it, without the comments attached to
+   * it.
+   *
+   * @param t
+   *        The token to copy. May not be <code>null</code>.
+   */
   protected final void printTokenOnly (final Token t)
   {
     genCode (getStringForTokenOnly (t));
@@ -328,6 +373,12 @@ public abstract class AbstractCodeGenerator
     return sRetval;
   }
 
+  /**
+   * Copy one grammar token together with the comments attached to it.
+   *
+   * @param t
+   *        The token to copy. May not be <code>null</code>.
+   */
   protected final void printToken (@NonNull final Token t)
   {
     genCode (getStringToPrint (t));
@@ -358,6 +409,12 @@ public abstract class AbstractCodeGenerator
     return sRetval + getStringForTokenOnly (t);
   }
 
+  /**
+   * Copy only the comments attached in front of a grammar token.
+   *
+   * @param t
+   *        The token whose comments to copy. May not be <code>null</code>.
+   */
   protected final void printLeadingComments (final Token t)
   {
     genCode (getLeadingComments (t));
@@ -393,11 +450,25 @@ public abstract class AbstractCodeGenerator
     return sRetval;
   }
 
+  /**
+   * Copy the comments that follow a grammar token on the same line.
+   *
+   * @param t
+   *        The token whose comments to copy. May not be <code>null</code>.
+   */
   protected final void printTrailingComments (final Token t)
   {
     m_aOutputBuffer.append (getTrailingComments (t));
   }
 
+  /**
+   * The same as {@link #printTrailingComments(Token)} but hands the text back instead of emitting
+   * it.
+   *
+   * @param t
+   *        The token whose comments to collect. May not be <code>null</code>.
+   * @return The comments after the token. Never <code>null</code>.
+   */
   protected final String getTrailingComments (@NonNull final Token t)
   {
     if (t.next == null)
@@ -459,6 +530,18 @@ public abstract class AbstractCodeGenerator
   }
 
 
+  /**
+   * Write the header of a method that throws nothing.
+   *
+   * @param sModsAndRetType
+   *        The modifiers and the return type, as this language spells them. May not be
+   *         <code>null</code>.
+   * @param sClassName
+   *        The class the method belongs to. Only C++ needs it, to qualify the out of line
+   *         definition. May be <code>null</code>.
+   * @param sNameAndParams
+   *        The method name and its parameter list. May not be <code>null</code>.
+   */
   public final void generateMethodDefHeader (final String sModsAndRetType,
                                              final String sClassName,
                                              final String sNameAndParams)
@@ -466,6 +549,20 @@ public abstract class AbstractCodeGenerator
     generateMethodDefHeader (sModsAndRetType, sClassName, sNameAndParams, null);
   }
 
+  /**
+   * Write the header of a method, ending the line afterwards.
+   *
+   * @param sQualifiedModsAndRetType
+   *        The modifiers and the return type, as this language spells them. May not be
+   *         <code>null</code>.
+   * @param sClassName
+   *        The class the method belongs to. Only C++ needs it, to qualify the out of line
+   *         definition. May be <code>null</code>.
+   * @param sNameAndParams
+   *        The method name and its parameter list. May not be <code>null</code>.
+   * @param sExceptions
+   *        The checked exceptions. May be <code>null</code>.
+   */
   public final void generateMethodDefHeader (@NonNull final String sQualifiedModsAndRetType,
                                              final String sClassName,
                                              final String sNameAndParams,
@@ -475,6 +572,8 @@ public abstract class AbstractCodeGenerator
   }
 
   /**
+   * Write the header of a method, with a say over whether the line is ended afterwards.
+   *
    * @param sQualifiedModsAndRetType
    *        The modifiers and the return type, as this language spells them. May not be
    *        <code>null</code>.
@@ -543,6 +642,8 @@ public abstract class AbstractCodeGenerator
   }
 
   /**
+   * The prefix an out of line member definition needs in this language.
+   *
    * @param sClassName
    *        The class the member belongs to. May be <code>null</code>.
    * @return The "ClassName::" prefix C++ wants on an out of line definition, empty for Java.
@@ -571,6 +672,16 @@ public abstract class AbstractCodeGenerator
     return "SimpleCharStream";
   }
 
+  /**
+   * Expand one of the templates below <code>src/main/resources/templates</code> into the current
+   * output buffer.
+   *
+   * @param sName
+   *        The template resource path. May not be <code>null</code>.
+   * @param aOptions
+   *        The values the template substitutes. May not be <code>null</code>. @throws IOException
+   *         if the template cannot be read
+   */
   public void writeTemplate (final String sName, final Map <String, Object> aOptions) throws IOException
   {
     final OutputFileGenerator aGen = new OutputFileGenerator (sName, aOptions);

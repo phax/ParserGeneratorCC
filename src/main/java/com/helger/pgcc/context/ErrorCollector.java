@@ -85,7 +85,7 @@ public final class ErrorCollector
   }
 
   /**
-   * {@return the number of errors, which is the sum of the parse errors and the semantic errors
+   * {@return the number of errors, which is the sum of the parse errors and the semantic errors.
    *         Warnings are not errors.}
    */
   public int getErrorCount ()

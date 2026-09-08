@@ -108,7 +108,7 @@ public final class JJTreeState
   }
 
   /**
-   * {@return the node ids already recorded, so that a repeated descriptor is only counted once
+   * {@return the node ids already recorded, so that a repeated descriptor is only counted once.
    *         Never <code>null</code>.}
    */
   @NonNull
