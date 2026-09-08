@@ -2964,7 +2964,7 @@ public class NfaState
   }
 
   // private static boolean boilerPlateDumped = false;
-  public static void printBoilerPlateCPP (@NonNull final AbstractCodeGenerator aCodeGenerator)
+  public static void printBoilerPlateCpp (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     aCodeGenerator.switchToIncludeFile ();
@@ -3442,7 +3442,7 @@ public class NfaState
     aNfa.getAllStates ().clear ();
   }
 
-  public static void dumpStatesForStateCPP (@NonNull final AbstractCodeGenerator aCodeGenerator)
+  public static void dumpStatesForStateCpp (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final NfaBuildState aNfa = nfa ();
     if (aNfa.getStatesForState () == null)
@@ -3569,7 +3569,7 @@ public class NfaState
     switch (eOutputLanguage)
     {
       case JAVA -> dumpStatesForStateJava (aCodeGenerator);
-      case CPP -> dumpStatesForStateCPP (aCodeGenerator);
+      case CPP -> dumpStatesForStateCpp (aCodeGenerator);
       default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
     boolean bMoreThanOne = false;

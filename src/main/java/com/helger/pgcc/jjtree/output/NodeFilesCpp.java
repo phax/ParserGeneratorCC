@@ -50,7 +50,7 @@ import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.jjtree.ASTNodeDescriptor;
 import com.helger.pgcc.jjtree.JJTreeOptions;
 import com.helger.pgcc.output.OutputFile;
-import com.helger.pgcc.output.cpp.OtherFilesGenCPP;
+import com.helger.pgcc.output.cpp.OtherFilesGenCpp;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.utils.OutputFileGenerator;
 
@@ -469,7 +469,7 @@ public final class NodeFilesCpp
         aOstr.println ("  static JJChar jjtNodeName_arr_" + i + "[] = ");
         final String n = aNodeNames.get (i);
         // ostr.println(" (JJChar*)\"" + n + "\",");
-        OtherFilesGenCPP.printCharArray (aOstr, n);
+        OtherFilesGenCpp.printCharArray (aOstr, n);
         aOstr.println (";");
       }
       aOstr.println ("  static JJString jjtNodeName[] = {");

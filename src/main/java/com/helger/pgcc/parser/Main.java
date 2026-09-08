@@ -48,8 +48,8 @@ import com.helger.pgcc.CPG;
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.cpp.LexGenCpp;
-import com.helger.pgcc.output.cpp.OtherFilesGenCPP;
-import com.helger.pgcc.output.cpp.ParseGenCPP;
+import com.helger.pgcc.output.cpp.OtherFilesGenCpp;
+import com.helger.pgcc.output.cpp.ParseGenCpp;
 import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.output.java.OtherFilesGenJava;
 import com.helger.pgcc.output.java.ParseGenJava;
@@ -313,11 +313,11 @@ public class Main
           // C++ for now
           if (bIsBuildParser)
           {
-            new ParseGenCPP ().start ();
+            new ParseGenCpp ().start ();
             new LexGenCpp ().start ();
           }
           Options.setStringOption (Options.NONUSER_OPTION__PARSER_NAME, grammar ().getParserName ());
-          OtherFilesGenCPP.start ();
+          OtherFilesGenCpp.start ();
           break;
         default:
           throw new IllegalStateException ("Unhandled language!");

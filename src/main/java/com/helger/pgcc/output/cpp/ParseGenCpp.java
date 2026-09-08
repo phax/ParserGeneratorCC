@@ -52,10 +52,10 @@ import com.helger.pgcc.parser.Token;
 /**
  * Generate the parser.
  */
-public class ParseGenCPP extends ParseGenJava
+public class ParseGenCpp extends ParseGenJava
 {
   /** Default constructor. */
-  public ParseGenCPP ()
+  public ParseGenCpp ()
   {}
 
   @SuppressWarnings ("unchecked")
@@ -218,7 +218,7 @@ public class ParseGenCPP extends ParseGenJava
       genCodeLine ("    ~__jj_depth_inc(){ parent->jj_depth--; }");
       genCodeLine ("  };");
     }
-    if (Options.hasCPPStackLimit ())
+    if (Options.hasCppStackLimit ())
     {
       genCodeLine ("  public: size_t jj_stack_limit;");
       genCodeLine ("  private: void* jj_stack_base;");
@@ -271,9 +271,9 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("    jj_kind = -1;");
     genCodeLine ("    indent = 0;");
     genCodeLine ("    trace = " + Options.isDebugParser () + ";");
-    if (Options.hasCPPStackLimit ())
+    if (Options.hasCppStackLimit ())
     {
-      genCodeLine ("    jj_stack_limit = " + Options.getCPPStackLimit () + ";");
+      genCodeLine ("    jj_stack_limit = " + Options.getCppStackLimit () + ";");
       genCodeLine ("    jj_stack_error = jj_stack_check(true);");
     }
 
@@ -328,7 +328,7 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("}");
     genCodeNewLine ();
 
-    if (Options.hasCPPStackLimit ())
+    if (Options.hasCppStackLimit ())
     {
       genCodeNewLine ();
       switchToIncludeFile ();
@@ -355,7 +355,7 @@ public class ParseGenCPP extends ParseGenJava
 
     generateMethodDefHeader ("Token *", grammar ().getParserName (), "jj_consume_token(int kind)", "ParseException");
     genCodeLine ("  {");
-    if (Options.hasCPPStackLimit ())
+    if (Options.hasCppStackLimit ())
     {
       genCodeLine ("    if(kind != -1 && (jj_stack_error || jj_stack_check(false))) {");
       genCodeLine ("      if (!jj_stack_error) {");
@@ -412,13 +412,13 @@ public class ParseGenCPP extends ParseGenJava
       genCodeLine ("    jj_kind = kind;");
     }
     // genCodeLine(" throw generateParseException();");
-    if (Options.hasCPPStackLimit ())
+    if (Options.hasCppStackLimit ())
     {
       genCodeLine ("    if (!jj_stack_error) {");
     }
     genCodeLine ("    JJString image = kind >= 0 ? tokenImage[kind] : tokenImage[0];");
     genCodeLine ("    errorHandler->handleUnexpectedToken(kind, image.substr(1, image.size() - 2), getToken(1), this);");
-    if (Options.hasCPPStackLimit ())
+    if (Options.hasCppStackLimit ())
     {
       genCodeLine ("    }");
     }
@@ -432,7 +432,7 @@ public class ParseGenCPP extends ParseGenJava
       switchToMainFile ();
       generateMethodDefHeader ("bool ", grammar ().getParserName (), "jj_scan_token(int kind)");
       genCodeLine ("{");
-      if (Options.hasCPPStackLimit ())
+      if (Options.hasCppStackLimit ())
       {
         genCodeLine ("    if(kind != -1 && (jj_stack_error || jj_stack_check(false))) {");
         genCodeLine ("      if (!jj_stack_error) {");

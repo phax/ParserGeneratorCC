@@ -565,7 +565,7 @@ public class LexGenCpp extends LexGenJava
     if (lexer ().isHasTokenActions ())
       _dumpTokenActions ();
 
-    NfaState.printBoilerPlateCPP (this);
+    NfaState.printBoilerPlateCpp (this);
 
     {
       final Map <String, Object> aOpts = new HashMap <> ();

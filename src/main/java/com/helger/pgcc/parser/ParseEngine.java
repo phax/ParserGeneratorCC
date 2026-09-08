@@ -615,7 +615,7 @@ public class ParseEngine
   }
 
   // Print CPPCODE method header.
-  private String _generateCPPMethodheader (@NonNull final CodeProductionCpp p)
+  private String _generateCppMethodHeader (@NonNull final CodeProductionCpp p)
   {
     final StringBuilder aSig = new StringBuilder ();
     String sRet, sParams;
@@ -669,7 +669,7 @@ public class ParseEngine
   }
 
   // Print method header and return the ERROR_RETURN string.
-  private String _generateCPPMethodheader (@NonNull final BNFProduction p, final Token aT2)
+  private String _generateCppMethodHeader (@NonNull final BNFProduction p, final Token aT2)
   {
     final StringBuilder aSig = new StringBuilder ();
     Token t = aT2;
@@ -865,7 +865,7 @@ public class ParseEngine
         }
         break;
       case CPP:
-        sError_ret_cpp = _generateCPPMethodheader (p, t);
+        sError_ret_cpp = _generateCppMethodHeader (p, t);
         break;
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -1904,7 +1904,7 @@ public class ParseEngine
           continue;
         }
 
-        _generateCPPMethodheader (cp);
+        _generateCppMethodHeader (cp);
 
         if (false)
         {

@@ -552,7 +552,7 @@ public class Options
         else
           if (sNameUC.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))
           {
-            processCPPNamespaceOption ((String) aValue);
+            processCppNamespaceOption ((String) aValue);
           }
   }
 
@@ -1084,11 +1084,11 @@ public class Options
     optionValues ().put (sOptionName, sOptionValue);
     if (sOptionName.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))
     {
-      processCPPNamespaceOption (sOptionValue);
+      processCppNamespaceOption (sOptionValue);
     }
   }
 
-  public static void processCPPNamespaceOption (final String sOptionValue)
+  public static void processCppNamespaceOption (final String sOptionValue)
   {
     final String sNs = sOptionValue;
     if (sNs.length () > 0)
@@ -1133,7 +1133,7 @@ public class Options
    *
    * @return The requested stack usage limit.
    */
-  public static String getCPPStackLimit ()
+  public static String getCppStackLimit ()
   {
     final String sLimit = stringValue (USEROPTION__CPP_STACK_LIMIT);
     if (sLimit.equals ("0"))
@@ -1141,9 +1141,9 @@ public class Options
     return sLimit;
   }
 
-  public static boolean hasCPPStackLimit ()
+  public static boolean hasCppStackLimit ()
   {
-    return StringHelper.isNotEmpty (getCPPStackLimit ());
+    return StringHelper.isNotEmpty (getCppStackLimit ());
   }
 
   /**
