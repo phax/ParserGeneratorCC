@@ -41,6 +41,10 @@ import java.util.List;
  */
 public class TokenProduction implements IGrammarLocation
 {
+  /** Default constructor. */
+  public TokenProduction ()
+  {}
+
   /**
    * The starting line and column of this token production.
    */

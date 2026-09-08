@@ -49,6 +49,10 @@ import com.helger.pgcc.parser.Options;
 
 public class JJTree
 {
+  /** Default constructor. */
+  public JJTree ()
+  {}
+
   private JJTreeIO m_aIO;
 
   private void helpMessage ()

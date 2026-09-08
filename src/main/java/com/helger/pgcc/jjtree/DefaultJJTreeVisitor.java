@@ -37,6 +37,10 @@ import org.jspecify.annotations.NonNull;
 
 public class DefaultJJTreeVisitor implements JJTreeParserVisitor
 {
+  /** Default constructor. */
+  public DefaultJJTreeVisitor ()
+  {}
+
   public Object defaultVisit (@NonNull final SimpleNode aNode, final Object aData)
   {
     return aNode.childrenAccept (this, aData);

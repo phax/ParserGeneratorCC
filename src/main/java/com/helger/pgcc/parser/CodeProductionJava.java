@@ -37,4 +37,9 @@ package com.helger.pgcc.parser;
  * Describes JAVACODE productions.
  */
 public class CodeProductionJava extends AbstractCodeProduction
-{}
+{
+  /** Default constructor. */
+  public CodeProductionJava ()
+  {}
+}
+

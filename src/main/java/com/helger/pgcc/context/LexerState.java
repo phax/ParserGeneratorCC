@@ -59,6 +59,10 @@ import com.helger.pgcc.parser.exp.ExpAction;
  */
 public final class LexerState
 {
+  /** Default constructor. */
+  public LexerState ()
+  {}
+
   private final Map <String, List <TokenProduction>> m_aAllTpsForState = new LinkedHashMap <> ();
   private final Map <String, NfaState> m_aInitStates = new LinkedHashMap <> ();
 

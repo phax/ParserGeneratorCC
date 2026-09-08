@@ -39,6 +39,10 @@ import com.helger.annotation.Nonempty;
 
 public class JavaResourceTemplateLocationImpl implements IJavaResourceTemplateLocations
 {
+  /** Default constructor. */
+  public JavaResourceTemplateLocationImpl ()
+  {}
+
   @NonNull
   @Nonempty
   public String getTokenTemplateResourceUrl ()

@@ -54,6 +54,10 @@ import com.helger.pgcc.parser.NfaState;
  */
 public final class NfaBuildState
 {
+  /** Default constructor. */
+  public NfaBuildState ()
+  {}
+
   private final List <NfaState> m_aIndexedAllStates = new ArrayList <> ();
   private final List <NfaState> m_aNonAsciiTableForMethod = new ArrayList <> ();
   private final Map <String, NfaState> m_aEquivStatesTable = new HashMap <> ();

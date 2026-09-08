@@ -53,6 +53,16 @@ import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.utils.OutputFileGenerator;
 
+/**
+ * The buffers and the emitting that the four generators share.
+ * <p>
+ * Output is collected in memory rather than written as it is produced, because C++ needs it split
+ * three ways - the main file, the include file and a statics file - and which of them is current
+ * changes as generation proceeds. {@link #saveOutput(String)} writes what is collected.
+ * <p>
+ * It also carries the position tracking used when grammar text is copied through verbatim, so that
+ * the action code lands in the generated file with its original line and column.
+ */
 public abstract class AbstractCodeGenerator
 {
   private final StringBuilder m_aMainBuffer = new StringBuilder ();
@@ -63,10 +73,14 @@ public abstract class AbstractCodeGenerator
   private int m_nLine;
   private int m_nCol;
 
+  /** Default constructor for the generators to extend. */
   protected AbstractCodeGenerator ()
   {}
 
   @NonNull
+  /**
+   * @return The language being generated. Never <code>null</code>.
+   */
   public final EOutputLanguage getOutputLanguage ()
   {
     return Options.getOutputLanguage ();
@@ -93,11 +107,17 @@ public abstract class AbstractCodeGenerator
     }
   }
 
+  /**
+   * @return The column the next copied character would go to. 1-based.
+   */
   protected final int getCol ()
   {
     return m_nCol;
   }
 
+  /**
+   * @return The line the next copied character would go to. 1-based.
+   */
   protected final int getLineNumber ()
   {
     return m_nLine;
@@ -114,21 +134,40 @@ public abstract class AbstractCodeGenerator
     m_nCol = nCol;
   }
 
+  /**
+   * Append one character to the current output buffer.
+   *
+   * @param c
+   *        The character to emit.
+   */
   public final void genCode (final char c)
   {
     m_aOutputBuffer.append (c);
   }
 
+  /**
+   * Append text to the current output buffer.
+   *
+   * @param s
+   *        The text to emit. May not be <code>null</code>.
+   */
   public final void genCode (final String s)
   {
     m_aOutputBuffer.append (s);
   }
 
+  /** Append a line break to the current output buffer. */
   public final void genCodeNewLine ()
   {
     genCode ("\n");
   }
 
+  /**
+   * Append text and a line break to the current output buffer.
+   *
+   * @param s
+   *        The text to emit. May not be <code>null</code>.
+   */
   public final void genCodeLine (final String s)
   {
     genCode (s);
@@ -243,6 +282,14 @@ public abstract class AbstractCodeGenerator
     genCode (getStringForTokenOnly (t));
   }
 
+  /**
+   * Render one token, padded with the newlines and spaces needed to put it at its original line
+   * and column.
+   *
+   * @param t
+   *        The token to render. May not be <code>null</code>.
+   * @return The text to emit. Never <code>null</code>.
+   */
   protected final String getStringForTokenOnly (@NonNull final Token t)
   {
     String sRetval = "";
@@ -279,6 +326,13 @@ public abstract class AbstractCodeGenerator
     genCode (getStringToPrint (t));
   }
 
+  /**
+   * Render one token together with the comments in front of it.
+   *
+   * @param t
+   *        The token to render. May not be <code>null</code>.
+   * @return The text to emit. Never <code>null</code>.
+   */
   protected final String getStringToPrint (@NonNull final Token t)
   {
     String sRetval = "";
@@ -302,6 +356,13 @@ public abstract class AbstractCodeGenerator
     genCode (getLeadingComments (t));
   }
 
+  /**
+   * Render the special tokens attached in front of a token, which is where comments live.
+   *
+   * @param t
+   *        The token whose leading comments to render. May not be <code>null</code>.
+   * @return The text to emit, empty if there are none. Never <code>null</code>.
+   */
   protected final String getLeadingComments (@NonNull final Token t)
   {
     String sRetval = "";
@@ -508,11 +569,21 @@ public abstract class AbstractCodeGenerator
     }
   }
 
+  /**
+   * @param sClassName
+   *        The class the member belongs to. May be <code>null</code>.
+   * @return The "ClassName::" prefix C++ wants on an out of line definition, empty for Java.
+   *         Never <code>null</code>.
+   */
   protected final String getClassQualifier (@Nullable final String sClassName)
   {
     return sClassName == null ? "" : sClassName + "::";
   }
 
+  /**
+   * @return The name of the char stream class the current options select. Never
+   *         <code>null</code>.
+   */
   public static String getCharStreamName ()
   {
     if (Options.isJavaUserCharStream ())

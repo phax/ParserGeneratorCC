@@ -61,6 +61,10 @@ import com.helger.pgcc.parser.TokenizerData;
  */
 public final class TokenizerDataBuildState
 {
+  /** Default constructor. */
+  public TokenizerDataBuildState ()
+  {}
+
   /**
    * A start state that is composite and got a name no {@code NfaState} object carries.
    *

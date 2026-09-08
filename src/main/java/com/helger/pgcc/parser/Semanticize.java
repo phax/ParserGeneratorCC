@@ -49,6 +49,10 @@ import com.helger.pgcc.parser.exp.*;
 
 public class Semanticize
 {
+  /** Default constructor. */
+  public Semanticize ()
+  {}
+
   private static void prepareToRemove (final List <RegExprSpec> aVec, final Object aItem)
   {
     PGCCContext.current ().semanticize ().prepareToRemove (aVec, aItem);

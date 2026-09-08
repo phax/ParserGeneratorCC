@@ -61,6 +61,10 @@ import com.helger.pgcc.parser.exp.ExpAction;
  */
 public final class GrammarState
 {
+  /** Default constructor. */
+  public GrammarState ()
+  {}
+
   private final ICommonsList <Token> m_aCuToInsertionPoint1 = new CommonsArrayList <> ();
   private final ICommonsList <Token> m_aCuToInsertionPoint2 = new CommonsArrayList <> ();
   private final ICommonsList <Token> m_aCuFromInsertionPoint2 = new CommonsArrayList <> ();

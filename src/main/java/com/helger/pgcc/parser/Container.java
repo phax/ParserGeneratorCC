@@ -39,6 +39,10 @@ package com.helger.pgcc.parser;
 
 public final class Container
 {
+  /** Default constructor. */
+  public Container ()
+  {}
+
   private Object m_aMember;
 
   /**

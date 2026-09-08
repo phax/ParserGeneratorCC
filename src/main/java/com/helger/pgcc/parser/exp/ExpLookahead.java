@@ -48,6 +48,10 @@ import com.helger.pgcc.parser.Token;
  */
 public final class ExpLookahead extends Expansion
 {
+  /** Default constructor. */
+  public ExpLookahead ()
+  {}
+
   /**
    * Contains the list of tokens that make up the semantic lookahead if any. If this node represents
    * a different kind of lookahead (other than semantic lookahead), then this list contains nothing.

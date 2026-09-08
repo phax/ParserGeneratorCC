@@ -68,6 +68,10 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
  */
 public class OtherFilesGenCPP
 {
+  /** Default constructor. */
+  public OtherFilesGenCPP ()
+  {}
+
   // Used by the CPP code generatror
   public static void printCharArray (@NonNull final PrintWriter aOstr, @NonNull final String s)
   {

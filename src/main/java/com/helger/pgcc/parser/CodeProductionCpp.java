@@ -37,4 +37,9 @@ package com.helger.pgcc.parser;
  * Describes CPPCODE productions.
  */
 public class CodeProductionCpp extends AbstractCodeProduction
-{}
+{
+  /** Default constructor. */
+  public CodeProductionCpp ()
+  {}
+}
+

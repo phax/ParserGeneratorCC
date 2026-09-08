@@ -50,6 +50,10 @@ import com.helger.pgcc.parser.exp.Expansion;
 
 public class BNFGenerator implements IDocGenerator
 {
+  /** Default constructor. */
+  public BNFGenerator ()
+  {}
+
   private final Map <String, String> m_aIDMap = new HashMap <> ();
   private int m_nID = 1;
   private Writer m_aPW;

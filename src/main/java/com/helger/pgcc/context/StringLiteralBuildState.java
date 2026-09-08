@@ -51,6 +51,10 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral.KindInfo;
  */
 public final class StringLiteralBuildState
 {
+  /** Default constructor. */
+  public StringLiteralBuildState ()
+  {}
+
   private boolean m_bBoilerPlateDumped = false;
 
   private int m_nMaxStrKind = 0;

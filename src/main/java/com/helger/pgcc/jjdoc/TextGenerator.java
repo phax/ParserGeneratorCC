@@ -201,6 +201,8 @@ public class TextGenerator implements IDocGenerator
    * Create an output stream for the generated Jack code. Try to open a file based on the name of
    * the parser, but if that fails use the standard output stream.
    *
+   * @param sExt
+   *        The file extension to use, dot included. May not be <code>null</code>.
    * @return Never <code>null</code>.
    */
   @NonNull

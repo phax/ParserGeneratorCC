@@ -53,6 +53,10 @@ import com.helger.pgcc.parser.TokenizerData;
 
 public class JavaCCInterpreter
 {
+  /** Default constructor. */
+  public JavaCCInterpreter ()
+  {}
+
   public static void main (@NonNull final String [] aArgs) throws Exception
   {
     // Initialize all static state

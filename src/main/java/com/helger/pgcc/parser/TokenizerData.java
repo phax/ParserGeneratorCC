@@ -46,6 +46,10 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
 // the code generators to produce code.
 public class TokenizerData
 {
+  /** Default constructor. */
+  public TokenizerData ()
+  {}
+
   // Name of the parser as specified in the PARSER_BEGIN/PARSER_END block.
   private String m_sParserName;
   // Decls coming from TOKEN_MGR_DECLS

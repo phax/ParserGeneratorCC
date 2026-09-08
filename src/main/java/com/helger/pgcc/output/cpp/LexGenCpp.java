@@ -70,6 +70,10 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
  */
 public class LexGenCpp extends LexGenJava
 {
+  /** Default constructor. */
+  public LexGenCpp ()
+  {}
+
   /**
    * Emit a C++ string literal as a char array, which is how the generated C++ carries them.
    *

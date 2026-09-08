@@ -40,6 +40,10 @@ import com.helger.pgcc.context.PGCCContext;
  */
 public final class JJDocGlobals
 {
+  /** Default constructor. */
+  public JJDocGlobals ()
+  {}
+
   public static final String STANDARD_INPUT = "standard input";
   public static final String STANDARD_OUTPUT = "standard output";
 

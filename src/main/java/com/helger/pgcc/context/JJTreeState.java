@@ -56,6 +56,10 @@ import com.helger.pgcc.jjtree.Token;
  */
 public final class JJTreeState
 {
+  /** Default constructor. */
+  public JJTreeState ()
+  {}
+
   private final Map <String, ASTProduction> m_aProductions = new HashMap <> ();
 
   /*

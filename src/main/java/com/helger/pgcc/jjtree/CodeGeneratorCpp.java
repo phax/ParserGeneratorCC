@@ -47,6 +47,10 @@ import com.helger.pgcc.parser.Options;
 
 public class CodeGeneratorCpp extends DefaultJJTreeVisitor
 {
+  /** Default constructor. */
+  public CodeGeneratorCpp ()
+  {}
+
   @Override
   public Object defaultVisit (final SimpleNode aNode, final Object aData)
   {

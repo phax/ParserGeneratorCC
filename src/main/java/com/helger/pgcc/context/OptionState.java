@@ -53,6 +53,10 @@ import com.helger.pgcc.output.EOutputLanguage;
  */
 public final class OptionState
 {
+  /** Default constructor. */
+  public OptionState ()
+  {}
+
   private final Map <String, Object> m_aValues = new HashMap <> ();
   private final Set <String> m_aCmdLineSet = new HashSet <> ();
   private final Set <String> m_aInputFileSet = new HashSet <> ();

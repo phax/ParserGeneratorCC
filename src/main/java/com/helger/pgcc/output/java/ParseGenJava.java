@@ -58,6 +58,10 @@ import com.helger.pgcc.parser.Token;
  */
 public class ParseGenJava extends AbstractCodeGenerator
 {
+  /** Default constructor. */
+  public ParseGenJava ()
+  {}
+
   /**
    * Generate everything of a parser constructor that comes after the assignment of the
    * <code>jj_input_stream</code> field.

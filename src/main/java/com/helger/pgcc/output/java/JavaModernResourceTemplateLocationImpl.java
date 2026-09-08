@@ -35,6 +35,10 @@ package com.helger.pgcc.output.java;
 
 public class JavaModernResourceTemplateLocationImpl extends JavaResourceTemplateLocationImpl
 {
+  /** Default constructor. */
+  public JavaModernResourceTemplateLocationImpl ()
+  {}
+
   @Override
   public String getSimpleCharStreamTemplateResourceUrl ()
   {

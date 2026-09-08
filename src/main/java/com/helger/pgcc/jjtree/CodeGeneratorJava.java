@@ -49,6 +49,10 @@ import com.helger.pgcc.parser.JavaCCGlobals;
 
 public class CodeGeneratorJava extends DefaultJJTreeVisitor
 {
+  /** Default constructor. */
+  public CodeGeneratorJava ()
+  {}
+
   @Override
   public Object defaultVisit (final SimpleNode aNode, final Object aData)
   {

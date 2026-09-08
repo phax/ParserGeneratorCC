@@ -65,6 +65,10 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
  */
 public class OtherFilesGenJava
 {
+  /** Default constructor. */
+  public OtherFilesGenJava ()
+  {}
+
   private static final String CONSTANTS_FILENAME_SUFFIX = "Constants.java";
 
   private static final IJavaResourceTemplateLocations RESOURCES_JAVA_CLASSIC = new JavaResourceTemplateLocationImpl ();

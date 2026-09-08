@@ -42,6 +42,10 @@ import com.helger.pgcc.parser.exp.ExpAction;
 
 public class RegExprSpec
 {
+  /** Default constructor. */
+  public RegExprSpec ()
+  {}
+
   /**
    * The regular expression of this specification.
    */

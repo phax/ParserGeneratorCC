@@ -51,6 +51,10 @@ import org.jspecify.annotations.Nullable;
  */
 public final class SemanticizeState
 {
+  /** Default constructor. */
+  public SemanticizeState ()
+  {}
+
   private final List <List <?>> m_aRemoveFrom = new ArrayList <> ();
   private final List <Object> m_aRemoveWhat = new ArrayList <> ();
   private String m_sLoopString;

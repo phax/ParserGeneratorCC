@@ -46,6 +46,10 @@ import com.helger.pgcc.parser.Token;
 
 public final class ExpTryBlock extends Expansion
 {
+  /** Default constructor. */
+  public ExpTryBlock ()
+  {}
+
   /**
    * The expansion contained within the try block.
    */

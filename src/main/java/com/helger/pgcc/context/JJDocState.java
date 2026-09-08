@@ -47,6 +47,10 @@ import com.helger.pgcc.jjdoc.IDocGenerator;
  */
 public final class JJDocState
 {
+  /** Default constructor. */
+  public JJDocState ()
+  {}
+
   private String m_sInputFile;
   private String m_sOutputFile;
   private IDocGenerator m_aGenerator;

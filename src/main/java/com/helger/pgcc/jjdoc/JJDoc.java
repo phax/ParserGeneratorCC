@@ -60,6 +60,10 @@ import com.helger.pgcc.parser.exp.*;
  */
 public final class JJDoc
 {
+  /** Default constructor. */
+  public JJDoc ()
+  {}
+
   static void start () throws IOException
   {
     PGCCContext.current ().jjdoc ().setGenerator (JJDocGlobals.getGenerator ());

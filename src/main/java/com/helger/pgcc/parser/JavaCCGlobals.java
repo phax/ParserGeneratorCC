@@ -64,6 +64,10 @@ import com.helger.pgcc.context.PGCCContext;
  */
 public final class JavaCCGlobals
 {
+  /** Default constructor. */
+  public JavaCCGlobals ()
+  {}
+
   /**
    * @return The grammar that is being processed by the current run. Never <code>null</code>. This
    *         replaces the pile of static fields this class used to be.

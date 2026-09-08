@@ -58,6 +58,10 @@ public sealed class Expansion implements IGrammarLocation permits
                               ExpZeroOrOne,
                               AbstractExpRegularExpression
 {
+  /** Default constructor. */
+  public Expansion ()
+  {}
+
   protected static final String EOL = System.getProperty ("line.separator", "\n");
 
   /**

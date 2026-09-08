@@ -45,6 +45,10 @@ import com.helger.annotation.style.ReturnsMutableObject;
  */
 public class BNFProduction extends AbstractNormalProduction
 {
+  /** Default constructor. */
+  public BNFProduction ()
+  {}
+
   /**
    * The declarations of this production.
    */

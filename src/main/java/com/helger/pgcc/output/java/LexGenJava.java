@@ -76,6 +76,10 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
  */
 public class LexGenJava extends AbstractCodeGenerator
 {
+  /** Default constructor. */
+  public LexGenJava ()
+  {}
+
   /**
    * @return The token manager generation state of the current run. Never <code>null</code>. This
    *         replaces the 43 static fields this class used to keep.

@@ -42,6 +42,10 @@ import com.helger.pgcc.context.PGCCContext;
 
 public class JJTreeGlobals
 {
+  /** Default constructor. */
+  public JJTreeGlobals ()
+  {}
+
   /**
    * This set stores the JJTree-specific options that should not be passed down to JavaCC
    */

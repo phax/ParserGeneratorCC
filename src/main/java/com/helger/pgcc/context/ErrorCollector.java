@@ -46,6 +46,10 @@ package com.helger.pgcc.context;
  */
 public final class ErrorCollector
 {
+  /** Default constructor. */
+  public ErrorCollector ()
+  {}
+
   private int m_nParseErrors;
   private int m_nSemanticErrors;
   private int m_nWarnings;

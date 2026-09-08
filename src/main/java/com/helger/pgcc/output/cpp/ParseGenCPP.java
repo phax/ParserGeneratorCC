@@ -54,6 +54,10 @@ import com.helger.pgcc.parser.Token;
  */
 public class ParseGenCPP extends ParseGenJava
 {
+  /** Default constructor. */
+  public ParseGenCPP ()
+  {}
+
   @SuppressWarnings ("unchecked")
   public void start () throws MetaParseException
   {
