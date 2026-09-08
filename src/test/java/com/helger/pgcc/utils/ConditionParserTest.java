@@ -50,20 +50,20 @@ import com.helger.base.string.StringHelper;
  */
 public final class ConditionParserTest
 {
-  private static void _test (final String input, final boolean expectedValue) throws ParseException
+  private static void _test (final String sInput, final boolean bExpectedValue) throws ParseException
   {
-    final Map <String, Object> values = new HashMap <> ();
-    values.put ("F", Boolean.FALSE);
-    values.put ("T", Boolean.TRUE);
-    _test (input, values, expectedValue);
+    final Map <String, Object> aValues = new HashMap <> ();
+    aValues.put ("F", Boolean.FALSE);
+    aValues.put ("T", Boolean.TRUE);
+    _test (sInput, aValues, bExpectedValue);
   }
 
-  private static void _test (final String input, final Map <String, Object> values, final boolean expectedValue)
+  private static void _test (final String sInput, final Map <String, Object> aValues, final boolean bExpectedValue)
                                                                                                                  throws ParseException
   {
-    final ConditionParser cp = new ConditionParser (input);
-    final boolean value = cp.CompilationUnit (values);
-    assertEquals (Boolean.valueOf (expectedValue), Boolean.valueOf (value));
+    final ConditionParser aCp = new ConditionParser (sInput);
+    final boolean bValue = aCp.CompilationUnit (aValues);
+    assertEquals (Boolean.valueOf (bExpectedValue), Boolean.valueOf (bValue));
   }
 
   @Test

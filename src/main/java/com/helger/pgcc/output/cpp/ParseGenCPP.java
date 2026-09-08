@@ -60,8 +60,8 @@ public class ParseGenCPP extends ParseGenJava
     if (JavaCCErrors.getErrorCount () != 0)
       throw new MetaParseException ("Error count is already present!");
 
-    final List <String> tn = new ArrayList <> (grammar ().getToolNameList ());
-    tn.add (CPG.APP_NAME);
+    final List <String> aTn = new ArrayList <> (grammar ().getToolNameList ());
+    aTn.add (CPG.APP_NAME);
     switchToStaticsFile ();
 
     switchToIncludeFile ();
@@ -72,9 +72,9 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("#include \"Token.h\"");
     genCodeLine ("#include \"TokenManager.h\"");
 
-    final Object object = Options.objectValue (Options.USEROPTION__CPP_PARSER_INCLUDES);
+    final Object aObject = Options.objectValue (Options.USEROPTION__CPP_PARSER_INCLUDES);
 
-    if (object instanceof final String include)
+    if (aObject instanceof final String include)
     {
       if (include.length () > 0)
       {
@@ -85,9 +85,9 @@ public class ParseGenCPP extends ParseGenJava
       }
     }
     else
-      if (object instanceof List <?>)
+      if (aObject instanceof List <?>)
       {
-        for (final String include : (List <String>) object)
+        for (final String include : (List <String>) aObject)
           if (include.length () > 0)
           {
             if (include.charAt (0) == '<')
@@ -126,11 +126,11 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("  };");
     genCodeNewLine ();
 
-    final String superClass = Options.stringValue (Options.USEROPTION__PARSER_SUPER_CLASS);
+    final String sSuperClass = Options.stringValue (Options.USEROPTION__PARSER_SUPER_CLASS);
     genClassStart ("",
                    grammar ().getParserName (),
                    new String [] {},
-                   superClass == null ? new String [0] : new String [] { "public " + superClass });
+                   sSuperClass == null ? new String [0] : new String [] { "public " + sSuperClass });
     switchToMainFile ();
     if (grammar ().cuToInsertionPoint2 ().size () != 0)
     {
@@ -184,12 +184,12 @@ public class ParseGenCPP extends ParseGenJava
     genCodeLine ("protected: ");
     genCodeLine ("  bool          hasError;");
     genCodeNewLine ();
-    final int tokenMaskSize = (grammar ().getTokenCount () - 1) / 32 + 1;
+    final int nTokenMaskSize = (grammar ().getTokenCount () - 1) / 32 + 1;
 
-    if (Options.isErrorReporting () && tokenMaskSize > 0)
+    if (Options.isErrorReporting () && nTokenMaskSize > 0)
     {
       switchToStaticsFile ();
-      for (int i = 0; i < tokenMaskSize; i++)
+      for (int i = 0; i < nTokenMaskSize; i++)
       {
         if (grammar ().maskVals ().size () > 0)
         {
@@ -231,9 +231,9 @@ public class ParseGenCPP extends ParseGenJava
     generateMethodDefHeader (" ",
                              grammar ().getParserName (),
                              grammar ().getParserName () + "(TokenManager *tokenManager)");
-    if (superClass != null)
+    if (sSuperClass != null)
     {
-      genCodeLine (" : " + superClass + "()");
+      genCodeLine (" : " + sSuperClass + "()");
     }
     genCodeLine ("{");
     genCodeLine ("    head = nullptr;");
@@ -790,12 +790,12 @@ public class ParseGenCPP extends ParseGenJava
     switchToIncludeFile ();
 
     // copy other stuff
-    Token t1 = JavaCCGlobals.getOtherLanguageDeclTokenBegin ();
-    final Token t2 = JavaCCGlobals.getOtherLanguageDeclTokenEnd ();
-    while (t1 != t2)
+    Token aT1 = JavaCCGlobals.getOtherLanguageDeclTokenBegin ();
+    final Token aT2 = JavaCCGlobals.getOtherLanguageDeclTokenEnd ();
+    while (aT1 != aT2)
     {
-      printToken (t1);
-      t1 = t1.next;
+      printToken (aT1);
+      aT1 = aT1.next;
     }
     genCodeLine ("\n");
     if (grammar ().isJJTreeGenerated ())

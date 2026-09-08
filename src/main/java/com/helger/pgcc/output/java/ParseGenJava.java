@@ -170,19 +170,19 @@ public class ParseGenJava extends CodeGenerator
     final boolean bHasCharset = eJavaVersion.isNewerOrEqualsThan (EJavaVersion.JDK_1_6);
     final boolean bEmptyTypeVar = eJavaVersion.isNewerOrEqualsThan (EJavaVersion.JDK_1_7);
 
-    final List <String> tn = new ArrayList <> (grammar ().getToolNameList ());
-    tn.add (CPG.APP_NAME);
+    final List <String> aTn = new ArrayList <> (grammar ().getToolNameList ());
+    aTn.add (CPG.APP_NAME);
 
     // This is the first line generated -- the the comment line at the top of
     // the generated parser
-    genCodeLine ("/* " + getIdString (tn, grammar ().getParserName () + ".java") + " */");
+    genCodeLine ("/* " + getIdString (aTn, grammar ().getParserName () + ".java") + " */");
 
     boolean bImplementsExists = false;
 
     if (grammar ().cuToInsertionPoint1 ().size () != 0)
     {
-      final Token firstToken = grammar ().cuToInsertionPoint1 ().get (0);
-      printTokenSetup (firstToken);
+      final Token aFirstToken = grammar ().cuToInsertionPoint1 ().get (0);
+      printTokenSetup (aFirstToken);
       setColToStart ();
       Token t;
       for (final Token aToken : grammar ().cuToInsertionPoint1 ())
@@ -267,18 +267,18 @@ public class ParseGenJava extends CodeGenerator
     {
       genCodeLine ("  private int jj_gen;");
       genCodeLine ("  final private int[] jj_la1 = new int[" + grammar ().getMaskIndex () + "];");
-      final int tokenMaskSize = (grammar ().getTokenCount () - 1) / 32 + 1;
-      for (int i = 0; i < tokenMaskSize; i++)
+      final int nTokenMaskSize = (grammar ().getTokenCount () - 1) / 32 + 1;
+      for (int i = 0; i < nTokenMaskSize; i++)
       {
         genCodeLine ("  static private int[] jj_la1_" + i + ";");
       }
       genCodeLine ("  static {");
-      for (int i = 0; i < tokenMaskSize; i++)
+      for (int i = 0; i < nTokenMaskSize; i++)
       {
         genCodeLine ("	   jj_la1_init_" + i + "();");
       }
       genCodeLine ("	}");
-      for (int i = 0; i < tokenMaskSize; i++)
+      for (int i = 0; i < nTokenMaskSize; i++)
       {
         genCodeLine ("	private static void jj_la1_init_" + i + "() {");
         genCode ("	   jj_la1_" + i + " = new int[] {");
@@ -538,14 +538,14 @@ public class ParseGenJava extends CodeGenerator
 
         }
 
-        final String readerInterfaceName = bIsJavaModernMode ? "Provider" : "java.io.Reader";
-        final String stringReaderClass = bIsJavaModernMode ? "StringProvider" : "java.io.StringReader";
+        final String sReaderInterfaceName = bIsJavaModernMode ? "Provider" : "java.io.Reader";
+        final String sStringReaderClass = bIsJavaModernMode ? "StringProvider" : "java.io.StringReader";
 
         genCodeLine ("  /**");
         genCodeLine ("   * Constructor with InputStream.");
         genCodeLine ("   * @param stream char stream");
         genCodeLine ("   */");
-        genCodeLine ("  public " + grammar ().getParserName () + "(final " + readerInterfaceName + " stream) {");
+        genCodeLine ("  public " + grammar ().getParserName () + "(final " + sReaderInterfaceName + " stream) {");
         genCodeLine ("	 jj_input_stream = new " + getCharStreamName () + "(stream, 1, 1);");
         _genCtorTail ();
         genCodeLine ("  }");
@@ -588,7 +588,7 @@ public class ParseGenJava extends CodeGenerator
           genCodeLine ("   * @param sDSL String representation to be parsed");
           genCodeLine ("   */");
           genCodeLine ("  public " + grammar ().getParserName () + "(final String sDSL) {");
-          genCodeLine ("	   this(new " + stringReaderClass + "(sDSL));");
+          genCodeLine ("	   this(new " + sStringReaderClass + "(sDSL));");
           genCodeLine ("  }");
           genCodeNewLine ();
 
@@ -597,7 +597,7 @@ public class ParseGenJava extends CodeGenerator
           genCodeLine ("   * @param sDSL String representation to be parsed");
           genCodeLine ("   */");
           genCodeLine ("  public void ReInit(final String sDSL) {");
-          genCodeLine ("	  ReInit(new " + stringReaderClass + "(sDSL));");
+          genCodeLine ("	  ReInit(new " + sStringReaderClass + "(sDSL));");
           genCodeLine ("  }");
 
         }
@@ -606,7 +606,7 @@ public class ParseGenJava extends CodeGenerator
         genCodeLine ("   * Reinitialise");
         genCodeLine ("   * @param stream char stream");
         genCodeLine ("   */");
-        genCodeLine ("  public void ReInit(final " + readerInterfaceName + " stream) {");
+        genCodeLine ("  public void ReInit(final " + sReaderInterfaceName + " stream) {");
         genCodeLine ("	if (jj_input_stream == null) {");
         genCodeLine ("	  jj_input_stream = new " + getCharStreamName () + "(stream, 1, 1);");
         genCodeLine ("	} else {");

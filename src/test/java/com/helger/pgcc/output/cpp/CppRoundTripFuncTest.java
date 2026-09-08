@@ -74,7 +74,7 @@ public final class CppRoundTripFuncTest
         if (new ProcessBuilder (sCompiler, "--version").redirectErrorStream (true).start ().waitFor () == 0)
           return sCompiler;
       }
-      catch (final IOException | InterruptedException ex)
+      catch (final IOException | InterruptedException aEx)
       {
         // Try the next one
       }

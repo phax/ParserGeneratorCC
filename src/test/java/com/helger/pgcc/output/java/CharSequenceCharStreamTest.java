@@ -73,11 +73,11 @@ public final class CharSequenceCharStreamTest
   @Parameters (name = "{0}, lineColumn={1}")
   public static Collection <Object []> parameters ()
   {
-    final List <Object []> ret = new ArrayList <> ();
+    final List <Object []> aRet = new ArrayList <> ();
     for (final String sTemplate : new String [] { "classic", "modern" })
       for (final boolean bLineColumn : new boolean [] { true, false })
-        ret.add (new Object [] { sTemplate, Boolean.valueOf (bLineColumn) });
-    return ret;
+        aRet.add (new Object [] { sTemplate, Boolean.valueOf (bLineColumn) });
+    return aRet;
   }
 
   private final String m_sTemplate;
@@ -195,7 +195,7 @@ public final class CharSequenceCharStreamTest
       final Method aNext = aTMClass.getMethod ("getNextToken");
       final Class <?> aTokenClass = Class.forName ("Token", true, aLoader);
 
-      final List <String> ret = new ArrayList <> ();
+      final List <String> aRet = new ArrayList <> ();
       while (true)
       {
         final Object aToken = aNext.invoke (aTM);
@@ -212,11 +212,11 @@ public final class CharSequenceCharStreamTest
                .append (aTokenClass.getField ("endLine").getInt (aToken))
                .append (':')
                .append (aTokenClass.getField ("endColumn").getInt (aToken));
-        ret.add (aLine.toString ());
+        aRet.add (aLine.toString ());
         if (nKind == 0)
           break;
       }
-      return ret;
+      return aRet;
     }
   }
 
@@ -251,9 +251,9 @@ public final class CharSequenceCharStreamTest
 
   private static String _letters (final int nLength)
   {
-    final StringBuilder ret = new StringBuilder (nLength);
+    final StringBuilder aRet = new StringBuilder (nLength);
     for (int i = 0; i < nLength; ++i)
-      ret.append ((char) ('a' + i % 26));
-    return ret.toString ();
+      aRet.append ((char) ('a' + i % 26));
+    return aRet.toString ();
   }
 }

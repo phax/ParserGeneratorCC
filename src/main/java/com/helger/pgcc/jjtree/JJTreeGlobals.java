@@ -81,8 +81,8 @@ public class JJTreeGlobals
     PGCCContext.current ().jjtree ().reset ();
   }
 
-  public static boolean isOptionJJTreeOnly (@NonNull final String optionName)
+  public static boolean isOptionJJTreeOnly (@NonNull final String sOptionName)
   {
-    return JJTREE_OPTIONS.contains (optionName.toUpperCase (Locale.US));
+    return JJTREE_OPTIONS.contains (sOptionName.toUpperCase (Locale.US));
   }
 }

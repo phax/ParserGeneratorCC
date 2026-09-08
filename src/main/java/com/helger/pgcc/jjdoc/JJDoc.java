@@ -66,37 +66,37 @@ public final class JJDoc
     PGCCContext.current ().jjdoc ().getGenerator ().documentEnd ();
   }
 
-  private static Token _getPrecedingSpecialToken (final Token tok)
+  private static Token _getPrecedingSpecialToken (final Token aTok)
   {
-    Token t = tok;
+    Token t = aTok;
     while (t.specialToken != null)
     {
       t = t.specialToken;
     }
-    return t != tok ? t : null;
+    return t != aTok ? t : null;
   }
 
-  private static void _emitTopLevelSpecialTokens (final Token aTok, final IDocGenerator gen) throws IOException
+  private static void _emitTopLevelSpecialTokens (final Token aTok, final IDocGenerator aGen) throws IOException
   {
     if (aTok == null)
     {
       // Strange ...
       return;
     }
-    Token tok = _getPrecedingSpecialToken (aTok);
+    Token aSpecial = _getPrecedingSpecialToken (aTok);
     String s = "";
-    if (tok != null)
+    if (aSpecial != null)
     {
-      grammar ().setCurrentLine (tok.beginLine);
-      grammar ().setCurrentColumn (tok.beginColumn);
-      while (tok != null)
+      grammar ().setCurrentLine (aSpecial.beginLine);
+      grammar ().setCurrentColumn (aSpecial.beginColumn);
+      while (aSpecial != null)
       {
-        s += JavaCCGlobals.printTokenOnly (tok);
-        tok = tok.next;
+        s += JavaCCGlobals.printTokenOnly (aSpecial);
+        aSpecial = aSpecial.next;
       }
     }
     if (s.length () > 0)
-      gen.specialTokens (s);
+      aGen.specialTokens (s);
   }
 
   /*
@@ -104,17 +104,17 @@ public final class JJDoc
    * (exp.parent instanceof NormalProduction) || (exp.parent instanceof TokenProduction) ); }
    */
 
-  private static void _emitTokenProductions (final IDocGenerator gen, final List <TokenProduction> prods)
+  private static void _emitTokenProductions (final IDocGenerator aGen, final List <TokenProduction> aProds)
                                                                                                           throws IOException
   {
-    gen.tokensStart ();
+    aGen.tokensStart ();
     // FIXME there are many empty productions here
-    for (final TokenProduction aTokenProduction : prods)
+    for (final TokenProduction aTokenProduction : aProds)
     {
-      final TokenProduction tp = aTokenProduction;
-      _emitTopLevelSpecialTokens (tp.m_firstToken, gen);
+      final TokenProduction aTp = aTokenProduction;
+      _emitTopLevelSpecialTokens (aTp.m_firstToken, aGen);
 
-      gen.handleTokenProduction (tp);
+      aGen.handleTokenProduction (aTp);
 
       // if (!token.equals("")) {
       // gen.tokenStart(tp);
@@ -123,154 +123,154 @@ public final class JJDoc
       // gen.tokenEnd(tp);
       // }
     }
-    gen.tokensEnd ();
+    aGen.tokensEnd ();
   }
 
-  public static String getStandardTokenProductionText (final TokenProduction tp)
+  public static String getStandardTokenProductionText (final TokenProduction aTp)
   {
-    String token = "";
-    if (tp.m_isExplicit)
+    String sToken = "";
+    if (aTp.m_isExplicit)
     {
-      if (tp.m_lexStates == null)
+      if (aTp.m_lexStates == null)
       {
-        token += "<*> ";
+        sToken += "<*> ";
       }
       else
       {
-        token += "<";
-        for (int i = 0; i < tp.m_lexStates.length; ++i)
+        sToken += "<";
+        for (int i = 0; i < aTp.m_lexStates.length; ++i)
         {
-          token += tp.m_lexStates[i];
-          if (i < tp.m_lexStates.length - 1)
+          sToken += aTp.m_lexStates[i];
+          if (i < aTp.m_lexStates.length - 1)
           {
-            token += ",";
+            sToken += ",";
           }
         }
-        token += "> ";
+        sToken += "> ";
       }
-      token += tp.m_kind.getImage ();
-      if (tp.m_ignoreCase)
+      sToken += aTp.m_kind.getImage ();
+      if (aTp.m_ignoreCase)
       {
-        token += " [IGNORE_CASE]";
+        sToken += " [IGNORE_CASE]";
       }
-      token += " : {\n";
-      for (final Iterator <RegExprSpec> it2 = tp.m_respecs.iterator (); it2.hasNext ();)
+      sToken += " : {\n";
+      for (final Iterator <RegExprSpec> aIt2 = aTp.m_respecs.iterator (); aIt2.hasNext ();)
       {
-        final RegExprSpec res = it2.next ();
+        final RegExprSpec aRes = aIt2.next ();
 
-        token += emitRE (res.m_aRexp);
+        sToken += emitRE (aRes.m_aRexp);
 
-        if (res.m_aNsTok != null)
+        if (aRes.m_aNsTok != null)
         {
-          token += " : " + res.m_aNsTok.image;
+          sToken += " : " + aRes.m_aNsTok.image;
         }
 
-        token += "\n";
-        if (it2.hasNext ())
+        sToken += "\n";
+        if (aIt2.hasNext ())
         {
-          token += "| ";
+          sToken += "| ";
         }
       }
-      token += "}\n\n";
+      sToken += "}\n\n";
     }
-    return token;
+    return sToken;
   }
 
-  private static void _emitNormalProductions (final IDocGenerator gen, final List <NormalProduction> prods)
+  private static void _emitNormalProductions (final IDocGenerator aGen, final List <NormalProduction> aProds)
                                                                                                             throws IOException
   {
-    gen.nonterminalsStart ();
-    for (final NormalProduction np : prods)
+    aGen.nonterminalsStart ();
+    for (final NormalProduction np : aProds)
     {
-      _emitTopLevelSpecialTokens (np.getFirstToken (), gen);
+      _emitTopLevelSpecialTokens (np.getFirstToken (), aGen);
       if (np instanceof BNFProduction)
       {
-        gen.productionStart (np);
+        aGen.productionStart (np);
         if (np.getExpansion () instanceof ExpChoice)
         {
-          boolean first = true;
+          boolean bFirst = true;
           final ExpChoice c = (ExpChoice) np.getExpansion ();
           for (final Expansion e : c.getChoices ())
           {
-            gen.expansionStart (e, first);
-            _emitExpansionTree (e, gen);
-            gen.expansionEnd (e, first);
-            first = false;
+            aGen.expansionStart (e, bFirst);
+            _emitExpansionTree (e, aGen);
+            aGen.expansionEnd (e, bFirst);
+            bFirst = false;
           }
         }
         else
         {
-          gen.expansionStart (np.getExpansion (), true);
-          _emitExpansionTree (np.getExpansion (), gen);
-          gen.expansionEnd (np.getExpansion (), true);
+          aGen.expansionStart (np.getExpansion (), true);
+          _emitExpansionTree (np.getExpansion (), aGen);
+          aGen.expansionEnd (np.getExpansion (), true);
         }
-        gen.productionEnd (np);
+        aGen.productionEnd (np);
       }
       else
         if (np instanceof final CodeProductionCpp aCodeProductionCpp)
         {
-          gen.cppcode (aCodeProductionCpp);
+          aGen.cppcode (aCodeProductionCpp);
         }
         else
           if (np instanceof final CodeProductionJava aCodeProductionJava)
           {
-            gen.javacode (aCodeProductionJava);
+            aGen.javacode (aCodeProductionJava);
           }
     }
-    gen.nonterminalsEnd ();
+    aGen.nonterminalsEnd ();
   }
 
-  private static void _emitExpansionTree (final Expansion exp, final IDocGenerator gen) throws IOException
+  private static void _emitExpansionTree (final Expansion aExp, final IDocGenerator aGen) throws IOException
   {
     // gen.text("[->" + exp.getClass().getName() + "]");
-    if (exp instanceof final ExpAction aAction)
+    if (aExp instanceof final ExpAction aAction)
     {
-      _emitExpansionAction (aAction, gen);
+      _emitExpansionAction (aAction, aGen);
     }
     else
-      if (exp instanceof final ExpChoice aChoice)
+      if (aExp instanceof final ExpChoice aChoice)
       {
-        _emitExpansionChoice (aChoice, gen);
+        _emitExpansionChoice (aChoice, aGen);
       }
       else
-        if (exp instanceof final ExpLookahead aLookahead)
+        if (aExp instanceof final ExpLookahead aLookahead)
         {
-          _emitExpansionLookahead (aLookahead, gen);
+          _emitExpansionLookahead (aLookahead, aGen);
         }
         else
-          if (exp instanceof final ExpNonTerminal aNonTerminal)
+          if (aExp instanceof final ExpNonTerminal aNonTerminal)
           {
-            _emitExpansionNonTerminal (aNonTerminal, gen);
+            _emitExpansionNonTerminal (aNonTerminal, aGen);
           }
           else
-            if (exp instanceof final ExpOneOrMore aOneOrMore)
+            if (aExp instanceof final ExpOneOrMore aOneOrMore)
             {
-              _emitExpansionOneOrMore (aOneOrMore, gen);
+              _emitExpansionOneOrMore (aOneOrMore, aGen);
             }
             else
-              if (exp instanceof final AbstractExpRegularExpression aRegularExpression)
+              if (aExp instanceof final AbstractExpRegularExpression aRegularExpression)
               {
-                _emitExpansionRegularExpression (aRegularExpression, gen);
+                _emitExpansionRegularExpression (aRegularExpression, aGen);
               }
               else
-                if (exp instanceof final ExpSequence aSequence)
+                if (aExp instanceof final ExpSequence aSequence)
                 {
-                  _emitExpansionSequence (aSequence, gen);
+                  _emitExpansionSequence (aSequence, aGen);
                 }
                 else
-                  if (exp instanceof final ExpTryBlock aTryBlock)
+                  if (aExp instanceof final ExpTryBlock aTryBlock)
                   {
-                    _emitExpansionTryBlock (aTryBlock, gen);
+                    _emitExpansionTryBlock (aTryBlock, aGen);
                   }
                   else
-                    if (exp instanceof final ExpZeroOrMore aZeroOrMore)
+                    if (aExp instanceof final ExpZeroOrMore aZeroOrMore)
                     {
-                      _emitExpansionZeroOrMore (aZeroOrMore, gen);
+                      _emitExpansionZeroOrMore (aZeroOrMore, aGen);
                     }
                     else
-                      if (exp instanceof final ExpZeroOrOne aZeroOrOne)
+                      if (aExp instanceof final ExpZeroOrOne aZeroOrOne)
                       {
-                        _emitExpansionZeroOrOne (aZeroOrOne, gen);
+                        _emitExpansionZeroOrOne (aZeroOrOne, aGen);
                       }
                       else
                       {
@@ -279,207 +279,207 @@ public final class JJDoc
     // gen.text("[<-" + exp.getClass().getName() + "]");
   }
 
-  private static void _emitExpansionAction (final ExpAction a, final IDocGenerator gen)
+  private static void _emitExpansionAction (final ExpAction a, final IDocGenerator aGen)
   {
-    gen.doNothing (a);
+    aGen.doNothing (a);
   }
 
-  private static void _emitExpansionChoice (final ExpChoice c, final IDocGenerator gen) throws IOException
+  private static void _emitExpansionChoice (final ExpChoice c, final IDocGenerator aGen) throws IOException
   {
-    boolean first = true;
+    boolean bFirst = true;
     for (final Expansion e : c.getChoices ())
     {
-      if (first)
-        first = false;
+      if (bFirst)
+        bFirst = false;
       else
-        gen.text (" | ");
-      _emitExpansionTree (e, gen);
+        aGen.text (" | ");
+      _emitExpansionTree (e, aGen);
     }
   }
 
-  private static void _emitExpansionLookahead (final ExpLookahead l, final IDocGenerator gen)
+  private static void _emitExpansionLookahead (final ExpLookahead l, final IDocGenerator aGen)
   {
-    gen.doNothing (l);
+    aGen.doNothing (l);
   }
 
-  private static void _emitExpansionNonTerminal (final ExpNonTerminal nt, final IDocGenerator gen) throws IOException
+  private static void _emitExpansionNonTerminal (final ExpNonTerminal aNt, final IDocGenerator aGen) throws IOException
   {
-    gen.nonTerminalStart (nt);
-    gen.text (nt.getName ());
-    gen.nonTerminalEnd (nt);
+    aGen.nonTerminalStart (aNt);
+    aGen.text (aNt.getName ());
+    aGen.nonTerminalEnd (aNt);
   }
 
-  private static void _emitExpansionOneOrMore (final ExpOneOrMore o, final IDocGenerator gen) throws IOException
+  private static void _emitExpansionOneOrMore (final ExpOneOrMore o, final IDocGenerator aGen) throws IOException
   {
-    gen.text ("( ");
-    _emitExpansionTree (o.getExpansion (), gen);
-    gen.text (" )+");
+    aGen.text ("( ");
+    _emitExpansionTree (o.getExpansion (), aGen);
+    aGen.text (" )+");
   }
 
-  private static void _emitExpansionRegularExpression (final AbstractExpRegularExpression r, final IDocGenerator gen)
+  private static void _emitExpansionRegularExpression (final AbstractExpRegularExpression r, final IDocGenerator aGen)
                                                                                                                       throws IOException
   {
-    final String reRendered = emitRE (r);
-    if (StringHelper.isNotEmpty (reRendered))
+    final String sReRendered = emitRE (r);
+    if (StringHelper.isNotEmpty (sReRendered))
     {
-      gen.reStart (r);
-      gen.text (reRendered);
-      gen.reEnd (r);
+      aGen.reStart (r);
+      aGen.text (sReRendered);
+      aGen.reEnd (r);
     }
   }
 
-  private static void _emitExpansionSequence (final ExpSequence s, final IDocGenerator gen) throws IOException
+  private static void _emitExpansionSequence (final ExpSequence s, final IDocGenerator aGen) throws IOException
   {
-    boolean firstUnit = true;
+    boolean bFirstUnit = true;
     for (final Expansion e : s.getUnits ())
     {
       if (e instanceof ExpLookahead || e instanceof ExpAction)
       {
         continue;
       }
-      if (!firstUnit)
+      if (!bFirstUnit)
       {
-        gen.text (" ");
+        aGen.text (" ");
       }
-      final boolean needParens = (e instanceof ExpChoice) || (e instanceof ExpSequence);
-      if (needParens)
+      final boolean bNeedParens = (e instanceof ExpChoice) || (e instanceof ExpSequence);
+      if (bNeedParens)
       {
-        gen.text ("( ");
+        aGen.text ("( ");
       }
-      _emitExpansionTree (e, gen);
-      if (needParens)
+      _emitExpansionTree (e, aGen);
+      if (bNeedParens)
       {
-        gen.text (" )");
+        aGen.text (" )");
       }
-      firstUnit = false;
+      bFirstUnit = false;
     }
   }
 
-  private static void _emitExpansionTryBlock (final ExpTryBlock t, final IDocGenerator gen) throws IOException
+  private static void _emitExpansionTryBlock (final ExpTryBlock t, final IDocGenerator aGen) throws IOException
   {
-    final boolean needParens = t.m_exp instanceof ExpChoice;
-    if (needParens)
+    final boolean bNeedParens = t.m_exp instanceof ExpChoice;
+    if (bNeedParens)
     {
-      gen.text ("( ");
+      aGen.text ("( ");
     }
-    _emitExpansionTree (t.m_exp, gen);
-    if (needParens)
+    _emitExpansionTree (t.m_exp, aGen);
+    if (bNeedParens)
     {
-      gen.text (" )");
+      aGen.text (" )");
     }
   }
 
-  private static void _emitExpansionZeroOrMore (final ExpZeroOrMore z, final IDocGenerator gen) throws IOException
+  private static void _emitExpansionZeroOrMore (final ExpZeroOrMore z, final IDocGenerator aGen) throws IOException
   {
-    gen.text ("( ");
-    _emitExpansionTree (z.getExpansion (), gen);
-    gen.text (" )*");
+    aGen.text ("( ");
+    _emitExpansionTree (z.getExpansion (), aGen);
+    aGen.text (" )*");
   }
 
-  private static void _emitExpansionZeroOrOne (final ExpZeroOrOne z, final IDocGenerator gen) throws IOException
+  private static void _emitExpansionZeroOrOne (final ExpZeroOrOne z, final IDocGenerator aGen) throws IOException
   {
-    gen.text ("( ");
-    _emitExpansionTree (z.getExpansion (), gen);
-    gen.text (" )?");
+    aGen.text ("( ");
+    _emitExpansionTree (z.getExpansion (), aGen);
+    aGen.text (" )?");
   }
 
-  public static String emitRE (final AbstractExpRegularExpression re)
+  public static String emitRE (final AbstractExpRegularExpression aRe)
   {
-    String returnString = "";
-    final boolean hasLabel = StringHelper.isNotEmpty (re.getLabel ());
-    final boolean justName = re instanceof ExpRJustName;
-    final boolean eof = re instanceof ExpREndOfFile;
-    final boolean isString = re instanceof ExpRStringLiteral;
-    final boolean toplevelRE = re.m_aTpContext != null;
-    final boolean needBrackets = justName || eof || hasLabel || (!isString && toplevelRE);
-    if (needBrackets)
+    String sReturnString = "";
+    final boolean bHasLabel = StringHelper.isNotEmpty (aRe.getLabel ());
+    final boolean bJustName = aRe instanceof ExpRJustName;
+    final boolean bEof = aRe instanceof ExpREndOfFile;
+    final boolean bIsString = aRe instanceof ExpRStringLiteral;
+    final boolean bToplevelRE = aRe.m_aTpContext != null;
+    final boolean bNeedBrackets = bJustName || bEof || bHasLabel || (!bIsString && bToplevelRE);
+    if (bNeedBrackets)
     {
-      returnString += "<";
-      if (!justName)
+      sReturnString += "<";
+      if (!bJustName)
       {
-        if (re.m_bPrivateRexp)
+        if (aRe.m_bPrivateRexp)
         {
-          returnString += "#";
+          sReturnString += "#";
         }
-        if (hasLabel)
+        if (bHasLabel)
         {
-          returnString += re.getLabel ();
-          returnString += ": ";
+          sReturnString += aRe.getLabel ();
+          sReturnString += ": ";
         }
       }
     }
-    if (re instanceof final ExpRCharacterList cl)
+    if (aRe instanceof final ExpRCharacterList cl)
     {
       if (cl.isNegatedList ())
       {
-        returnString += "~";
+        sReturnString += "~";
       }
-      returnString += "[";
+      sReturnString += "[";
       boolean bFirst = true;
       for (final ICCCharacter o : cl.getDescriptors ())
       {
         if (bFirst)
           bFirst = false;
         else
-          returnString += ",";
+          sReturnString += ",";
 
         if (o instanceof final SingleCharacter aSingleCharacter)
         {
-          returnString += "\"";
+          sReturnString += "\"";
           final char s[] = { aSingleCharacter.getChar () };
-          returnString += JavaCCGlobals.addEscapes (new String (s));
-          returnString += "\"";
+          sReturnString += JavaCCGlobals.addEscapes (new String (s));
+          sReturnString += "\"";
         }
         else
           if (o instanceof final CharacterRange aCharacterRange)
           {
-            returnString += "\"";
+            sReturnString += "\"";
             final char s[] = { aCharacterRange.getLeft () };
-            returnString += JavaCCGlobals.addEscapes (new String (s));
-            returnString += "\"-\"";
+            sReturnString += JavaCCGlobals.addEscapes (new String (s));
+            sReturnString += "\"-\"";
             s[0] = aCharacterRange.getRight ();
-            returnString += JavaCCGlobals.addEscapes (new String (s));
-            returnString += "\"";
+            sReturnString += JavaCCGlobals.addEscapes (new String (s));
+            sReturnString += "\"";
           }
           else
           {
             PGPrinter.error ("Oops: unknown character list element type.");
           }
       }
-      returnString += "]";
+      sReturnString += "]";
     }
     else
-      if (re instanceof final ExpRChoice c)
+      if (aRe instanceof final ExpRChoice c)
       {
-        for (final Iterator <AbstractExpRegularExpression> it = c.getChoices ().iterator (); it.hasNext ();)
+        for (final Iterator <AbstractExpRegularExpression> aIt = c.getChoices ().iterator (); aIt.hasNext ();)
         {
-          final AbstractExpRegularExpression sub = (it.next ());
-          returnString += emitRE (sub);
-          if (it.hasNext ())
+          final AbstractExpRegularExpression aSub = (aIt.next ());
+          sReturnString += emitRE (aSub);
+          if (aIt.hasNext ())
           {
-            returnString += " | ";
+            sReturnString += " | ";
           }
         }
       }
       else
-        if (re instanceof ExpREndOfFile)
+        if (aRe instanceof ExpREndOfFile)
         {
-          returnString += "EOF";
+          sReturnString += "EOF";
         }
         else
-          if (re instanceof final ExpRJustName jn)
+          if (aRe instanceof final ExpRJustName jn)
           {
-            returnString += jn.getLabel ();
+            sReturnString += jn.getLabel ();
           }
           else
-            if (re instanceof final ExpROneOrMore om)
+            if (aRe instanceof final ExpROneOrMore om)
             {
-              returnString += "(";
-              returnString += emitRE (om.getRegExpr ());
-              returnString += ")+";
+              sReturnString += "(";
+              sReturnString += emitRE (om.getRegExpr ());
+              sReturnString += ")+";
             }
             else
-              if (re instanceof final ExpRSequence s)
+              if (aRe instanceof final ExpRSequence s)
               {
                 boolean bFirst = true;
                 for (final AbstractExpRegularExpression sub : s.getUnits ())
@@ -487,59 +487,59 @@ public final class JJDoc
                   if (bFirst)
                     bFirst = false;
                   else
-                    returnString += " ";
+                    sReturnString += " ";
 
-                  final boolean needParens = sub instanceof ExpRChoice;
-                  if (needParens)
-                    returnString += "(";
-                  returnString += emitRE (sub);
-                  if (needParens)
-                    returnString += ")";
+                  final boolean bNeedParens = sub instanceof ExpRChoice;
+                  if (bNeedParens)
+                    sReturnString += "(";
+                  sReturnString += emitRE (sub);
+                  if (bNeedParens)
+                    sReturnString += ")";
                 }
               }
               else
-                if (re instanceof final ExpRStringLiteral sl)
+                if (aRe instanceof final ExpRStringLiteral sl)
                 {
-                  returnString += ("\"" + JavaCCGlobals.addEscapes (sl.m_image) + "\"");
+                  sReturnString += ("\"" + JavaCCGlobals.addEscapes (sl.m_image) + "\"");
                 }
                 else
-                  if (re instanceof final ExpRZeroOrMore zm)
+                  if (aRe instanceof final ExpRZeroOrMore zm)
                   {
-                    returnString += "(";
-                    returnString += emitRE (zm.getRegExpr ());
-                    returnString += ")*";
+                    sReturnString += "(";
+                    sReturnString += emitRE (zm.getRegExpr ());
+                    sReturnString += ")*";
                   }
                   else
-                    if (re instanceof final ExpRZeroOrOne zo)
+                    if (aRe instanceof final ExpRZeroOrOne zo)
                     {
-                      returnString += "(";
-                      returnString += emitRE (zo.getRegExpr ());
-                      returnString += ")?";
+                      sReturnString += "(";
+                      sReturnString += emitRE (zo.getRegExpr ());
+                      sReturnString += ")?";
                     }
                     else
-                      if (re instanceof final ExpRRepetitionRange zo)
+                      if (aRe instanceof final ExpRRepetitionRange zo)
                       {
-                        returnString += "(";
-                        returnString += emitRE (zo.getRegExpr ());
-                        returnString += ")";
-                        returnString += "{";
-                        returnString += zo.getMin ();
+                        sReturnString += "(";
+                        sReturnString += emitRE (zo.getRegExpr ());
+                        sReturnString += ")";
+                        sReturnString += "{";
+                        sReturnString += zo.getMin ();
                         if (zo.hasMax ())
                         {
-                          returnString += ",";
-                          returnString += zo.getMax ();
+                          sReturnString += ",";
+                          sReturnString += zo.getMax ();
                         }
-                        returnString += "}";
+                        sReturnString += "}";
                       }
                       else
                       {
                         PGPrinter.error ("Oops: Unknown regular expression type.");
                       }
-    if (needBrackets)
+    if (bNeedBrackets)
     {
-      returnString += ">";
+      sReturnString += ">";
     }
-    return returnString;
+    return sReturnString;
   }
 
   /*

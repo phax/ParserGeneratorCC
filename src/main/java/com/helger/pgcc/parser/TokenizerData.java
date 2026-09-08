@@ -83,17 +83,17 @@ public class TokenizerData
     // match kind if any. Integer.MAX_VALUE if this is not a final state.
     public final int m_kind;
 
-    NfaState (final int index,
+    NfaState (final int nIndex,
               final Set <Character> characters,
               final Set <Integer> nextStates,
-              final Set <Integer> compositeStates,
-              final int kind)
+              final Set <Integer> aCompositeStates,
+              final int nKind)
     {
-      this.m_index = index;
+      this.m_index = nIndex;
       this.m_characters = characters;
       this.m_nextStates = nextStates;
-      this.m_kind = kind;
-      this.m_compositeStates = compositeStates;
+      this.m_kind = nKind;
+      this.m_compositeStates = aCompositeStates;
     }
   }
 
@@ -122,17 +122,17 @@ public class TokenizerData
     // Any lexical state transition specified.
     public final String m_action;
 
-    public MatchInfo (final String image,
-                      final int kind,
-                      final EMatchType matchType,
-                      final int newLexState,
-                      final String action)
+    public MatchInfo (final String sImage,
+                      final int nKind,
+                      final EMatchType eMatchType,
+                      final int nNewLexState,
+                      final String sAction)
     {
-      this.m_image = image;
-      this.m_kind = kind;
-      this.m_matchType = matchType;
-      this.m_newLexState = newLexState;
-      this.m_action = action;
+      this.m_image = sImage;
+      this.m_kind = nKind;
+      this.m_matchType = eMatchType;
+      this.m_newLexState = nNewLexState;
+      this.m_action = sAction;
     }
   }
 
@@ -151,100 +151,100 @@ public class TokenizerData
   // DEFAULT lexical state index.
   public int m_defaultLexState;
 
-  public void setParserName (final String parserName)
+  public void setParserName (final String sParserName)
   {
-    this.m_parserName = parserName;
+    this.m_parserName = sParserName;
   }
 
-  public void setDecls (final String decls)
+  public void setDecls (final String sDecls)
   {
-    this.m_decls = decls;
+    this.m_decls = sDecls;
   }
 
-  public void setLiteralSequence (final Map <Integer, List <String>> literalSequence)
+  public void setLiteralSequence (final Map <Integer, List <String>> aLiteralSequence)
   {
-    this.m_literalSequence = literalSequence;
+    this.m_literalSequence = aLiteralSequence;
   }
 
-  public void setLiteralKinds (final Map <Integer, List <Integer>> literalKinds)
+  public void setLiteralKinds (final Map <Integer, List <Integer>> aLiteralKinds)
   {
-    this.m_literalKinds = literalKinds;
+    this.m_literalKinds = aLiteralKinds;
   }
 
-  public void setKindToNfaStartState (final Map <Integer, Integer> kindToNfaStartState)
+  public void setKindToNfaStartState (final Map <Integer, Integer> aKindToNfaStartState)
   {
-    this.m_kindToNfaStartState = kindToNfaStartState;
+    this.m_kindToNfaStartState = aKindToNfaStartState;
   }
 
-  public void addNfaState (final int index,
+  public void addNfaState (final int nIndex,
                            final Set <Character> characters,
                            final Set <Integer> nextStates,
-                           final Set <Integer> compositeStates,
-                           final int kind)
+                           final Set <Integer> aCompositeStates,
+                           final int nKind)
   {
-    final NfaState nfaState = new NfaState (index, characters, nextStates, compositeStates, kind);
-    m_nfa.put (Integer.valueOf (index), nfaState);
+    final NfaState aNfaState = new NfaState (nIndex, characters, nextStates, aCompositeStates, nKind);
+    m_nfa.put (Integer.valueOf (nIndex), aNfaState);
   }
 
-  public void setInitialStates (final Map <Integer, Integer> initialStates)
+  public void setInitialStates (final Map <Integer, Integer> aInitialStates)
   {
-    this.m_initialStates = initialStates;
+    this.m_initialStates = aInitialStates;
   }
 
-  public void setWildcardKind (final Map <Integer, Integer> wildcardKind)
+  public void setWildcardKind (final Map <Integer, Integer> aWildcardKind)
   {
-    this.m_wildcardKind = wildcardKind;
+    this.m_wildcardKind = aWildcardKind;
   }
 
-  public void setLexStateNames (final String [] lexStateNames)
+  public void setLexStateNames (final String [] aLexStateNames)
   {
-    this.m_lexStateNames = lexStateNames;
+    this.m_lexStateNames = aLexStateNames;
   }
 
-  public void setDefaultLexState (final int defaultLexState)
+  public void setDefaultLexState (final int nDefaultLexState)
   {
-    this.m_defaultLexState = defaultLexState;
+    this.m_defaultLexState = nDefaultLexState;
   }
 
-  public void updateMatchInfo (final Map <Integer, String> actions,
-                               final int [] newLexStateIndices,
-                               final long [] toSkip,
-                               final long [] toSpecial,
-                               final long [] toMore,
-                               final long [] toToken)
+  public void updateMatchInfo (final Map <Integer, String> aActions,
+                               final int [] aNewLexStateIndices,
+                               final long [] aToSkip,
+                               final long [] aToSpecial,
+                               final long [] aToMore,
+                               final long [] aToToken)
   {
-    for (int i = 0; i < newLexStateIndices.length; i++)
+    for (int i = 0; i < aNewLexStateIndices.length; i++)
     {
-      final int vectorIndex = i >> 6;
-      final long bits = (1L << (i & 077));
-      EMatchType matchType = EMatchType.TOKEN;
-      if (toSkip.length > vectorIndex && (toSkip[vectorIndex] & bits) != 0L)
+      final int nVectorIndex = i >> 6;
+      final long nBits = (1L << (i & 077));
+      EMatchType eMatchType = EMatchType.TOKEN;
+      if (aToSkip.length > nVectorIndex && (aToSkip[nVectorIndex] & nBits) != 0L)
       {
-        matchType = EMatchType.SKIP;
+        eMatchType = EMatchType.SKIP;
       }
       else
-        if (toSpecial.length > vectorIndex && (toSpecial[vectorIndex] & bits) != 0L)
+        if (aToSpecial.length > nVectorIndex && (aToSpecial[nVectorIndex] & nBits) != 0L)
         {
-          matchType = EMatchType.SPECIAL_TOKEN;
+          eMatchType = EMatchType.SPECIAL_TOKEN;
         }
         else
-          if (toMore.length > vectorIndex && (toMore[vectorIndex] & bits) != 0L)
+          if (aToMore.length > nVectorIndex && (aToMore[nVectorIndex] & nBits) != 0L)
           {
-            matchType = EMatchType.MORE;
+            eMatchType = EMatchType.MORE;
           }
           else
           {
-            assert (toToken.length > vectorIndex && (toToken[vectorIndex] & bits) != 0L);
-            matchType = EMatchType.TOKEN;
+            assert (aToToken.length > nVectorIndex && (aToToken[nVectorIndex] & nBits) != 0L);
+            eMatchType = EMatchType.TOKEN;
           }
-      final MatchInfo matchInfo = new MatchInfo (Options.isIgnoreCase () ? null
+      final MatchInfo aMatchInfo = new MatchInfo (Options.isIgnoreCase () ? null
                                                                          : ExpRStringLiteral.strLit ()
                                                                                             .getAllImages ()[i],
                                                  i,
-                                                 matchType,
-                                                 newLexStateIndices[i],
-                                                 actions.get (Integer.valueOf (i)));
-      m_allMatches.put (Integer.valueOf (i), matchInfo);
+                                                 eMatchType,
+                                                 aNewLexStateIndices[i],
+                                                 aActions.get (Integer.valueOf (i)));
+      m_allMatches.put (Integer.valueOf (i), aMatchInfo);
     }
   }
 }

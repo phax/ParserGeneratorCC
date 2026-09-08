@@ -60,52 +60,52 @@ public final class ExpansionTest
   @Test
   public void testZeroOrOneConstructor ()
   {
-    final ExpZeroOrOne zoo = new ExpZeroOrOne (m_aToken, m_aExp);
-    assertEquals (m_aToken.beginColumn, zoo.getColumn ());
-    assertEquals (m_aToken.beginLine, zoo.getLine ());
-    assertEquals (m_aExp, zoo.getExpansion ());
-    assertSame (m_aExp.getParent (), zoo);
+    final ExpZeroOrOne aZoo = new ExpZeroOrOne (m_aToken, m_aExp);
+    assertEquals (m_aToken.beginColumn, aZoo.getColumn ());
+    assertEquals (m_aToken.beginLine, aZoo.getLine ());
+    assertEquals (m_aExp, aZoo.getExpansion ());
+    assertSame (m_aExp.getParent (), aZoo);
   }
 
   @Test
   public void testZeroOrMoreConstructor ()
   {
-    final ExpZeroOrMore zom = new ExpZeroOrMore (m_aToken, m_aExp);
-    assertEquals (m_aToken.beginColumn, zom.getColumn ());
-    assertEquals (m_aToken.beginLine, zom.getLine ());
-    assertEquals (m_aExp, zom.getExpansion ());
-    assertEquals (m_aExp.getParent (), zom);
+    final ExpZeroOrMore aZom = new ExpZeroOrMore (m_aToken, m_aExp);
+    assertEquals (m_aToken.beginColumn, aZom.getColumn ());
+    assertEquals (m_aToken.beginLine, aZom.getLine ());
+    assertEquals (m_aExp, aZom.getExpansion ());
+    assertEquals (m_aExp.getParent (), aZom);
   }
 
   @Test
   public void testRZeroOrMoreConstructor ()
   {
     final AbstractExpRegularExpression r = new ExpRChoice ();
-    final ExpRZeroOrMore rzom = new ExpRZeroOrMore (m_aToken, r);
-    assertEquals (m_aToken.beginColumn, rzom.getColumn ());
-    assertEquals (m_aToken.beginLine, rzom.getLine ());
-    assertEquals (r, rzom.getRegExpr ());
+    final ExpRZeroOrMore aRzom = new ExpRZeroOrMore (m_aToken, r);
+    assertEquals (m_aToken.beginColumn, aRzom.getColumn ());
+    assertEquals (m_aToken.beginLine, aRzom.getLine ());
+    assertEquals (r, aRzom.getRegExpr ());
   }
 
   @Test
   public void testROneOrMoreConstructor ()
   {
     final AbstractExpRegularExpression r = new ExpRChoice ();
-    final ExpROneOrMore room = new ExpROneOrMore (m_aToken, r);
-    assertEquals (m_aToken.beginColumn, room.getColumn ());
-    assertEquals (m_aToken.beginLine, room.getLine ());
-    assertEquals (r, room.getRegExpr ());
+    final ExpROneOrMore aRoom = new ExpROneOrMore (m_aToken, r);
+    assertEquals (m_aToken.beginColumn, aRoom.getColumn ());
+    assertEquals (m_aToken.beginLine, aRoom.getLine ());
+    assertEquals (r, aRoom.getRegExpr ());
   }
 
   @Test
   public void testOneOrMoreConstructor ()
   {
-    final Expansion rce = new ExpRChoice ();
-    final ExpOneOrMore oom = new ExpOneOrMore (m_aToken, rce);
-    assertEquals (m_aToken.beginColumn, oom.getColumn ());
-    assertEquals (m_aToken.beginLine, oom.getLine ());
-    assertEquals (rce, oom.getExpansion ());
-    assertEquals (rce.getParent (), oom);
+    final Expansion aRce = new ExpRChoice ();
+    final ExpOneOrMore aOom = new ExpOneOrMore (m_aToken, aRce);
+    assertEquals (m_aToken.beginColumn, aOom.getColumn ());
+    assertEquals (m_aToken.beginLine, aOom.getLine ());
+    assertEquals (aRce, aOom.getExpansion ());
+    assertEquals (aRce.getParent (), aOom);
   }
 
   @Test
@@ -129,10 +129,10 @@ public final class ExpansionTest
   @Test
   public void testSequenceConstructor ()
   {
-    final ExpLookahead la = new ExpLookahead ();
-    final ExpSequence s = new ExpSequence (m_aToken, la);
+    final ExpLookahead aLa = new ExpLookahead ();
+    final ExpSequence s = new ExpSequence (m_aToken, aLa);
     assertEquals (m_aToken.beginColumn, s.getColumn ());
     assertEquals (m_aToken.beginLine, s.getLine ());
-    assertSame (la, s.getUnitAt (0));
+    assertSame (aLa, s.getUnitAt (0));
   }
 }

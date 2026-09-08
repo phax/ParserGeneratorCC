@@ -66,9 +66,9 @@ public final class OutputFileGeneratorTest
 
       // Main parsing
       final OutputFileGenerator aOutputGenerator = new OutputFileGenerator (sTemplateName, aOptions);
-      try (final NonBlockingStringWriter sw = new NonBlockingStringWriter ())
+      try (final NonBlockingStringWriter aSw = new NonBlockingStringWriter ())
       {
-        aOutputGenerator.generate (sw);
+        aOutputGenerator.generate (aSw);
       }
     }
   }

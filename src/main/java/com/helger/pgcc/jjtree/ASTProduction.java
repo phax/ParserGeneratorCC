@@ -54,14 +54,14 @@ public class ASTProduction extends JJTreeNode
 
   int getNodeScopeNumber (@NonNull final NodeScope s)
   {
-    final Integer ret = m_aScopes.computeIfAbsent (s, k -> Integer.valueOf (m_nNextNodeScopeNumber++));
-    return ret.intValue ();
+    final Integer aRet = m_aScopes.computeIfAbsent (s, k -> Integer.valueOf (m_nNextNodeScopeNumber++));
+    return aRet.intValue ();
   }
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

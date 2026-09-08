@@ -56,17 +56,17 @@ public final class ExpChoice extends Expansion
   public ExpChoice ()
   {}
 
-  public ExpChoice (final Token token)
+  public ExpChoice (final Token aToken)
   {
-    setLine (token.beginLine);
-    setColumn (token.beginColumn);
+    setLine (aToken.beginLine);
+    setColumn (aToken.beginColumn);
   }
 
-  public ExpChoice (final Expansion expansion)
+  public ExpChoice (final Expansion aExpansion)
   {
-    setLine (expansion.getLine ());
-    setColumn (expansion.getColumn ());
-    m_choices.add (expansion);
+    setLine (aExpansion.getLine ());
+    setColumn (aExpansion.getColumn ());
+    m_choices.add (aExpansion);
   }
 
   /**
@@ -97,12 +97,12 @@ public final class ExpChoice extends Expansion
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder sb = super.dump (indent, alreadyDumped);
-    if (alreadyDumped.add (this))
+    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
+    if (aAlreadyDumped.add (this))
       for (final Expansion next : getChoices ())
-        sb.append (EOL).append (next.dump (indent + 1, alreadyDumped));
-    return sb;
+        aSb.append (EOL).append (next.dump (nIndent + 1, aAlreadyDumped));
+    return aSb;
   }
 }

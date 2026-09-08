@@ -45,9 +45,9 @@ public class ASTExpansionNodeScope extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 
 }

@@ -68,18 +68,18 @@ public final class ExpRZeroOrOne extends AbstractExpRegularExpression
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    final Nfa retVal = new Nfa ();
-    final NfaState startState = retVal.start ();
-    final NfaState finalState = retVal.end ();
+    final Nfa aRetVal = new Nfa ();
+    final NfaState aStartState = aRetVal.start ();
+    final NfaState aFinalState = aRetVal.end ();
 
-    final Nfa temp = m_regexpr.generateNfa (ignoreCase);
+    final Nfa aTemp = m_regexpr.generateNfa (bIgnoreCase);
 
-    startState.addMove (temp.start ());
-    startState.addMove (finalState);
-    temp.end ().addMove (finalState);
+    aStartState.addMove (aTemp.start ());
+    aStartState.addMove (aFinalState);
+    aTemp.end ().addMove (aFinalState);
 
-    return retVal;
+    return aRetVal;
   }
 }

@@ -96,24 +96,24 @@ public class Token
    * @param image
    *        token image
    */
-  public Token (final int kind, final String image)
+  public Token (final int nKind, final String sImage)
   {
-    this.kind = kind;
-    this.image = image;
+    this.kind = nKind;
+    this.image = sImage;
   }
 
   /**
    * equals
    */
   @Override
-  public boolean equals (final Object object)
+  public boolean equals (final Object aObject)
   {
-    if (object == null)
+    if (aObject == null)
       return false;
-    if (this == object)
+    if (this == aObject)
       return true;
-    if (object instanceof String)
-      return object.equals (image);
+    if (aObject instanceof String)
+      return aObject.equals (image);
     return false;
   }
 
@@ -162,22 +162,22 @@ public class Token
    *        token image
    * @return The created token. Never <code>null</code>.
    */
-  public static Token newToken (final int ofKind, final String image)
+  public static Token newToken (final int nOfKind, final String sImage)
   {
-    switch (ofKind)
+    switch (nOfKind)
     {
       case JavaCCParserConstants.RUNSIGNEDSHIFT:
       case JavaCCParserConstants.RSIGNEDSHIFT:
       case JavaCCParserConstants.GT:
-        return new GTToken (ofKind, image);
+        return new GTToken (nOfKind, sImage);
       default:
-        return new Token (ofKind, image);
+        return new Token (nOfKind, sImage);
     }
   }
 
-  public static Token newToken (final int ofKind)
+  public static Token newToken (final int nOfKind)
   {
-    return newToken (ofKind, null);
+    return newToken (nOfKind, null);
   }
 
   /**
@@ -187,9 +187,9 @@ public class Token
   {
     int m_realKind = JavaCCParserConstants.GT;
 
-    public GTToken (final int kind, final String image)
+    public GTToken (final int nKind, final String sImage)
     {
-      super (kind, image);
+      super (nKind, sImage);
     }
   }
 }

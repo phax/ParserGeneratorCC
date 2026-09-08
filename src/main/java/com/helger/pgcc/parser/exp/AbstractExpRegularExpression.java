@@ -141,10 +141,10 @@ public abstract sealed class AbstractExpRegularExpression extends Expansion perm
    * @param lhsTokens
    *        the lhsTokens to set
    */
-  public final void setLhsTokens (@NonNull final List <Token> lhsTokens)
+  public final void setLhsTokens (@NonNull final List <Token> aLhsTokens)
   {
     m_aLhsTokens.clear ();
-    m_aLhsTokens.addAll (lhsTokens);
+    m_aLhsTokens.addAll (aLhsTokens);
   }
 
   @Nullable
@@ -153,9 +153,9 @@ public abstract sealed class AbstractExpRegularExpression extends Expansion perm
     return m_aRhsToken;
   }
 
-  public final void setRhsToken (@Nullable final Token rhsToken)
+  public final void setRhsToken (@Nullable final Token aRhsToken)
   {
-    m_aRhsToken = rhsToken;
+    m_aRhsToken = aRhsToken;
   }
 
   public final int getWalkStatus ()

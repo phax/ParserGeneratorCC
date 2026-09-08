@@ -108,9 +108,9 @@ public final class SelfGenerate
       if (sTrimmed.startsWith ("package ") && sTrimmed.endsWith (";"))
       {
         final String sPackage = sTrimmed.substring ("package ".length (), sTrimmed.length () - 1).trim ();
-        final File ret = new File (aRoot, sPackage.replace ('.', '/'));
-        ret.mkdirs ();
-        return ret;
+        final File aRet = new File (aRoot, sPackage.replace ('.', '/'));
+        aRet.mkdirs ();
+        return aRet;
       }
     }
     throw new IllegalStateException ("Found no package declaration in " + aGrammar);
@@ -203,9 +203,9 @@ public final class SelfGenerate
    * @throws IOException
    *         On IO error
    */
-  public static void main (@Nullable final String [] args) throws IOException
+  public static void main (@Nullable final String [] aArgs) throws IOException
   {
-    final File aTargetDir = new File (args != null && args.length > 0 ? args[0] : "target/selfgen");
+    final File aTargetDir = new File (aArgs != null && aArgs.length > 0 ? aArgs[0] : "target/selfgen");
     regenerateInto (aTargetDir);
     LOGGER.info ("Regenerated this project's parsers into " + aTargetDir.getAbsolutePath ());
   }

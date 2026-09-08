@@ -117,7 +117,7 @@ public class JJTree
    * @return {@link ESuccess}
    */
   @NonNull
-  public ESuccess main (final String [] args)
+  public ESuccess main (final String [] aArgs)
   {
     // Drop everything the previous run left behind, so that repeat runs in one JVM are
     // independent. reInitAll replaces the whole context, the JJTree state included
@@ -130,7 +130,7 @@ public class JJTree
     {
 
       initializeOptions ();
-      if (args.length == 0)
+      if (aArgs.length == 0)
       {
         PGPrinter.info ("");
         help_message ();
@@ -138,59 +138,59 @@ public class JJTree
       }
       PGPrinter.info ("(type \"jjtree\" with no arguments for help)");
 
-      final String fn = args[args.length - 1];
-      if (Options.isOption (fn))
+      final String sFn = aArgs[aArgs.length - 1];
+      if (Options.isOption (sFn))
       {
-        PGPrinter.info ("Last argument \"" + fn + "\" is not a filename");
+        PGPrinter.info ("Last argument \"" + sFn + "\" is not a filename");
         return ESuccess.FAILURE;
       }
-      for (int arg = 0; arg < args.length - 1; arg++)
+      for (int nArg = 0; nArg < aArgs.length - 1; nArg++)
       {
-        if (!Options.isOption (args[arg]))
+        if (!Options.isOption (aArgs[nArg]))
         {
-          PGPrinter.info ("Argument \"" + args[arg] + "\" must be an option setting.");
+          PGPrinter.info ("Argument \"" + aArgs[nArg] + "\" must be an option setting.");
           return ESuccess.FAILURE;
         }
-        Options.setCmdLineOption (args[arg]);
+        Options.setCmdLineOption (aArgs[nArg]);
       }
 
       JJTreeOptions.validate ();
 
       try
       {
-        m_aIO.setInput (fn);
+        m_aIO.setInput (sFn);
       }
-      catch (final IOException ioe)
+      catch (final IOException aIoe)
       {
-        PGPrinter.info ("Error setting input: " + ioe.getMessage ());
+        PGPrinter.info ("Error setting input: " + aIoe.getMessage ());
         return ESuccess.FAILURE;
       }
       PGPrinter.info ("Reading from file " + m_aIO.getInputFilename () + " . . .");
 
       PGCCContext.current ().jjtree ().toolList ().clear ();
-      PGCCContext.current ().jjtree ().toolList ().addAll (JavaCCGlobals.getToolNames (fn));
+      PGCCContext.current ().jjtree ().toolList ().addAll (JavaCCGlobals.getToolNames (sFn));
       PGCCContext.current ().jjtree ().toolList ().add ("JJTree");
 
       try
       {
-        final JJTreeParser parser = new JJTreeParser (new StreamProvider (m_aIO.getIn ()));
-        parser.javacc_input ();
+        final JJTreeParser aParser = new JJTreeParser (new StreamProvider (m_aIO.getIn ()));
+        aParser.javacc_input ();
 
-        final ASTGrammar root = (ASTGrammar) parser.jjtree.rootNode ();
+        final ASTGrammar aRoot = (ASTGrammar) aParser.jjtree.rootNode ();
         if (Boolean.getBoolean ("jjtree-dump"))
         {
-          root.dump (" ");
+          aRoot.dump (" ");
         }
         try
         {
           m_aIO.setOutput ();
         }
-        catch (final IOException ioe)
+        catch (final IOException aIoe)
         {
-          PGPrinter.info ("Error setting output: " + ioe.getMessage ());
+          PGPrinter.info ("Error setting output: " + aIoe.getMessage ());
           return ESuccess.FAILURE;
         }
-        root.generate (m_aIO);
+        aRoot.generate (m_aIO);
         m_aIO.getOut ().close ();
 
         // TODO :: Not yet tested this in GWT/Modern mode (disabled by default
@@ -216,9 +216,9 @@ public class JJTree
         PGPrinter.info ("Annotated grammar generated successfully in " + m_aIO.getOutputFilename ());
         return ESuccess.SUCCESS;
       }
-      catch (final ParseException pe)
+      catch (final ParseException aPe)
       {
-        PGPrinter.error ("Error parsing input: " + pe.toString ());
+        PGPrinter.error ("Error parsing input: " + aPe.toString ());
       }
       catch (final Exception e)
       {

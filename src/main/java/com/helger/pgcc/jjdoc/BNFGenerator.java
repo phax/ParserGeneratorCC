@@ -53,9 +53,9 @@ public class BNFGenerator implements IDocGenerator
   protected Writer m_aPW;
   private boolean m_bPrinting = true;
 
-  protected String get_id (final String nt)
+  protected String get_id (final String sNt)
   {
-    return m_aIDMap.computeIfAbsent (nt, k -> "prod" + m_nID++);
+    return m_aIDMap.computeIfAbsent (sNt, k -> "prod" + m_nID++);
   }
 
   protected static Writer create_output_stream ()
@@ -103,28 +103,28 @@ public class BNFGenerator implements IDocGenerator
   public void tokensEnd ()
   {}
 
-  public void javacode (final CodeProductionJava jp)
+  public void javacode (final CodeProductionJava aJp)
   {}
 
-  public void cppcode (final CodeProductionCpp cp)
+  public void cppcode (final CodeProductionCpp aCp)
   {}
 
-  public void expansionEnd (final Expansion e, final boolean first)
+  public void expansionEnd (final Expansion e, final boolean bFirst)
   {}
 
-  public void nonTerminalStart (final ExpNonTerminal nt)
+  public void nonTerminalStart (final ExpNonTerminal aNt)
   {}
 
-  public void nonTerminalEnd (final ExpNonTerminal nt)
+  public void nonTerminalEnd (final ExpNonTerminal aNt)
   {}
 
-  public void productionStart (final NormalProduction np) throws IOException
+  public void productionStart (final NormalProduction aNp) throws IOException
   {
     print ("\n");
-    print (np.getLhs () + " ::= ");
+    print (aNp.getLhs () + " ::= ");
   }
 
-  public void productionEnd (final NormalProduction np) throws IOException
+  public void productionEnd (final NormalProduction aNp) throws IOException
   {
     print ("\n");
   }
@@ -153,10 +153,10 @@ public class BNFGenerator implements IDocGenerator
   }
 
   @Override
-  public void handleTokenProduction (final TokenProduction tp) throws IOException
+  public void handleTokenProduction (final TokenProduction aTp) throws IOException
   {
     m_bPrinting = false;
-    final String sText = JJDoc.getStandardTokenProductionText (tp);
+    final String sText = JJDoc.getStandardTokenProductionText (aTp);
     text (sText);
     m_bPrinting = true;
   }

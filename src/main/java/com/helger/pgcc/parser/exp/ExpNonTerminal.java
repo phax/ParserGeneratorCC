@@ -74,9 +74,9 @@ public final class ExpNonTerminal extends Expansion
   private NormalProduction m_prod;
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    return super.dump (indent, alreadyDumped).append (' ').append (m_name);
+    return super.dump (nIndent, aAlreadyDumped).append (' ').append (m_name);
   }
 
   /**
@@ -104,9 +104,9 @@ public final class ExpNonTerminal extends Expansion
    * @param lhsTokens
    *        the lhsTokens to set
    */
-  public final void setLhsTokens (@NonNull final List <Token> lhsTokens)
+  public final void setLhsTokens (@NonNull final List <Token> aLhsTokens)
   {
-    m_lhsTokens.setAll (lhsTokens);
+    m_lhsTokens.setAll (aLhsTokens);
   }
 
   /**
@@ -121,9 +121,9 @@ public final class ExpNonTerminal extends Expansion
    * @param name
    *        the name to set
    */
-  public final void setName (final String name)
+  public final void setName (final String sName)
   {
-    m_name = name;
+    m_name = sName;
   }
 
   @NonNull
@@ -180,8 +180,8 @@ public final class ExpNonTerminal extends Expansion
    * @param prod
    *        the prod to set
    */
-  public final void setProd (final NormalProduction prod)
+  public final void setProd (final NormalProduction aProd)
   {
-    m_prod = prod;
+    m_prod = aProd;
   }
 }

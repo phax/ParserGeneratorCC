@@ -122,17 +122,17 @@ public class NfaState
   @NonNull
   private NfaState _createClone ()
   {
-    final NfaState retVal = new NfaState ();
+    final NfaState aRetVal = new NfaState ();
 
-    retVal.m_isFinal = m_isFinal;
-    retVal.m_kind = m_kind;
-    retVal.m_lookingFor = m_lookingFor;
-    retVal.m_lexState = m_lexState;
-    retVal.m_inNextOf = m_inNextOf;
+    aRetVal.m_isFinal = m_isFinal;
+    aRetVal.m_kind = m_kind;
+    aRetVal.m_lookingFor = m_lookingFor;
+    aRetVal.m_lexState = m_lexState;
+    aRetVal.m_inNextOf = m_inNextOf;
 
-    retVal._mergeMoves (this);
+    aRetVal._mergeMoves (this);
 
-    return retVal;
+    return aRetVal;
   }
 
   private static void _insertInOrder (final List <NfaState> v, final NfaState s)
@@ -140,27 +140,27 @@ public class NfaState
     int j = 0;
     for (; j < v.size (); j++)
     {
-      final NfaState tmp = v.get (j);
-      if (tmp.m_id > s.m_id)
+      final NfaState aTmp = v.get (j);
+      if (aTmp.m_id > s.m_id)
         break;
-      if (tmp.m_id == s.m_id)
+      if (aTmp.m_id == s.m_id)
         return;
     }
 
     v.add (j, s);
   }
 
-  private static char [] _expandCharArr (final char [] oldArr, final int incr)
+  private static char [] _expandCharArr (final char [] aOldArr, final int nIncr)
   {
-    final char [] ret = new char [oldArr.length + incr];
-    System.arraycopy (oldArr, 0, ret, 0, oldArr.length);
-    return ret;
+    final char [] aRet = new char [aOldArr.length + nIncr];
+    System.arraycopy (aOldArr, 0, aRet, 0, aOldArr.length);
+    return aRet;
   }
 
-  public void addMove (@NonNull final NfaState newState)
+  public void addMove (@NonNull final NfaState aNewState)
   {
-    if (!m_epsilonMoves.contains (newState))
-      _insertInOrder (m_epsilonMoves, newState);
+    if (!m_epsilonMoves.contains (aNewState))
+      _insertInOrder (m_epsilonMoves, aNewState);
   }
 
   private final void _addASCIIMove (final char c)
@@ -182,16 +182,16 @@ public class NfaState
     if (m_charMoves == null)
       m_charMoves = new char [10];
 
-    int len = m_charMoves.length;
+    int nLen = m_charMoves.length;
 
-    if (m_charMoves[len - 1] != 0)
+    if (m_charMoves[nLen - 1] != 0)
     {
       m_charMoves = _expandCharArr (m_charMoves, 10);
-      len += 10;
+      nLen += 10;
     }
 
     int i = 0;
-    for (; i < len; i++)
+    for (; i < nLen; i++)
       if (m_charMoves[i] == 0 || m_charMoves[i] > c)
         break;
 
@@ -207,42 +207,42 @@ public class NfaState
                                                              "one that can handle your character set.");
     }
 
-    char temp = m_charMoves[i];
+    char cTemp = m_charMoves[i];
     m_charMoves[i] = c;
 
-    for (i++; i < len; i++)
+    for (i++; i < nLen; i++)
     {
-      if (temp == 0)
+      if (cTemp == 0)
         break;
 
-      final char temp1 = m_charMoves[i];
-      m_charMoves[i] = temp;
-      temp = temp1;
+      final char cTemp1 = m_charMoves[i];
+      m_charMoves[i] = cTemp;
+      cTemp = cTemp1;
     }
   }
 
-  public void addRange (final char pleft, final char right)
+  public void addRange (final char cPleft, final char cRight)
   {
-    char left = pleft;
+    char cLeft = cPleft;
     m_onlyChar = 2;
-    char tempLeft1, tempLeft2, tempRight1, tempRight2;
+    char cTempLeft1, cTempLeft2, cTempRight1, cTempRight2;
 
-    if (left < 128)
+    if (cLeft < 128)
     {
-      if (right < 128)
+      if (cRight < 128)
       {
-        for (; left <= right; left++)
-          _addASCIIMove (left);
+        for (; cLeft <= cRight; cLeft++)
+          _addASCIIMove (cLeft);
 
         return;
       }
 
-      for (; left < 128; left++)
-        _addASCIIMove (left);
+      for (; cLeft < 128; cLeft++)
+        _addASCIIMove (cLeft);
     }
 
     if (!nfa ().isUnicodeWarningGiven () &&
-      (left > 0xff || right > 0xff) &&
+      (cLeft > 0xff || cRight > 0xff) &&
       !Options.isJavaUnicodeEscape () &&
       !Options.isJavaUserCharStream ())
     {
@@ -256,49 +256,49 @@ public class NfaState
     if (m_rangeMoves == null)
       m_rangeMoves = new char [20];
 
-    int len = m_rangeMoves.length;
+    int nLen = m_rangeMoves.length;
 
-    if (m_rangeMoves[len - 1] != 0)
+    if (m_rangeMoves[nLen - 1] != 0)
     {
       m_rangeMoves = _expandCharArr (m_rangeMoves, 20);
-      len += 20;
+      nLen += 20;
     }
 
     int i = 0;
-    for (; i < len; i += 2)
+    for (; i < nLen; i += 2)
       if (m_rangeMoves[i] == 0 ||
-        (m_rangeMoves[i] > left) ||
-        ((m_rangeMoves[i] == left) && (m_rangeMoves[i + 1] > right)))
+        (m_rangeMoves[i] > cLeft) ||
+        ((m_rangeMoves[i] == cLeft) && (m_rangeMoves[i + 1] > cRight)))
         break;
 
-    tempLeft1 = m_rangeMoves[i];
-    tempRight1 = m_rangeMoves[i + 1];
-    m_rangeMoves[i] = left;
-    m_rangeMoves[i + 1] = right;
+    cTempLeft1 = m_rangeMoves[i];
+    cTempRight1 = m_rangeMoves[i + 1];
+    m_rangeMoves[i] = cLeft;
+    m_rangeMoves[i + 1] = cRight;
 
-    for (i += 2; i < len; i += 2)
+    for (i += 2; i < nLen; i += 2)
     {
-      if (tempLeft1 == 0)
+      if (cTempLeft1 == 0)
         break;
 
-      tempLeft2 = m_rangeMoves[i];
-      tempRight2 = m_rangeMoves[i + 1];
-      m_rangeMoves[i] = tempLeft1;
-      m_rangeMoves[i + 1] = tempRight1;
-      tempLeft1 = tempLeft2;
-      tempRight1 = tempRight2;
+      cTempLeft2 = m_rangeMoves[i];
+      cTempRight2 = m_rangeMoves[i + 1];
+      m_rangeMoves[i] = cTempLeft1;
+      m_rangeMoves[i + 1] = cTempRight1;
+      cTempLeft1 = cTempLeft2;
+      cTempRight1 = cTempRight2;
     }
   }
 
-  private static boolean _equalCharArr (final char [] arr1, final char [] arr2)
+  private static boolean _equalCharArr (final char [] aArr1, final char [] aArr2)
   {
-    if (arr1 == arr2)
+    if (aArr1 == aArr2)
       return true;
 
-    if (arr1 != null && arr2 != null && arr1.length == arr2.length)
+    if (aArr1 != null && aArr2 != null && aArr1.length == aArr2.length)
     {
-      for (int i = arr1.length; i-- > 0;)
-        if (arr1[i] != arr2[i])
+      for (int i = aArr1.length; i-- > 0;)
+        if (aArr1[i] != aArr2[i])
           return false;
 
       return true;
@@ -361,102 +361,102 @@ public class NfaState
       (m_rangeMoves != null && m_rangeMoves[0] != 0));
   }
 
-  private void _mergeMoves (final NfaState other)
+  private void _mergeMoves (final NfaState aOther)
   {
     // Warning : This function does not merge epsilon moves
-    if (m_asciiMoves == other.m_asciiMoves)
+    if (m_asciiMoves == aOther.m_asciiMoves)
       JavaCCErrors.internalError ();
 
-    m_asciiMoves[0] = m_asciiMoves[0] | other.m_asciiMoves[0];
-    m_asciiMoves[1] = m_asciiMoves[1] | other.m_asciiMoves[1];
+    m_asciiMoves[0] = m_asciiMoves[0] | aOther.m_asciiMoves[0];
+    m_asciiMoves[1] = m_asciiMoves[1] | aOther.m_asciiMoves[1];
 
-    if (other.m_charMoves != null)
+    if (aOther.m_charMoves != null)
     {
       if (m_charMoves == null)
-        m_charMoves = other.m_charMoves;
+        m_charMoves = aOther.m_charMoves;
       else
       {
-        final char [] tmpCharMoves = new char [m_charMoves.length + other.m_charMoves.length];
-        System.arraycopy (m_charMoves, 0, tmpCharMoves, 0, m_charMoves.length);
-        m_charMoves = tmpCharMoves;
+        final char [] aTmpCharMoves = new char [m_charMoves.length + aOther.m_charMoves.length];
+        System.arraycopy (m_charMoves, 0, aTmpCharMoves, 0, m_charMoves.length);
+        m_charMoves = aTmpCharMoves;
 
-        for (final char aCharMove : other.m_charMoves)
+        for (final char aCharMove : aOther.m_charMoves)
           addChar (aCharMove);
       }
     }
 
-    if (other.m_rangeMoves != null)
+    if (aOther.m_rangeMoves != null)
     {
       if (m_rangeMoves == null)
-        m_rangeMoves = other.m_rangeMoves;
+        m_rangeMoves = aOther.m_rangeMoves;
       else
       {
-        final char [] tmpRangeMoves = new char [m_rangeMoves.length + other.m_rangeMoves.length];
-        System.arraycopy (m_rangeMoves, 0, tmpRangeMoves, 0, m_rangeMoves.length);
-        m_rangeMoves = tmpRangeMoves;
-        for (int i = 0; i < other.m_rangeMoves.length; i += 2)
-          addRange (other.m_rangeMoves[i], other.m_rangeMoves[i + 1]);
+        final char [] aTmpRangeMoves = new char [m_rangeMoves.length + aOther.m_rangeMoves.length];
+        System.arraycopy (m_rangeMoves, 0, aTmpRangeMoves, 0, m_rangeMoves.length);
+        m_rangeMoves = aTmpRangeMoves;
+        for (int i = 0; i < aOther.m_rangeMoves.length; i += 2)
+          addRange (aOther.m_rangeMoves[i], aOther.m_rangeMoves[i + 1]);
       }
     }
 
-    if (other.m_kind < m_kind)
-      m_kind = other.m_kind;
+    if (aOther.m_kind < m_kind)
+      m_kind = aOther.m_kind;
 
-    if (other.m_kindToPrint < m_kindToPrint)
-      m_kindToPrint = other.m_kindToPrint;
+    if (aOther.m_kindToPrint < m_kindToPrint)
+      m_kindToPrint = aOther.m_kindToPrint;
 
-    m_isFinal |= other.m_isFinal;
+    m_isFinal |= aOther.m_isFinal;
   }
 
-  NfaState createEquivState (final List <NfaState> states)
+  NfaState createEquivState (final List <NfaState> aStates)
   {
-    final NfaState newState = states.get (0)._createClone ();
+    final NfaState aNewState = aStates.get (0)._createClone ();
 
-    newState.m_next = new NfaState ();
+    aNewState.m_next = new NfaState ();
 
-    _insertInOrder (newState.m_next.m_epsilonMoves, states.get (0).m_next);
+    _insertInOrder (aNewState.m_next.m_epsilonMoves, aStates.get (0).m_next);
 
-    for (int i = 1; i < states.size (); i++)
+    for (int i = 1; i < aStates.size (); i++)
     {
-      final NfaState tmp2 = (states.get (i));
+      final NfaState aTmp2 = (aStates.get (i));
 
-      if (tmp2.m_kind < newState.m_kind)
-        newState.m_kind = tmp2.m_kind;
+      if (aTmp2.m_kind < aNewState.m_kind)
+        aNewState.m_kind = aTmp2.m_kind;
 
-      newState.m_isFinal |= tmp2.m_isFinal;
+      aNewState.m_isFinal |= aTmp2.m_isFinal;
 
-      _insertInOrder (newState.m_next.m_epsilonMoves, tmp2.m_next);
+      _insertInOrder (aNewState.m_next.m_epsilonMoves, aTmp2.m_next);
     }
 
-    return newState;
+    return aNewState;
   }
 
   private NfaState _getEquivalentRunTimeState ()
   {
     Outer: for (int i = nfa ().getAllStates ().size (); i-- > 0;)
     {
-      final NfaState other = nfa ().getAllStates ().get (i);
+      final NfaState aOther = nfa ().getAllStates ().get (i);
 
-      if (this != other &&
-        other.m_stateName != -1 &&
-        m_kindToPrint == other.m_kindToPrint &&
-        m_asciiMoves[0] == other.m_asciiMoves[0] &&
-        m_asciiMoves[1] == other.m_asciiMoves[1] &&
-        _equalCharArr (m_charMoves, other.m_charMoves) &&
-        _equalCharArr (m_rangeMoves, other.m_rangeMoves))
+      if (this != aOther &&
+        aOther.m_stateName != -1 &&
+        m_kindToPrint == aOther.m_kindToPrint &&
+        m_asciiMoves[0] == aOther.m_asciiMoves[0] &&
+        m_asciiMoves[1] == aOther.m_asciiMoves[1] &&
+        _equalCharArr (m_charMoves, aOther.m_charMoves) &&
+        _equalCharArr (m_rangeMoves, aOther.m_rangeMoves))
       {
-        if (m_next == other.m_next)
-          return other;
+        if (m_next == aOther.m_next)
+          return aOther;
         else
-          if (m_next != null && other.m_next != null)
+          if (m_next != null && aOther.m_next != null)
           {
-            if (m_next.m_epsilonMoves.size () == other.m_next.m_epsilonMoves.size ())
+            if (m_next.m_epsilonMoves.size () == aOther.m_next.m_epsilonMoves.size ())
             {
               for (int j = 0; j < m_next.m_epsilonMoves.size (); j++)
-                if (m_next.m_epsilonMoves.get (j) != other.m_next.m_epsilonMoves.get (j))
+                if (m_next.m_epsilonMoves.get (j) != aOther.m_next.m_epsilonMoves.get (j))
                   continue Outer;
 
-              return other;
+              return aOther;
             }
           }
       }
@@ -480,11 +480,11 @@ public class NfaState
 
     if (m_stateName == -1 && hasTransitions ())
     {
-      final NfaState tmp = _getEquivalentRunTimeState ();
+      final NfaState aTmp = _getEquivalentRunTimeState ();
 
-      if (tmp != null)
+      if (aTmp != null)
       {
-        m_stateName = tmp.m_stateName;
+        m_stateName = aTmp.m_stateName;
         // ????
         // tmp.inNextOf += inNextOf;
         // ????
@@ -503,9 +503,9 @@ public class NfaState
     // Back to front
     for (int i = nfa ().getAllStates ().size () - 1; i >= 0; --i)
     {
-      final NfaState tmp = nfa ().getAllStates ().get (i);
-      if (!tmp.m_closureDone)
-        tmp._optimizeEpsilonMoves (true);
+      final NfaState aTmp = nfa ().getAllStates ().get (i);
+      if (!aTmp.m_closureDone)
+        aTmp._optimizeEpsilonMoves (true);
     }
 
     // Operate on copy!
@@ -517,14 +517,14 @@ public class NfaState
     {
       for (int i = 0; i < nfa ().getAllStates ().size (); i++)
       {
-        final NfaState tmp = nfa ().getAllStates ().get (i);
-        final NfaState [] epsilonMoveArray = new NfaState [tmp.m_epsilonMoves.size ()];
-        tmp.m_epsilonMoves.toArray (epsilonMoveArray);
+        final NfaState aTmp = nfa ().getAllStates ().get (i);
+        final NfaState [] aEpsilonMoveArray = new NfaState [aTmp.m_epsilonMoves.size ()];
+        aTmp.m_epsilonMoves.toArray (aEpsilonMoveArray);
       }
     }
   }
 
-  private void _optimizeEpsilonMoves (final boolean optReqd)
+  private void _optimizeEpsilonMoves (final boolean bOptReqd)
   {
     // First do epsilon closure
     nfa ().setDone (false);
@@ -542,65 +542,65 @@ public class NfaState
 
     for (int i = nfa ().getAllStates ().size (); i-- > 0;)
     {
-      final NfaState tmp = nfa ().getAllStates ().get (i);
-      tmp.m_closureDone = nfa ().getMark ()[tmp.m_id];
+      final NfaState aTmp = nfa ().getAllStates ().get (i);
+      aTmp.m_closureDone = nfa ().getMark ()[aTmp.m_id];
     }
 
     // Warning : The following piece of code is just an optimization.
     // in case of trouble, just remove this piece.
 
-    boolean sometingOptimized = true;
+    boolean bSometingOptimized = true;
 
-    NfaState newState = null;
-    NfaState tmp1, tmp2;
-    List <NfaState> equivStates = null;
+    NfaState aNewState = null;
+    NfaState aTmp1, aTmp2;
+    List <NfaState> aEquivStates = null;
 
-    while (sometingOptimized)
+    while (bSometingOptimized)
     {
-      sometingOptimized = false;
-      for (int i = 0; optReqd && i < m_epsilonMoves.size (); i++)
+      bSometingOptimized = false;
+      for (int i = 0; bOptReqd && i < m_epsilonMoves.size (); i++)
       {
-        tmp1 = m_epsilonMoves.get (i);
-        if (tmp1.hasTransitions ())
+        aTmp1 = m_epsilonMoves.get (i);
+        if (aTmp1.hasTransitions ())
         {
           for (int j = i + 1; j < m_epsilonMoves.size (); j++)
           {
-            tmp2 = m_epsilonMoves.get (j);
-            if (tmp2.hasTransitions () &&
-              (tmp1.m_asciiMoves[0] == tmp2.m_asciiMoves[0] &&
-                tmp1.m_asciiMoves[1] == tmp2.m_asciiMoves[1] &&
-                _equalCharArr (tmp1.m_charMoves, tmp2.m_charMoves) &&
-                _equalCharArr (tmp1.m_rangeMoves, tmp2.m_rangeMoves)))
+            aTmp2 = m_epsilonMoves.get (j);
+            if (aTmp2.hasTransitions () &&
+              (aTmp1.m_asciiMoves[0] == aTmp2.m_asciiMoves[0] &&
+                aTmp1.m_asciiMoves[1] == aTmp2.m_asciiMoves[1] &&
+                _equalCharArr (aTmp1.m_charMoves, aTmp2.m_charMoves) &&
+                _equalCharArr (aTmp1.m_rangeMoves, aTmp2.m_rangeMoves)))
             {
-              if (equivStates == null)
+              if (aEquivStates == null)
               {
-                equivStates = new ArrayList <> ();
-                equivStates.add (tmp1);
+                aEquivStates = new ArrayList <> ();
+                aEquivStates.add (aTmp1);
               }
 
-              _insertInOrder (equivStates, tmp2);
+              _insertInOrder (aEquivStates, aTmp2);
               m_epsilonMoves.remove (j--);
             }
           }
         }
 
-        if (equivStates != null)
+        if (aEquivStates != null)
         {
-          sometingOptimized = true;
-          String tmp = "";
-          for (final NfaState equivState : equivStates)
-            tmp += String.valueOf (equivState.m_id) + ", ";
+          bSometingOptimized = true;
+          String sTmp = "";
+          for (final NfaState equivState : aEquivStates)
+            sTmp += String.valueOf (equivState.m_id) + ", ";
 
-          if ((newState = nfa ().equivStatesTable ().get (tmp)) == null)
+          if ((aNewState = nfa ().equivStatesTable ().get (sTmp)) == null)
           {
-            newState = createEquivState (equivStates);
-            nfa ().equivStatesTable ().put (tmp, newState);
+            aNewState = createEquivState (aEquivStates);
+            nfa ().equivStatesTable ().put (sTmp, aNewState);
           }
 
           m_epsilonMoves.remove (i--);
-          m_epsilonMoves.add (newState);
-          equivStates = null;
-          newState = null;
+          m_epsilonMoves.add (aNewState);
+          aEquivStates = null;
+          aNewState = null;
         }
       }
 
@@ -608,31 +608,31 @@ public class NfaState
       {
         // if ((tmp1 = (NfaState)epsilonMoves.elementAt(i)).next == null)
         // continue;
-        tmp1 = m_epsilonMoves.get (i);
+        aTmp1 = m_epsilonMoves.get (i);
 
         for (int j = i + 1; j < m_epsilonMoves.size (); j++)
         {
-          tmp2 = m_epsilonMoves.get (j);
+          aTmp2 = m_epsilonMoves.get (j);
 
-          if (tmp1.m_next == tmp2.m_next)
+          if (aTmp1.m_next == aTmp2.m_next)
           {
-            if (newState == null)
+            if (aNewState == null)
             {
-              newState = tmp1._createClone ();
-              newState.m_next = tmp1.m_next;
-              sometingOptimized = true;
+              aNewState = aTmp1._createClone ();
+              aNewState.m_next = aTmp1.m_next;
+              bSometingOptimized = true;
             }
 
-            newState._mergeMoves (tmp2);
+            aNewState._mergeMoves (aTmp2);
             m_epsilonMoves.remove (j--);
           }
         }
 
-        if (newState != null)
+        if (aNewState != null)
         {
           m_epsilonMoves.remove (i--);
-          m_epsilonMoves.add (newState);
-          newState = null;
+          m_epsilonMoves.add (aNewState);
+          aNewState = null;
         }
       }
     }
@@ -659,28 +659,28 @@ public class NfaState
 
   private String _getEpsilonMovesString ()
   {
-    final int [] stateNames = new int [m_usefulEpsilonMoves];
-    int cnt = 0;
+    final int [] aStateNames = new int [m_usefulEpsilonMoves];
+    int nCnt = 0;
 
     if (m_epsilonMovesString != null)
       return m_epsilonMovesString;
 
     if (m_usefulEpsilonMoves > 0)
     {
-      NfaState tempState;
+      NfaState aTempState;
       m_epsilonMovesString = "{ ";
       for (final NfaState m_epsilonMove : m_epsilonMoves)
       {
-        tempState = m_epsilonMove;
-        if (tempState.hasTransitions ())
+        aTempState = m_epsilonMove;
+        if (aTempState.hasTransitions ())
         {
-          if (tempState.m_stateName == -1)
-            tempState.generateCode ();
+          if (aTempState.m_stateName == -1)
+            aTempState.generateCode ();
 
-          nfa ().indexedAllStates ().get (tempState.m_stateName).m_inNextOf++;
-          stateNames[cnt] = tempState.m_stateName;
-          m_epsilonMovesString += tempState.m_stateName + ", ";
-          if (cnt++ > 0 && cnt % 16 == 0)
+          nfa ().indexedAllStates ().get (aTempState.m_stateName).m_inNextOf++;
+          aStateNames[nCnt] = aTempState.m_stateName;
+          m_epsilonMovesString += aTempState.m_stateName + ", ";
+          if (nCnt++ > 0 && nCnt % 16 == 0)
             m_epsilonMovesString += "\n";
         }
       }
@@ -688,13 +688,13 @@ public class NfaState
       m_epsilonMovesString += "};";
     }
 
-    m_usefulEpsilonMoves = cnt;
+    m_usefulEpsilonMoves = nCnt;
     if (m_epsilonMovesString != null && nfa ().allNextStates ().get (m_epsilonMovesString) == null)
     {
-      final int [] statesToPut = new int [m_usefulEpsilonMoves];
+      final int [] aStatesToPut = new int [m_usefulEpsilonMoves];
 
-      System.arraycopy (stateNames, 0, statesToPut, 0, cnt);
-      nfa ().allNextStates ().put (m_epsilonMovesString, statesToPut);
+      System.arraycopy (aStateNames, 0, aStatesToPut, 0, nCnt);
+      nfa ().allNextStates ().put (m_epsilonMovesString, aStatesToPut);
     }
 
     return m_epsilonMovesString;
@@ -710,13 +710,13 @@ public class NfaState
     if (s == null || s.equals ("null;"))
       return false;
 
-    final int [] states = nfa ().allNextStates ().get (s);
+    final int [] aStates = nfa ().allNextStates ().get (s);
 
-    for (final int aState : states)
+    for (final int aState : aStates)
     {
-      final NfaState tmp = nfa ().indexedAllStates ().get (aState);
+      final NfaState aTmp = nfa ().indexedAllStates ().get (aState);
 
-      if ((tmp.m_asciiMoves[c / 64] & (1L << c % 64)) != 0L)
+      if ((aTmp.m_asciiMoves[c / 64] & (1L << c % 64)) != 0L)
         return true;
     }
 
@@ -757,13 +757,13 @@ public class NfaState
     return false;
   }
 
-  public int getFirstValidPos (final String s, final int nPos, final int len)
+  public int getFirstValidPos (final String s, final int nPos, final int nLen)
   {
     int i = nPos;
     if (m_onlyChar == 1)
     {
       final char c = m_matchSingleChar;
-      while (c != s.charAt (i) && ++i < len)
+      while (c != s.charAt (i) && ++i < nLen)
       {}
       return i;
     }
@@ -772,17 +772,17 @@ public class NfaState
     {
       if (_canMoveUsingChar (s.charAt (i)))
         return i;
-    } while (++i < len);
+    } while (++i < nLen);
 
     return i;
   }
 
-  public int moveFrom (final char c, final List <NfaState> newStates)
+  public int moveFrom (final char c, final List <NfaState> aNewStates)
   {
     if (_canMoveUsingChar (c))
     {
       for (int i = m_next.m_epsilonMoves.size (); i-- > 0;)
-        _insertInOrder (newStates, m_next.m_epsilonMoves.get (i));
+        _insertInOrder (aNewStates, m_next.m_epsilonMoves.get (i));
 
       return m_kindToPrint;
     }
@@ -790,56 +790,56 @@ public class NfaState
     return Integer.MAX_VALUE;
   }
 
-  public static int moveFromSet (final char c, final List <NfaState> states, final List <NfaState> newStates)
+  public static int moveFromSet (final char c, final List <NfaState> states, final List <NfaState> aNewStates)
   {
-    int retVal = Integer.MAX_VALUE;
+    int nRetVal = Integer.MAX_VALUE;
 
     for (int i = states.size (); i-- > 0;)
     {
-      final int tmp = states.get (i).moveFrom (c, newStates);
-      if (retVal > tmp)
-        retVal = tmp;
+      final int nTmp = states.get (i).moveFrom (c, aNewStates);
+      if (nRetVal > nTmp)
+        nRetVal = nTmp;
     }
 
-    return retVal;
+    return nRetVal;
   }
 
   public static int moveFromSetForRegEx (final char c,
-                                         final NfaState [] states,
-                                         final NfaState [] newStates,
-                                         final int round)
+                                         final NfaState [] aStates,
+                                         final NfaState [] aNewStates,
+                                         final int nRound)
   {
-    int start = 0;
-    final int sz = states.length;
+    int nStart = 0;
+    final int nSz = aStates.length;
 
-    for (int i = 0; i < sz; i++)
+    for (int i = 0; i < nSz; i++)
     {
-      final NfaState tmp1 = states[i];
-      if (tmp1 == null)
+      final NfaState aTmp1 = aStates[i];
+      if (aTmp1 == null)
         break;
 
-      if (tmp1._canMoveUsingChar (c))
+      if (aTmp1._canMoveUsingChar (c))
       {
-        if (tmp1.m_kindToPrint != Integer.MAX_VALUE)
+        if (aTmp1.m_kindToPrint != Integer.MAX_VALUE)
         {
-          newStates[start] = null;
+          aNewStates[nStart] = null;
           return 1;
         }
 
-        final List <NfaState> v = tmp1.m_next.m_epsilonMoves;
+        final List <NfaState> v = aTmp1.m_next.m_epsilonMoves;
         for (int j = v.size () - 1; j >= 0; j--)
         {
-          final NfaState tmp2 = v.get (j);
-          if (tmp2.m_round != round)
+          final NfaState aTmp2 = v.get (j);
+          if (aTmp2.m_round != nRound)
           {
-            tmp2.m_round = round;
-            newStates[start++] = tmp2;
+            aTmp2.m_round = nRound;
+            aNewStates[nStart++] = aTmp2;
           }
         }
       }
     }
 
-    newStates[start] = null;
+    aNewStates[nStart] = null;
     return Integer.MAX_VALUE;
   }
 
@@ -850,12 +850,12 @@ public class NfaState
    * generates code to match a char with the common bit vectors. (Need a better comment).
    */
 
-  private void _generateNonAsciiMoves (final CodeGenerator codeGenerator)
+  private void _generateNonAsciiMoves (final CodeGenerator aCodeGenerator)
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     int i = 0, j = 0;
-    int cnt = 0;
-    final long [] [] loBytes = new long [256] [4];
+    int nCnt = 0;
+    final long [] [] aLoBytes = new long [256] [4];
 
     if ((m_charMoves == null || m_charMoves[0] == 0) && (m_rangeMoves == null || m_rangeMoves[0] == 0))
       return;
@@ -867,8 +867,8 @@ public class NfaState
         if (m_charMoves[i] == 0)
           break;
 
-        final char hiByte = (char) (m_charMoves[i] >> 8);
-        loBytes[hiByte][(m_charMoves[i] & 0xff) / 64] |= (1L << ((m_charMoves[i] & 0xff) % 64));
+        final char cHiByte = (char) (m_charMoves[i] >> 8);
+        aLoBytes[cHiByte][(m_charMoves[i] & 0xff) / 64] |= (1L << ((m_charMoves[i] & 0xff) % 64));
       }
     }
 
@@ -882,125 +882,125 @@ public class NfaState
         char c, r;
 
         r = (char) (m_rangeMoves[i + 1] & 0xff);
-        char hiByte = (char) (m_rangeMoves[i] >> 8);
+        char cHiByte = (char) (m_rangeMoves[i] >> 8);
 
-        if (hiByte == (char) (m_rangeMoves[i + 1] >> 8))
+        if (cHiByte == (char) (m_rangeMoves[i + 1] >> 8))
         {
           for (c = (char) (m_rangeMoves[i] & 0xff); c <= r; c++)
-            loBytes[hiByte][c / 64] |= (1L << (c % 64));
+            aLoBytes[cHiByte][c / 64] |= (1L << (c % 64));
 
           continue;
         }
 
         for (c = (char) (m_rangeMoves[i] & 0xff); c <= 0xff; c++)
-          loBytes[hiByte][c / 64] |= (1L << (c % 64));
+          aLoBytes[cHiByte][c / 64] |= (1L << (c % 64));
 
-        while (++hiByte < (char) (m_rangeMoves[i + 1] >> 8))
+        while (++cHiByte < (char) (m_rangeMoves[i + 1] >> 8))
         {
-          loBytes[hiByte][0] |= 0xffffffffffffffffL;
-          loBytes[hiByte][1] |= 0xffffffffffffffffL;
-          loBytes[hiByte][2] |= 0xffffffffffffffffL;
-          loBytes[hiByte][3] |= 0xffffffffffffffffL;
+          aLoBytes[cHiByte][0] |= 0xffffffffffffffffL;
+          aLoBytes[cHiByte][1] |= 0xffffffffffffffffL;
+          aLoBytes[cHiByte][2] |= 0xffffffffffffffffL;
+          aLoBytes[cHiByte][3] |= 0xffffffffffffffffL;
         }
 
         for (c = 0; c <= r; c++)
-          loBytes[hiByte][c / 64] |= (1L << (c % 64));
+          aLoBytes[cHiByte][c / 64] |= (1L << (c % 64));
       }
     }
 
-    long [] common = null;
-    final boolean [] done = new boolean [256];
+    long [] aCommon = null;
+    final boolean [] aDone = new boolean [256];
 
     for (i = 0; i <= 255; i++)
     {
-      if (done[i] || (done[i] = loBytes[i][0] == 0 && loBytes[i][1] == 0 && loBytes[i][2] == 0 && loBytes[i][3] == 0))
+      if (aDone[i] || (aDone[i] = aLoBytes[i][0] == 0 && aLoBytes[i][1] == 0 && aLoBytes[i][2] == 0 && aLoBytes[i][3] == 0))
         continue;
 
       for (j = i + 1; j < 256; j++)
       {
-        if (done[j])
+        if (aDone[j])
           continue;
 
-        if (loBytes[i][0] == loBytes[j][0] &&
-          loBytes[i][1] == loBytes[j][1] &&
-          loBytes[i][2] == loBytes[j][2] &&
-          loBytes[i][3] == loBytes[j][3])
+        if (aLoBytes[i][0] == aLoBytes[j][0] &&
+          aLoBytes[i][1] == aLoBytes[j][1] &&
+          aLoBytes[i][2] == aLoBytes[j][2] &&
+          aLoBytes[i][3] == aLoBytes[j][3])
         {
-          done[j] = true;
-          if (common == null)
+          aDone[j] = true;
+          if (aCommon == null)
           {
-            done[i] = true;
-            common = new long [4];
-            common[i / 64] |= (1L << (i % 64));
+            aDone[i] = true;
+            aCommon = new long [4];
+            aCommon[i / 64] |= (1L << (i % 64));
           }
 
-          common[j / 64] |= (1L << (j % 64));
+          aCommon[j / 64] |= (1L << (j % 64));
         }
       }
 
-      if (common != null)
+      if (aCommon != null)
       {
-        String tmp = "{\n   " +
-                     eOutputLanguage.getLongHex (common[0]) +
+        String sTmp = "{\n   " +
+                     eOutputLanguage.getLongHex (aCommon[0]) +
                      ", " +
-                     eOutputLanguage.getLongHex (common[1]) +
+                     eOutputLanguage.getLongHex (aCommon[1]) +
                      ", " +
-                     eOutputLanguage.getLongHex (common[2]) +
+                     eOutputLanguage.getLongHex (aCommon[2]) +
                      ", " +
-                     eOutputLanguage.getLongHex (common[3]) +
+                     eOutputLanguage.getLongHex (aCommon[3]) +
                      "\n};";
-        Integer ind = nfa ().loHiByteTab ().get (tmp);
-        if (ind == null)
+        Integer aInd = nfa ().loHiByteTab ().get (sTmp);
+        if (aInd == null)
         {
-          nfa ().getAllBitVectors ().add (tmp);
+          nfa ().getAllBitVectors ().add (sTmp);
 
-          if (!allBitsSet (tmp))
+          if (!allBitsSet (sTmp))
           {
-            codeGenerator.genStaticArrayDeclaration (eOutputLanguage.getTypeLong (),
+            aCodeGenerator.genStaticArrayDeclaration (eOutputLanguage.getTypeLong (),
                                                      "jjbitVec" + nfa ().getLoHiByteCnt ());
-            codeGenerator.genCodeLine (tmp);
+            aCodeGenerator.genCodeLine (sTmp);
           }
-          ind = Integer.valueOf (nfa ().getAndIncLoHiByteCnt ());
-          nfa ().loHiByteTab ().put (tmp, ind);
+          aInd = Integer.valueOf (nfa ().getAndIncLoHiByteCnt ());
+          nfa ().loHiByteTab ().put (sTmp, aInd);
         }
 
-        nfa ().getTmpIndices ()[cnt++] = ind.intValue ();
+        nfa ().getTmpIndices ()[nCnt++] = aInd.intValue ();
 
-        tmp = "{\n   " +
-              eOutputLanguage.getLongHex (loBytes[i][0]) +
+        sTmp = "{\n   " +
+              eOutputLanguage.getLongHex (aLoBytes[i][0]) +
               ", " +
-              eOutputLanguage.getLongHex (loBytes[i][1]) +
+              eOutputLanguage.getLongHex (aLoBytes[i][1]) +
               ", " +
-              eOutputLanguage.getLongHex (loBytes[i][2]) +
+              eOutputLanguage.getLongHex (aLoBytes[i][2]) +
               ", " +
-              eOutputLanguage.getLongHex (loBytes[i][3]) +
+              eOutputLanguage.getLongHex (aLoBytes[i][3]) +
               "\n};";
-        ind = nfa ().loHiByteTab ().get (tmp);
-        if (ind == null)
+        aInd = nfa ().loHiByteTab ().get (sTmp);
+        if (aInd == null)
         {
-          nfa ().getAllBitVectors ().add (tmp);
+          nfa ().getAllBitVectors ().add (sTmp);
 
-          if (!allBitsSet (tmp))
+          if (!allBitsSet (sTmp))
           {
-            codeGenerator.genStaticArrayDeclaration (eOutputLanguage.getTypeLong (),
+            aCodeGenerator.genStaticArrayDeclaration (eOutputLanguage.getTypeLong (),
                                                      "jjbitVec" + nfa ().getLoHiByteCnt ());
-            codeGenerator.genCodeLine (tmp);
+            aCodeGenerator.genCodeLine (sTmp);
             // This one, unlike the other two, returns to the main file afterwards
             if (!eOutputLanguage.isJava ())
-              codeGenerator.switchToMainFile ();
+              aCodeGenerator.switchToMainFile ();
           }
-          ind = Integer.valueOf (nfa ().getAndIncLoHiByteCnt ());
-          nfa ().loHiByteTab ().put (tmp, ind);
+          aInd = Integer.valueOf (nfa ().getAndIncLoHiByteCnt ());
+          nfa ().loHiByteTab ().put (sTmp, aInd);
         }
 
-        nfa ().getTmpIndices ()[cnt++] = ind.intValue ();
+        nfa ().getTmpIndices ()[nCnt++] = aInd.intValue ();
 
-        common = null;
+        aCommon = null;
       }
     }
 
-    m_nonAsciiMoveIndices = new int [cnt];
-    System.arraycopy (nfa ().getTmpIndices (), 0, m_nonAsciiMoveIndices, 0, cnt);
+    m_nonAsciiMoveIndices = new int [nCnt];
+    System.arraycopy (nfa ().getTmpIndices (), 0, m_nonAsciiMoveIndices, 0, nCnt);
 
     /*
      * System.out.println("state : " + stateName + " cnt : " + cnt); while (cnt > 0) {
@@ -1010,38 +1010,38 @@ public class NfaState
 
     for (i = 0; i < 256; i++)
     {
-      if (done[i])
-        loBytes[i] = null;
+      if (aDone[i])
+        aLoBytes[i] = null;
       else
       {
         // System.out.print(i + ", ");
-        final String tmp = "{\n   " +
-                           eOutputLanguage.getLongHex (loBytes[i][0]) +
+        final String sTmp = "{\n   " +
+                           eOutputLanguage.getLongHex (aLoBytes[i][0]) +
                            ", " +
-                           eOutputLanguage.getLongHex (loBytes[i][1]) +
+                           eOutputLanguage.getLongHex (aLoBytes[i][1]) +
                            ", " +
-                           eOutputLanguage.getLongHex (loBytes[i][2]) +
+                           eOutputLanguage.getLongHex (aLoBytes[i][2]) +
                            ", " +
-                           eOutputLanguage.getLongHex (loBytes[i][3]) +
+                           eOutputLanguage.getLongHex (aLoBytes[i][3]) +
                            "\n};";
 
-        Integer ind = nfa ().loHiByteTab ().get (tmp);
-        if (ind == null)
+        Integer aInd = nfa ().loHiByteTab ().get (sTmp);
+        if (aInd == null)
         {
-          nfa ().getAllBitVectors ().add (tmp);
+          nfa ().getAllBitVectors ().add (sTmp);
 
-          if (!allBitsSet (tmp))
-            codeGenerator.genStaticArrayDeclaration (eOutputLanguage.getTypeLong (),
+          if (!allBitsSet (sTmp))
+            aCodeGenerator.genStaticArrayDeclaration (eOutputLanguage.getTypeLong (),
                                                      "jjbitVec" + nfa ().getLoHiByteCnt ());
-          codeGenerator.genCodeLine (tmp);
-          nfa ().loHiByteTab ().put (tmp, ind = Integer.valueOf (nfa ().getAndIncLoHiByteCnt ()));
+          aCodeGenerator.genCodeLine (sTmp);
+          nfa ().loHiByteTab ().put (sTmp, aInd = Integer.valueOf (nfa ().getAndIncLoHiByteCnt ()));
         }
 
         if (m_loByteVec == null)
           m_loByteVec = new ArrayList <> ();
 
         m_loByteVec.add (Integer.valueOf (i));
-        m_loByteVec.add (ind);
+        m_loByteVec.add (aInd);
       }
     }
     // System.out.println("");
@@ -1052,9 +1052,9 @@ public class NfaState
   {
     for (int i = 0; i < nfa ().nonAsciiTableForMethod ().size (); i++)
     {
-      final NfaState tmp = nfa ().nonAsciiTableForMethod ().get (i);
-      if (_equalLoByteVectors (m_loByteVec, tmp.m_loByteVec) &&
-        _equalNonAsciiMoveIndices (m_nonAsciiMoveIndices, tmp.m_nonAsciiMoveIndices))
+      final NfaState aTmp = nfa ().nonAsciiTableForMethod ().get (i);
+      if (_equalLoByteVectors (m_loByteVec, aTmp.m_loByteVec) &&
+        _equalNonAsciiMoveIndices (m_nonAsciiMoveIndices, aTmp.m_nonAsciiMoveIndices))
       {
         m_nonAsciiMethod = i;
         return;
@@ -1065,129 +1065,129 @@ public class NfaState
     nfa ().nonAsciiTableForMethod ().add (this);
   }
 
-  private static boolean _equalLoByteVectors (final List <Integer> vec1, final List <Integer> vec2)
+  private static boolean _equalLoByteVectors (final List <Integer> vec1, final List <Integer> aVec2)
   {
-    if (vec1 == null || vec2 == null)
+    if (vec1 == null || aVec2 == null)
       return false;
 
-    if (vec1 == vec2)
+    if (vec1 == aVec2)
       return true;
 
-    if (vec1.size () != vec2.size ())
+    if (vec1.size () != aVec2.size ())
       return false;
 
     for (int i = 0; i < vec1.size (); i++)
     {
-      if (vec1.get (i).intValue () != vec2.get (i).intValue ())
+      if (vec1.get (i).intValue () != aVec2.get (i).intValue ())
         return false;
     }
 
     return true;
   }
 
-  private static boolean _equalNonAsciiMoveIndices (final int [] moves1, final int [] moves2)
+  private static boolean _equalNonAsciiMoveIndices (final int [] aMoves1, final int [] aMoves2)
   {
-    if (moves1 == moves2)
+    if (aMoves1 == aMoves2)
       return true;
 
-    if (moves1 == null || moves2 == null)
+    if (aMoves1 == null || aMoves2 == null)
       return false;
 
-    if (moves1.length != moves2.length)
+    if (aMoves1.length != aMoves2.length)
       return false;
 
-    for (int i = 0; i < moves1.length; i++)
+    for (int i = 0; i < aMoves1.length; i++)
     {
-      if (moves1[i] != moves2[i])
+      if (aMoves1[i] != aMoves2[i])
         return false;
     }
 
     return true;
   }
 
-  static boolean allBitsSet (final String bitVec)
+  static boolean allBitsSet (final String sBitVec)
   {
-    return bitVec.equals (nfa ().getAllBits ());
+    return sBitVec.equals (nfa ().getAllBits ());
   }
 
-  public static int addStartStateSet (final String stateSetString)
+  public static int addStartStateSet (final String sStateSetString)
   {
-    return _addCompositeStateSet (stateSetString, true);
+    return _addCompositeStateSet (sStateSetString, true);
   }
 
-  private static int _addCompositeStateSet (final String stateSetString, final boolean starts)
+  private static int _addCompositeStateSet (final String sStateSetString, final boolean bStarts)
   {
-    Integer stateNameToReturn;
+    Integer aStateNameToReturn;
 
-    if ((stateNameToReturn = nfa ().stateNameForComposite ().get (stateSetString)) != null)
-      return stateNameToReturn.intValue ();
+    if ((aStateNameToReturn = nfa ().stateNameForComposite ().get (sStateSetString)) != null)
+      return aStateNameToReturn.intValue ();
 
-    int toRet = 0;
-    final int [] nameSet = nfa ().allNextStates ().get (stateSetString);
+    int nToRet = 0;
+    final int [] aNameSet = nfa ().allNextStates ().get (sStateSetString);
 
-    if (!starts)
-      nfa ().stateBlockTable ().put (stateSetString, stateSetString);
+    if (!bStarts)
+      nfa ().stateBlockTable ().put (sStateSetString, sStateSetString);
 
-    if (nameSet == null)
+    if (aNameSet == null)
       JavaCCErrors.internalError ();
 
-    if (nameSet.length == 1)
+    if (aNameSet.length == 1)
     {
-      stateNameToReturn = Integer.valueOf (nameSet[0]);
-      nfa ().stateNameForComposite ().put (stateSetString, stateNameToReturn);
-      return nameSet[0];
+      aStateNameToReturn = Integer.valueOf (aNameSet[0]);
+      nfa ().stateNameForComposite ().put (sStateSetString, aStateNameToReturn);
+      return aNameSet[0];
     }
 
-    for (final int aElement : nameSet)
+    for (final int aElement : aNameSet)
     {
       if (aElement == -1)
         continue;
 
-      final NfaState st = nfa ().indexedAllStates ().get (aElement);
-      st.m_isComposite = true;
-      st.m_compositeStates = nameSet;
+      final NfaState aSt = nfa ().indexedAllStates ().get (aElement);
+      aSt.m_isComposite = true;
+      aSt.m_compositeStates = aNameSet;
     }
 
-    while (toRet < nameSet.length && (starts && nfa ().indexedAllStates ().get (nameSet[toRet]).m_inNextOf > 1))
-      toRet++;
+    while (nToRet < aNameSet.length && (bStarts && nfa ().indexedAllStates ().get (aNameSet[nToRet]).m_inNextOf > 1))
+      nToRet++;
 
     for (final String s : nfa ().compositeStateTable ().keySet ())
     {
-      if (!s.equals (stateSetString) && _intersect (stateSetString, s))
+      if (!s.equals (sStateSetString) && _intersect (sStateSetString, s))
       {
-        final int [] other = nfa ().compositeStateTable ().get (s);
+        final int [] aOther = nfa ().compositeStateTable ().get (s);
 
-        while (toRet < nameSet.length &&
-          ((starts && nfa ().indexedAllStates ().get (nameSet[toRet]).m_inNextOf > 1) ||
-            _elemOccurs (nameSet[toRet], other) >= 0))
-          toRet++;
+        while (nToRet < aNameSet.length &&
+          ((bStarts && nfa ().indexedAllStates ().get (aNameSet[nToRet]).m_inNextOf > 1) ||
+            _elemOccurs (aNameSet[nToRet], aOther) >= 0))
+          nToRet++;
       }
     }
 
-    int tmp;
+    int nTmp;
 
-    if (toRet >= nameSet.length)
+    if (nToRet >= aNameSet.length)
     {
       if (nfa ().getDummyStateIndex () == -1)
         nfa ().setDummyStateIndex (nfa ().getGeneratedStates ());
       else
         nfa ().setDummyStateIndex (nfa ().getDummyStateIndex () + 1);
-      tmp = nfa ().getDummyStateIndex ();
+      nTmp = nfa ().getDummyStateIndex ();
 
     }
     else
-      tmp = nameSet[toRet];
+      nTmp = aNameSet[nToRet];
 
-    stateNameToReturn = Integer.valueOf (tmp);
-    nfa ().stateNameForComposite ().put (stateSetString, stateNameToReturn);
-    nfa ().compositeStateTable ().put (stateSetString, nameSet);
+    aStateNameToReturn = Integer.valueOf (nTmp);
+    nfa ().stateNameForComposite ().put (sStateSetString, aStateNameToReturn);
+    nfa ().compositeStateTable ().put (sStateSetString, aNameSet);
 
-    return tmp;
+    return nTmp;
   }
 
-  private static int _stateNameForComposite (final String stateSetString)
+  private static int _stateNameForComposite (final String sStateSetString)
   {
-    return nfa ().stateNameForComposite ().get (stateSetString).intValue ();
+    return nfa ().stateNameForComposite ().get (sStateSetString).intValue ();
   }
 
   public static int initStateName ()
@@ -1209,117 +1209,117 @@ public class NfaState
     return addStartStateSet (m_epsilonMovesString);
   }
 
-  private static int [] _getStateSetIndicesForUse (final String arrayString)
+  private static int [] _getStateSetIndicesForUse (final String sArrayString)
   {
-    int [] ret;
-    final int [] set = nfa ().allNextStates ().get (arrayString);
+    int [] aRet;
+    final int [] aSet = nfa ().allNextStates ().get (sArrayString);
 
-    if ((ret = nfa ().tableToDump ().get (arrayString)) == null)
+    if ((aRet = nfa ().tableToDump ().get (sArrayString)) == null)
     {
-      ret = new int [2];
-      ret[0] = nfa ().getLastIndex ();
-      ret[1] = nfa ().getLastIndex () + set.length - 1;
-      nfa ().setLastIndex (nfa ().getLastIndex () + set.length);
-      nfa ().tableToDump ().put (arrayString, ret);
-      nfa ().orderedStateSet ().add (set);
+      aRet = new int [2];
+      aRet[0] = nfa ().getLastIndex ();
+      aRet[1] = nfa ().getLastIndex () + aSet.length - 1;
+      nfa ().setLastIndex (nfa ().getLastIndex () + aSet.length);
+      nfa ().tableToDump ().put (sArrayString, aRet);
+      nfa ().orderedStateSet ().add (aSet);
     }
 
-    return ret;
+    return aRet;
   }
 
-  public static void dumpStateSets (final CodeGenerator codeGenerator)
+  public static void dumpStateSets (final CodeGenerator aCodeGenerator)
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
 
-    codeGenerator.genStaticArrayDeclaration ("int", "jjnextStates");
-    codeGenerator.genCode ("{");
+    aCodeGenerator.genStaticArrayDeclaration ("int", "jjnextStates");
+    aCodeGenerator.genCode ("{");
     if (nfa ().orderedStateSet ().size () > 0)
     {
-      int cnt = 0;
+      int nCnt = 0;
       for (final int [] set : nfa ().orderedStateSet ())
       {
         for (final int aElement : set)
         {
-          if (cnt++ % 16 == 0)
-            codeGenerator.genCode ("\n   ");
+          if (nCnt++ % 16 == 0)
+            aCodeGenerator.genCode ("\n   ");
 
-          codeGenerator.genCode (aElement + ", ");
+          aCodeGenerator.genCode (aElement + ", ");
         }
       }
     }
     else
-      codeGenerator.genCode ("0");
+      aCodeGenerator.genCode ("0");
 
-    codeGenerator.genCodeLine ("\n};");
-    codeGenerator.switchToMainFile ();
+    aCodeGenerator.genCodeLine ("\n};");
+    aCodeGenerator.switchToMainFile ();
   }
 
-  private static String _getStateSetString (final int [] states)
+  private static String _getStateSetString (final int [] aStates)
   {
-    String retVal = "{ ";
-    for (int i = 0; i < states.length;)
+    String sRetVal = "{ ";
+    for (int i = 0; i < aStates.length;)
     {
-      retVal += states[i] + ", ";
+      sRetVal += aStates[i] + ", ";
 
       if (i++ > 0 && i % 16 == 0)
-        retVal += "\n";
+        sRetVal += "\n";
     }
 
-    retVal += "};";
-    nfa ().allNextStates ().put (retVal, states);
-    return retVal;
+    sRetVal += "};";
+    nfa ().allNextStates ().put (sRetVal, aStates);
+    return sRetVal;
   }
 
-  public static String getStateSetString (@Nullable final List <NfaState> states)
+  public static String getStateSetString (@Nullable final List <NfaState> aStates)
   {
-    if (states == null || states.size () == 0)
+    if (aStates == null || aStates.size () == 0)
       return "null;";
 
-    final int [] set = new int [states.size ()];
-    String retVal = "{ ";
-    for (int i = 0; i < states.size ();)
+    final int [] aSet = new int [aStates.size ()];
+    String sRetVal = "{ ";
+    for (int i = 0; i < aStates.size ();)
     {
-      final int k = states.get (i).m_stateName;
-      retVal += k + ", ";
-      set[i] = k;
+      final int k = aStates.get (i).m_stateName;
+      sRetVal += k + ", ";
+      aSet[i] = k;
 
       if (i++ > 0 && (i % 16) == 0)
-        retVal += "\n";
+        sRetVal += "\n";
     }
 
-    retVal += "};";
-    nfa ().allNextStates ().put (retVal, set);
-    return retVal;
+    sRetVal += "};";
+    nfa ().allNextStates ().put (sRetVal, aSet);
+    return sRetVal;
   }
 
   private static int _numberOfBitsSet (final long l)
   {
-    int ret = 0;
+    int nRet = 0;
     for (int i = 0; i < 63; i++)
       if (((l >> i) & 1L) != 0L)
-        ret++;
+        nRet++;
 
-    return ret;
+    return nRet;
   }
 
   private static int _isOnlyOneBitSet (final long l)
   {
-    int oneSeen = -1;
+    int nOneSeen = -1;
     for (int i = 0; i < 64; i++)
       if (((l >> i) & 1L) != 0L)
       {
-        if (oneSeen >= 0)
+        if (nOneSeen >= 0)
           return -1;
-        oneSeen = i;
+        nOneSeen = i;
       }
 
-    return oneSeen;
+    return nOneSeen;
   }
 
-  private static int _elemOccurs (final int elem, final int [] arr)
+  private static int _elemOccurs (final int nElem, final int [] aArr)
   {
-    for (int i = arr.length; i-- > 0;)
-      if (arr[i] == elem)
+    for (int i = aArr.length; i-- > 0;)
+      if (aArr[i] == nElem)
         return i;
 
     return -1;
@@ -1334,130 +1334,130 @@ public class NfaState
     if (nfa ().getStateDone () == null)
       nfa ().setStateDone (new boolean [nfa ().getGeneratedStates ()]);
 
-    final String set = m_next.m_epsilonMovesString;
+    final String sSet = m_next.m_epsilonMovesString;
 
-    final int [] nameSet = nfa ().allNextStates ().get (set);
+    final int [] aNameSet = nfa ().allNextStates ().get (sSet);
 
-    if (nameSet.length <= 2 || nfa ().compositeStateTable ().get (set) != null)
+    if (aNameSet.length <= 2 || nfa ().compositeStateTable ().get (sSet) != null)
       return false;
 
-    final int freq[] = new int [nameSet.length];
-    final boolean live[] = new boolean [nameSet.length];
-    final int [] count = new int [nfa ().allNextStates ().size ()];
+    final int freq[] = new int [aNameSet.length];
+    final boolean live[] = new boolean [aNameSet.length];
+    final int [] aCount = new int [nfa ().allNextStates ().size ()];
 
-    for (int i = 0; i < nameSet.length; i++)
+    for (int i = 0; i < aNameSet.length; i++)
     {
-      if (nameSet[i] != -1)
+      if (aNameSet[i] != -1)
       {
-        live[i] = !nfa ().getStateDone ()[nameSet[i]];
+        live[i] = !nfa ().getStateDone ()[aNameSet[i]];
         if (live[i])
-          count[0]++;
+          aCount[0]++;
       }
     }
 
-    int blockLen = 0, commonFreq = 0;
-    boolean needUpdate;
+    int nBlockLen = 0, commonFreq = 0;
+    boolean bNeedUpdate;
 
     for (final Map.Entry <String, int []> aEntry : nfa ().allNextStates ().entrySet ())
     {
-      final int [] tmpSet = aEntry.getValue ();
-      if (tmpSet == nameSet)
+      final int [] aTmpSet = aEntry.getValue ();
+      if (aTmpSet == aNameSet)
         continue;
 
-      needUpdate = false;
-      for (int j = 0; j < nameSet.length; j++)
+      bNeedUpdate = false;
+      for (int j = 0; j < aNameSet.length; j++)
       {
-        if (nameSet[j] == -1)
+        if (aNameSet[j] == -1)
           continue;
 
-        if (live[j] && _elemOccurs (nameSet[j], tmpSet) >= 0)
+        if (live[j] && _elemOccurs (aNameSet[j], aTmpSet) >= 0)
         {
-          if (!needUpdate)
+          if (!bNeedUpdate)
           {
-            needUpdate = true;
+            bNeedUpdate = true;
             commonFreq++;
           }
 
-          count[freq[j]]--;
-          count[commonFreq]++;
+          aCount[freq[j]]--;
+          aCount[commonFreq]++;
           freq[j] = commonFreq;
         }
       }
 
-      if (needUpdate)
+      if (bNeedUpdate)
       {
-        int foundFreq = -1;
-        blockLen = 0;
+        int nFoundFreq = -1;
+        nBlockLen = 0;
 
         for (int j = 0; j <= commonFreq; j++)
-          if (count[j] > blockLen)
+          if (aCount[j] > nBlockLen)
           {
-            foundFreq = j;
-            blockLen = count[j];
+            nFoundFreq = j;
+            nBlockLen = aCount[j];
           }
 
-        if (blockLen <= 1)
+        if (nBlockLen <= 1)
           return false;
 
-        for (int j = 0; j < nameSet.length; j++)
-          if (nameSet[j] != -1 && freq[j] != foundFreq)
+        for (int j = 0; j < aNameSet.length; j++)
+          if (aNameSet[j] != -1 && freq[j] != nFoundFreq)
           {
             live[j] = false;
-            count[freq[j]]--;
+            aCount[freq[j]]--;
           }
       }
     }
 
-    if (blockLen <= 1)
+    if (nBlockLen <= 1)
       return false;
 
-    final int [] commonBlock = new int [blockLen];
-    int cnt = 0;
+    final int [] aCommonBlock = new int [nBlockLen];
+    int nCnt = 0;
     // System.out.println("Common Block for " + set + " :");
-    for (int i = 0; i < nameSet.length; i++)
+    for (int i = 0; i < aNameSet.length; i++)
     {
       if (live[i])
       {
-        if (nfa ().indexedAllStates ().get (nameSet[i]).m_isComposite)
+        if (nfa ().indexedAllStates ().get (aNameSet[i]).m_isComposite)
           return false;
 
-        nfa ().getStateDone ()[nameSet[i]] = true;
-        commonBlock[cnt++] = nameSet[i];
+        nfa ().getStateDone ()[aNameSet[i]] = true;
+        aCommonBlock[nCnt++] = aNameSet[i];
         // System.out.print(nameSet[i] + ", ");
       }
     }
 
     // System.out.println("");
 
-    final String s = _getStateSetString (commonBlock);
+    final String s = _getStateSetString (aCommonBlock);
 
     Outer: for (final Map.Entry <String, int []> aEntry : nfa ().allNextStates ().entrySet ())
     {
-      boolean firstOne = true;
-      final String stringToFix = aEntry.getKey ();
-      final int [] setToFix = aEntry.getValue ();
+      boolean bFirstOne = true;
+      final String sStringToFix = aEntry.getKey ();
+      final int [] aSetToFix = aEntry.getValue ();
 
-      if (setToFix == commonBlock)
+      if (aSetToFix == aCommonBlock)
         continue;
 
-      for (int k = 0; k < cnt; k++)
+      for (int k = 0; k < nCnt; k++)
       {
-        final int at = _elemOccurs (commonBlock[k], setToFix);
-        if (at >= 0)
+        final int nAt = _elemOccurs (aCommonBlock[k], aSetToFix);
+        if (nAt >= 0)
         {
-          if (!firstOne)
-            setToFix[at] = -1;
-          firstOne = false;
+          if (!bFirstOne)
+            aSetToFix[nAt] = -1;
+          bFirstOne = false;
         }
         else
           continue Outer;
       }
 
-      if (nfa ().stateSetsToFix ().get (stringToFix) == null)
-        nfa ().stateSetsToFix ().put (stringToFix, setToFix);
+      if (nfa ().stateSetsToFix ().get (sStringToFix) == null)
+        nfa ().stateSetsToFix ().put (sStringToFix, aSetToFix);
     }
 
-    m_next.m_usefulEpsilonMoves -= blockLen - 1;
+    m_next.m_usefulEpsilonMoves -= nBlockLen - 1;
     _addCompositeStateSet (s, false);
     return true;
   }
@@ -1468,73 +1468,73 @@ public class NfaState
     if (m_next == null || m_next.m_usefulEpsilonMoves <= 1)
       return true;
 
-    final String set = m_next.m_epsilonMovesString;
+    final String sSet = m_next.m_epsilonMovesString;
 
-    final int [] nameSet = nfa ().allNextStates ().get (set);
+    final int [] aNameSet = nfa ().allNextStates ().get (sSet);
 
-    if (nameSet.length == 1 ||
-      nfa ().compositeStateTable ().get (set) != null ||
-      nfa ().stateSetsToFix ().get (set) != null)
+    if (aNameSet.length == 1 ||
+      nfa ().compositeStateTable ().get (sSet) != null ||
+      nfa ().stateSetsToFix ().get (sSet) != null)
       return false;
 
-    final Map <String, int []> occursIn = new HashMap <> ();
-    final NfaState tmp = nfa ().getAllStates ().get (nameSet[0]);
+    final Map <String, int []> aOccursIn = new HashMap <> ();
+    final NfaState aTmp = nfa ().getAllStates ().get (aNameSet[0]);
 
-    for (int i = 1; i < nameSet.length; i++)
+    for (int i = 1; i < aNameSet.length; i++)
     {
-      final NfaState tmp1 = nfa ().getAllStates ().get (nameSet[i]);
+      final NfaState aTmp1 = nfa ().getAllStates ().get (aNameSet[i]);
 
-      if (tmp.m_inNextOf != tmp1.m_inNextOf)
+      if (aTmp.m_inNextOf != aTmp1.m_inNextOf)
         return false;
     }
 
     for (final Map.Entry <String, int []> aEntry : nfa ().allNextStates ().entrySet ())
     {
       final String s = aEntry.getKey ();
-      final int [] tmpSet = aEntry.getValue ();
+      final int [] aTmpSet = aEntry.getValue ();
 
-      if (tmpSet == nameSet)
+      if (aTmpSet == aNameSet)
         continue;
 
-      int isPresent = 0;
+      int nIsPresent = 0;
       int j = 0;
-      for (final int aElement : nameSet)
+      for (final int aElement : aNameSet)
       {
-        if (_elemOccurs (aElement, tmpSet) >= 0)
-          isPresent++;
+        if (_elemOccurs (aElement, aTmpSet) >= 0)
+          nIsPresent++;
         else
-          if (isPresent > 0)
+          if (nIsPresent > 0)
             return false;
         j++;
       }
 
-      if (isPresent == j)
+      if (nIsPresent == j)
       {
-        if (tmpSet.length > nameSet.length)
-          occursIn.put (s, tmpSet);
+        if (aTmpSet.length > aNameSet.length)
+          aOccursIn.put (s, aTmpSet);
 
         // May not need. But safe.
         if (nfa ().compositeStateTable ().get (s) != null || nfa ().stateSetsToFix ().get (s) != null)
           return false;
       }
       else
-        if (isPresent != 0)
+        if (nIsPresent != 0)
           return false;
     }
 
-    for (final Map.Entry <String, int []> aEntry : occursIn.entrySet ())
+    for (final Map.Entry <String, int []> aEntry : aOccursIn.entrySet ())
     {
       final String s = aEntry.getKey ();
-      final int [] setToFix = aEntry.getValue ();
+      final int [] aSetToFix = aEntry.getValue ();
 
       if (!nfa ().stateSetsToFix ().containsKey (s))
-        nfa ().stateSetsToFix ().put (s, setToFix);
+        nfa ().stateSetsToFix ().put (s, aSetToFix);
 
-      for (int k = 0; k < setToFix.length; k++)
+      for (int k = 0; k < aSetToFix.length; k++)
       {
         // Not >= since need the first one (0)
-        if (_elemOccurs (setToFix[k], nameSet) > 0)
-          setToFix[k] = -1;
+        if (_elemOccurs (aSetToFix[k], aNameSet) > 0)
+          aSetToFix[k] = -1;
       }
     }
 
@@ -1545,27 +1545,27 @@ public class NfaState
 
   private static void _fixStateSets ()
   {
-    final Map <String, int []> fixedSets = new HashMap <> ();
-    final int [] tmp = new int [nfa ().getGeneratedStates ()];
+    final Map <String, int []> aFixedSets = new HashMap <> ();
+    final int [] aTmp = new int [nfa ().getGeneratedStates ()];
 
     for (final Map.Entry <String, int []> aEntry : nfa ().stateSetsToFix ().entrySet ())
     {
       final String s = aEntry.getKey ();
-      final int [] toFix = aEntry.getValue ();
-      int cnt = 0;
+      final int [] aToFix = aEntry.getValue ();
+      int nCnt = 0;
 
       // System.out.print("Fixing : ");
-      for (final int aElement : toFix)
+      for (final int aElement : aToFix)
       {
         // System.out.print(toFix[i] + ", ");
         if (aElement != -1)
-          tmp[cnt++] = aElement;
+          aTmp[nCnt++] = aElement;
       }
 
-      final int [] fixed = new int [cnt];
-      System.arraycopy (tmp, 0, fixed, 0, cnt);
-      fixedSets.put (s, fixed);
-      nfa ().allNextStates ().put (s, fixed);
+      final int [] aFixed = new int [nCnt];
+      System.arraycopy (aTmp, 0, aFixed, 0, nCnt);
+      aFixedSets.put (s, aFixed);
+      nfa ().allNextStates ().put (s, aFixed);
       // System.out.println(" as " + GetStateSetString(fixed));
     }
 
@@ -1578,69 +1578,69 @@ public class NfaState
        * if (compositeStateTable.get(tmpState.next.epsilonMovesString) != null)
        * tmpState.next.usefulEpsilonMoves = 1; else
        */
-      final int [] newSet = fixedSets.get (tmpState.m_next.m_epsilonMovesString);
-      if (newSet != null)
-        tmpState._fixNextStates (newSet);
+      final int [] aNewSet = aFixedSets.get (tmpState.m_next.m_epsilonMovesString);
+      if (aNewSet != null)
+        tmpState._fixNextStates (aNewSet);
     }
   }
 
-  private final void _fixNextStates (final int [] newSet)
+  private final void _fixNextStates (final int [] aNewSet)
   {
-    m_next.m_usefulEpsilonMoves = newSet.length;
+    m_next.m_usefulEpsilonMoves = aNewSet.length;
     // next.epsilonMovesString = GetStateSetString(newSet);
   }
 
-  private static boolean _intersect (final String set1, final String set2)
+  private static boolean _intersect (final String sSet1, final String sSet2)
   {
-    if (set1 == null || set2 == null)
+    if (sSet1 == null || sSet2 == null)
       return false;
 
-    final int [] nameSet1 = nfa ().allNextStates ().get (set1);
-    final int [] nameSet2 = nfa ().allNextStates ().get (set2);
+    final int [] aNameSet1 = nfa ().allNextStates ().get (sSet1);
+    final int [] aNameSet2 = nfa ().allNextStates ().get (sSet2);
 
-    if (nameSet1 == null || nameSet2 == null)
+    if (aNameSet1 == null || aNameSet2 == null)
       return false;
 
-    if (nameSet1 == nameSet2)
+    if (aNameSet1 == aNameSet2)
       return true;
 
-    for (int i = nameSet1.length; i-- > 0;)
-      for (int j = nameSet2.length; j-- > 0;)
-        if (nameSet1[i] == nameSet2[j])
+    for (int i = aNameSet1.length; i-- > 0;)
+      for (int j = aNameSet2.length; j-- > 0;)
+        if (aNameSet1[i] == aNameSet2[j])
           return true;
 
     return false;
   }
 
-  private static void _dumpHeadForCase (final CodeGenerator codeGenerator, final int byteNum)
+  private static void _dumpHeadForCase (final CodeGenerator aCodeGenerator, final int nByteNum)
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
-    if (byteNum == 0)
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
+    if (nByteNum == 0)
     {
-      codeGenerator.genCodeLine ("         " + eOutputLanguage.getTypeLong () + " l = 1L << curChar;");
+      aCodeGenerator.genCodeLine ("         " + eOutputLanguage.getTypeLong () + " l = 1L << curChar;");
       switch (eOutputLanguage)
       {
         case JAVA:
           // Nothing
           break;
         case CPP:
-          codeGenerator.genCodeLine ("         (void)l;");
+          aCodeGenerator.genCodeLine ("         (void)l;");
           break;
         default:
           throw new UnsupportedOutputLanguageException (eOutputLanguage);
       }
     }
     else
-      if (byteNum == 1)
+      if (nByteNum == 1)
       {
-        codeGenerator.genCodeLine ("         " + eOutputLanguage.getTypeLong () + " l = 1L << (curChar & 077);");
+        aCodeGenerator.genCodeLine ("         " + eOutputLanguage.getTypeLong () + " l = 1L << (curChar & 077);");
         switch (eOutputLanguage)
         {
           case JAVA:
             // Nothing
             break;
           case CPP:
-            codeGenerator.genCodeLine ("         (void)l;");
+            aCodeGenerator.genCodeLine ("         (void)l;");
             break;
           default:
             throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -1650,210 +1650,210 @@ public class NfaState
       {
         if (Options.isJavaUnicodeEscape () || nfa ().isUnicodeWarningGiven ())
         {
-          codeGenerator.genCodeLine ("         int hiByte = (curChar >> 8);");
-          codeGenerator.genCodeLine ("         int i1 = hiByte >> 6;");
-          codeGenerator.genCodeLine ("         " + eOutputLanguage.getTypeLong () + " l1 = 1L << (hiByte & 077);");
+          aCodeGenerator.genCodeLine ("         int hiByte = (curChar >> 8);");
+          aCodeGenerator.genCodeLine ("         int i1 = hiByte >> 6;");
+          aCodeGenerator.genCodeLine ("         " + eOutputLanguage.getTypeLong () + " l1 = 1L << (hiByte & 077);");
         }
 
-        codeGenerator.genCodeLine ("         int i2 = (curChar & 0xff) >> 6;");
-        codeGenerator.genCodeLine ("         " + eOutputLanguage.getTypeLong () + " l2 = 1L << (curChar & 077);");
+        aCodeGenerator.genCodeLine ("         int i2 = (curChar & 0xff) >> 6;");
+        aCodeGenerator.genCodeLine ("         " + eOutputLanguage.getTypeLong () + " l2 = 1L << (curChar & 077);");
       }
 
     // codeGenerator.genCodeLine(" MatchLoop: do");
-    codeGenerator.genCodeLine ("         do");
-    codeGenerator.genCodeLine ("         {");
+    aCodeGenerator.genCodeLine ("         do");
+    aCodeGenerator.genCodeLine ("         {");
 
-    codeGenerator.genCodeLine ("            switch(jjstateSet[--i])");
-    codeGenerator.genCodeLine ("            {");
+    aCodeGenerator.genCodeLine ("            switch(jjstateSet[--i])");
+    aCodeGenerator.genCodeLine ("            {");
   }
 
-  private static List <List <NfaState>> _partitionStatesSetForAscii (final int [] states, final int byteNum)
+  private static List <List <NfaState>> _partitionStatesSetForAscii (final int [] aStates, final int nByteNum)
   {
-    final int [] cardinalities = new int [states.length];
-    List <NfaState> original = new ArrayList <> ();
-    final List <List <NfaState>> partition = new ArrayList <> ();
-    NfaState tmp;
+    final int [] aCardinalities = new int [aStates.length];
+    List <NfaState> aOriginal = new ArrayList <> ();
+    final List <List <NfaState>> aPartition = new ArrayList <> ();
+    NfaState aTmp;
 
     for (@SuppressWarnings ("unused")
-    final int x : states)
-      original.add (null);
+    final int x : aStates)
+      aOriginal.add (null);
 
-    int cnt = 0;
-    for (int i = 0; i < states.length; i++)
+    int nCnt = 0;
+    for (int i = 0; i < aStates.length; i++)
     {
-      tmp = nfa ().getAllStates ().get (states[i]);
+      aTmp = nfa ().getAllStates ().get (aStates[i]);
 
-      if (tmp.m_asciiMoves[byteNum] != 0L)
+      if (aTmp.m_asciiMoves[nByteNum] != 0L)
       {
         int j;
-        final int p = _numberOfBitsSet (tmp.m_asciiMoves[byteNum]);
+        final int p = _numberOfBitsSet (aTmp.m_asciiMoves[nByteNum]);
 
         for (j = 0; j < i; j++)
-          if (cardinalities[j] <= p)
+          if (aCardinalities[j] <= p)
             break;
 
         for (int k = i; k > j; k--)
-          cardinalities[k] = cardinalities[k - 1];
+          aCardinalities[k] = aCardinalities[k - 1];
 
-        cardinalities[j] = p;
+        aCardinalities[j] = p;
 
-        original.add (j, tmp);
-        cnt++;
+        aOriginal.add (j, aTmp);
+        nCnt++;
       }
     }
 
     // original.setSize (cnt);
-    while (original.size () < cnt)
-      original.add (null);
-    if (original.size () > cnt)
-      original = original.subList (0, cnt);
+    while (aOriginal.size () < nCnt)
+      aOriginal.add (null);
+    if (aOriginal.size () > nCnt)
+      aOriginal = aOriginal.subList (0, nCnt);
 
-    while (!original.isEmpty ())
+    while (!aOriginal.isEmpty ())
     {
-      tmp = original.remove (0);
+      aTmp = aOriginal.remove (0);
 
-      long bitVec = tmp.m_asciiMoves[byteNum];
-      final List <NfaState> subSet = new ArrayList <> ();
-      subSet.add (tmp);
+      long nBitVec = aTmp.m_asciiMoves[nByteNum];
+      final List <NfaState> aSubSet = new ArrayList <> ();
+      aSubSet.add (aTmp);
 
-      for (int j = 0; j < original.size (); j++)
+      for (int j = 0; j < aOriginal.size (); j++)
       {
-        final NfaState tmp1 = original.get (j);
+        final NfaState aTmp1 = aOriginal.get (j);
 
-        if ((tmp1.m_asciiMoves[byteNum] & bitVec) == 0L)
+        if ((aTmp1.m_asciiMoves[nByteNum] & nBitVec) == 0L)
         {
-          bitVec |= tmp1.m_asciiMoves[byteNum];
-          subSet.add (tmp1);
-          original.remove (j--);
+          nBitVec |= aTmp1.m_asciiMoves[nByteNum];
+          aSubSet.add (aTmp1);
+          aOriginal.remove (j--);
         }
       }
 
-      partition.add (subSet);
+      aPartition.add (aSubSet);
     }
 
-    return partition;
+    return aPartition;
   }
 
-  private String _printNoBreak (final CodeGenerator codeGenerator, final int byteNum, final boolean [] dumped)
+  private String _printNoBreak (final CodeGenerator aCodeGenerator, final int nByteNum, final boolean [] aDumped)
   {
     if (m_inNextOf != 1)
       JavaCCErrors.internalError ();
 
-    dumped[m_stateName] = true;
+    aDumped[m_stateName] = true;
 
-    if (byteNum >= 0)
+    if (nByteNum >= 0)
     {
-      if (m_asciiMoves[byteNum] != 0L)
+      if (m_asciiMoves[nByteNum] != 0L)
       {
-        codeGenerator.genCodeLine ("               case " + m_stateName + ":");
-        _dumpAsciiMoveForCompositeState (codeGenerator, byteNum, false);
+        aCodeGenerator.genCodeLine ("               case " + m_stateName + ":");
+        _dumpAsciiMoveForCompositeState (aCodeGenerator, nByteNum, false);
         return "";
       }
     }
     else
       if (m_nonAsciiMethod != -1)
       {
-        codeGenerator.genCodeLine ("               case " + m_stateName + ":");
-        _dumpNonAsciiMoveForCompositeState (codeGenerator);
+        aCodeGenerator.genCodeLine ("               case " + m_stateName + ":");
+        _dumpNonAsciiMoveForCompositeState (aCodeGenerator);
         return "";
       }
 
     return ("               case " + m_stateName + ":\n");
   }
 
-  private static void _dumpCompositeStatesAsciiMoves (final CodeGenerator codeGenerator,
-                                                      final String key,
-                                                      final int byteNum,
-                                                      final boolean [] dumped)
+  private static void _dumpCompositeStatesAsciiMoves (final CodeGenerator aCodeGenerator,
+                                                      final String sKey,
+                                                      final int nByteNum,
+                                                      final boolean [] aDumped)
   {
-    final int [] nameSet = nfa ().allNextStates ().get (key);
+    final int [] aNameSet = nfa ().allNextStates ().get (sKey);
 
-    if (nameSet.length == 1 || dumped[_stateNameForComposite (key)])
+    if (aNameSet.length == 1 || aDumped[_stateNameForComposite (sKey)])
       return;
 
-    NfaState toBePrinted = null;
-    int neededStates = 0;
-    NfaState stateForCase = null;
-    String toPrint = "";
-    final boolean stateBlock = (nfa ().stateBlockTable ().get (key) != null);
+    NfaState aToBePrinted = null;
+    int nNeededStates = 0;
+    NfaState aStateForCase = null;
+    String sToPrint = "";
+    final boolean bStateBlock = (nfa ().stateBlockTable ().get (sKey) != null);
 
-    for (final int aElement : nameSet)
+    for (final int aElement : aNameSet)
     {
-      final NfaState tmp = nfa ().getAllStates ().get (aElement);
+      final NfaState aTmp = nfa ().getAllStates ().get (aElement);
 
-      if (tmp.m_asciiMoves[byteNum] != 0L)
+      if (aTmp.m_asciiMoves[nByteNum] != 0L)
       {
-        if (neededStates++ == 1)
+        if (nNeededStates++ == 1)
           break;
-        toBePrinted = tmp;
+        aToBePrinted = aTmp;
       }
       else
-        dumped[tmp.m_stateName] = true;
+        aDumped[aTmp.m_stateName] = true;
 
-      if (tmp.m_stateForCase != null)
+      if (aTmp.m_stateForCase != null)
       {
-        if (stateForCase != null)
+        if (aStateForCase != null)
           JavaCCErrors.internalError ();
 
-        stateForCase = tmp.m_stateForCase;
+        aStateForCase = aTmp.m_stateForCase;
       }
     }
 
-    if (stateForCase != null)
-      toPrint = stateForCase._printNoBreak (codeGenerator, byteNum, dumped);
+    if (aStateForCase != null)
+      sToPrint = aStateForCase._printNoBreak (aCodeGenerator, nByteNum, aDumped);
 
-    if (neededStates == 0)
+    if (nNeededStates == 0)
     {
-      if (stateForCase != null && toPrint.length () == 0)
-        codeGenerator.genCodeLine ("                  break;");
+      if (aStateForCase != null && sToPrint.length () == 0)
+        aCodeGenerator.genCodeLine ("                  break;");
       return;
     }
 
-    if (neededStates == 1)
+    if (nNeededStates == 1)
     {
       // if (byteNum == 1)
       // System.out.println(toBePrinted.stateName + " is the only state for "
       // + key + " ; and key is : " + StateNameForComposite(key));
 
-      if (StringHelper.isNotEmpty (toPrint))
-        codeGenerator.genCode (toPrint);
+      if (StringHelper.isNotEmpty (sToPrint))
+        aCodeGenerator.genCode (sToPrint);
 
-      codeGenerator.genCodeLine ("               case " + _stateNameForComposite (key) + ":");
+      aCodeGenerator.genCodeLine ("               case " + _stateNameForComposite (sKey) + ":");
 
-      if (!dumped[toBePrinted.m_stateName] && !stateBlock && toBePrinted.m_inNextOf > 1)
-        codeGenerator.genCodeLine ("               case " + toBePrinted.m_stateName + ":");
+      if (!aDumped[aToBePrinted.m_stateName] && !bStateBlock && aToBePrinted.m_inNextOf > 1)
+        aCodeGenerator.genCodeLine ("               case " + aToBePrinted.m_stateName + ":");
 
-      dumped[toBePrinted.m_stateName] = true;
-      toBePrinted._dumpAsciiMove (codeGenerator, byteNum, dumped);
+      aDumped[aToBePrinted.m_stateName] = true;
+      aToBePrinted._dumpAsciiMove (aCodeGenerator, nByteNum, aDumped);
       return;
     }
 
-    final List <List <NfaState>> partition = _partitionStatesSetForAscii (nameSet, byteNum);
+    final List <List <NfaState>> aPartition = _partitionStatesSetForAscii (aNameSet, nByteNum);
 
-    if (StringHelper.isNotEmpty (toPrint))
-      codeGenerator.genCode (toPrint);
+    if (StringHelper.isNotEmpty (sToPrint))
+      aCodeGenerator.genCode (sToPrint);
 
-    final int keyState = _stateNameForComposite (key);
-    codeGenerator.genCodeLine ("               case " + keyState + ":");
-    if (keyState < nfa ().getGeneratedStates ())
-      dumped[keyState] = true;
+    final int nKeyState = _stateNameForComposite (sKey);
+    aCodeGenerator.genCodeLine ("               case " + nKeyState + ":");
+    if (nKeyState < nfa ().getGeneratedStates ())
+      aDumped[nKeyState] = true;
 
-    for (final List <NfaState> subSet : partition)
+    for (final List <NfaState> subSet : aPartition)
     {
       int nIndex = 0;
       for (final NfaState tmp : subSet)
       {
-        if (stateBlock)
-          dumped[tmp.m_stateName] = true;
-        tmp._dumpAsciiMoveForCompositeState (codeGenerator, byteNum, nIndex != 0);
+        if (bStateBlock)
+          aDumped[tmp.m_stateName] = true;
+        tmp._dumpAsciiMoveForCompositeState (aCodeGenerator, nByteNum, nIndex != 0);
         ++nIndex;
       }
     }
 
-    if (stateBlock)
-      codeGenerator.genCodeLine ("                  break;");
+    if (bStateBlock)
+      aCodeGenerator.genCodeLine ("                  break;");
     else
-      codeGenerator.genCodeLine ("                  break;");
+      aCodeGenerator.genCodeLine ("                  break;");
   }
 
   private boolean _selfLoop ()
@@ -1861,16 +1861,16 @@ public class NfaState
     if (m_next == null || m_next.m_epsilonMovesString == null)
       return false;
 
-    final int [] set = nfa ().allNextStates ().get (m_next.m_epsilonMovesString);
-    return _elemOccurs (m_stateName, set) >= 0;
+    final int [] aSet = nfa ().allNextStates ().get (m_next.m_epsilonMovesString);
+    return _elemOccurs (m_stateName, aSet) >= 0;
   }
 
-  private void _dumpAsciiMoveForCompositeState (final CodeGenerator codeGenerator,
-                                                final int byteNum,
-                                                final boolean elseNeeded)
+  private void _dumpAsciiMoveForCompositeState (final CodeGenerator aCodeGenerator,
+                                                final int nByteNum,
+                                                final boolean bElseNeeded)
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
-    boolean nextIntersects = _selfLoop ();
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
+    boolean bNextIntersects = _selfLoop ();
 
     for (final NfaState temp1 : nfa ().getAllStates ())
     {
@@ -1878,441 +1878,441 @@ public class NfaState
         temp1.m_stateName == -1 ||
         temp1.m_dummy ||
         m_stateName == temp1.m_stateName ||
-        temp1.m_asciiMoves[byteNum] == 0L)
+        temp1.m_asciiMoves[nByteNum] == 0L)
         continue;
 
-      if (!nextIntersects && _intersect (temp1.m_next.m_epsilonMovesString, m_next.m_epsilonMovesString))
+      if (!bNextIntersects && _intersect (temp1.m_next.m_epsilonMovesString, m_next.m_epsilonMovesString))
       {
-        nextIntersects = true;
+        bNextIntersects = true;
         break;
       }
     }
 
     // System.out.println(stateName + " \'s nextIntersects : " +
     // nextIntersects);
-    String prefix = "";
-    if (m_asciiMoves[byteNum] != 0xffffffffffffffffL)
+    String sPrefix = "";
+    if (m_asciiMoves[nByteNum] != 0xffffffffffffffffL)
     {
-      final int oneBit = _isOnlyOneBitSet (m_asciiMoves[byteNum]);
+      final int nOneBit = _isOnlyOneBitSet (m_asciiMoves[nByteNum]);
 
-      if (oneBit != -1)
-        codeGenerator.genCodeLine ("                  " +
-                                   (elseNeeded ? "else " : "") +
+      if (nOneBit != -1)
+        aCodeGenerator.genCodeLine ("                  " +
+                                   (bElseNeeded ? "else " : "") +
                                    "if (curChar == " +
-                                   (64 * byteNum + oneBit) +
+                                   (64 * nByteNum + nOneBit) +
                                    ")");
       else
-        codeGenerator.genCodeLine ("                  " +
-                                   (elseNeeded ? "else " : "") +
+        aCodeGenerator.genCodeLine ("                  " +
+                                   (bElseNeeded ? "else " : "") +
                                    "if ((" +
-                                   eOutputLanguage.getLongHex (m_asciiMoves[byteNum]) +
+                                   eOutputLanguage.getLongHex (m_asciiMoves[nByteNum]) +
                                    " & l) != " +
                                    eOutputLanguage.getLongPlain (0) +
                                    ")");
-      prefix = "   ";
+      sPrefix = "   ";
     }
 
     if (m_kindToPrint != Integer.MAX_VALUE)
     {
-      if (m_asciiMoves[byteNum] != 0xffffffffffffffffL)
+      if (m_asciiMoves[nByteNum] != 0xffffffffffffffffL)
       {
-        codeGenerator.genCodeLine ("                  {");
+        aCodeGenerator.genCodeLine ("                  {");
       }
 
-      codeGenerator.genCodeLine (prefix + "                  if (kind > " + m_kindToPrint + ")");
-      codeGenerator.genCodeLine (prefix + "                     kind = " + m_kindToPrint + ";");
+      aCodeGenerator.genCodeLine (sPrefix + "                  if (kind > " + m_kindToPrint + ")");
+      aCodeGenerator.genCodeLine (sPrefix + "                     kind = " + m_kindToPrint + ";");
     }
 
     if (m_next != null && m_next.m_usefulEpsilonMoves > 0)
     {
-      final int [] stateNames = nfa ().allNextStates ().get (m_next.m_epsilonMovesString);
+      final int [] aStateNames = nfa ().allNextStates ().get (m_next.m_epsilonMovesString);
       if (m_next.m_usefulEpsilonMoves == 1)
       {
-        final int name = stateNames[0];
+        final int nName = aStateNames[0];
 
-        if (nextIntersects)
-          codeGenerator.genCodeLine (prefix + "                  { jjCheckNAdd(" + name + "); }");
+        if (bNextIntersects)
+          aCodeGenerator.genCodeLine (sPrefix + "                  { jjCheckNAdd(" + nName + "); }");
         else
-          codeGenerator.genCodeLine (prefix + "                  jjstateSet[jjnewStateCnt++] = " + name + ";");
+          aCodeGenerator.genCodeLine (sPrefix + "                  jjstateSet[jjnewStateCnt++] = " + nName + ";");
       }
       else
-        if (m_next.m_usefulEpsilonMoves == 2 && nextIntersects)
+        if (m_next.m_usefulEpsilonMoves == 2 && bNextIntersects)
         {
-          codeGenerator.genCodeLine (prefix +
+          aCodeGenerator.genCodeLine (sPrefix +
                                      "                  { jjCheckNAddTwoStates(" +
-                                     stateNames[0] +
+                                     aStateNames[0] +
                                      ", " +
-                                     stateNames[1] +
+                                     aStateNames[1] +
                                      "); }");
         }
         else
         {
-          final int [] indices = _getStateSetIndicesForUse (m_next.m_epsilonMovesString);
-          final boolean notTwo = (indices[0] + 1 != indices[1]);
+          final int [] aIndices = _getStateSetIndicesForUse (m_next.m_epsilonMovesString);
+          final boolean bNotTwo = (aIndices[0] + 1 != aIndices[1]);
 
-          if (nextIntersects)
+          if (bNextIntersects)
           {
-            codeGenerator.genCode (prefix + "                  { jjCheckNAddStates(" + indices[0]);
-            if (notTwo)
+            aCodeGenerator.genCode (sPrefix + "                  { jjCheckNAddStates(" + aIndices[0]);
+            if (bNotTwo)
             {
               nfa ().setJJCheckNAddStatesDualNeeded (true);
-              codeGenerator.genCode (", " + indices[1]);
+              aCodeGenerator.genCode (", " + aIndices[1]);
             }
             else
             {
               nfa ().setJJCheckNAddStatesUnaryNeeded (true);
             }
-            codeGenerator.genCodeLine ("); }");
+            aCodeGenerator.genCodeLine ("); }");
           }
           else
-            codeGenerator.genCodeLine (prefix +
+            aCodeGenerator.genCodeLine (sPrefix +
                                        "                  { jjAddStates(" +
-                                       indices[0] +
+                                       aIndices[0] +
                                        ", " +
-                                       indices[1] +
+                                       aIndices[1] +
                                        "); }");
         }
     }
 
-    if (m_asciiMoves[byteNum] != 0xffffffffffffffffL && m_kindToPrint != Integer.MAX_VALUE)
-      codeGenerator.genCodeLine ("                  }");
+    if (m_asciiMoves[nByteNum] != 0xffffffffffffffffL && m_kindToPrint != Integer.MAX_VALUE)
+      aCodeGenerator.genCodeLine ("                  }");
   }
 
-  private void _dumpAsciiMove (final CodeGenerator codeGenerator, final int byteNum, final boolean dumped[])
+  private void _dumpAsciiMove (final CodeGenerator aCodeGenerator, final int nByteNum, final boolean dumped[])
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
-    boolean nextIntersects = _selfLoop () && m_isComposite;
-    boolean onlyState = true;
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
+    boolean bNextIntersects = _selfLoop () && m_isComposite;
+    boolean bOnlyState = true;
 
     for (final NfaState s_allState : nfa ().getAllStates ())
     {
-      final NfaState temp1 = s_allState;
+      final NfaState aTemp1 = s_allState;
 
-      if (this == temp1 ||
-        temp1.m_stateName == -1 ||
-        temp1.m_dummy ||
-        m_stateName == temp1.m_stateName ||
-        temp1.m_asciiMoves[byteNum] == 0L)
+      if (this == aTemp1 ||
+        aTemp1.m_stateName == -1 ||
+        aTemp1.m_dummy ||
+        m_stateName == aTemp1.m_stateName ||
+        aTemp1.m_asciiMoves[nByteNum] == 0L)
         continue;
 
-      if (onlyState && (m_asciiMoves[byteNum] & temp1.m_asciiMoves[byteNum]) != 0L)
-        onlyState = false;
+      if (bOnlyState && (m_asciiMoves[nByteNum] & aTemp1.m_asciiMoves[nByteNum]) != 0L)
+        bOnlyState = false;
 
-      if (!nextIntersects && _intersect (temp1.m_next.m_epsilonMovesString, m_next.m_epsilonMovesString))
-        nextIntersects = true;
+      if (!bNextIntersects && _intersect (aTemp1.m_next.m_epsilonMovesString, m_next.m_epsilonMovesString))
+        bNextIntersects = true;
 
-      if (!dumped[temp1.m_stateName] &&
-        !temp1.m_isComposite &&
-        m_asciiMoves[byteNum] == temp1.m_asciiMoves[byteNum] &&
-        m_kindToPrint == temp1.m_kindToPrint &&
-        (m_next.m_epsilonMovesString == temp1.m_next.m_epsilonMovesString ||
+      if (!dumped[aTemp1.m_stateName] &&
+        !aTemp1.m_isComposite &&
+        m_asciiMoves[nByteNum] == aTemp1.m_asciiMoves[nByteNum] &&
+        m_kindToPrint == aTemp1.m_kindToPrint &&
+        (m_next.m_epsilonMovesString == aTemp1.m_next.m_epsilonMovesString ||
           (m_next.m_epsilonMovesString != null &&
-            temp1.m_next.m_epsilonMovesString != null &&
-            m_next.m_epsilonMovesString.equals (temp1.m_next.m_epsilonMovesString))))
+            aTemp1.m_next.m_epsilonMovesString != null &&
+            m_next.m_epsilonMovesString.equals (aTemp1.m_next.m_epsilonMovesString))))
       {
-        dumped[temp1.m_stateName] = true;
-        codeGenerator.genCodeLine ("               case " + temp1.m_stateName + ":");
+        dumped[aTemp1.m_stateName] = true;
+        aCodeGenerator.genCodeLine ("               case " + aTemp1.m_stateName + ":");
       }
     }
 
     // if (onlyState)
     // nextIntersects = false;
 
-    final int oneBit = _isOnlyOneBitSet (m_asciiMoves[byteNum]);
-    if (m_asciiMoves[byteNum] != 0xffffffffffffffffL)
+    final int nOneBit = _isOnlyOneBitSet (m_asciiMoves[nByteNum]);
+    if (m_asciiMoves[nByteNum] != 0xffffffffffffffffL)
     {
       if ((m_next == null || m_next.m_usefulEpsilonMoves == 0) && m_kindToPrint != Integer.MAX_VALUE)
       {
-        String kindCheck = "";
+        String sKindCheck = "";
 
-        if (!onlyState)
-          kindCheck = " && kind > " + m_kindToPrint;
+        if (!bOnlyState)
+          sKindCheck = " && kind > " + m_kindToPrint;
 
-        if (oneBit != -1)
-          codeGenerator.genCodeLine ("                  if (curChar == " + (64 * byteNum + oneBit) + kindCheck + ")");
+        if (nOneBit != -1)
+          aCodeGenerator.genCodeLine ("                  if (curChar == " + (64 * nByteNum + nOneBit) + sKindCheck + ")");
         else
-          codeGenerator.genCodeLine ("                  if ((" +
-                                     eOutputLanguage.getLongHex (m_asciiMoves[byteNum]) +
+          aCodeGenerator.genCodeLine ("                  if ((" +
+                                     eOutputLanguage.getLongHex (m_asciiMoves[nByteNum]) +
                                      " & l) != " +
                                      eOutputLanguage.getLongPlain (0) +
-                                     kindCheck +
+                                     sKindCheck +
                                      ")");
 
-        codeGenerator.genCodeLine ("                     kind = " + m_kindToPrint + ";");
+        aCodeGenerator.genCodeLine ("                     kind = " + m_kindToPrint + ";");
 
-        if (onlyState)
-          codeGenerator.genCodeLine ("                  break;");
+        if (bOnlyState)
+          aCodeGenerator.genCodeLine ("                  break;");
         else
-          codeGenerator.genCodeLine ("                  break;");
+          aCodeGenerator.genCodeLine ("                  break;");
 
         return;
       }
     }
 
-    String prefix = "";
+    String sPrefix = "";
     if (m_kindToPrint != Integer.MAX_VALUE)
     {
 
-      if (oneBit != -1)
+      if (nOneBit != -1)
       {
-        codeGenerator.genCodeLine ("                  if (curChar != " + (64 * byteNum + oneBit) + ")");
-        codeGenerator.genCodeLine ("                     break;");
+        aCodeGenerator.genCodeLine ("                  if (curChar != " + (64 * nByteNum + nOneBit) + ")");
+        aCodeGenerator.genCodeLine ("                     break;");
       }
       else
-        if (m_asciiMoves[byteNum] != 0xffffffffffffffffL)
+        if (m_asciiMoves[nByteNum] != 0xffffffffffffffffL)
         {
-          codeGenerator.genCodeLine ("                  if ((" +
-                                     eOutputLanguage.getLongHex (m_asciiMoves[byteNum]) +
+          aCodeGenerator.genCodeLine ("                  if ((" +
+                                     eOutputLanguage.getLongHex (m_asciiMoves[nByteNum]) +
                                      " & l) == " +
                                      eOutputLanguage.getLongPlain (0) +
                                      ")");
-          codeGenerator.genCodeLine ("                     break;");
+          aCodeGenerator.genCodeLine ("                     break;");
         }
 
-      if (onlyState)
+      if (bOnlyState)
       {
-        codeGenerator.genCodeLine ("                  kind = " + m_kindToPrint + ";");
+        aCodeGenerator.genCodeLine ("                  kind = " + m_kindToPrint + ";");
       }
       else
       {
-        codeGenerator.genCodeLine ("                  if (kind > " + m_kindToPrint + ")");
-        codeGenerator.genCodeLine ("                     kind = " + m_kindToPrint + ";");
+        aCodeGenerator.genCodeLine ("                  if (kind > " + m_kindToPrint + ")");
+        aCodeGenerator.genCodeLine ("                     kind = " + m_kindToPrint + ";");
       }
     }
     else
     {
-      if (oneBit != -1)
+      if (nOneBit != -1)
       {
-        codeGenerator.genCodeLine ("                  if (curChar == " + (64 * byteNum + oneBit) + ")");
-        prefix = "   ";
+        aCodeGenerator.genCodeLine ("                  if (curChar == " + (64 * nByteNum + nOneBit) + ")");
+        sPrefix = "   ";
       }
       else
-        if (m_asciiMoves[byteNum] != 0xffffffffffffffffL)
+        if (m_asciiMoves[nByteNum] != 0xffffffffffffffffL)
         {
-          codeGenerator.genCodeLine ("                  if ((" +
-                                     eOutputLanguage.getLongHex (m_asciiMoves[byteNum]) +
+          aCodeGenerator.genCodeLine ("                  if ((" +
+                                     eOutputLanguage.getLongHex (m_asciiMoves[nByteNum]) +
                                      " & l) != " +
                                      eOutputLanguage.getLongPlain (0) +
                                      ")");
-          prefix = "   ";
+          sPrefix = "   ";
         }
     }
 
     if (m_next != null && m_next.m_usefulEpsilonMoves > 0)
     {
-      final int [] stateNames = nfa ().allNextStates ().get (m_next.m_epsilonMovesString);
+      final int [] aStateNames = nfa ().allNextStates ().get (m_next.m_epsilonMovesString);
       if (m_next.m_usefulEpsilonMoves == 1)
       {
-        final int name = stateNames[0];
-        if (nextIntersects)
-          codeGenerator.genCodeLine (prefix + "                  { jjCheckNAdd(" + name + "); }");
+        final int nName = aStateNames[0];
+        if (bNextIntersects)
+          aCodeGenerator.genCodeLine (sPrefix + "                  { jjCheckNAdd(" + nName + "); }");
         else
-          codeGenerator.genCodeLine (prefix + "                  jjstateSet[jjnewStateCnt++] = " + name + ";");
+          aCodeGenerator.genCodeLine (sPrefix + "                  jjstateSet[jjnewStateCnt++] = " + nName + ";");
       }
       else
-        if (m_next.m_usefulEpsilonMoves == 2 && nextIntersects)
+        if (m_next.m_usefulEpsilonMoves == 2 && bNextIntersects)
         {
-          codeGenerator.genCodeLine (prefix +
+          aCodeGenerator.genCodeLine (sPrefix +
                                      "                  { jjCheckNAddTwoStates(" +
-                                     stateNames[0] +
+                                     aStateNames[0] +
                                      ", " +
-                                     stateNames[1] +
+                                     aStateNames[1] +
                                      "); }");
         }
         else
         {
-          final int [] indices = _getStateSetIndicesForUse (m_next.m_epsilonMovesString);
-          final boolean notTwo = (indices[0] + 1 != indices[1]);
+          final int [] aIndices = _getStateSetIndicesForUse (m_next.m_epsilonMovesString);
+          final boolean bNotTwo = (aIndices[0] + 1 != aIndices[1]);
 
-          if (nextIntersects)
+          if (bNextIntersects)
           {
-            codeGenerator.genCode (prefix + "                  { jjCheckNAddStates(" + indices[0]);
-            if (notTwo)
+            aCodeGenerator.genCode (sPrefix + "                  { jjCheckNAddStates(" + aIndices[0]);
+            if (bNotTwo)
             {
               nfa ().setJJCheckNAddStatesDualNeeded (true);
-              codeGenerator.genCode (", " + indices[1]);
+              aCodeGenerator.genCode (", " + aIndices[1]);
             }
             else
             {
               nfa ().setJJCheckNAddStatesUnaryNeeded (true);
             }
-            codeGenerator.genCodeLine ("); }");
+            aCodeGenerator.genCodeLine ("); }");
           }
           else
-            codeGenerator.genCodeLine (prefix +
+            aCodeGenerator.genCodeLine (sPrefix +
                                        "                  { jjAddStates(" +
-                                       indices[0] +
+                                       aIndices[0] +
                                        ", " +
-                                       indices[1] +
+                                       aIndices[1] +
                                        "); }");
         }
     }
 
-    if (onlyState)
-      codeGenerator.genCodeLine ("                  break;");
+    if (bOnlyState)
+      aCodeGenerator.genCodeLine ("                  break;");
     else
-      codeGenerator.genCodeLine ("                  break;");
+      aCodeGenerator.genCodeLine ("                  break;");
   }
 
-  private static void _dumpAsciiMoves (final CodeGenerator codeGenerator, final int byteNum)
+  private static void _dumpAsciiMoves (final CodeGenerator aCodeGenerator, final int nByteNum)
   {
-    final boolean [] dumped = new boolean [Math.max (nfa ().getGeneratedStates (), nfa ().getDummyStateIndex () + 1)];
+    final boolean [] aDumped = new boolean [Math.max (nfa ().getGeneratedStates (), nfa ().getDummyStateIndex () + 1)];
 
-    _dumpHeadForCase (codeGenerator, byteNum);
+    _dumpHeadForCase (aCodeGenerator, nByteNum);
 
     for (final String s : nfa ().compositeStateTable ().keySet ())
-      _dumpCompositeStatesAsciiMoves (codeGenerator, s, byteNum, dumped);
+      _dumpCompositeStatesAsciiMoves (aCodeGenerator, s, nByteNum, aDumped);
 
     for (final NfaState s_allState : nfa ().getAllStates ())
     {
-      final NfaState temp = s_allState;
+      final NfaState aTemp = s_allState;
 
-      if (dumped[temp.m_stateName] ||
-        temp.m_lexState != LexGenJava.lexer ().getLexStateIndex () ||
-        !temp.hasTransitions () ||
-        temp.m_dummy ||
-        temp.m_stateName == -1)
+      if (aDumped[aTemp.m_stateName] ||
+        aTemp.m_lexState != LexGenJava.lexer ().getLexStateIndex () ||
+        !aTemp.hasTransitions () ||
+        aTemp.m_dummy ||
+        aTemp.m_stateName == -1)
         continue;
 
-      String toPrint = "";
+      String sToPrint = "";
 
-      if (temp.m_stateForCase != null)
+      if (aTemp.m_stateForCase != null)
       {
-        if (temp.m_inNextOf == 1)
+        if (aTemp.m_inNextOf == 1)
           continue;
 
-        if (dumped[temp.m_stateForCase.m_stateName])
+        if (aDumped[aTemp.m_stateForCase.m_stateName])
           continue;
 
-        toPrint = (temp.m_stateForCase._printNoBreak (codeGenerator, byteNum, dumped));
+        sToPrint = (aTemp.m_stateForCase._printNoBreak (aCodeGenerator, nByteNum, aDumped));
 
-        if (temp.m_asciiMoves[byteNum] == 0L)
+        if (aTemp.m_asciiMoves[nByteNum] == 0L)
         {
-          if (StringHelper.isEmpty (toPrint))
-            codeGenerator.genCodeLine ("                  break;");
+          if (StringHelper.isEmpty (sToPrint))
+            aCodeGenerator.genCodeLine ("                  break;");
 
           continue;
         }
       }
 
-      if (temp.m_asciiMoves[byteNum] == 0L)
+      if (aTemp.m_asciiMoves[nByteNum] == 0L)
         continue;
 
-      if (StringHelper.isNotEmpty (toPrint))
-        codeGenerator.genCode (toPrint);
+      if (StringHelper.isNotEmpty (sToPrint))
+        aCodeGenerator.genCode (sToPrint);
 
-      dumped[temp.m_stateName] = true;
-      codeGenerator.genCodeLine ("               case " + temp.m_stateName + ":");
-      temp._dumpAsciiMove (codeGenerator, byteNum, dumped);
+      aDumped[aTemp.m_stateName] = true;
+      aCodeGenerator.genCodeLine ("               case " + aTemp.m_stateName + ":");
+      aTemp._dumpAsciiMove (aCodeGenerator, nByteNum, aDumped);
     }
 
-    if (byteNum != 0 && byteNum != 1)
+    if (nByteNum != 0 && nByteNum != 1)
     {
-      codeGenerator.genCodeLine ("               default : if (i1 == 0 || l1 == 0 || i2 == 0 ||  l2 == 0) break; else break;");
+      aCodeGenerator.genCodeLine ("               default : if (i1 == 0 || l1 == 0 || i2 == 0 ||  l2 == 0) break; else break;");
     }
     else
     {
-      codeGenerator.genCodeLine ("               default : break;");
+      aCodeGenerator.genCodeLine ("               default : break;");
     }
 
-    codeGenerator.genCodeLine ("            }");
-    codeGenerator.genCodeLine ("         } while(i != startsAt);");
+    aCodeGenerator.genCodeLine ("            }");
+    aCodeGenerator.genCodeLine ("         } while(i != startsAt);");
   }
 
-  private static void _dumpCompositeStatesNonAsciiMoves (final CodeGenerator codeGenerator,
-                                                         final String key,
-                                                         final boolean [] dumped)
+  private static void _dumpCompositeStatesNonAsciiMoves (final CodeGenerator aCodeGenerator,
+                                                         final String sKey,
+                                                         final boolean [] aDumped)
   {
-    final int [] nameSet = nfa ().allNextStates ().get (key);
+    final int [] aNameSet = nfa ().allNextStates ().get (sKey);
 
-    if (nameSet.length == 1 || dumped[_stateNameForComposite (key)])
+    if (aNameSet.length == 1 || aDumped[_stateNameForComposite (sKey)])
       return;
 
-    NfaState toBePrinted = null;
-    int neededStates = 0;
-    NfaState tmp;
-    NfaState stateForCase = null;
-    String toPrint = "";
-    final boolean stateBlock = (nfa ().stateBlockTable ().get (key) != null);
+    NfaState aToBePrinted = null;
+    int nNeededStates = 0;
+    NfaState aTmp;
+    NfaState aStateForCase = null;
+    String sToPrint = "";
+    final boolean bStateBlock = (nfa ().stateBlockTable ().get (sKey) != null);
 
-    for (final int aElement : nameSet)
+    for (final int aElement : aNameSet)
     {
-      tmp = nfa ().getAllStates ().get (aElement);
+      aTmp = nfa ().getAllStates ().get (aElement);
 
-      if (tmp.m_nonAsciiMethod != -1)
+      if (aTmp.m_nonAsciiMethod != -1)
       {
-        if (neededStates++ == 1)
+        if (nNeededStates++ == 1)
           break;
-        toBePrinted = tmp;
+        aToBePrinted = aTmp;
       }
       else
-        dumped[tmp.m_stateName] = true;
+        aDumped[aTmp.m_stateName] = true;
 
-      if (tmp.m_stateForCase != null)
+      if (aTmp.m_stateForCase != null)
       {
-        if (stateForCase != null)
+        if (aStateForCase != null)
           JavaCCErrors.internalError ();
 
-        stateForCase = tmp.m_stateForCase;
+        aStateForCase = aTmp.m_stateForCase;
       }
     }
 
-    if (stateForCase != null)
-      toPrint = stateForCase._printNoBreak (codeGenerator, -1, dumped);
+    if (aStateForCase != null)
+      sToPrint = aStateForCase._printNoBreak (aCodeGenerator, -1, aDumped);
 
-    if (neededStates == 0)
+    if (nNeededStates == 0)
     {
-      if (stateForCase != null)
-        if (StringHelper.isEmpty (toPrint))
-          codeGenerator.genCodeLine ("                  break;");
+      if (aStateForCase != null)
+        if (StringHelper.isEmpty (sToPrint))
+          aCodeGenerator.genCodeLine ("                  break;");
 
       return;
     }
 
-    if (neededStates == 1)
+    if (nNeededStates == 1)
     {
-      if (StringHelper.isNotEmpty (toPrint))
-        codeGenerator.genCode (toPrint);
+      if (StringHelper.isNotEmpty (sToPrint))
+        aCodeGenerator.genCode (sToPrint);
 
-      codeGenerator.genCodeLine ("               case " + _stateNameForComposite (key) + ":");
+      aCodeGenerator.genCodeLine ("               case " + _stateNameForComposite (sKey) + ":");
 
-      if (!dumped[toBePrinted.m_stateName] && !stateBlock && toBePrinted.m_inNextOf > 1)
-        codeGenerator.genCodeLine ("               case " + toBePrinted.m_stateName + ":");
+      if (!aDumped[aToBePrinted.m_stateName] && !bStateBlock && aToBePrinted.m_inNextOf > 1)
+        aCodeGenerator.genCodeLine ("               case " + aToBePrinted.m_stateName + ":");
 
-      dumped[toBePrinted.m_stateName] = true;
-      toBePrinted._dumpNonAsciiMove (codeGenerator, dumped);
+      aDumped[aToBePrinted.m_stateName] = true;
+      aToBePrinted._dumpNonAsciiMove (aCodeGenerator, aDumped);
       return;
     }
 
-    if (StringHelper.isNotEmpty (toPrint))
-      codeGenerator.genCode (toPrint);
+    if (StringHelper.isNotEmpty (sToPrint))
+      aCodeGenerator.genCode (sToPrint);
 
-    final int keyState = _stateNameForComposite (key);
-    codeGenerator.genCodeLine ("               case " + keyState + ":");
-    if (keyState < nfa ().getGeneratedStates ())
-      dumped[keyState] = true;
+    final int nKeyState = _stateNameForComposite (sKey);
+    aCodeGenerator.genCodeLine ("               case " + nKeyState + ":");
+    if (nKeyState < nfa ().getGeneratedStates ())
+      aDumped[nKeyState] = true;
 
-    for (final int aElement : nameSet)
+    for (final int aElement : aNameSet)
     {
-      tmp = nfa ().getAllStates ().get (aElement);
+      aTmp = nfa ().getAllStates ().get (aElement);
 
-      if (tmp.m_nonAsciiMethod != -1)
+      if (aTmp.m_nonAsciiMethod != -1)
       {
-        if (stateBlock)
-          dumped[tmp.m_stateName] = true;
-        tmp._dumpNonAsciiMoveForCompositeState (codeGenerator);
+        if (bStateBlock)
+          aDumped[aTmp.m_stateName] = true;
+        aTmp._dumpNonAsciiMoveForCompositeState (aCodeGenerator);
       }
     }
 
-    if (stateBlock)
-      codeGenerator.genCodeLine ("                  break;");
+    if (bStateBlock)
+      aCodeGenerator.genCodeLine ("                  break;");
     else
-      codeGenerator.genCodeLine ("                  break;");
+      aCodeGenerator.genCodeLine ("                  break;");
   }
 
-  private final void _dumpNonAsciiMoveForCompositeState (final CodeGenerator codeGenerator)
+  private final void _dumpNonAsciiMoveForCompositeState (final CodeGenerator aCodeGenerator)
   {
-    boolean nextIntersects = _selfLoop ();
+    boolean bNextIntersects = _selfLoop ();
     for (final NfaState temp1 : nfa ().getAllStates ())
     {
       if (this == temp1 ||
@@ -2322,9 +2322,9 @@ public class NfaState
         (temp1.m_nonAsciiMethod == -1))
         continue;
 
-      if (!nextIntersects && _intersect (temp1.m_next.m_epsilonMovesString, m_next.m_epsilonMovesString))
+      if (!bNextIntersects && _intersect (temp1.m_next.m_epsilonMovesString, m_next.m_epsilonMovesString))
       {
-        nextIntersects = true;
+        bNextIntersects = true;
         break;
       }
     }
@@ -2332,257 +2332,257 @@ public class NfaState
     if (!Options.isJavaUnicodeEscape () && !nfa ().isUnicodeWarningGiven ())
     {
       if (m_loByteVec != null && m_loByteVec.size () > 1)
-        codeGenerator.genCodeLine ("                  if ((jjbitVec" +
+        aCodeGenerator.genCodeLine ("                  if ((jjbitVec" +
                                    m_loByteVec.get (1).intValue () +
                                    "[i2" +
                                    "] & l2) != 0L)");
     }
     else
     {
-      codeGenerator.genCodeLine ("                  if (jjCanMove_" + m_nonAsciiMethod + "(hiByte, i1, i2, l1, l2))");
+      aCodeGenerator.genCodeLine ("                  if (jjCanMove_" + m_nonAsciiMethod + "(hiByte, i1, i2, l1, l2))");
     }
 
     if (m_kindToPrint != Integer.MAX_VALUE)
     {
-      codeGenerator.genCodeLine ("                  {");
-      codeGenerator.genCodeLine ("                     if (kind > " + m_kindToPrint + ")");
-      codeGenerator.genCodeLine ("                        kind = " + m_kindToPrint + ";");
+      aCodeGenerator.genCodeLine ("                  {");
+      aCodeGenerator.genCodeLine ("                     if (kind > " + m_kindToPrint + ")");
+      aCodeGenerator.genCodeLine ("                        kind = " + m_kindToPrint + ";");
     }
 
     if (m_next != null && m_next.m_usefulEpsilonMoves > 0)
     {
-      final int [] stateNames = nfa ().allNextStates ().get (m_next.m_epsilonMovesString);
+      final int [] aStateNames = nfa ().allNextStates ().get (m_next.m_epsilonMovesString);
       if (m_next.m_usefulEpsilonMoves == 1)
       {
-        final int name = stateNames[0];
-        if (nextIntersects)
-          codeGenerator.genCodeLine ("                     { jjCheckNAdd(" + name + "); }");
+        final int nName = aStateNames[0];
+        if (bNextIntersects)
+          aCodeGenerator.genCodeLine ("                     { jjCheckNAdd(" + nName + "); }");
         else
-          codeGenerator.genCodeLine ("                     jjstateSet[jjnewStateCnt++] = " + name + ";");
+          aCodeGenerator.genCodeLine ("                     jjstateSet[jjnewStateCnt++] = " + nName + ";");
       }
       else
-        if (m_next.m_usefulEpsilonMoves == 2 && nextIntersects)
+        if (m_next.m_usefulEpsilonMoves == 2 && bNextIntersects)
         {
-          codeGenerator.genCodeLine ("                     { jjCheckNAddTwoStates(" +
-                                     stateNames[0] +
+          aCodeGenerator.genCodeLine ("                     { jjCheckNAddTwoStates(" +
+                                     aStateNames[0] +
                                      ", " +
-                                     stateNames[1] +
+                                     aStateNames[1] +
                                      "); }");
         }
         else
         {
-          final int [] indices = _getStateSetIndicesForUse (m_next.m_epsilonMovesString);
-          final boolean notTwo = (indices[0] + 1 != indices[1]);
+          final int [] aIndices = _getStateSetIndicesForUse (m_next.m_epsilonMovesString);
+          final boolean bNotTwo = (aIndices[0] + 1 != aIndices[1]);
 
-          if (nextIntersects)
+          if (bNextIntersects)
           {
-            codeGenerator.genCode ("                     { jjCheckNAddStates(" + indices[0]);
-            if (notTwo)
+            aCodeGenerator.genCode ("                     { jjCheckNAddStates(" + aIndices[0]);
+            if (bNotTwo)
             {
               nfa ().setJJCheckNAddStatesDualNeeded (true);
-              codeGenerator.genCode (", " + indices[1]);
+              aCodeGenerator.genCode (", " + aIndices[1]);
             }
             else
             {
               nfa ().setJJCheckNAddStatesUnaryNeeded (true);
             }
-            codeGenerator.genCodeLine ("); }");
+            aCodeGenerator.genCodeLine ("); }");
           }
           else
-            codeGenerator.genCodeLine ("                     { jjAddStates(" + indices[0] + ", " + indices[1] + "); }");
+            aCodeGenerator.genCodeLine ("                     { jjAddStates(" + aIndices[0] + ", " + aIndices[1] + "); }");
         }
     }
 
     if (m_kindToPrint != Integer.MAX_VALUE)
-      codeGenerator.genCodeLine ("                  }");
+      aCodeGenerator.genCodeLine ("                  }");
   }
 
-  private final void _dumpNonAsciiMove (final CodeGenerator codeGenerator, final boolean dumped[])
+  private final void _dumpNonAsciiMove (final CodeGenerator aCodeGenerator, final boolean dumped[])
   {
-    boolean nextIntersects = _selfLoop () && m_isComposite;
+    boolean bNextIntersects = _selfLoop () && m_isComposite;
 
     for (final NfaState s_allState : nfa ().getAllStates ())
     {
-      final NfaState temp1 = s_allState;
+      final NfaState aTemp1 = s_allState;
 
-      if (this == temp1 ||
-        temp1.m_stateName == -1 ||
-        temp1.m_dummy ||
-        m_stateName == temp1.m_stateName ||
-        (temp1.m_nonAsciiMethod == -1))
+      if (this == aTemp1 ||
+        aTemp1.m_stateName == -1 ||
+        aTemp1.m_dummy ||
+        m_stateName == aTemp1.m_stateName ||
+        (aTemp1.m_nonAsciiMethod == -1))
         continue;
 
-      if (!nextIntersects && _intersect (temp1.m_next.m_epsilonMovesString, m_next.m_epsilonMovesString))
-        nextIntersects = true;
+      if (!bNextIntersects && _intersect (aTemp1.m_next.m_epsilonMovesString, m_next.m_epsilonMovesString))
+        bNextIntersects = true;
 
-      if (!dumped[temp1.m_stateName] &&
-        !temp1.m_isComposite &&
-        m_nonAsciiMethod == temp1.m_nonAsciiMethod &&
-        m_kindToPrint == temp1.m_kindToPrint &&
-        (m_next.m_epsilonMovesString == temp1.m_next.m_epsilonMovesString ||
+      if (!dumped[aTemp1.m_stateName] &&
+        !aTemp1.m_isComposite &&
+        m_nonAsciiMethod == aTemp1.m_nonAsciiMethod &&
+        m_kindToPrint == aTemp1.m_kindToPrint &&
+        (m_next.m_epsilonMovesString == aTemp1.m_next.m_epsilonMovesString ||
           (m_next.m_epsilonMovesString != null &&
-            temp1.m_next.m_epsilonMovesString != null &&
-            m_next.m_epsilonMovesString.equals (temp1.m_next.m_epsilonMovesString))))
+            aTemp1.m_next.m_epsilonMovesString != null &&
+            m_next.m_epsilonMovesString.equals (aTemp1.m_next.m_epsilonMovesString))))
       {
-        dumped[temp1.m_stateName] = true;
-        codeGenerator.genCodeLine ("               case " + temp1.m_stateName + ":");
+        dumped[aTemp1.m_stateName] = true;
+        aCodeGenerator.genCodeLine ("               case " + aTemp1.m_stateName + ":");
       }
     }
 
     if (m_next == null || m_next.m_usefulEpsilonMoves <= 0)
     {
-      final String kindCheck = " && kind > " + m_kindToPrint;
+      final String sKindCheck = " && kind > " + m_kindToPrint;
 
       if (!Options.isJavaUnicodeEscape () && !nfa ().isUnicodeWarningGiven ())
       {
         if (m_loByteVec != null && m_loByteVec.size () > 1)
-          codeGenerator.genCodeLine ("                  if ((jjbitVec" +
+          aCodeGenerator.genCodeLine ("                  if ((jjbitVec" +
                                      m_loByteVec.get (1).intValue () +
                                      "[i2" +
                                      "] & l2) != 0L" +
-                                     kindCheck +
+                                     sKindCheck +
                                      ")");
       }
       else
       {
-        codeGenerator.genCodeLine ("                  if (jjCanMove_" +
+        aCodeGenerator.genCodeLine ("                  if (jjCanMove_" +
                                    m_nonAsciiMethod +
                                    "(hiByte, i1, i2, l1, l2)" +
-                                   kindCheck +
+                                   sKindCheck +
                                    ")");
       }
-      codeGenerator.genCodeLine ("                     kind = " + m_kindToPrint + ";");
-      codeGenerator.genCodeLine ("                  break;");
+      aCodeGenerator.genCodeLine ("                     kind = " + m_kindToPrint + ";");
+      aCodeGenerator.genCodeLine ("                  break;");
       return;
     }
 
-    String prefix = "   ";
+    String sPrefix = "   ";
     if (m_kindToPrint != Integer.MAX_VALUE)
     {
       if (!Options.isJavaUnicodeEscape () && !nfa ().isUnicodeWarningGiven ())
       {
         if (m_loByteVec != null && m_loByteVec.size () > 1)
         {
-          codeGenerator.genCodeLine ("                  if ((jjbitVec" +
+          aCodeGenerator.genCodeLine ("                  if ((jjbitVec" +
                                      m_loByteVec.get (1).intValue () +
                                      "[i2" +
                                      "] & l2) == 0L)");
-          codeGenerator.genCodeLine ("                     break;");
+          aCodeGenerator.genCodeLine ("                     break;");
         }
       }
       else
       {
-        codeGenerator.genCodeLine ("                  if (!jjCanMove_" +
+        aCodeGenerator.genCodeLine ("                  if (!jjCanMove_" +
                                    m_nonAsciiMethod +
                                    "(hiByte, i1, i2, l1, l2))");
-        codeGenerator.genCodeLine ("                     break;");
+        aCodeGenerator.genCodeLine ("                     break;");
       }
 
-      codeGenerator.genCodeLine ("                  if (kind > " + m_kindToPrint + ")");
-      codeGenerator.genCodeLine ("                     kind = " + m_kindToPrint + ";");
-      prefix = "";
+      aCodeGenerator.genCodeLine ("                  if (kind > " + m_kindToPrint + ")");
+      aCodeGenerator.genCodeLine ("                     kind = " + m_kindToPrint + ";");
+      sPrefix = "";
     }
     else
       if (!Options.isJavaUnicodeEscape () && !nfa ().isUnicodeWarningGiven ())
       {
         if (m_loByteVec != null && m_loByteVec.size () > 1)
-          codeGenerator.genCodeLine ("                  if ((jjbitVec" +
+          aCodeGenerator.genCodeLine ("                  if ((jjbitVec" +
                                      m_loByteVec.get (1).intValue () +
                                      "[i2" +
                                      "] & l2) != 0L)");
       }
       else
       {
-        codeGenerator.genCodeLine ("                  if (jjCanMove_" + m_nonAsciiMethod + "(hiByte, i1, i2, l1, l2))");
+        aCodeGenerator.genCodeLine ("                  if (jjCanMove_" + m_nonAsciiMethod + "(hiByte, i1, i2, l1, l2))");
       }
 
     if (m_next != null && m_next.m_usefulEpsilonMoves > 0)
     {
-      final int [] stateNames = nfa ().allNextStates ().get (m_next.m_epsilonMovesString);
+      final int [] aStateNames = nfa ().allNextStates ().get (m_next.m_epsilonMovesString);
       if (m_next.m_usefulEpsilonMoves == 1)
       {
-        final int name = stateNames[0];
-        if (nextIntersects)
-          codeGenerator.genCodeLine (prefix + "                  { jjCheckNAdd(" + name + "); }");
+        final int nName = aStateNames[0];
+        if (bNextIntersects)
+          aCodeGenerator.genCodeLine (sPrefix + "                  { jjCheckNAdd(" + nName + "); }");
         else
-          codeGenerator.genCodeLine (prefix + "                  jjstateSet[jjnewStateCnt++] = " + name + ";");
+          aCodeGenerator.genCodeLine (sPrefix + "                  jjstateSet[jjnewStateCnt++] = " + nName + ";");
       }
       else
-        if (m_next.m_usefulEpsilonMoves == 2 && nextIntersects)
+        if (m_next.m_usefulEpsilonMoves == 2 && bNextIntersects)
         {
-          codeGenerator.genCodeLine (prefix +
+          aCodeGenerator.genCodeLine (sPrefix +
                                      "                  { jjCheckNAddTwoStates(" +
-                                     stateNames[0] +
+                                     aStateNames[0] +
                                      ", " +
-                                     stateNames[1] +
+                                     aStateNames[1] +
                                      "); }");
         }
         else
         {
-          final int [] indices = _getStateSetIndicesForUse (m_next.m_epsilonMovesString);
-          final boolean notTwo = (indices[0] + 1 != indices[1]);
+          final int [] aIndices = _getStateSetIndicesForUse (m_next.m_epsilonMovesString);
+          final boolean bNotTwo = (aIndices[0] + 1 != aIndices[1]);
 
-          if (nextIntersects)
+          if (bNextIntersects)
           {
-            codeGenerator.genCode (prefix + "                  { jjCheckNAddStates(" + indices[0]);
-            if (notTwo)
+            aCodeGenerator.genCode (sPrefix + "                  { jjCheckNAddStates(" + aIndices[0]);
+            if (bNotTwo)
             {
               nfa ().setJJCheckNAddStatesDualNeeded (true);
-              codeGenerator.genCode (", " + indices[1]);
+              aCodeGenerator.genCode (", " + aIndices[1]);
             }
             else
             {
               nfa ().setJJCheckNAddStatesUnaryNeeded (true);
             }
-            codeGenerator.genCodeLine ("); }");
+            aCodeGenerator.genCodeLine ("); }");
           }
           else
-            codeGenerator.genCodeLine (prefix +
+            aCodeGenerator.genCodeLine (sPrefix +
                                        "                  { jjAddStates(" +
-                                       indices[0] +
+                                       aIndices[0] +
                                        ", " +
-                                       indices[1] +
+                                       aIndices[1] +
                                        "); }");
         }
     }
 
-    codeGenerator.genCodeLine ("                  break;");
+    aCodeGenerator.genCodeLine ("                  break;");
   }
 
-  public static void dumpCharAndRangeMoves (final CodeGenerator codeGenerator)
+  public static void dumpCharAndRangeMoves (final CodeGenerator aCodeGenerator)
   {
-    final boolean [] dumped = new boolean [Math.max (nfa ().getGeneratedStates (), nfa ().getDummyStateIndex () + 1)];
+    final boolean [] aDumped = new boolean [Math.max (nfa ().getGeneratedStates (), nfa ().getDummyStateIndex () + 1)];
 
-    _dumpHeadForCase (codeGenerator, -1);
+    _dumpHeadForCase (aCodeGenerator, -1);
 
     for (final String s : nfa ().compositeStateTable ().keySet ())
-      _dumpCompositeStatesNonAsciiMoves (codeGenerator, s, dumped);
+      _dumpCompositeStatesNonAsciiMoves (aCodeGenerator, s, aDumped);
 
     for (final NfaState temp : nfa ().getAllStates ())
     {
       if (temp.m_stateName == -1 ||
-        dumped[temp.m_stateName] ||
+        aDumped[temp.m_stateName] ||
         temp.m_lexState != LexGenJava.lexer ().getLexStateIndex () ||
         !temp.hasTransitions () ||
         temp.m_dummy)
         continue;
 
-      String toPrint = "";
+      String sToPrint = "";
 
       if (temp.m_stateForCase != null)
       {
         if (temp.m_inNextOf == 1)
           continue;
 
-        if (dumped[temp.m_stateForCase.m_stateName])
+        if (aDumped[temp.m_stateForCase.m_stateName])
           continue;
 
-        toPrint = temp.m_stateForCase._printNoBreak (codeGenerator, -1, dumped);
+        sToPrint = temp.m_stateForCase._printNoBreak (aCodeGenerator, -1, aDumped);
 
         if (temp.m_nonAsciiMethod == -1)
         {
-          if (StringHelper.isEmpty (toPrint))
-            codeGenerator.genCodeLine ("                  break;");
+          if (StringHelper.isEmpty (sToPrint))
+            aCodeGenerator.genCodeLine ("                  break;");
 
           continue;
         }
@@ -2591,28 +2591,28 @@ public class NfaState
       if (temp.m_nonAsciiMethod == -1)
         continue;
 
-      if (StringHelper.isNotEmpty (toPrint))
-        codeGenerator.genCode (toPrint);
+      if (StringHelper.isNotEmpty (sToPrint))
+        aCodeGenerator.genCode (sToPrint);
 
-      dumped[temp.m_stateName] = true;
+      aDumped[temp.m_stateName] = true;
       // System.out.println("case : " + temp.stateName);
-      codeGenerator.genCodeLine ("               case " + temp.m_stateName + ":");
-      temp._dumpNonAsciiMove (codeGenerator, dumped);
+      aCodeGenerator.genCodeLine ("               case " + temp.m_stateName + ":");
+      temp._dumpNonAsciiMove (aCodeGenerator, aDumped);
     }
 
     if (Options.isJavaUnicodeEscape () || nfa ().isUnicodeWarningGiven ())
     {
-      codeGenerator.genCodeLine ("               default : if (i1 == 0 || l1 == 0 || i2 == 0 ||  l2 == 0) break; else break;");
+      aCodeGenerator.genCodeLine ("               default : if (i1 == 0 || l1 == 0 || i2 == 0 ||  l2 == 0) break; else break;");
     }
     else
     {
-      codeGenerator.genCodeLine ("               default : break;");
+      aCodeGenerator.genCodeLine ("               default : break;");
     }
-    codeGenerator.genCodeLine ("            }");
-    codeGenerator.genCodeLine ("         } while(i != startsAt);");
+    aCodeGenerator.genCodeLine ("            }");
+    aCodeGenerator.genCodeLine ("         } while(i != startsAt);");
   }
 
-  public static void dumpNonAsciiMoveMethods (final CodeGenerator codeGenerator)
+  public static void dumpNonAsciiMoveMethods (final CodeGenerator aCodeGenerator)
   {
     if (!Options.isJavaUnicodeEscape () && !nfa ().isUnicodeWarningGiven ())
       return;
@@ -2622,17 +2622,17 @@ public class NfaState
 
     for (final NfaState tmp : nfa ().nonAsciiTableForMethod ())
     {
-      tmp._dumpNonAsciiMoveMethod (codeGenerator);
+      tmp._dumpNonAsciiMoveMethod (aCodeGenerator);
     }
   }
 
-  private void _dumpNonAsciiMoveMethod (final CodeGenerator codeGenerator)
+  private void _dumpNonAsciiMoveMethod (final CodeGenerator aCodeGenerator)
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     switch (eOutputLanguage)
     {
       case JAVA:
-        codeGenerator.genCodeLine ("private static final " +
+        aCodeGenerator.genCodeLine ("private static final " +
                                    eOutputLanguage.getTypeBoolean () +
                                    " jjCanMove_" +
                                    m_nonAsciiMethod +
@@ -2643,7 +2643,7 @@ public class NfaState
                                    " l2)");
         break;
       case CPP:
-        codeGenerator.generateMethodDefHeader (eOutputLanguage.getTypeBoolean (),
+        aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getTypeBoolean (),
                                                LexGenJava.lexer ().getTokenMgrClassName (),
                                                "jjCanMove_" +
                                                                                             m_nonAsciiMethod +
@@ -2656,28 +2656,28 @@ public class NfaState
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
-    codeGenerator.genCodeLine ("{");
-    codeGenerator.genCodeLine ("   switch(hiByte)");
-    codeGenerator.genCodeLine ("   {");
+    aCodeGenerator.genCodeLine ("{");
+    aCodeGenerator.genCodeLine ("   switch(hiByte)");
+    aCodeGenerator.genCodeLine ("   {");
 
     if (m_loByteVec != null && m_loByteVec.size () > 0)
     {
       for (int j = 0; j < m_loByteVec.size (); j += 2)
       {
-        codeGenerator.genCodeLine ("      case " + m_loByteVec.get (j).intValue () + ":");
+        aCodeGenerator.genCodeLine ("      case " + m_loByteVec.get (j).intValue () + ":");
         if (!allBitsSet (nfa ().getAllBitVectors ().get (m_loByteVec.get (j + 1).intValue ())))
         {
-          codeGenerator.genCodeLine ("         return ((jjbitVec" +
+          aCodeGenerator.genCodeLine ("         return ((jjbitVec" +
                                      m_loByteVec.get (j + 1).intValue () +
                                      "[i2" +
                                      "] & l2) != 0L);");
         }
         else
-          codeGenerator.genCodeLine ("            return true;");
+          aCodeGenerator.genCodeLine ("            return true;");
       }
     }
 
-    codeGenerator.genCodeLine ("      default :");
+    aCodeGenerator.genCodeLine ("      default :");
 
     if (m_nonAsciiMoveIndices != null)
     {
@@ -2686,22 +2686,22 @@ public class NfaState
         do
         {
           if (!allBitsSet (nfa ().getAllBitVectors ().get (m_nonAsciiMoveIndices[j - 2])))
-            codeGenerator.genCodeLine ("         if ((jjbitVec" + m_nonAsciiMoveIndices[j - 2] + "[i1] & l1) != 0L)");
+            aCodeGenerator.genCodeLine ("         if ((jjbitVec" + m_nonAsciiMoveIndices[j - 2] + "[i1] & l1) != 0L)");
           if (!allBitsSet (nfa ().getAllBitVectors ().get (m_nonAsciiMoveIndices[j - 1])))
           {
-            codeGenerator.genCodeLine ("            if ((jjbitVec" +
+            aCodeGenerator.genCodeLine ("            if ((jjbitVec" +
                                        m_nonAsciiMoveIndices[j - 1] +
                                        "[i2] & l2) == 0L)");
-            codeGenerator.genCodeLine ("               return false;");
-            codeGenerator.genCodeLine ("            else");
+            aCodeGenerator.genCodeLine ("               return false;");
+            aCodeGenerator.genCodeLine ("            else");
           }
-          codeGenerator.genCodeLine ("            return true;");
+          aCodeGenerator.genCodeLine ("            return true;");
         } while ((j -= 2) > 0);
     }
 
-    codeGenerator.genCodeLine ("         return false;");
-    codeGenerator.genCodeLine ("   }");
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeLine ("         return false;");
+    aCodeGenerator.genCodeLine ("   }");
+    aCodeGenerator.genCodeLine ("}");
   }
 
   private static void _reArrange ()
@@ -2714,121 +2714,121 @@ public class NfaState
 
     for (int j = 0; j < v.size (); j++)
     {
-      final NfaState tmp = v.get (j);
-      if (tmp.m_stateName != -1 && !tmp.m_dummy)
-        nfa ().getAllStates ().set (tmp.m_stateName, tmp);
+      final NfaState aTmp = v.get (j);
+      if (aTmp.m_stateName != -1 && !aTmp.m_dummy)
+        nfa ().getAllStates ().set (aTmp.m_stateName, aTmp);
     }
   }
 
   // private static boolean boilerPlateDumped = false;
-  public static void printBoilerPlateJava (final CodeGenerator codeGenerator)
+  public static void printBoilerPlateJava (final CodeGenerator aCodeGenerator)
   {
-    codeGenerator.genCodeLine ("private void jjCheckNAdd(int state)");
-    codeGenerator.genCodeLine ("{");
-    codeGenerator.genCodeLine ("   if (jjrounds[state] != jjround)");
-    codeGenerator.genCodeLine ("   {");
-    codeGenerator.genCodeLine ("      jjstateSet[jjnewStateCnt++] = state;");
-    codeGenerator.genCodeLine ("      jjrounds[state] = jjround;");
-    codeGenerator.genCodeLine ("   }");
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeLine ("private void jjCheckNAdd(int state)");
+    aCodeGenerator.genCodeLine ("{");
+    aCodeGenerator.genCodeLine ("   if (jjrounds[state] != jjround)");
+    aCodeGenerator.genCodeLine ("   {");
+    aCodeGenerator.genCodeLine ("      jjstateSet[jjnewStateCnt++] = state;");
+    aCodeGenerator.genCodeLine ("      jjrounds[state] = jjround;");
+    aCodeGenerator.genCodeLine ("   }");
+    aCodeGenerator.genCodeLine ("}");
 
-    codeGenerator.genCodeLine ("private void jjAddStates(int start, int end)");
-    codeGenerator.genCodeLine ("{");
-    codeGenerator.genCodeLine ("   do {");
-    codeGenerator.genCodeLine ("      jjstateSet[jjnewStateCnt++] = jjnextStates[start];");
-    codeGenerator.genCodeLine ("   } while (start++ != end);");
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeLine ("private void jjAddStates(int start, int end)");
+    aCodeGenerator.genCodeLine ("{");
+    aCodeGenerator.genCodeLine ("   do {");
+    aCodeGenerator.genCodeLine ("      jjstateSet[jjnewStateCnt++] = jjnextStates[start];");
+    aCodeGenerator.genCodeLine ("   } while (start++ != end);");
+    aCodeGenerator.genCodeLine ("}");
 
-    codeGenerator.genCodeLine ("private void jjCheckNAddTwoStates(int state1, int state2)");
-    codeGenerator.genCodeLine ("{");
-    codeGenerator.genCodeLine ("   jjCheckNAdd(state1);");
-    codeGenerator.genCodeLine ("   jjCheckNAdd(state2);");
-    codeGenerator.genCodeLine ("}");
-    codeGenerator.genCodeNewLine ();
+    aCodeGenerator.genCodeLine ("private void jjCheckNAddTwoStates(int state1, int state2)");
+    aCodeGenerator.genCodeLine ("{");
+    aCodeGenerator.genCodeLine ("   jjCheckNAdd(state1);");
+    aCodeGenerator.genCodeLine ("   jjCheckNAdd(state2);");
+    aCodeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeNewLine ();
 
     if (nfa ().isJJCheckNAddStatesDualNeeded ())
     {
-      codeGenerator.genCodeLine ("private void jjCheckNAddStates(int start, int end)");
-      codeGenerator.genCodeLine ("{");
-      codeGenerator.genCodeLine ("   do {");
-      codeGenerator.genCodeLine ("      jjCheckNAdd(jjnextStates[start]);");
-      codeGenerator.genCodeLine ("   } while (start++ != end);");
-      codeGenerator.genCodeLine ("}");
-      codeGenerator.genCodeNewLine ();
+      aCodeGenerator.genCodeLine ("private void jjCheckNAddStates(int start, int end)");
+      aCodeGenerator.genCodeLine ("{");
+      aCodeGenerator.genCodeLine ("   do {");
+      aCodeGenerator.genCodeLine ("      jjCheckNAdd(jjnextStates[start]);");
+      aCodeGenerator.genCodeLine ("   } while (start++ != end);");
+      aCodeGenerator.genCodeLine ("}");
+      aCodeGenerator.genCodeNewLine ();
     }
 
     if (nfa ().isJJCheckNAddStatesUnaryNeeded ())
     {
-      codeGenerator.genCodeLine ("private void jjCheckNAddStates(int start)");
-      codeGenerator.genCodeLine ("{");
-      codeGenerator.genCodeLine ("   jjCheckNAdd(jjnextStates[start]);");
-      codeGenerator.genCodeLine ("   jjCheckNAdd(jjnextStates[start + 1]);");
-      codeGenerator.genCodeLine ("}");
-      codeGenerator.genCodeNewLine ();
+      aCodeGenerator.genCodeLine ("private void jjCheckNAddStates(int start)");
+      aCodeGenerator.genCodeLine ("{");
+      aCodeGenerator.genCodeLine ("   jjCheckNAdd(jjnextStates[start]);");
+      aCodeGenerator.genCodeLine ("   jjCheckNAdd(jjnextStates[start + 1]);");
+      aCodeGenerator.genCodeLine ("}");
+      aCodeGenerator.genCodeNewLine ();
     }
   }
 
   // private static boolean boilerPlateDumped = false;
-  public static void printBoilerPlateCPP (final CodeGenerator codeGenerator)
+  public static void printBoilerPlateCPP (final CodeGenerator aCodeGenerator)
   {
-    codeGenerator.switchToIncludeFile ();
-    codeGenerator.genCodeLine ("#define jjCheckNAdd(state)\\");
-    codeGenerator.genCodeLine ("{\\");
-    codeGenerator.genCodeLine ("   if (jjrounds[state] != jjround)\\");
-    codeGenerator.genCodeLine ("   {\\");
-    codeGenerator.genCodeLine ("      jjstateSet[jjnewStateCnt++] = state;\\");
-    codeGenerator.genCodeLine ("      jjrounds[state] = jjround;\\");
-    codeGenerator.genCodeLine ("   }\\");
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.switchToIncludeFile ();
+    aCodeGenerator.genCodeLine ("#define jjCheckNAdd(state)\\");
+    aCodeGenerator.genCodeLine ("{\\");
+    aCodeGenerator.genCodeLine ("   if (jjrounds[state] != jjround)\\");
+    aCodeGenerator.genCodeLine ("   {\\");
+    aCodeGenerator.genCodeLine ("      jjstateSet[jjnewStateCnt++] = state;\\");
+    aCodeGenerator.genCodeLine ("      jjrounds[state] = jjround;\\");
+    aCodeGenerator.genCodeLine ("   }\\");
+    aCodeGenerator.genCodeLine ("}");
 
-    codeGenerator.genCodeLine ("#define jjAddStates(start, end)\\");
-    codeGenerator.genCodeLine ("{\\");
-    codeGenerator.genCodeLine ("   for (int x = start; x <= end; x++) {\\");
-    codeGenerator.genCodeLine ("      jjstateSet[jjnewStateCnt++] = jjnextStates[x];\\");
-    codeGenerator.genCodeLine ("   } /*while (start++ != end);*/\\");
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeLine ("#define jjAddStates(start, end)\\");
+    aCodeGenerator.genCodeLine ("{\\");
+    aCodeGenerator.genCodeLine ("   for (int x = start; x <= end; x++) {\\");
+    aCodeGenerator.genCodeLine ("      jjstateSet[jjnewStateCnt++] = jjnextStates[x];\\");
+    aCodeGenerator.genCodeLine ("   } /*while (start++ != end);*/\\");
+    aCodeGenerator.genCodeLine ("}");
 
-    codeGenerator.genCodeLine ("#define jjCheckNAddTwoStates(state1, state2)\\");
-    codeGenerator.genCodeLine ("{\\");
-    codeGenerator.genCodeLine ("   jjCheckNAdd(state1);\\");
-    codeGenerator.genCodeLine ("   jjCheckNAdd(state2);\\");
-    codeGenerator.genCodeLine ("}");
-    codeGenerator.genCodeNewLine ();
+    aCodeGenerator.genCodeLine ("#define jjCheckNAddTwoStates(state1, state2)\\");
+    aCodeGenerator.genCodeLine ("{\\");
+    aCodeGenerator.genCodeLine ("   jjCheckNAdd(state1);\\");
+    aCodeGenerator.genCodeLine ("   jjCheckNAdd(state2);\\");
+    aCodeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeNewLine ();
 
     if (nfa ().isJJCheckNAddStatesDualNeeded ())
     {
-      codeGenerator.genCodeLine ("#define jjCheckNAddStates(start, end)\\");
-      codeGenerator.genCodeLine ("{\\");
-      codeGenerator.genCodeLine ("   for (int x = start; x <= end; x++) {\\");
-      codeGenerator.genCodeLine ("      jjCheckNAdd(jjnextStates[x]);\\");
-      codeGenerator.genCodeLine ("   } /*while (start++ != end);*/\\");
-      codeGenerator.genCodeLine ("}");
-      codeGenerator.genCodeNewLine ();
+      aCodeGenerator.genCodeLine ("#define jjCheckNAddStates(start, end)\\");
+      aCodeGenerator.genCodeLine ("{\\");
+      aCodeGenerator.genCodeLine ("   for (int x = start; x <= end; x++) {\\");
+      aCodeGenerator.genCodeLine ("      jjCheckNAdd(jjnextStates[x]);\\");
+      aCodeGenerator.genCodeLine ("   } /*while (start++ != end);*/\\");
+      aCodeGenerator.genCodeLine ("}");
+      aCodeGenerator.genCodeNewLine ();
     }
 
     if (nfa ().isJJCheckNAddStatesUnaryNeeded ())
     {
-      codeGenerator.genCodeLine ("#define jjCheckNAddStates(start)\\");
-      codeGenerator.genCodeLine ("{\\");
-      codeGenerator.genCodeLine ("   jjCheckNAdd(jjnextStates[start]);\\");
-      codeGenerator.genCodeLine ("   jjCheckNAdd(jjnextStates[start + 1]);\\");
-      codeGenerator.genCodeLine ("}");
-      codeGenerator.genCodeNewLine ();
+      aCodeGenerator.genCodeLine ("#define jjCheckNAddStates(start)\\");
+      aCodeGenerator.genCodeLine ("{\\");
+      aCodeGenerator.genCodeLine ("   jjCheckNAdd(jjnextStates[start]);\\");
+      aCodeGenerator.genCodeLine ("   jjCheckNAdd(jjnextStates[start + 1]);\\");
+      aCodeGenerator.genCodeLine ("}");
+      aCodeGenerator.genCodeNewLine ();
     }
-    codeGenerator.switchToMainFile ();
+    aCodeGenerator.switchToMainFile ();
   }
 
   @SuppressWarnings ("unused")
   private static void _findStatesWithNoBreak ()
   {
-    final Map <String, String> printed = new HashMap <> ();
-    final boolean [] put = new boolean [nfa ().getGeneratedStates ()];
-    int cnt = 0;
-    int foundAt = 0;
+    final Map <String, String> aPrinted = new HashMap <> ();
+    final boolean [] aPut = new boolean [nfa ().getGeneratedStates ()];
+    int nCnt = 0;
+    int nFoundAt = 0;
 
     Outer: for (final NfaState tmpState : nfa ().getAllStates ())
     {
-      NfaState stateForCase = null;
+      NfaState aStateForCase = null;
       if (tmpState.m_stateName == -1 ||
         tmpState.m_dummy ||
         !tmpState._isUsefulState () ||
@@ -2838,33 +2838,33 @@ public class NfaState
 
       final String s = tmpState.m_next.m_epsilonMovesString;
 
-      if (nfa ().compositeStateTable ().get (s) != null || printed.get (s) != null)
+      if (nfa ().compositeStateTable ().get (s) != null || aPrinted.get (s) != null)
         continue;
 
-      printed.put (s, s);
-      final int [] nexts = nfa ().allNextStates ().get (s);
+      aPrinted.put (s, s);
+      final int [] aNexts = nfa ().allNextStates ().get (s);
 
-      if (nexts.length == 1)
+      if (aNexts.length == 1)
         continue;
 
-      int state = cnt;
+      int nState = nCnt;
       // System.out.println("State " + tmpState.stateName + " : " + s);
-      for (int i = 0; i < nexts.length; i++)
+      for (int i = 0; i < aNexts.length; i++)
       {
-        if ((state = nexts[i]) == -1)
+        if ((nState = aNexts[i]) == -1)
           continue;
 
-        final NfaState tmp = nfa ().getAllStates ().get (state);
+        final NfaState aTmp = nfa ().getAllStates ().get (nState);
 
-        if (!tmp.m_isComposite && tmp.m_inNextOf == 1)
+        if (!aTmp.m_isComposite && aTmp.m_inNextOf == 1)
         {
-          if (put[state])
+          if (aPut[nState])
             JavaCCErrors.internalError ();
 
-          foundAt = i;
-          cnt++;
-          stateForCase = tmp;
-          put[state] = true;
+          nFoundAt = i;
+          nCnt++;
+          aStateForCase = aTmp;
+          aPut[nState] = true;
 
           // System.out.print(state + " : " + tmp.inNextOf + ", ");
           break;
@@ -2872,29 +2872,29 @@ public class NfaState
       }
       // System.out.println("");
 
-      if (stateForCase == null)
+      if (aStateForCase == null)
         continue;
 
-      for (int i = 0; i < nexts.length; i++)
+      for (int i = 0; i < aNexts.length; i++)
       {
-        if ((state = nexts[i]) == -1)
+        if ((nState = aNexts[i]) == -1)
           continue;
 
-        final NfaState tmp = nfa ().getAllStates ().get (state);
+        final NfaState aTmp = nfa ().getAllStates ().get (nState);
 
-        if (!put[state] && tmp.m_inNextOf > 1 && !tmp.m_isComposite && tmp.m_stateForCase == null)
+        if (!aPut[nState] && aTmp.m_inNextOf > 1 && !aTmp.m_isComposite && aTmp.m_stateForCase == null)
         {
-          cnt++;
-          nexts[i] = -1;
-          put[state] = true;
+          nCnt++;
+          aNexts[i] = -1;
+          aPut[nState] = true;
 
-          final int toSwap = nexts[0];
-          nexts[0] = nexts[foundAt];
-          nexts[foundAt] = toSwap;
+          final int nToSwap = aNexts[0];
+          aNexts[0] = aNexts[nFoundAt];
+          aNexts[nFoundAt] = nToSwap;
 
-          tmp.m_stateForCase = stateForCase;
-          stateForCase.m_stateForCase = tmp;
-          nfa ().stateSetsToFix ().put (s, nexts);
+          aTmp.m_stateForCase = aStateForCase;
+          aStateForCase.m_stateForCase = aTmp;
+          nfa ().stateSetsToFix ().put (s, aNexts);
 
           // System.out.println("For : " + s + "; " + stateForCase.stateName +
           // " and " + tmp.stateName);
@@ -2903,26 +2903,26 @@ public class NfaState
         }
       }
 
-      for (final int aNext : nexts)
+      for (final int aNext : aNexts)
       {
-        if ((state = aNext) == -1)
+        if ((nState = aNext) == -1)
           continue;
 
-        final NfaState tmp = nfa ().getAllStates ().get (state);
-        if (tmp.m_inNextOf <= 1)
-          put[state] = false;
+        final NfaState aTmp = nfa ().getAllStates ().get (nState);
+        if (aTmp.m_inNextOf <= 1)
+          aPut[nState] = false;
       }
     }
   }
 
-  public static void dumpMoveNfa (final CodeGenerator codeGenerator)
+  public static void dumpMoveNfa (final CodeGenerator aCodeGenerator)
   {
     // if (!boilerPlateDumped)
     // PrintBoilerPlate(codeGenerator);
 
     // boilerPlateDumped = true;
-    int [] kindsForStates = null;
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
+    int [] aKindsForStates = null;
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
 
     if (nfa ().getKinds () == null)
     {
@@ -2934,52 +2934,52 @@ public class NfaState
 
     for (final NfaState s_allState : nfa ().getAllStates ())
     {
-      final NfaState temp = s_allState;
+      final NfaState aTemp = s_allState;
 
-      if (temp.m_lexState != LexGenJava.lexer ().getLexStateIndex () ||
-        !temp.hasTransitions () ||
-        temp.m_dummy ||
-        temp.m_stateName == -1)
+      if (aTemp.m_lexState != LexGenJava.lexer ().getLexStateIndex () ||
+        !aTemp.hasTransitions () ||
+        aTemp.m_dummy ||
+        aTemp.m_stateName == -1)
         continue;
 
-      if (kindsForStates == null)
+      if (aKindsForStates == null)
       {
-        kindsForStates = new int [nfa ().getGeneratedStates ()];
+        aKindsForStates = new int [nfa ().getGeneratedStates ()];
         nfa ().getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()] = new int [Math.max (nfa ()
                                                                                                         .getGeneratedStates (),
                                                                                                   nfa ().getDummyStateIndex () +
                                                                                                                                 1)] [];
       }
 
-      kindsForStates[temp.m_stateName] = temp.m_lookingFor;
-      nfa ().getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()][temp.m_stateName] = temp.m_compositeStates;
+      aKindsForStates[aTemp.m_stateName] = aTemp.m_lookingFor;
+      nfa ().getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()][aTemp.m_stateName] = aTemp.m_compositeStates;
 
-      temp._generateNonAsciiMoves (codeGenerator);
+      aTemp._generateNonAsciiMoves (aCodeGenerator);
     }
 
     for (final Map.Entry <String, Integer> aEntry : nfa ().stateNameForComposite ().entrySet ())
     {
       final String s = aEntry.getKey ();
-      final int state = aEntry.getValue ().intValue ();
+      final int nState = aEntry.getValue ().intValue ();
 
-      if (state >= nfa ().getGeneratedStates ())
-        nfa ().getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()][state] = nfa ().allNextStates ().get (s);
+      if (nState >= nfa ().getGeneratedStates ())
+        nfa ().getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()][nState] = nfa ().allNextStates ().get (s);
     }
 
     if (nfa ().stateSetsToFix ().size () != 0)
       _fixStateSets ();
 
-    nfa ().getKinds ()[LexGenJava.lexer ().getLexStateIndex ()] = kindsForStates;
+    nfa ().getKinds ()[LexGenJava.lexer ().getLexStateIndex ()] = aKindsForStates;
 
     switch (eOutputLanguage)
     {
       case JAVA:
-        codeGenerator.genCodeLine ("private int jjMoveNfa" +
+        aCodeGenerator.genCodeLine ("private int jjMoveNfa" +
                                    LexGenJava.lexer ().getLexStateSuffix () +
                                    "(int startState, int curPos)");
         break;
       case CPP:
-        codeGenerator.generateMethodDefHeader ("int",
+        aCodeGenerator.generateMethodDefHeader ("int",
                                                LexGenJava.lexer ().getTokenMgrClassName (),
                                                "jjMoveNfa" +
                                                                                             LexGenJava.lexer ()
@@ -2989,53 +2989,53 @@ public class NfaState
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
-    codeGenerator.genCodeLine ("{");
+    aCodeGenerator.genCodeLine ("{");
     if (nfa ().getGeneratedStates () == 0)
     {
-      codeGenerator.genCodeLine ("   return curPos;");
-      codeGenerator.genCodeLine ("}");
+      aCodeGenerator.genCodeLine ("   return curPos;");
+      aCodeGenerator.genCodeLine ("}");
       return;
     }
 
     if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
     {
-      codeGenerator.genCodeLine ("   int strKind = jjmatchedKind;");
-      codeGenerator.genCodeLine ("   int strPos = jjmatchedPos;");
-      codeGenerator.genCodeLine ("   int seenUpto;");
+      aCodeGenerator.genCodeLine ("   int strKind = jjmatchedKind;");
+      aCodeGenerator.genCodeLine ("   int strPos = jjmatchedPos;");
+      aCodeGenerator.genCodeLine ("   int seenUpto;");
       switch (eOutputLanguage)
       {
         case JAVA:
-          codeGenerator.genCodeLine ("   input_stream.backup(seenUpto = curPos + 1);");
-          codeGenerator.genCodeLine ("   try { curChar = input_stream.readChar(); }");
+          aCodeGenerator.genCodeLine ("   input_stream.backup(seenUpto = curPos + 1);");
+          aCodeGenerator.genCodeLine ("   try { curChar = input_stream.readChar(); }");
           // TODO do not throw error
-          codeGenerator.genCodeLine ("   catch(final java.io.IOException e) { throw new Error(\"Internal Error\"); }");
+          aCodeGenerator.genCodeLine ("   catch(final java.io.IOException e) { throw new Error(\"Internal Error\"); }");
           break;
         case CPP:
-          codeGenerator.genCodeLine ("   input_stream->backup(seenUpto = curPos + 1);");
-          codeGenerator.genCodeLine ("   assert(!input_stream->endOfInput());");
-          codeGenerator.genCodeLine ("   curChar = input_stream->readChar();");
+          aCodeGenerator.genCodeLine ("   input_stream->backup(seenUpto = curPos + 1);");
+          aCodeGenerator.genCodeLine ("   assert(!input_stream->endOfInput());");
+          aCodeGenerator.genCodeLine ("   curChar = input_stream->readChar();");
           break;
         default:
           throw new UnsupportedOutputLanguageException (eOutputLanguage);
       }
-      codeGenerator.genCodeLine ("   curPos = 0;");
+      aCodeGenerator.genCodeLine ("   curPos = 0;");
     }
 
-    codeGenerator.genCodeLine ("   int startsAt = 0;");
-    codeGenerator.genCodeLine ("   jjnewStateCnt = " + nfa ().getGeneratedStates () + ";");
-    codeGenerator.genCodeLine ("   int i = 1;");
-    codeGenerator.genCodeLine ("   jjstateSet[0] = startState;");
+    aCodeGenerator.genCodeLine ("   int startsAt = 0;");
+    aCodeGenerator.genCodeLine ("   jjnewStateCnt = " + nfa ().getGeneratedStates () + ";");
+    aCodeGenerator.genCodeLine ("   int i = 1;");
+    aCodeGenerator.genCodeLine ("   jjstateSet[0] = startState;");
 
     if (Options.isDebugTokenManager ())
     {
       switch (eOutputLanguage)
       {
         case JAVA:
-          codeGenerator.genCodeLine ("      debugStream.println(\"   Starting NFA to match one of : \" + " +
+          aCodeGenerator.genCodeLine ("      debugStream.println(\"   Starting NFA to match one of : \" + " +
                                      "jjKindsForStateVector(curLexState, jjstateSet, 0, 1));");
           break;
         case CPP:
-          codeGenerator.genCodeLine ("      fprintf(debugStream, \"   Starting NFA to match one of : %s\\n\", jjKindsForStateVector(curLexState, jjstateSet, 0, 1).c_str());");
+          aCodeGenerator.genCodeLine ("      fprintf(debugStream, \"   Starting NFA to match one of : %s\\n\", jjKindsForStateVector(curLexState, jjstateSet, 0, 1).c_str());");
           break;
         default:
           throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -3047,7 +3047,7 @@ public class NfaState
       switch (eOutputLanguage)
       {
         case JAVA:
-          codeGenerator.genCodeLine ("      debugStream.println(" +
+          aCodeGenerator.genCodeLine ("      debugStream.println(" +
                                      (LexGenJava.lexer ().getMaxLexStates () > 1
                                                                                  ? "\"<\" + lexStateNames[curLexState] + \">\" + "
                                                                                  : "") +
@@ -3057,7 +3057,7 @@ public class NfaState
                                      "at line \" + input_stream.getEndLine() + \" column \" + input_stream.getEndColumn());");
           break;
         case CPP:
-          codeGenerator.genCodeLine ("   fprintf(debugStream, " +
+          aCodeGenerator.genCodeLine ("   fprintf(debugStream, " +
                                      "\"<%s>Current character : %c(%d) at line %d column %d\\n\"," +
                                      "addUnicodeEscapes(lexStateNames[curLexState]).c_str(), curChar, (int)curChar, " +
                                      "input_stream->getEndLine(), input_stream->getEndColumn());");
@@ -3067,58 +3067,58 @@ public class NfaState
       }
     }
 
-    codeGenerator.genCodeLine ("   int kind = 0x" + Integer.toHexString (Integer.MAX_VALUE) + ";");
-    codeGenerator.genCodeLine ("   for (;;)");
-    codeGenerator.genCodeLine ("   {");
-    codeGenerator.genCodeLine ("      if (++jjround == 0x" + Integer.toHexString (Integer.MAX_VALUE) + ")");
-    codeGenerator.genCodeLine ("         ReInitRounds();");
-    codeGenerator.genCodeLine ("      if (curChar < 64)");
-    codeGenerator.genCodeLine ("      {");
+    aCodeGenerator.genCodeLine ("   int kind = 0x" + Integer.toHexString (Integer.MAX_VALUE) + ";");
+    aCodeGenerator.genCodeLine ("   for (;;)");
+    aCodeGenerator.genCodeLine ("   {");
+    aCodeGenerator.genCodeLine ("      if (++jjround == 0x" + Integer.toHexString (Integer.MAX_VALUE) + ")");
+    aCodeGenerator.genCodeLine ("         ReInitRounds();");
+    aCodeGenerator.genCodeLine ("      if (curChar < 64)");
+    aCodeGenerator.genCodeLine ("      {");
 
-    _dumpAsciiMoves (codeGenerator, 0);
+    _dumpAsciiMoves (aCodeGenerator, 0);
 
-    codeGenerator.genCodeLine ("      }");
+    aCodeGenerator.genCodeLine ("      }");
 
-    codeGenerator.genCodeLine ("      else if (curChar < 128)");
+    aCodeGenerator.genCodeLine ("      else if (curChar < 128)");
 
-    codeGenerator.genCodeLine ("      {");
+    aCodeGenerator.genCodeLine ("      {");
 
-    _dumpAsciiMoves (codeGenerator, 1);
+    _dumpAsciiMoves (aCodeGenerator, 1);
 
-    codeGenerator.genCodeLine ("      }");
+    aCodeGenerator.genCodeLine ("      }");
 
-    codeGenerator.genCodeLine ("      else");
-    codeGenerator.genCodeLine ("      {");
+    aCodeGenerator.genCodeLine ("      else");
+    aCodeGenerator.genCodeLine ("      {");
 
-    dumpCharAndRangeMoves (codeGenerator);
+    dumpCharAndRangeMoves (aCodeGenerator);
 
-    codeGenerator.genCodeLine ("      }");
+    aCodeGenerator.genCodeLine ("      }");
 
-    codeGenerator.genCodeLine ("      if (kind != 0x" + Integer.toHexString (Integer.MAX_VALUE) + ")");
-    codeGenerator.genCodeLine ("      {");
-    codeGenerator.genCodeLine ("         jjmatchedKind = kind;");
-    codeGenerator.genCodeLine ("         jjmatchedPos = curPos;");
-    codeGenerator.genCodeLine ("         kind = 0x" + Integer.toHexString (Integer.MAX_VALUE) + ";");
-    codeGenerator.genCodeLine ("      }");
-    codeGenerator.genCodeLine ("      ++curPos;");
+    aCodeGenerator.genCodeLine ("      if (kind != 0x" + Integer.toHexString (Integer.MAX_VALUE) + ")");
+    aCodeGenerator.genCodeLine ("      {");
+    aCodeGenerator.genCodeLine ("         jjmatchedKind = kind;");
+    aCodeGenerator.genCodeLine ("         jjmatchedPos = curPos;");
+    aCodeGenerator.genCodeLine ("         kind = 0x" + Integer.toHexString (Integer.MAX_VALUE) + ";");
+    aCodeGenerator.genCodeLine ("      }");
+    aCodeGenerator.genCodeLine ("      ++curPos;");
 
     if (Options.isDebugTokenManager ())
     {
       switch (eOutputLanguage)
       {
         case JAVA:
-          codeGenerator.genCodeLine ("      if (jjmatchedKind != 0 && jjmatchedKind != 0x" +
+          aCodeGenerator.genCodeLine ("      if (jjmatchedKind != 0 && jjmatchedKind != 0x" +
                                      Integer.toHexString (Integer.MAX_VALUE) +
                                      ")");
-          codeGenerator.genCodeLine ("         debugStream.println(" +
+          aCodeGenerator.genCodeLine ("         debugStream.println(" +
                                      "\"   Currently matched the first \" + (jjmatchedPos + 1) + \" characters as" +
                                      " a \" + tokenImage[jjmatchedKind] + \" token.\");");
           break;
         case CPP:
-          codeGenerator.genCodeLine ("      if (jjmatchedKind != 0 && jjmatchedKind != 0x" +
+          aCodeGenerator.genCodeLine ("      if (jjmatchedKind != 0 && jjmatchedKind != 0x" +
                                      Integer.toHexString (Integer.MAX_VALUE) +
                                      ")");
-          codeGenerator.genCodeLine ("   fprintf(debugStream, \"   Currently matched the first %d characters as a \\\"%s\\\" token.\\n\",  (jjmatchedPos + 1),  addUnicodeEscapes(tokenImage[jjmatchedKind]).c_str());");
+          aCodeGenerator.genCodeLine ("   fprintf(debugStream, \"   Currently matched the first %d characters as a \\\"%s\\\" token.\\n\",  (jjmatchedPos + 1),  addUnicodeEscapes(tokenImage[jjmatchedKind]).c_str());");
           break;
         default:
           throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -3131,21 +3131,21 @@ public class NfaState
         if (false)
         {
           // Old
-          codeGenerator.genCodeLine ("      if ((i = jjnewStateCnt) == (startsAt = " +
+          aCodeGenerator.genCodeLine ("      if ((i = jjnewStateCnt) == (startsAt = " +
                                      nfa ().getGeneratedStates () +
                                      " - (jjnewStateCnt = startsAt)))");
         }
         else
         {
           // New
-          codeGenerator.genCodeLine ("      i = jjnewStateCnt;");
-          codeGenerator.genCodeLine ("      jjnewStateCnt = startsAt;");
-          codeGenerator.genCodeLine ("      startsAt = " + nfa ().getGeneratedStates () + " - jjnewStateCnt;");
-          codeGenerator.genCodeLine ("      if (i == startsAt)");
+          aCodeGenerator.genCodeLine ("      i = jjnewStateCnt;");
+          aCodeGenerator.genCodeLine ("      jjnewStateCnt = startsAt;");
+          aCodeGenerator.genCodeLine ("      startsAt = " + nfa ().getGeneratedStates () + " - jjnewStateCnt;");
+          aCodeGenerator.genCodeLine ("      if (i == startsAt)");
         }
         break;
       case CPP:
-        codeGenerator.genCodeLine ("      if ((i = jjnewStateCnt), (jjnewStateCnt = startsAt), (i == (startsAt = " +
+        aCodeGenerator.genCodeLine ("      if ((i = jjnewStateCnt), (jjnewStateCnt = startsAt), (i == (startsAt = " +
                                    nfa ().getGeneratedStates () +
                                    " - startsAt)))");
         break;
@@ -3153,20 +3153,20 @@ public class NfaState
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
     if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
-      codeGenerator.genCodeLine ("         break;");
+      aCodeGenerator.genCodeLine ("         break;");
     else
-      codeGenerator.genCodeLine ("         return curPos;");
+      aCodeGenerator.genCodeLine ("         return curPos;");
 
     if (Options.isDebugTokenManager ())
     {
       switch (eOutputLanguage)
       {
         case JAVA:
-          codeGenerator.genCodeLine ("      debugStream.println(\"   Possible kinds of longer matches : \" + " +
+          aCodeGenerator.genCodeLine ("      debugStream.println(\"   Possible kinds of longer matches : \" + " +
                                      "jjKindsForStateVector(curLexState, jjstateSet, startsAt, i));");
           break;
         case CPP:
-          codeGenerator.genCodeLine ("      fprintf(debugStream, \"   Possible kinds of longer matches : %s\\n\", jjKindsForStateVector(curLexState, jjstateSet, startsAt, i).c_str());");
+          aCodeGenerator.genCodeLine ("      fprintf(debugStream, \"   Possible kinds of longer matches : %s\\n\", jjKindsForStateVector(curLexState, jjstateSet, startsAt, i).c_str());");
           break;
         default:
           throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -3176,18 +3176,18 @@ public class NfaState
     switch (eOutputLanguage)
     {
       case JAVA:
-        codeGenerator.genCodeLine ("      try { curChar = input_stream.readChar(); }");
+        aCodeGenerator.genCodeLine ("      try { curChar = input_stream.readChar(); }");
         if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
-          codeGenerator.genCodeLine ("      catch(final java.io.IOException e) { break; }");
+          aCodeGenerator.genCodeLine ("      catch(final java.io.IOException e) { break; }");
         else
-          codeGenerator.genCodeLine ("      catch(final java.io.IOException e) { return curPos; }");
+          aCodeGenerator.genCodeLine ("      catch(final java.io.IOException e) { return curPos; }");
         break;
       case CPP:
         if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
-          codeGenerator.genCodeLine ("      if (input_stream->endOfInput()) { break; }");
+          aCodeGenerator.genCodeLine ("      if (input_stream->endOfInput()) { break; }");
         else
-          codeGenerator.genCodeLine ("      if (input_stream->endOfInput()) { return curPos; }");
-        codeGenerator.genCodeLine ("      curChar = input_stream->readChar();");
+          aCodeGenerator.genCodeLine ("      if (input_stream->endOfInput()) { return curPos; }");
+        aCodeGenerator.genCodeLine ("      curChar = input_stream->readChar();");
         break;
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -3198,7 +3198,7 @@ public class NfaState
       switch (eOutputLanguage)
       {
         case JAVA:
-          codeGenerator.genCodeLine ("      debugStream.println(" +
+          aCodeGenerator.genCodeLine ("      debugStream.println(" +
                                      (LexGenJava.lexer ().getMaxLexStates () > 1
                                                                                  ? "\"<\" + lexStateNames[curLexState] + \">\" + "
                                                                                  : "") +
@@ -3208,7 +3208,7 @@ public class NfaState
                                      "at line \" + input_stream.getEndLine() + \" column \" + input_stream.getEndColumn());");
           break;
         case CPP:
-          codeGenerator.genCodeLine ("   fprintf(debugStream, " +
+          aCodeGenerator.genCodeLine ("   fprintf(debugStream, " +
                                      "\"<%s>Current character : %c(%d) at line %d column %d\\n\"," +
                                      "addUnicodeEscapes(lexStateNames[curLexState]).c_str(), curChar, (int)curChar, " +
                                      "input_stream->getEndLine(), input_stream->getEndColumn());");
@@ -3218,61 +3218,61 @@ public class NfaState
       }
     }
 
-    codeGenerator.genCodeLine ("   }");
+    aCodeGenerator.genCodeLine ("   }");
 
     if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
     {
-      codeGenerator.genCodeLine ("   if (jjmatchedPos > strPos)");
-      codeGenerator.genCodeLine ("      return curPos;");
-      codeGenerator.genCodeNewLine ();
-      codeGenerator.genCodeLine ("   int toRet = " + eOutputLanguage.getMax ("curPos", "seenUpto") + ";");
-      codeGenerator.genCodeNewLine ();
-      codeGenerator.genCodeLine ("   if (curPos < toRet)");
-      codeGenerator.genCodeLine ("      for (i = toRet - " +
+      aCodeGenerator.genCodeLine ("   if (jjmatchedPos > strPos)");
+      aCodeGenerator.genCodeLine ("      return curPos;");
+      aCodeGenerator.genCodeNewLine ();
+      aCodeGenerator.genCodeLine ("   int toRet = " + eOutputLanguage.getMax ("curPos", "seenUpto") + ";");
+      aCodeGenerator.genCodeNewLine ();
+      aCodeGenerator.genCodeLine ("   if (curPos < toRet)");
+      aCodeGenerator.genCodeLine ("      for (i = toRet - " +
                                  eOutputLanguage.getMin ("curPos", "seenUpto") +
                                  "; i-- > 0; )");
       // Reading the next char: Java catches the end of input, C++ asserts against it
       switch (eOutputLanguage)
       {
         case JAVA:
-          codeGenerator.genCodeLine ("         try { curChar = input_stream.readChar(); }");
+          aCodeGenerator.genCodeLine ("         try { curChar = input_stream.readChar(); }");
           // TODO do not throw error
-          codeGenerator.genCodeLine ("         catch(final java.io.IOException e) { throw new Error(\"Internal Error : Please send a bug report.\"); }");
+          aCodeGenerator.genCodeLine ("         catch(final java.io.IOException e) { throw new Error(\"Internal Error : Please send a bug report.\"); }");
           break;
         case CPP:
-          codeGenerator.genCodeLine ("        {  assert(!input_stream->endOfInput());");
-          codeGenerator.genCodeLine ("           curChar = input_stream->readChar(); }");
+          aCodeGenerator.genCodeLine ("        {  assert(!input_stream->endOfInput());");
+          aCodeGenerator.genCodeLine ("           curChar = input_stream->readChar(); }");
           break;
         default:
           throw new UnsupportedOutputLanguageException (eOutputLanguage);
       }
-      codeGenerator.genCodeNewLine ();
-      codeGenerator.genCodeLine ("   if (jjmatchedPos < strPos)");
-      codeGenerator.genCodeLine ("   {");
-      codeGenerator.genCodeLine ("      jjmatchedKind = strKind;");
-      codeGenerator.genCodeLine ("      jjmatchedPos = strPos;");
-      codeGenerator.genCodeLine ("   }");
-      codeGenerator.genCodeLine ("   else");
-      codeGenerator.genCodeLine ("   if (jjmatchedPos == strPos && jjmatchedKind > strKind)");
-      codeGenerator.genCodeLine ("      jjmatchedKind = strKind;");
-      codeGenerator.genCodeNewLine ();
-      codeGenerator.genCodeLine ("   return toRet;");
+      aCodeGenerator.genCodeNewLine ();
+      aCodeGenerator.genCodeLine ("   if (jjmatchedPos < strPos)");
+      aCodeGenerator.genCodeLine ("   {");
+      aCodeGenerator.genCodeLine ("      jjmatchedKind = strKind;");
+      aCodeGenerator.genCodeLine ("      jjmatchedPos = strPos;");
+      aCodeGenerator.genCodeLine ("   }");
+      aCodeGenerator.genCodeLine ("   else");
+      aCodeGenerator.genCodeLine ("   if (jjmatchedPos == strPos && jjmatchedKind > strKind)");
+      aCodeGenerator.genCodeLine ("      jjmatchedKind = strKind;");
+      aCodeGenerator.genCodeNewLine ();
+      aCodeGenerator.genCodeLine ("   return toRet;");
     }
 
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeLine ("}");
     nfa ().getAllStates ().clear ();
   }
 
-  public static void dumpStatesForStateCPP (final CodeGenerator codeGenerator)
+  public static void dumpStatesForStateCPP (final CodeGenerator aCodeGenerator)
   {
     if (nfa ().getStatesForState () == null)
     {
       assert (false) : "This should never be null.";
-      codeGenerator.genCodeLine ("null;");
+      aCodeGenerator.genCodeLine ("null;");
       return;
     }
 
-    codeGenerator.switchToStaticsFile ();
+    aCodeGenerator.switchToStaticsFile ();
     for (int i = 0; i < LexGenJava.lexer ().getMaxLexStates (); i++)
     {
       if (nfa ().getStatesForState ()[i] == null)
@@ -3282,131 +3282,131 @@ public class NfaState
 
       for (int j = 0; j < nfa ().getStatesForState ()[i].length; j++)
       {
-        final int [] stateSet = nfa ().getStatesForState ()[i][j];
+        final int [] aStateSet = nfa ().getStatesForState ()[i][j];
 
-        codeGenerator.genCode ("const int stateSet_" +
+        aCodeGenerator.genCode ("const int stateSet_" +
                                i +
                                "_" +
                                j +
                                "[" +
                                LexGenJava.lexer ().getStateSetSize () +
                                "] = ");
-        if (stateSet == null)
+        if (aStateSet == null)
         {
-          codeGenerator.genCodeLine ("   { " + j + " };");
+          aCodeGenerator.genCodeLine ("   { " + j + " };");
           continue;
         }
 
-        codeGenerator.genCode ("   { ");
+        aCodeGenerator.genCode ("   { ");
 
-        for (final int aElement : stateSet)
-          codeGenerator.genCode (aElement + ", ");
+        for (final int aElement : aStateSet)
+          aCodeGenerator.genCode (aElement + ", ");
 
-        codeGenerator.genCodeLine ("};");
+        aCodeGenerator.genCodeLine ("};");
       }
 
     }
 
     for (int i = 0; i < LexGenJava.lexer ().getMaxLexStates (); i++)
     {
-      codeGenerator.genCodeLine ("const int *stateSet_" + i + "[] = {");
+      aCodeGenerator.genCodeLine ("const int *stateSet_" + i + "[] = {");
       if (nfa ().getStatesForState ()[i] == null)
       {
-        codeGenerator.genCodeLine (" NULL, ");
-        codeGenerator.genCodeLine ("};");
+        aCodeGenerator.genCodeLine (" NULL, ");
+        aCodeGenerator.genCodeLine ("};");
         continue;
       }
 
       for (int j = 0; j < nfa ().getStatesForState ()[i].length; j++)
       {
-        codeGenerator.genCode ("stateSet_" + i + "_" + j + ",");
+        aCodeGenerator.genCode ("stateSet_" + i + "_" + j + ",");
       }
-      codeGenerator.genCodeLine ("};");
+      aCodeGenerator.genCodeLine ("};");
     }
 
-    codeGenerator.genCode ("const int** statesForState[] = { ");
+    aCodeGenerator.genCode ("const int** statesForState[] = { ");
     for (int i = 0; i < LexGenJava.lexer ().getMaxLexStates (); i++)
     {
-      codeGenerator.genCodeLine ("stateSet_" + i + ", ");
+      aCodeGenerator.genCodeLine ("stateSet_" + i + ", ");
     }
 
-    codeGenerator.genCodeLine ("\n};");
-    codeGenerator.switchToMainFile ();
+    aCodeGenerator.genCodeLine ("\n};");
+    aCodeGenerator.switchToMainFile ();
   }
 
-  public static void dumpStatesForStateJava (final CodeGenerator codeGenerator)
+  public static void dumpStatesForStateJava (final CodeGenerator aCodeGenerator)
   {
-    codeGenerator.genCodeLine ("protected static final class States {");
-    codeGenerator.genCode ("  protected static final int[][][] statesForState = ");
+    aCodeGenerator.genCodeLine ("protected static final class States {");
+    aCodeGenerator.genCode ("  protected static final int[][][] statesForState = ");
 
     if (nfa ().getStatesForState () == null)
     {
-      codeGenerator.genCodeLine ("null;");
+      aCodeGenerator.genCodeLine ("null;");
     }
     else
     {
-      codeGenerator.genCodeLine ("{");
+      aCodeGenerator.genCodeLine ("{");
       for (int i = 0; i < LexGenJava.lexer ().getMaxLexStates (); i++)
       {
         if (nfa ().getStatesForState ()[i] == null)
         {
-          codeGenerator.genCodeLine (" {},");
+          aCodeGenerator.genCodeLine (" {},");
           continue;
         }
 
-        codeGenerator.genCodeLine (" {");
+        aCodeGenerator.genCodeLine (" {");
         for (int j = 0; j < nfa ().getStatesForState ()[i].length; j++)
         {
-          final int [] stateSet = nfa ().getStatesForState ()[i][j];
+          final int [] aStateSet = nfa ().getStatesForState ()[i][j];
 
-          if (stateSet == null)
+          if (aStateSet == null)
           {
-            codeGenerator.genCodeLine ("   { " + j + " },");
+            aCodeGenerator.genCodeLine ("   { " + j + " },");
           }
           else
           {
-            codeGenerator.genCode ("   { ");
-            for (final int aElement : stateSet)
-              codeGenerator.genCode (aElement + ", ");
-            codeGenerator.genCodeLine ("},");
+            aCodeGenerator.genCode ("   { ");
+            for (final int aElement : aStateSet)
+              aCodeGenerator.genCode (aElement + ", ");
+            aCodeGenerator.genCodeLine ("},");
           }
         }
-        codeGenerator.genCodeLine ("},");
+        aCodeGenerator.genCodeLine ("},");
       }
 
-      codeGenerator.genCodeLine ("\n};");
+      aCodeGenerator.genCodeLine ("\n};");
     }
 
     // Close class
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeLine ("}");
   }
 
-  public static void dumpStatesForKind (final CodeGenerator codeGenerator)
+  public static void dumpStatesForKind (final CodeGenerator aCodeGenerator)
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     switch (eOutputLanguage)
     {
       case JAVA:
-        dumpStatesForStateJava (codeGenerator);
+        dumpStatesForStateJava (aCodeGenerator);
         break;
       case CPP:
-        dumpStatesForStateCPP (codeGenerator);
+        dumpStatesForStateCPP (aCodeGenerator);
         break;
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
-    boolean moreThanOne = false;
-    int cnt = 0;
+    boolean bMoreThanOne = false;
+    int nCnt = 0;
 
     switch (eOutputLanguage)
     {
       case JAVA:
-        codeGenerator.genCodeLine ("protected static final class Kinds {");
-        codeGenerator.genCode ("  protected static final int[][] kindForState = ");
+        aCodeGenerator.genCodeLine ("protected static final class Kinds {");
+        aCodeGenerator.genCode ("  protected static final int[][] kindForState = ");
         break;
       case CPP:
-        codeGenerator.switchToStaticsFile ();
-        codeGenerator.genCode ("static const int kindForState[" +
+        aCodeGenerator.switchToStaticsFile ();
+        aCodeGenerator.genCode ("static const int kindForState[" +
                                LexGenJava.lexer ().getStateSetSize () +
                                "][" +
                                LexGenJava.lexer ().getStateSetSize () +
@@ -3418,46 +3418,46 @@ public class NfaState
 
     if (nfa ().getKinds () == null)
     {
-      codeGenerator.genCodeLine ("null;");
+      aCodeGenerator.genCodeLine ("null;");
     }
     else
     {
-      codeGenerator.genCodeLine ("{");
+      aCodeGenerator.genCodeLine ("{");
 
       for (final int [] aKind : nfa ().getKinds ())
       {
-        if (moreThanOne)
-          codeGenerator.genCodeLine (",");
-        moreThanOne = true;
+        if (bMoreThanOne)
+          aCodeGenerator.genCodeLine (",");
+        bMoreThanOne = true;
 
         if (aKind == null)
-          codeGenerator.genCodeLine ("{}");
+          aCodeGenerator.genCodeLine ("{}");
         else
         {
-          cnt = 0;
-          codeGenerator.genCode ("{ ");
+          nCnt = 0;
+          aCodeGenerator.genCode ("{ ");
           for (final int aElement : aKind)
           {
-            if (cnt % 15 == 0)
-              codeGenerator.genCode ("\n  ");
+            if (nCnt % 15 == 0)
+              aCodeGenerator.genCode ("\n  ");
             else
-              if (cnt > 1)
-                codeGenerator.genCode (" ");
+              if (nCnt > 1)
+                aCodeGenerator.genCode (" ");
 
-            codeGenerator.genCode (aElement + ", ");
+            aCodeGenerator.genCode (aElement + ", ");
           }
 
-          codeGenerator.genCode ("}");
+          aCodeGenerator.genCode ("}");
         }
       }
-      codeGenerator.genCodeLine ("\n};");
+      aCodeGenerator.genCodeLine ("\n};");
     }
 
     switch (eOutputLanguage)
     {
       case JAVA:
         // Close class
-        codeGenerator.genCode ("}");
+        aCodeGenerator.genCode ("}");
         break;
       case CPP:
         // empty
@@ -3465,7 +3465,7 @@ public class NfaState
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
-    codeGenerator.switchToMainFile ();
+    aCodeGenerator.switchToMainFile ();
   }
 
   /**
@@ -3488,48 +3488,48 @@ public class NfaState
     return null;
   }
 
-  public static void updateNfaData (final int maxState,
-                                    final int startStateName,
-                                    final int lexicalStateIndex,
-                                    final int matchAnyCharKind)
+  public static void updateNfaData (final int nMaxState,
+                                    final int nStartStateName,
+                                    final int nLexicalStateIndex,
+                                    final int nMatchAnyCharKind)
   {
     // Cleanup the state set.
-    final Set <Integer> done = new HashSet <> ();
-    final List <NfaState> cleanStates = new ArrayList <> ();
-    NfaState startState = null;
+    final Set <Integer> aDone = new HashSet <> ();
+    final List <NfaState> aCleanStates = new ArrayList <> ();
+    NfaState aStartState = null;
     for (int i = 0; i < nfa ().getAllStates ().size (); i++)
     {
-      final NfaState tmp = nfa ().getAllStates ().get (i);
-      if (tmp.m_stateName == -1)
+      final NfaState aTmp = nfa ().getAllStates ().get (i);
+      if (aTmp.m_stateName == -1)
         continue;
-      if (!done.add (Integer.valueOf (tmp.m_stateName)))
+      if (!aDone.add (Integer.valueOf (aTmp.m_stateName)))
         continue;
-      cleanStates.add (tmp);
-      if (tmp.m_stateName == startStateName)
+      aCleanStates.add (aTmp);
+      if (aTmp.m_stateName == nStartStateName)
       {
-        startState = tmp;
+        aStartState = aTmp;
       }
     }
 
-    if (startState == null && startStateName != -1)
+    if (aStartState == null && nStartStateName != -1)
     {
       // The start state is composite and carries a name that no NfaState object has:
       // _addCompositeStateSet ran out of member states whose name it could reuse and allocated a
       // dummy one past the end instead. The generated token manager copes, because it only ever
       // switches on the name, but the TokenizerData the interpreter reads needs a state to start
       // in. Remember what the name stands for so that buildTokenizerData can synthesize one.
-      final int [] aMembers = memberStatesOfComposite (startStateName);
+      final int [] aMembers = memberStatesOfComposite (nStartStateName);
       if (aMembers != null)
         tokenizerBuild ().compositeStartStates ()
-                         .put (Integer.valueOf (lexicalStateIndex), new CompositeStartState (startStateName, aMembers));
+                         .put (Integer.valueOf (nLexicalStateIndex), new CompositeStartState (nStartStateName, aMembers));
     }
 
-    tokenizerBuild ().initialStates ().put (Integer.valueOf (lexicalStateIndex), startState);
-    tokenizerBuild ().statesForLexicalState ().put (Integer.valueOf (lexicalStateIndex), cleanStates);
-    tokenizerBuild ().nfaStateOffset ().put (Integer.valueOf (lexicalStateIndex), Integer.valueOf (maxState));
+    tokenizerBuild ().initialStates ().put (Integer.valueOf (nLexicalStateIndex), aStartState);
+    tokenizerBuild ().statesForLexicalState ().put (Integer.valueOf (nLexicalStateIndex), aCleanStates);
+    tokenizerBuild ().nfaStateOffset ().put (Integer.valueOf (nLexicalStateIndex), Integer.valueOf (nMaxState));
     tokenizerBuild ().matchAnyChar ()
-                     .put (Integer.valueOf (lexicalStateIndex),
-                           Integer.valueOf (matchAnyCharKind > 0 ? matchAnyCharKind : Integer.MAX_VALUE));
+                     .put (Integer.valueOf (nLexicalStateIndex),
+                           Integer.valueOf (nMatchAnyCharKind > 0 ? nMatchAnyCharKind : Integer.MAX_VALUE));
   }
 
   /**
@@ -3545,65 +3545,65 @@ public class NfaState
    * @param nOffset
    *        The lexical state offset to shift the member names by.
    */
-  public static void buildTokenizerData (final TokenizerData tokenizerData)
+  public static void buildTokenizerData (final TokenizerData aTokenizerData)
   {
-    NfaState [] cleanStates;
-    final List <NfaState> cleanStateList = new ArrayList <> ();
+    NfaState [] aCleanStates;
+    final List <NfaState> aCleanStateList = new ArrayList <> ();
     // Which lexical state a state came from is needed further down, to shift its composite members
     // by the same offset as its own name
     final Map <NfaState, Integer> aOffsetOfState = new IdentityHashMap <> ();
     for (final int l : tokenizerBuild ().statesForLexicalState ().keySet ())
     {
-      final int offset = tokenizerBuild ().nfaStateOffset ().get (Integer.valueOf (l)).intValue ();
-      final List <NfaState> states = tokenizerBuild ().statesForLexicalState ().get (Integer.valueOf (l));
-      for (final NfaState state : states)
+      final int nOffset = tokenizerBuild ().nfaStateOffset ().get (Integer.valueOf (l)).intValue ();
+      final List <NfaState> aStates = tokenizerBuild ().statesForLexicalState ().get (Integer.valueOf (l));
+      for (final NfaState state : aStates)
       {
         if (state.m_stateName == -1)
           continue;
-        state.m_stateName += offset;
-        aOffsetOfState.put (state, Integer.valueOf (offset));
+        state.m_stateName += nOffset;
+        aOffsetOfState.put (state, Integer.valueOf (nOffset));
       }
-      cleanStateList.addAll (states);
+      aCleanStateList.addAll (aStates);
     }
-    cleanStates = new NfaState [cleanStateList.size ()];
-    for (final NfaState s : cleanStateList)
+    aCleanStates = new NfaState [aCleanStateList.size ()];
+    for (final NfaState s : aCleanStateList)
     {
-      assert (cleanStates[s.m_stateName] == null);
-      cleanStates[s.m_stateName] = s;
-      final Set <Character> chars = new TreeSet <> ();
+      assert (aCleanStates[s.m_stateName] == null);
+      aCleanStates[s.m_stateName] = s;
+      final Set <Character> aChars = new TreeSet <> ();
       for (int c = 0; c <= Character.MAX_VALUE; c++)
       {
         if (s._canMoveUsingChar ((char) c))
         {
-          chars.add (Character.valueOf ((char) c));
+          aChars.add (Character.valueOf ((char) c));
         }
       }
-      final Set <Integer> nextStates = new TreeSet <> ();
+      final Set <Integer> aNextStates = new TreeSet <> ();
       if (s.m_next != null)
       {
         for (final NfaState next : s.m_next.m_epsilonMoves)
         {
-          nextStates.add (Integer.valueOf (next.m_stateName));
+          aNextStates.add (Integer.valueOf (next.m_stateName));
         }
       }
-      final SortedSet <Integer> composite = new TreeSet <> ();
+      final SortedSet <Integer> aComposite = new TreeSet <> ();
       if (s.m_isComposite)
       {
         // The member names are the ones from before the shift above, so they need the same offset
         final int nOffset = aOffsetOfState.getOrDefault (s, Integer.valueOf (0)).intValue ();
         for (final int c : s.m_compositeStates)
-          composite.add (Integer.valueOf (c + nOffset));
+          aComposite.add (Integer.valueOf (c + nOffset));
       }
-      tokenizerData.addNfaState (s.m_stateName, chars, nextStates, composite, s.m_kindToPrint);
+      aTokenizerData.addNfaState (s.m_stateName, aChars, aNextStates, aComposite, s.m_kindToPrint);
     }
-    final Map <Integer, Integer> initStates = new HashMap <> ();
-    int nNextFreeStateName = cleanStateList.size ();
+    final Map <Integer, Integer> aInitStates = new HashMap <> ();
+    int nNextFreeStateName = aCleanStateList.size ();
     for (final int l : tokenizerBuild ().initialStates ().keySet ())
     {
       final NfaState x = tokenizerBuild ().initialStates ().get (Integer.valueOf (l));
       if (x != null)
       {
-        initStates.put (Integer.valueOf (l), Integer.valueOf (x.m_stateName));
+        aInitStates.put (Integer.valueOf (l), Integer.valueOf (x.m_stateName));
         continue;
       }
 
@@ -3618,7 +3618,7 @@ public class NfaState
       final CompositeStartState aComposite = tokenizerBuild ().compositeStartStates ().get (Integer.valueOf (l));
       if (aComposite == null)
       {
-        initStates.put (Integer.valueOf (l), Integer.valueOf (-1));
+        aInitStates.put (Integer.valueOf (l), Integer.valueOf (-1));
         continue;
       }
 
@@ -3627,21 +3627,21 @@ public class NfaState
       final SortedSet <Integer> aMembers = new TreeSet <> ();
       for (final int c : aComposite.aMemberStates ())
         aMembers.add (Integer.valueOf (c + nOffset));
-      tokenizerData.addNfaState (nName, new TreeSet <> (), new TreeSet <> (), aMembers, Integer.MAX_VALUE);
-      initStates.put (Integer.valueOf (l), Integer.valueOf (nName));
+      aTokenizerData.addNfaState (nName, new TreeSet <> (), new TreeSet <> (), aMembers, Integer.MAX_VALUE);
+      aInitStates.put (Integer.valueOf (l), Integer.valueOf (nName));
     }
-    tokenizerData.setInitialStates (initStates);
-    tokenizerData.setWildcardKind (tokenizerBuild ().matchAnyChar ());
+    aTokenizerData.setInitialStates (aInitStates);
+    aTokenizerData.setWildcardKind (tokenizerBuild ().matchAnyChar ());
   }
 
   @Nullable
-  public static NfaState getNfaState (final int index)
+  public static NfaState getNfaState (final int nIndex)
   {
-    if (index == -1)
+    if (nIndex == -1)
       return null;
 
     for (final NfaState s : nfa ().getAllStates ())
-      if (s.m_stateName == index)
+      if (s.m_stateName == nIndex)
         return s;
 
     assert false;

@@ -118,48 +118,48 @@ public abstract class NormalProduction
 
   private Token m_firstToken;
 
-  protected StringBuilder dumpPrefix (final int indent)
+  protected StringBuilder dumpPrefix (final int nIndent)
   {
-    final StringBuilder sb = new StringBuilder (128);
-    for (int i = 0; i < indent; i++)
-      sb.append ("  ");
-    return sb;
+    final StringBuilder aSb = new StringBuilder (128);
+    for (int i = 0; i < nIndent; i++)
+      aSb.append ("  ");
+    return aSb;
   }
 
   protected String getSimpleName ()
   {
-    final String name = getClass ().getName ();
-    return name.substring (name.lastIndexOf (".") + 1); // strip the package
+    final String sName = getClass ().getName ();
+    return sName.substring (sName.lastIndexOf (".") + 1); // strip the package
                                                         // name
   }
 
-  public StringBuilder dump (final int indent, final Set <? super NormalProduction> alreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super NormalProduction> aAlreadyDumped)
   {
-    final StringBuilder sb = dumpPrefix (indent).append (System.identityHashCode (this))
+    final StringBuilder aSb = dumpPrefix (nIndent).append (System.identityHashCode (this))
                                                 .append (' ')
                                                 .append (getSimpleName ())
                                                 .append (' ')
                                                 .append (getLhs ());
-    if (!alreadyDumped.contains (this))
+    if (!aAlreadyDumped.contains (this))
     {
-      alreadyDumped.add (this);
+      aAlreadyDumped.add (this);
       if (getExpansion () != null)
       {
         // cannot re-use already dumped
-        sb.append (EOL).append (getExpansion ().dump (indent + 1, new HashSet <> ()));
+        aSb.append (EOL).append (getExpansion ().dump (nIndent + 1, new HashSet <> ()));
       }
     }
 
-    return sb;
+    return aSb;
   }
 
   /**
    * @param line
    *        the line to set
    */
-  public void setLine (final int line)
+  public void setLine (final int nLine)
   {
-    this.m_line = line;
+    this.m_line = nLine;
   }
 
   /**
@@ -174,9 +174,9 @@ public abstract class NormalProduction
    * @param column
    *        the column to set
    */
-  public void setColumn (final int column)
+  public void setColumn (final int nColumn)
   {
-    this.m_column = column;
+    this.m_column = nColumn;
   }
 
   /**
@@ -191,9 +191,9 @@ public abstract class NormalProduction
    * @param parents
    *        the parents to set
    */
-  void setParents (final List <Expansion> parents)
+  void setParents (final List <Expansion> aParents)
   {
-    this.m_parents = parents;
+    this.m_parents = aParents;
   }
 
   /**
@@ -208,9 +208,9 @@ public abstract class NormalProduction
    * @param accessMod
    *        the accessMod to set
    */
-  public void setAccessMod (final String accessMod)
+  public void setAccessMod (final String sAccessMod)
   {
-    this.m_accessMod = accessMod;
+    this.m_accessMod = sAccessMod;
   }
 
   /**
@@ -225,9 +225,9 @@ public abstract class NormalProduction
    * @param lhs
    *        the lhs to set
    */
-  public void setLhs (final String lhs)
+  public void setLhs (final String sLhs)
   {
-    this.m_lhs = lhs;
+    this.m_lhs = sLhs;
   }
 
   /**
@@ -258,9 +258,9 @@ public abstract class NormalProduction
    * @param throws_list
    *        the throws_list to set
    */
-  public void setThrowsList (final List <List <Token>> throws_list)
+  public void setThrowsList (final List <List <Token>> aThrows_list)
   {
-    this.m_throws_list = throws_list;
+    this.m_throws_list = aThrows_list;
   }
 
   /**
@@ -275,9 +275,9 @@ public abstract class NormalProduction
    * @param expansion
    *        the expansion to set
    */
-  public void setExpansion (final Expansion expansion)
+  public void setExpansion (final Expansion aExpansion)
   {
-    this.m_expansion = expansion;
+    this.m_expansion = aExpansion;
   }
 
   /**
@@ -292,10 +292,10 @@ public abstract class NormalProduction
    * @param emptyPossible
    *        the emptyPossible to set
    */
-  boolean setEmptyPossible (final boolean emptyPossible)
+  boolean setEmptyPossible (final boolean bEmptyPossible)
   {
-    this.m_emptyPossible = emptyPossible;
-    return emptyPossible;
+    this.m_emptyPossible = bEmptyPossible;
+    return bEmptyPossible;
   }
 
   /**
@@ -310,9 +310,9 @@ public abstract class NormalProduction
    * @param leftExpansions
    *        the leftExpansions to set
    */
-  void setLeftExpansions (final NormalProduction [] leftExpansions)
+  void setLeftExpansions (final NormalProduction [] aLeftExpansions)
   {
-    this.m_leftExpansions = leftExpansions;
+    this.m_leftExpansions = aLeftExpansions;
   }
 
   /**
@@ -327,9 +327,9 @@ public abstract class NormalProduction
    * @param walkStatus
    *        the walkStatus to set
    */
-  void setWalkStatus (final int walkStatus)
+  void setWalkStatus (final int nWalkStatus)
   {
-    this.m_walkStatus = walkStatus;
+    this.m_walkStatus = nWalkStatus;
   }
 
   /**
@@ -345,10 +345,10 @@ public abstract class NormalProduction
    *        the firstToken to set
    * @return parameter token
    */
-  public Token setFirstToken (final Token firstToken)
+  public Token setFirstToken (final Token aFirstToken)
   {
-    this.m_firstToken = firstToken;
-    return firstToken;
+    this.m_firstToken = aFirstToken;
+    return aFirstToken;
   }
 
   /**
@@ -363,9 +363,9 @@ public abstract class NormalProduction
    * @param lastToken
    *        the lastToken to set
    */
-  public void setLastToken (final Token lastToken)
+  public void setLastToken (final Token aLastToken)
   {
-    this.m_lastToken = lastToken;
+    this.m_lastToken = aLastToken;
   }
 
   /**

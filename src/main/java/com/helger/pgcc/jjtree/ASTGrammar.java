@@ -44,17 +44,17 @@ public class ASTGrammar extends JJTreeNode
     super (nID);
   }
 
-  void generate (final JJTreeIO io)
+  void generate (final JJTreeIO aIo)
   {
     // TODO :: CBA -- Require Unification of output language specific processing
     // into a single Enum class
     switch (Options.getOutputLanguage ())
     {
       case JAVA:
-        new CodeGeneratorJava ().visit (this, io);
+        new CodeGeneratorJava ().visit (this, aIo);
         break;
       case CPP:
-        new CodeGeneratorCpp ().visit (this, io);
+        new CodeGeneratorCpp ().visit (this, aIo);
         NodeFilesCpp.generateTreeClasses ();
         break;
       default:
@@ -65,9 +65,9 @@ public class ASTGrammar extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }
 

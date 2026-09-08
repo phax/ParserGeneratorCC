@@ -49,10 +49,10 @@ public final class ExpZeroOrMore extends Expansion
    */
   private final Expansion m_expansion;
 
-  public ExpZeroOrMore (@NonNull final Token token, @NonNull final Expansion e)
+  public ExpZeroOrMore (@NonNull final Token aToken, @NonNull final Expansion e)
   {
-    setLine (token.beginLine);
-    setColumn (token.beginColumn);
+    setLine (aToken.beginLine);
+    setColumn (aToken.beginColumn);
     m_expansion = e;
     e.setParent (this);
   }
@@ -64,13 +64,13 @@ public final class ExpZeroOrMore extends Expansion
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder sb = super.dump (indent, alreadyDumped);
-    if (alreadyDumped.add (this))
+    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
+    if (aAlreadyDumped.add (this))
     {
-      sb.append (EOL).append (m_expansion.dump (indent + 1, alreadyDumped));
+      aSb.append (EOL).append (m_expansion.dump (nIndent + 1, aAlreadyDumped));
     }
-    return sb;
+    return aSb;
   }
 }

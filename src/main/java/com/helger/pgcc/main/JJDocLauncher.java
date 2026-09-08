@@ -43,8 +43,8 @@ public final class JJDocLauncher
   private JJDocLauncher ()
   {}
 
-  public static void main (final String [] args) throws Exception
+  public static void main (final String [] aArgs) throws Exception
   {
-    com.helger.pgcc.jjdoc.JJDocMain.main (args);
+    com.helger.pgcc.jjdoc.JJDocMain.main (aArgs);
   }
 }

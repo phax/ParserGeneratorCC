@@ -96,9 +96,9 @@ public final class SelfGenerateFuncTest
   {
     try (final Stream <Path> aStream = Files.walk (aDir.toPath ()))
     {
-      final List <Path> ret = new ArrayList <> ();
-      aStream.filter (Files::isRegularFile).filter (p -> p.toString ().endsWith (".java")).sorted ().forEach (ret::add);
-      return ret;
+      final List <Path> aRet = new ArrayList <> ();
+      aStream.filter (Files::isRegularFile).filter (p -> p.toString ().endsWith (".java")).sorted ().forEach (aRet::add);
+      return aRet;
     }
   }
 

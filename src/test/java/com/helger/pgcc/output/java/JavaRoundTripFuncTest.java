@@ -161,7 +161,7 @@ public final class JavaRoundTripFuncTest
       {
         aCtor = aParserClass.getConstructor (aArgType);
       }
-      catch (final NoSuchMethodException ex)
+      catch (final NoSuchMethodException aEx)
       {
         // Not this one
       }

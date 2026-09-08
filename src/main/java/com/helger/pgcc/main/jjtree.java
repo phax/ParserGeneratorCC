@@ -47,8 +47,8 @@ public final class jjtree
   private jjtree ()
   {}
 
-  public static void main (final String [] args)
+  public static void main (final String [] aArgs)
   {
-    JJTreeLauncher.main (args);
+    JJTreeLauncher.main (aArgs);
   }
 }

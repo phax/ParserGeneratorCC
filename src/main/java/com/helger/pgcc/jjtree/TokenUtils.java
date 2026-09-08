@@ -45,48 +45,48 @@ public final class TokenUtils
   private TokenUtils ()
   {}
 
-  static void print (final Token t, final JJTreeIO io, final String in, final String out)
+  static void print (final Token t, final JJTreeIO aIo, final String sIn, final String sOut)
   {
-    Token tt = t.specialToken;
-    if (tt != null)
+    Token aTt = t.specialToken;
+    if (aTt != null)
     {
-      while (tt.specialToken != null)
-        tt = tt.specialToken;
-      while (tt != null)
+      while (aTt.specialToken != null)
+        aTt = aTt.specialToken;
+      while (aTt != null)
       {
-        io.print (addUnicodeEscapes (tt.image));
-        tt = tt.next;
+        aIo.print (addUnicodeEscapes (aTt.image));
+        aTt = aTt.next;
       }
     }
     String i = t.image;
-    if (in != null && i.equals (in))
+    if (sIn != null && i.equals (sIn))
     {
-      i = out;
+      i = sOut;
     }
-    io.print (addUnicodeEscapes (i));
+    aIo.print (addUnicodeEscapes (i));
   }
 
-  static void print (final Token t, final JJTreeIO io)
+  static void print (final Token t, final JJTreeIO aIo)
   {
-    print (t, io, null, null);
+    print (t, aIo, null, null);
   }
 
-  static String addUnicodeEscapes (final String str)
+  static String addUnicodeEscapes (final String sStr)
   {
-    final StringBuilder ret = new StringBuilder (str.length ());
-    for (final char ch : str.toCharArray ())
+    final StringBuilder aRet = new StringBuilder (sStr.length ());
+    for (final char ch : sStr.toCharArray ())
     {
       if ((ch < 0x20 || ch > 0x7e) && ch != '\t' && ch != '\n' && ch != '\r' && ch != '\f')
       {
         final String s = "0000" + Integer.toString (ch, 16);
-        ret.append ("\\u").append (s.substring (s.length () - 4, s.length ()));
+        aRet.append ("\\u").append (s.substring (s.length () - 4, s.length ()));
       }
       else
       {
-        ret.append (ch);
+        aRet.append (ch);
       }
     }
-    return ret.toString ();
+    return aRet.toString ();
   }
 
   static boolean hasTokens (@NonNull final JJTreeNode n)
@@ -96,110 +96,110 @@ public final class TokenUtils
     return true;
   }
 
-  static String remove_escapes_and_quotes (final Token t, final String str)
+  static String remove_escapes_and_quotes (final Token t, final String sStr)
   {
-    String retval = "";
-    int index = 1;
-    while (index < str.length () - 1)
+    String sRetval = "";
+    int nIndex = 1;
+    while (nIndex < sStr.length () - 1)
     {
-      if (str.charAt (index) != '\\')
+      if (sStr.charAt (nIndex) != '\\')
       {
-        retval += str.charAt (index);
-        index++;
+        sRetval += sStr.charAt (nIndex);
+        nIndex++;
         continue;
       }
-      index++;
-      char ch = str.charAt (index);
-      if (ch == 'b')
+      nIndex++;
+      char cCh = sStr.charAt (nIndex);
+      if (cCh == 'b')
       {
-        retval += '\b';
-        index++;
+        sRetval += '\b';
+        nIndex++;
         continue;
       }
-      if (ch == 't')
+      if (cCh == 't')
       {
-        retval += '\t';
-        index++;
+        sRetval += '\t';
+        nIndex++;
         continue;
       }
-      if (ch == 'n')
+      if (cCh == 'n')
       {
-        retval += '\n';
-        index++;
+        sRetval += '\n';
+        nIndex++;
         continue;
       }
-      if (ch == 'f')
+      if (cCh == 'f')
       {
-        retval += '\f';
-        index++;
+        sRetval += '\f';
+        nIndex++;
         continue;
       }
-      if (ch == 'r')
+      if (cCh == 'r')
       {
-        retval += '\r';
-        index++;
+        sRetval += '\r';
+        nIndex++;
         continue;
       }
-      if (ch == '"')
+      if (cCh == '"')
       {
-        retval += '\"';
-        index++;
+        sRetval += '\"';
+        nIndex++;
         continue;
       }
-      if (ch == '\'')
+      if (cCh == '\'')
       {
-        retval += '\'';
-        index++;
+        sRetval += '\'';
+        nIndex++;
         continue;
       }
-      if (ch == '\\')
+      if (cCh == '\\')
       {
-        retval += '\\';
-        index++;
+        sRetval += '\\';
+        nIndex++;
         continue;
       }
-      if (ch >= '0' && ch <= '7')
+      if (cCh >= '0' && cCh <= '7')
       {
-        int ordinal = (ch) - ('0');
-        index++;
-        char ch1 = str.charAt (index);
-        if (ch1 >= '0' && ch1 <= '7')
+        int nOrdinal = (cCh) - ('0');
+        nIndex++;
+        char cCh1 = sStr.charAt (nIndex);
+        if (cCh1 >= '0' && cCh1 <= '7')
         {
-          ordinal = ordinal * 8 + (ch1) - ('0');
-          index++;
-          ch1 = str.charAt (index);
-          if (ch <= '3' && ch1 >= '0' && ch1 <= '7')
+          nOrdinal = nOrdinal * 8 + (cCh1) - ('0');
+          nIndex++;
+          cCh1 = sStr.charAt (nIndex);
+          if (cCh <= '3' && cCh1 >= '0' && cCh1 <= '7')
           {
-            ordinal = ordinal * 8 + (ch1) - ('0');
-            index++;
+            nOrdinal = nOrdinal * 8 + (cCh1) - ('0');
+            nIndex++;
           }
         }
-        retval += (char) ordinal;
+        sRetval += (char) nOrdinal;
         continue;
       }
-      if (ch == 'u')
+      if (cCh == 'u')
       {
-        index++;
-        ch = str.charAt (index);
-        if (_isHexchar (ch))
+        nIndex++;
+        cCh = sStr.charAt (nIndex);
+        if (_isHexchar (cCh))
         {
-          int ordinal = _getHexVal (ch);
-          index++;
-          ch = str.charAt (index);
-          if (_isHexchar (ch))
+          int nOrdinal = _getHexVal (cCh);
+          nIndex++;
+          cCh = sStr.charAt (nIndex);
+          if (_isHexchar (cCh))
           {
-            ordinal = ordinal * 16 + _getHexVal (ch);
-            index++;
-            ch = str.charAt (index);
-            if (_isHexchar (ch))
+            nOrdinal = nOrdinal * 16 + _getHexVal (cCh);
+            nIndex++;
+            cCh = sStr.charAt (nIndex);
+            if (_isHexchar (cCh))
             {
-              ordinal = ordinal * 16 + _getHexVal (ch);
-              index++;
-              ch = str.charAt (index);
-              if (_isHexchar (ch))
+              nOrdinal = nOrdinal * 16 + _getHexVal (cCh);
+              nIndex++;
+              cCh = sStr.charAt (nIndex);
+              if (_isHexchar (cCh))
               {
-                ordinal = ordinal * 16 + _getHexVal (ch);
-                index++;
+                nOrdinal = nOrdinal * 16 + _getHexVal (cCh);
+                nIndex++;
                 continue;
               }
             }
@@ -207,35 +207,35 @@ public final class TokenUtils
         }
         JavaCCErrors.parse_error (t,
                                   "Encountered non-hex character '" +
-                                     ch +
+                                     cCh +
                                      "' at position " +
-                                     index +
+                                     nIndex +
                                      " of string - Unicode escape must have 4 hex digits after it.");
-        return retval;
+        return sRetval;
       }
-      JavaCCErrors.parse_error (t, "Illegal escape sequence '\\" + ch + "' at position " + index + " of string.");
-      return retval;
+      JavaCCErrors.parse_error (t, "Illegal escape sequence '\\" + cCh + "' at position " + nIndex + " of string.");
+      return sRetval;
     }
-    return retval;
+    return sRetval;
   }
 
-  private static boolean _isHexchar (final char ch)
+  private static boolean _isHexchar (final char cCh)
   {
-    if (ch >= '0' && ch <= '9')
+    if (cCh >= '0' && cCh <= '9')
       return true;
-    if (ch >= 'A' && ch <= 'F')
+    if (cCh >= 'A' && cCh <= 'F')
       return true;
-    if (ch >= 'a' && ch <= 'f')
+    if (cCh >= 'a' && cCh <= 'f')
       return true;
     return false;
   }
 
-  private static int _getHexVal (final char ch)
+  private static int _getHexVal (final char cCh)
   {
-    if (ch >= '0' && ch <= '9')
-      return ch - '0';
-    if (ch >= 'A' && ch <= 'F')
-      return ch - 'A' + 10;
-    return ch - 'a' + 10;
+    if (cCh >= '0' && cCh <= '9')
+      return cCh - '0';
+    if (cCh >= 'A' && cCh <= 'F')
+      return cCh - 'A' + 10;
+    return cCh - 'a' + 10;
   }
 }

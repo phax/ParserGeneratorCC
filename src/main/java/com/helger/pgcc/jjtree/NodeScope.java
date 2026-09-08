@@ -51,12 +51,12 @@ public class NodeScope
 
     if (n == null)
     {
-      String nm = m_production.m_name;
+      String sNm = m_production.m_name;
       if (JJTreeOptions.isNodeDefaultVoid ())
       {
-        nm = "void";
+        sNm = "void";
       }
-      m_node_descriptor = ASTNodeDescriptor.indefinite (nm);
+      m_node_descriptor = ASTNodeDescriptor.indefinite (sNm);
     }
     else
     {
@@ -89,10 +89,10 @@ public class NodeScope
     return m_nodeVar;
   }
 
-  private String constructVariable (final String id)
+  private String constructVariable (final String sId)
   {
     final String s = "000" + m_scopeNumber;
-    return "jjt" + id + s.substring (s.length () - 3, s.length ());
+    return "jjt" + sId + s.substring (s.length () - 3, s.length ());
   }
 
   boolean usesCloseNodeVar ()
@@ -101,13 +101,13 @@ public class NodeScope
   }
 
   @Nullable
-  static NodeScope getEnclosingNodeScope (final Node node)
+  static NodeScope getEnclosingNodeScope (final Node aNode)
   {
-    if (node instanceof final ASTBNFDeclaration aASTBNFDeclaration)
+    if (aNode instanceof final ASTBNFDeclaration aASTBNFDeclaration)
     {
       return aASTBNFDeclaration.m_node_scope;
     }
-    for (Node n = node.jjtGetParent (); n != null; n = n.jjtGetParent ())
+    for (Node n = aNode.jjtGetParent (); n != null; n = n.jjtGetParent ())
     {
       if (n instanceof ASTBNFDeclaration)
       {

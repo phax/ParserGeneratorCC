@@ -47,8 +47,8 @@ public final class jjdoc
   private jjdoc ()
   {}
 
-  public static void main (final String [] args) throws Exception
+  public static void main (final String [] aArgs) throws Exception
   {
-    JJDocLauncher.main (args);
+    JJDocLauncher.main (aArgs);
   }
 }

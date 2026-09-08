@@ -56,21 +56,21 @@ public class XTextGenerator implements IDocGenerator
   public XTextGenerator ()
   {}
 
-  public void handleTokenProduction (final TokenProduction tp)
+  public void handleTokenProduction (final TokenProduction aTp)
   {
-    final StringBuilder sb = new StringBuilder ();
+    final StringBuilder aSb = new StringBuilder ();
 
-    for (final RegExprSpec res : tp.m_respecs)
+    for (final RegExprSpec res : aTp.m_respecs)
     {
-      final String regularExpressionText = JJDoc.emitRE (res.m_aRexp);
-      sb.append (regularExpressionText);
+      final String sRegularExpressionText = JJDoc.emitRE (res.m_aRexp);
+      aSb.append (sRegularExpressionText);
 
       if (res.m_aNsTok != null)
       {
-        sb.append (" : " + res.m_aNsTok.image);
+        aSb.append (" : " + res.m_aNsTok.image);
       }
 
-      sb.append ("\n");
+      aSb.append ("\n");
     }
   }
 
@@ -123,32 +123,32 @@ public class XTextGenerator implements IDocGenerator
   public void tokensEnd ()
   {}
 
-  public void javacode (final CodeProductionJava jp)
+  public void javacode (final CodeProductionJava aJp)
   {}
 
-  public void cppcode (final CodeProductionCpp cp)
+  public void cppcode (final CodeProductionCpp aCp)
   {}
 
-  public void productionStart (final NormalProduction np)
+  public void productionStart (final NormalProduction aNp)
   {}
 
-  public void productionEnd (final NormalProduction np)
+  public void productionEnd (final NormalProduction aNp)
   {}
 
-  public void expansionStart (final Expansion e, final boolean first)
+  public void expansionStart (final Expansion e, final boolean bFirst)
   {}
 
-  public void expansionEnd (final Expansion e, final boolean first) throws IOException
+  public void expansionEnd (final Expansion e, final boolean bFirst) throws IOException
   {
     println (";");
   }
 
-  public void nonTerminalStart (final ExpNonTerminal nt) throws IOException
+  public void nonTerminalStart (final ExpNonTerminal aNt) throws IOException
   {
     print ("terminal ");
   }
 
-  public void nonTerminalEnd (final ExpNonTerminal nt) throws IOException
+  public void nonTerminalEnd (final ExpNonTerminal aNt) throws IOException
   {
     print (";");
   }

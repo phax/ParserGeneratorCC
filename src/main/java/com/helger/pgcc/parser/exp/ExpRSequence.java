@@ -60,10 +60,10 @@ public final class ExpRSequence extends AbstractExpRegularExpression
     m_units = new ArrayList <> ();
   }
 
-  ExpRSequence (final List <AbstractExpRegularExpression> seq)
+  ExpRSequence (final List <AbstractExpRegularExpression> aSeq)
   {
     setOrdinal (Integer.MAX_VALUE);
-    m_units = seq;
+    m_units = aSeq;
   }
 
   @NonNull
@@ -72,41 +72,41 @@ public final class ExpRSequence extends AbstractExpRegularExpression
     return m_units;
   }
 
-  public final void addUnit (final AbstractExpRegularExpression ex)
+  public final void addUnit (final AbstractExpRegularExpression aEx)
   {
-    ValueEnforcer.notNull (ex, "RegEx");
-    m_units.add (ex);
+    ValueEnforcer.notNull (aEx, "RegEx");
+    m_units.add (aEx);
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
     if (m_units.size () == 1)
-      return m_units.get (0).generateNfa (ignoreCase);
+      return m_units.get (0).generateNfa (bIgnoreCase);
 
-    final Nfa retVal = new Nfa ();
-    final NfaState startState = retVal.start ();
-    final NfaState finalState = retVal.end ();
-    Nfa temp1;
-    Nfa temp2 = null;
+    final Nfa aRetVal = new Nfa ();
+    final NfaState aStartState = aRetVal.start ();
+    final NfaState aFinalState = aRetVal.end ();
+    Nfa aTemp1;
+    Nfa aTemp2 = null;
 
-    AbstractExpRegularExpression curRE;
+    AbstractExpRegularExpression aCurRE;
 
-    curRE = m_units.get (0);
-    temp1 = curRE.generateNfa (ignoreCase);
-    startState.addMove (temp1.start ());
+    aCurRE = m_units.get (0);
+    aTemp1 = aCurRE.generateNfa (bIgnoreCase);
+    aStartState.addMove (aTemp1.start ());
 
     for (int i = 1; i < m_units.size (); i++)
     {
-      curRE = m_units.get (i);
+      aCurRE = m_units.get (i);
 
-      temp2 = curRE.generateNfa (ignoreCase);
-      temp1.end ().addMove (temp2.start ());
-      temp1 = temp2;
+      aTemp2 = aCurRE.generateNfa (bIgnoreCase);
+      aTemp1.end ().addMove (aTemp2.start ());
+      aTemp1 = aTemp2;
     }
 
-    temp2.end ().addMove (finalState);
+    aTemp2.end ().addMove (aFinalState);
 
-    return retVal;
+    return aRetVal;
   }
 }

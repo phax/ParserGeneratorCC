@@ -40,13 +40,13 @@ public class ASTBNFAction extends JJTreeNode
     super (nID);
   }
 
-  protected Node getScopingParent (final NodeScope ns)
+  protected Node getScopingParent (final NodeScope aNs)
   {
     for (Node n = this.jjtGetParent (); n != null; n = n.jjtGetParent ())
     {
       if (n instanceof final ASTBNFNodeScope aASTBNFNodeScope)
       {
-        if (aASTBNFNodeScope.m_node_scope == ns)
+        if (aASTBNFNodeScope.m_node_scope == aNs)
         {
           return n;
         }
@@ -54,7 +54,7 @@ public class ASTBNFAction extends JJTreeNode
       else
         if (n instanceof final ASTExpansionNodeScope aASTExpansionNodeScope)
         {
-          if (aASTExpansionNodeScope.m_node_scope == ns)
+          if (aASTExpansionNodeScope.m_node_scope == aNs)
           {
             return n;
           }
@@ -65,8 +65,8 @@ public class ASTBNFAction extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

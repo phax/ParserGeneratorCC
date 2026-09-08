@@ -165,66 +165,66 @@ public class Options
 
   static
   {
-    final TreeSet <OptionInfo> temp = new TreeSet <> ();
-    temp.add (new OptionInfo (USEROPTION__PARSER_SUPER_CLASS, EOptionType.STRING, null));
-    temp.add (new OptionInfo (USEROPTION__TOKEN_MANAGER_SUPER_CLASS, EOptionType.STRING, null));
-    temp.add (new OptionInfo (USEROPTION__LOOKAHEAD, EOptionType.INTEGER, Integer.valueOf (1)));
+    final TreeSet <OptionInfo> aTemp = new TreeSet <> ();
+    aTemp.add (new OptionInfo (USEROPTION__PARSER_SUPER_CLASS, EOptionType.STRING, null));
+    aTemp.add (new OptionInfo (USEROPTION__TOKEN_MANAGER_SUPER_CLASS, EOptionType.STRING, null));
+    aTemp.add (new OptionInfo (USEROPTION__LOOKAHEAD, EOptionType.INTEGER, Integer.valueOf (1)));
 
-    temp.add (new OptionInfo (USEROPTION__CHOICE_AMBIGUITY_CHECK, EOptionType.INTEGER, Integer.valueOf (2)));
-    temp.add (new OptionInfo (USEROPTION__OTHER_AMBIGUITY_CHECK, EOptionType.INTEGER, Integer.valueOf (1)));
-    temp.add (new OptionInfo (USEROPTION__NO_DFA, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__DEBUG_PARSER, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__CHOICE_AMBIGUITY_CHECK, EOptionType.INTEGER, Integer.valueOf (2)));
+    aTemp.add (new OptionInfo (USEROPTION__OTHER_AMBIGUITY_CHECK, EOptionType.INTEGER, Integer.valueOf (1)));
+    aTemp.add (new OptionInfo (USEROPTION__NO_DFA, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__DEBUG_PARSER, EOptionType.BOOLEAN, Boolean.FALSE));
 
-    temp.add (new OptionInfo (USEROPTION__DEBUG_LOOKAHEAD, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__DEBUG_TOKEN_MANAGER, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__ERROR_REPORTING, EOptionType.BOOLEAN, Boolean.TRUE));
-    temp.add (new OptionInfo (USEROPTION__JAVA_UNICODE_ESCAPE, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__DEBUG_LOOKAHEAD, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__DEBUG_TOKEN_MANAGER, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__ERROR_REPORTING, EOptionType.BOOLEAN, Boolean.TRUE));
+    aTemp.add (new OptionInfo (USEROPTION__JAVA_UNICODE_ESCAPE, EOptionType.BOOLEAN, Boolean.FALSE));
 
-    temp.add (new OptionInfo (USEROPTION__UNICODE_INPUT, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__IGNORE_CASE, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__USER_TOKEN_MANAGER, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__USER_CHAR_STREAM, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__UNICODE_INPUT, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__IGNORE_CASE, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__USER_TOKEN_MANAGER, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__USER_CHAR_STREAM, EOptionType.BOOLEAN, Boolean.FALSE));
 
-    temp.add (new OptionInfo (USEROPTION__BUILD_PARSER, EOptionType.BOOLEAN, Boolean.TRUE));
-    temp.add (new OptionInfo (USEROPTION__BUILD_TOKEN_MANAGER, EOptionType.BOOLEAN, Boolean.TRUE));
-    temp.add (new OptionInfo (USEROPTION__TOKEN_MANAGER_USES_PARSER, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__SANITY_CHECK, EOptionType.BOOLEAN, Boolean.TRUE));
+    aTemp.add (new OptionInfo (USEROPTION__BUILD_PARSER, EOptionType.BOOLEAN, Boolean.TRUE));
+    aTemp.add (new OptionInfo (USEROPTION__BUILD_TOKEN_MANAGER, EOptionType.BOOLEAN, Boolean.TRUE));
+    aTemp.add (new OptionInfo (USEROPTION__TOKEN_MANAGER_USES_PARSER, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__SANITY_CHECK, EOptionType.BOOLEAN, Boolean.TRUE));
 
-    temp.add (new OptionInfo (USEROPTION__FORCE_LA_CHECK, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__COMMON_TOKEN_ACTION, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__CACHE_TOKENS, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__KEEP_LINE_COLUMN, EOptionType.BOOLEAN, Boolean.TRUE));
+    aTemp.add (new OptionInfo (USEROPTION__FORCE_LA_CHECK, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__COMMON_TOKEN_ACTION, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__CACHE_TOKENS, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__KEEP_LINE_COLUMN, EOptionType.BOOLEAN, Boolean.TRUE));
 
-    temp.add (new OptionInfo (USEROPTION__GENERATE_BOILERPLATE, EOptionType.BOOLEAN, Boolean.TRUE));
+    aTemp.add (new OptionInfo (USEROPTION__GENERATE_BOILERPLATE, EOptionType.BOOLEAN, Boolean.TRUE));
 
-    temp.add (new OptionInfo (USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC, EOptionType.BOOLEAN, Boolean.TRUE));
-    temp.add (new OptionInfo (USEROPTION__OUTPUT_DIRECTORY, EOptionType.STRING, "."));
-    temp.add (new OptionInfo (USEROPTION__JDK_VERSION, EOptionType.OTHER, DEFAULT_JDK_VERSION));
+    aTemp.add (new OptionInfo (USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC, EOptionType.BOOLEAN, Boolean.TRUE));
+    aTemp.add (new OptionInfo (USEROPTION__OUTPUT_DIRECTORY, EOptionType.STRING, "."));
+    aTemp.add (new OptionInfo (USEROPTION__JDK_VERSION, EOptionType.OTHER, DEFAULT_JDK_VERSION));
 
-    temp.add (new OptionInfo (USEROPTION__TOKEN_EXTENDS, EOptionType.STRING, ""));
-    temp.add (new OptionInfo (USEROPTION__TOKEN_FACTORY, EOptionType.STRING, ""));
-    temp.add (new OptionInfo (USEROPTION__GRAMMAR_ENCODING, EOptionType.STRING, ""));
-    temp.add (new OptionInfo (USEROPTION__OUTPUT_ENCODING, EOptionType.STRING, StandardCharsets.UTF_8.name ()));
+    aTemp.add (new OptionInfo (USEROPTION__TOKEN_EXTENDS, EOptionType.STRING, ""));
+    aTemp.add (new OptionInfo (USEROPTION__TOKEN_FACTORY, EOptionType.STRING, ""));
+    aTemp.add (new OptionInfo (USEROPTION__GRAMMAR_ENCODING, EOptionType.STRING, ""));
+    aTemp.add (new OptionInfo (USEROPTION__OUTPUT_ENCODING, EOptionType.STRING, StandardCharsets.UTF_8.name ()));
     PGCCContext.current ().options ().setLanguage (EOutputLanguage.JAVA);
-    temp.add (new OptionInfo (USEROPTION__OUTPUT_LANGUAGE,
+    aTemp.add (new OptionInfo (USEROPTION__OUTPUT_LANGUAGE,
                               EOptionType.STRING,
                               PGCCContext.current ().options ().getLanguage ().getID ()));
 
-    temp.add (new OptionInfo (USEROPTION__JAVA_TEMPLATE_TYPE, EOptionType.STRING, JAVA_TEMPLATE_TYPE_CLASSIC));
-    temp.add (new OptionInfo (USEROPTION__JAVA_CHAR_STREAM_TYPE, EOptionType.STRING, JAVA_CHAR_STREAM_TYPE_SIMPLE));
-    temp.add (new OptionInfo (USEROPTION__CPP_NAMESPACE, EOptionType.STRING, ""));
-    temp.add (new OptionInfo (USEROPTION__CPP_TOKEN_INCLUDES, EOptionType.STRING, ""));
-    temp.add (new OptionInfo (USEROPTION__CPP_PARSER_INCLUDES, EOptionType.STRING, ""));
+    aTemp.add (new OptionInfo (USEROPTION__JAVA_TEMPLATE_TYPE, EOptionType.STRING, JAVA_TEMPLATE_TYPE_CLASSIC));
+    aTemp.add (new OptionInfo (USEROPTION__JAVA_CHAR_STREAM_TYPE, EOptionType.STRING, JAVA_CHAR_STREAM_TYPE_SIMPLE));
+    aTemp.add (new OptionInfo (USEROPTION__CPP_NAMESPACE, EOptionType.STRING, ""));
+    aTemp.add (new OptionInfo (USEROPTION__CPP_TOKEN_INCLUDES, EOptionType.STRING, ""));
+    aTemp.add (new OptionInfo (USEROPTION__CPP_PARSER_INCLUDES, EOptionType.STRING, ""));
 
-    temp.add (new OptionInfo (USEROPTION__CPP_TOKEN_MANAGER_INCLUDES, EOptionType.STRING, ""));
-    temp.add (new OptionInfo (USEROPTION__CPP_IGNORE_ACTIONS, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__CPP_STOP_ON_FIRST_ERROR, EOptionType.BOOLEAN, Boolean.FALSE));
-    temp.add (new OptionInfo (USEROPTION__CPP_TOKEN_MANAGER_SUPERCLASS, EOptionType.STRING, ""));
+    aTemp.add (new OptionInfo (USEROPTION__CPP_TOKEN_MANAGER_INCLUDES, EOptionType.STRING, ""));
+    aTemp.add (new OptionInfo (USEROPTION__CPP_IGNORE_ACTIONS, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__CPP_STOP_ON_FIRST_ERROR, EOptionType.BOOLEAN, Boolean.FALSE));
+    aTemp.add (new OptionInfo (USEROPTION__CPP_TOKEN_MANAGER_SUPERCLASS, EOptionType.STRING, ""));
 
-    temp.add (new OptionInfo (USEROPTION__DEPTH_LIMIT, EOptionType.INTEGER, Integer.valueOf (0)));
-    temp.add (new OptionInfo (USEROPTION__CPP_STACK_LIMIT, EOptionType.STRING, ""));
+    aTemp.add (new OptionInfo (USEROPTION__DEPTH_LIMIT, EOptionType.INTEGER, Integer.valueOf (0)));
+    aTemp.add (new OptionInfo (USEROPTION__CPP_STACK_LIMIT, EOptionType.STRING, ""));
 
-    USER_OPTIONS = Collections.unmodifiableSet (temp);
+    USER_OPTIONS = Collections.unmodifiableSet (aTemp);
   }
 
   /**
@@ -258,9 +258,9 @@ public class Options
   }
 
   @Nullable
-  public static Object objectValue (final String option)
+  public static Object objectValue (final String sOption)
   {
-    return optionValues ().get (option);
+    return optionValues ().get (sOption);
   }
 
   /**
@@ -270,9 +270,9 @@ public class Options
    *        Name of the option to be retrieved. May not be <code>null</code>.
    * @return int value
    */
-  public static int intValue (final String option)
+  public static int intValue (final String sOption)
   {
-    return ((Integer) objectValue (option)).intValue ();
+    return ((Integer) objectValue (sOption)).intValue ();
   }
 
   /**
@@ -282,9 +282,9 @@ public class Options
    *        Name of the option to be retrieved. May not be <code>null</code>.
    * @return boolean value
    */
-  public static boolean booleanValue (final String option)
+  public static boolean booleanValue (final String sOption)
   {
-    return ((Boolean) objectValue (option)).booleanValue ();
+    return ((Boolean) objectValue (sOption)).booleanValue ();
   }
 
   /**
@@ -295,9 +295,9 @@ public class Options
    * @return String value
    */
   @Nullable
-  public static String stringValue (final String option)
+  public static String stringValue (final String sOption)
   {
-    return (String) objectValue (option);
+    return (String) objectValue (sOption);
   }
 
   @NonNull
@@ -338,19 +338,19 @@ public class Options
    * @return the string representation of the options, eg "KEEP_LINE_COLUMN=true,CACHE_TOKENS=false"
    */
   @NonNull
-  public static String getOptionsString (final String [] interestingOptions)
+  public static String getOptionsString (final String [] aInterestingOptions)
   {
-    final StringBuilder sb = new StringBuilder ();
+    final StringBuilder aSb = new StringBuilder ();
 
-    for (final String key : interestingOptions)
+    for (final String key : aInterestingOptions)
     {
-      if (sb.length () > 0)
-        sb.append (',');
+      if (aSb.length () > 0)
+        aSb.append (',');
 
-      sb.append (key).append ('=').append (optionValues ().get (key));
+      aSb.append (key).append ('=').append (optionValues ().get (key));
     }
 
-    return sb.toString ();
+    return aSb.toString ();
   }
 
   @NonNull
@@ -372,9 +372,9 @@ public class Options
    *        The command line argument to examine.
    * @return True when the argument looks like an option flag.
    */
-  public static boolean isOption (final String opt)
+  public static boolean isOption (final String sOpt)
   {
-    return opt != null && opt.length () > 1 && opt.charAt (0) == '-';
+    return sOpt != null && sOpt.length () > 1 && sOpt.charAt (0) == '-';
   }
 
   /**
@@ -388,44 +388,44 @@ public class Options
    * @return The upgraded value.
    */
   @NonNull
-  private static Object _upgradeValue (@NonNull final String name, @NonNull final Object value)
+  private static Object _upgradeValue (@NonNull final String sName, @NonNull final Object aValue)
   {
-    if (name.equalsIgnoreCase ("NODE_FACTORY") && value.getClass () == Boolean.class)
+    if (sName.equalsIgnoreCase ("NODE_FACTORY") && aValue.getClass () == Boolean.class)
     {
-      return ((Boolean) value).booleanValue () ? "*" : "";
+      return ((Boolean) aValue).booleanValue () ? "*" : "";
     }
 
-    if (name.equalsIgnoreCase (USEROPTION__JDK_VERSION) &&
-      (value.getClass () == String.class || value.getClass () == Integer.class))
+    if (sName.equalsIgnoreCase (USEROPTION__JDK_VERSION) &&
+      (aValue.getClass () == String.class || aValue.getClass () == Integer.class))
     {
-      final EJavaVersion ret = JavaVersionHelper.getFromStringOrNull (value.toString ());
-      if (ret != null)
+      final EJavaVersion eRet = JavaVersionHelper.getFromStringOrNull (aValue.toString ());
+      if (eRet != null)
       {
         // Only values >= JDK 1.5 are accepted per PGCC 1.1.0
-        if (ret.isNewerOrEqualsThan (EJavaVersion.JDK_1_5))
-          return ret;
+        if (eRet.isNewerOrEqualsThan (EJavaVersion.JDK_1_5))
+          return eRet;
       }
 
       // Else: bad option
     }
 
-    return value;
+    return aValue;
   }
 
-  public static void setInputFileOption (final Object nameloc,
-                                         final Object valueloc,
-                                         @NonNull final String name,
+  public static void setInputFileOption (final Object aNameloc,
+                                         final Object aValueloc,
+                                         @NonNull final String sName,
                                          @NonNull final Object aSrcValue)
   {
-    final String sNameUC = name.toUpperCase (Locale.US);
+    final String sNameUC = sName.toUpperCase (Locale.US);
     if (!optionValues ().containsKey (sNameUC))
     {
-      JavaCCErrors.warning (nameloc, "Bad option name \"" + name + "\".  Option setting will be ignored.");
+      JavaCCErrors.warning (aNameloc, "Bad option name \"" + sName + "\".  Option setting will be ignored.");
       return;
     }
     final Object aExistingValue = optionValues ().get (sNameUC);
 
-    final Object aRealSrc = _upgradeValue (name, aSrcValue);
+    final Object aRealSrc = _upgradeValue (sName, aSrcValue);
 
     if (aExistingValue != null)
     {
@@ -441,18 +441,18 @@ public class Options
       final boolean bIsInvalidInteger = aObject instanceof Integer && ((Integer) aRealSrc).intValue () <= 0;
       if (aExistingValue.getClass () != aObject.getClass () || bIsInvalidInteger)
       {
-        JavaCCErrors.warning (valueloc,
+        JavaCCErrors.warning (aValueloc,
                               "Bad option value \"" +
                                         aRealSrc +
                                         "\" for \"" +
-                                        name +
+                                        sName +
                                         "\".  Option setting will be ignored.");
         return;
       }
 
       if (inputFileSetting ().contains (sNameUC))
       {
-        JavaCCErrors.warning (nameloc, "Duplicate option setting for \"" + name + "\" will be ignored.");
+        JavaCCErrors.warning (aNameloc, "Duplicate option setting for \"" + sName + "\" will be ignored.");
         return;
       }
 
@@ -460,7 +460,7 @@ public class Options
       {
         if (!aExistingValue.equals (aRealSrc))
         {
-          JavaCCErrors.warning (nameloc, "Command line setting of \"" + name + "\" modifies option value in file.");
+          JavaCCErrors.warning (aNameloc, "Command line setting of \"" + sName + "\" modifies option value in file.");
         }
         return;
       }
@@ -470,7 +470,7 @@ public class Options
     inputFileSetting ().add (sNameUC);
 
     // Options that are not fully described by their map entry need extra handling
-    _applyIndirectOptionFlags (valueloc, sNameUC, name, aRealSrc);
+    _applyIndirectOptionFlags (aValueloc, sNameUC, sName, aRealSrc);
   }
 
   /**
@@ -489,17 +489,17 @@ public class Options
    * @param aValue
    *        The already upgraded option value. Never <code>null</code>.
    */
-  private static void _applyIndirectOptionFlags (@Nullable final Object valueloc,
+  private static void _applyIndirectOptionFlags (@Nullable final Object aValueloc,
                                                  @NonNull final String sNameUC,
                                                  @NonNull final String sName,
                                                  @NonNull final Object aValue)
   {
     if (sNameUC.equalsIgnoreCase (USEROPTION__JAVA_TEMPLATE_TYPE))
     {
-      final String templateType = (String) aValue;
-      if (!_isValidJavaTemplateType (templateType))
+      final String sTemplateType = (String) aValue;
+      if (!_isValidJavaTemplateType (sTemplateType))
       {
-        JavaCCErrors.warning (valueloc,
+        JavaCCErrors.warning (aValueloc,
                               "Bad option value \"" +
                                         aValue +
                                         "\" for \"" +
@@ -517,7 +517,7 @@ public class Options
         final String sCharStreamType = (String) aValue;
         if (!_isValidJavaCharStreamType (sCharStreamType))
         {
-          JavaCCErrors.warning (valueloc,
+          JavaCCErrors.warning (aValueloc,
                                 "Bad option value \"" +
                                           aValue +
                                           "\" for \"" +
@@ -532,11 +532,11 @@ public class Options
       else
         if (sNameUC.equalsIgnoreCase (USEROPTION__OUTPUT_LANGUAGE))
         {
-          final String outputLanguage = (String) aValue;
-          final EOutputLanguage eOutLanguage = EOutputLanguage.getFromIDCaseInsensitiveOrNull (outputLanguage);
+          final String sOutputLanguage = (String) aValue;
+          final EOutputLanguage eOutLanguage = EOutputLanguage.getFromIDCaseInsensitiveOrNull (sOutputLanguage);
           if (eOutLanguage == null)
           {
-            JavaCCErrors.warning (valueloc,
+            JavaCCErrors.warning (aValueloc,
                                   "Bad option value \"" +
                                             aValue +
                                             "\" for \"" +
@@ -571,30 +571,30 @@ public class Options
     else
       sRealArg = sArg;
 
-    final int index;
+    final int nIndex;
     {
       // Look for the first ":" or "=", which will separate the option name
       // from its value (if any).
-      final int index1 = sRealArg.indexOf ('=');
-      final int index2 = sRealArg.indexOf (':');
-      if (index1 < 0)
-        index = index2;
+      final int nIndex1 = sRealArg.indexOf ('=');
+      final int nIndex2 = sRealArg.indexOf (':');
+      if (nIndex1 < 0)
+        nIndex = nIndex2;
       else
-        if (index2 < 0)
-          index = index1;
+        if (nIndex2 < 0)
+          nIndex = nIndex1;
         else
-          index = Math.min (index1, index2);
+          nIndex = Math.min (nIndex1, nIndex2);
     }
 
     String sNameUC;
-    Object val;
-    if (index < 0)
+    Object aVal;
+    if (nIndex < 0)
     {
       // No separator char (like in "DO_THIS_AND_THAT")
       sNameUC = sRealArg.toUpperCase (Locale.US);
       if (optionValues ().containsKey (sNameUC))
       {
-        val = Boolean.TRUE;
+        aVal = Boolean.TRUE;
       }
       else
         if (sNameUC.length () > 2 &&
@@ -602,7 +602,7 @@ public class Options
           sNameUC.charAt (1) == 'O' &&
           optionValues ().containsKey (sNameUC.substring (2)))
         {
-          val = Boolean.FALSE;
+          aVal = Boolean.FALSE;
           sNameUC = sNameUC.substring (2);
         }
         else
@@ -614,18 +614,18 @@ public class Options
     else
     {
       // We have name and value as in "X=Y" or "X:Y"
-      sNameUC = sRealArg.substring (0, index).toUpperCase (Locale.US);
-      final String sRealValue = sRealArg.substring (index + 1);
+      sNameUC = sRealArg.substring (0, nIndex).toUpperCase (Locale.US);
+      final String sRealValue = sRealArg.substring (nIndex + 1);
       if (sRealValue.equalsIgnoreCase ("TRUE"))
       {
         // Boolean
-        val = Boolean.TRUE;
+        aVal = Boolean.TRUE;
       }
       else
         if (sRealValue.equalsIgnoreCase ("FALSE"))
         {
           // Boolean
-          val = Boolean.FALSE;
+          aVal = Boolean.FALSE;
         }
         else
         {
@@ -638,12 +638,12 @@ public class Options
               PGPrinter.warn ("Warning: Bad option value in \"" + sArg + "\" will be ignored.");
               return;
             }
-            val = Integer.valueOf (i);
+            aVal = Integer.valueOf (i);
           }
           catch (final NumberFormatException e)
           {
             // String
-            val = sRealValue;
+            aVal = sRealValue;
             if (sRealValue.length () > 2)
             {
               // Check if quoted
@@ -651,7 +651,7 @@ public class Options
               if (sRealValue.charAt (0) == '"' && sRealValue.charAt (sRealValue.length () - 1) == '"')
               {
                 // remove the two '"'s.
-                val = sRealValue.substring (1, sRealValue.length () - 1);
+                aVal = sRealValue.substring (1, sRealValue.length () - 1);
               }
             }
           }
@@ -664,14 +664,14 @@ public class Options
       return;
     }
 
-    val = _upgradeValue (sNameUC, val);
+    aVal = _upgradeValue (sNameUC, aVal);
 
     // PARSER_SUPER_CLASS and TOKEN_MANAGER_SUPER_CLASS default to null, so there is no existing
     // value to take the expected type from. setInputFileOption has always guarded against that;
     // this path did not, and setting either of them on the command line threw a
     // NullPointerException instead of generating anything
-    final Object valOrig = optionValues ().get (sNameUC);
-    if (valOrig != null && val.getClass () != valOrig.getClass ())
+    final Object aValOrig = optionValues ().get (sNameUC);
+    if (aValOrig != null && aVal.getClass () != aValOrig.getClass ())
     {
       PGPrinter.warn ("Warning: Bad option value in \"" + sArg + "\" will be ignored.");
       return;
@@ -682,11 +682,11 @@ public class Options
       return;
     }
 
-    optionValues ().put (sNameUC, val);
+    optionValues ().put (sNameUC, aVal);
     cmdLineSetting ().add (sNameUC);
 
     // Options that are not fully described by their map entry need extra handling
-    _applyIndirectOptionFlags (null, sNameUC, sNameUC, val);
+    _applyIndirectOptionFlags (null, sNameUC, sNameUC, aVal);
   }
 
   public static void normalize ()
@@ -997,7 +997,7 @@ public class Options
       {
         return Charset.forName (sValue);
       }
-      catch (final UnsupportedCharsetException ex)
+      catch (final UnsupportedCharsetException aEx)
       {
         // Fall through
         JavaCCErrors.warning ("The grammar encoding value '" + sValue + "' is invalid. Falling back to default.");
@@ -1020,7 +1020,7 @@ public class Options
       {
         return Charset.forName (sValue);
       }
-      catch (final UnsupportedCharsetException ex)
+      catch (final UnsupportedCharsetException aEx)
       {
         // Fall through
         JavaCCErrors.warning ("The output encoding value '" + sValue + "' is invalid. Falling back to default.");
@@ -1080,32 +1080,32 @@ public class Options
     return JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE.equalsIgnoreCase (getJavaCharStreamType ()) && !isJavaUnicodeEscape ();
   }
 
-  public static void setStringOption (final String optionName, final String optionValue)
+  public static void setStringOption (final String sOptionName, final String sOptionValue)
   {
-    optionValues ().put (optionName, optionValue);
-    if (optionName.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))
+    optionValues ().put (sOptionName, sOptionValue);
+    if (sOptionName.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))
     {
-      processCPPNamespaceOption (optionValue);
+      processCPPNamespaceOption (sOptionValue);
     }
   }
 
-  public static void processCPPNamespaceOption (final String optionValue)
+  public static void processCPPNamespaceOption (final String sOptionValue)
   {
-    final String ns = optionValue;
-    if (ns.length () > 0)
+    final String sNs = sOptionValue;
+    if (sNs.length () > 0)
     {
       // We also need to split it.
-      final StringTokenizer st = new StringTokenizer (ns, "::");
-      final StringBuilder expanded_ns = new StringBuilder ().append (st.nextToken ()).append (" {");
-      final StringBuilder ns_close = new StringBuilder ("}");
-      while (st.hasMoreTokens ())
+      final StringTokenizer aSt = new StringTokenizer (sNs, "::");
+      final StringBuilder aExpanded_ns = new StringBuilder ().append (aSt.nextToken ()).append (" {");
+      final StringBuilder aNs_close = new StringBuilder ("}");
+      while (aSt.hasMoreTokens ())
       {
-        expanded_ns.append ("\nnamespace ").append (st.nextToken ()).append (" {");
-        ns_close.append ("\n}");
+        aExpanded_ns.append ("\nnamespace ").append (aSt.nextToken ()).append (" {");
+        aNs_close.append ("\n}");
       }
-      optionValues ().put (NONUSER_OPTION__NAMESPACE_OPEN, expanded_ns.toString ());
+      optionValues ().put (NONUSER_OPTION__NAMESPACE_OPEN, aExpanded_ns.toString ());
       optionValues ().put (NONUSER_OPTION__HAS_NAMESPACE, Boolean.TRUE);
-      optionValues ().put (NONUSER_OPTION__NAMESPACE_CLOSE, ns_close.toString ());
+      optionValues ().put (NONUSER_OPTION__NAMESPACE_CLOSE, aNs_close.toString ());
     }
   }
 
@@ -1136,10 +1136,10 @@ public class Options
    */
   public static String getCPPStackLimit ()
   {
-    final String limit = stringValue (USEROPTION__CPP_STACK_LIMIT);
-    if (limit.equals ("0"))
+    final String sLimit = stringValue (USEROPTION__CPP_STACK_LIMIT);
+    if (sLimit.equals ("0"))
       return "";
-    return limit;
+    return sLimit;
   }
 
   public static boolean hasCPPStackLimit ()

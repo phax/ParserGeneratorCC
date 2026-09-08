@@ -135,12 +135,12 @@ public sealed class Expansion permits
   }
 
   @NonNull
-  protected static StringBuilder dumpPrefix (final int indent)
+  protected static StringBuilder dumpPrefix (final int nIndent)
   {
-    final StringBuilder sb = new StringBuilder (indent * 2);
-    for (int i = 0; i < indent; i++)
-      sb.append ("  ");
-    return sb;
+    final StringBuilder aSb = new StringBuilder (nIndent * 2);
+    for (int i = 0; i < nIndent; i++)
+      aSb.append ("  ");
+    return aSb;
   }
 
   /**
@@ -151,9 +151,9 @@ public sealed class Expansion permits
    * @return String
    */
   @OverrideOnDemand
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    return dumpPrefix (indent).append (System.identityHashCode (this)).append (" ").append (_getSimpleName ());
+    return dumpPrefix (nIndent).append (System.identityHashCode (this)).append (" ").append (_getSimpleName ());
   }
 
   /**
@@ -168,9 +168,9 @@ public sealed class Expansion permits
    * @param column
    *        the column to set
    */
-  public final void setColumn (final int column)
+  public final void setColumn (final int nColumn)
   {
-    m_nColumn = column;
+    m_nColumn = nColumn;
   }
 
   /**
@@ -185,9 +185,9 @@ public sealed class Expansion permits
    * @param line
    *        the line to set
    */
-  public final void setLine (final int line)
+  public final void setLine (final int nLine)
   {
-    m_nLine = line;
+    m_nLine = nLine;
   }
 
   public final Object getParent ()

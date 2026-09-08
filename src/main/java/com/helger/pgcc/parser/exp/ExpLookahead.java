@@ -94,9 +94,9 @@ public final class ExpLookahead extends Expansion
    * @param amount
    *        the amount to set
    */
-  public final void setAmount (final int amount)
+  public final void setAmount (final int nAmount)
   {
-    m_amount = amount;
+    m_amount = nAmount;
   }
 
   /**
@@ -111,9 +111,9 @@ public final class ExpLookahead extends Expansion
    * @param la_expansion
    *        the la_expansion to set
    */
-  public final void setLaExpansion (final Expansion la_expansion)
+  public final void setLaExpansion (final Expansion aLa_expansion)
   {
-    m_la_expansion = la_expansion;
+    m_la_expansion = aLa_expansion;
   }
 
   /**
@@ -128,19 +128,19 @@ public final class ExpLookahead extends Expansion
    * @param isExplicit
    *        the isExplicit to set
    */
-  public final void setExplicit (final boolean isExplicit)
+  public final void setExplicit (final boolean bIsExplicit)
   {
-    m_bIsExplicit = isExplicit;
+    m_bIsExplicit = bIsExplicit;
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder sb = super.dump (indent, alreadyDumped).append (m_bIsExplicit ? " explicit" : " implicit");
-    if (alreadyDumped.add (this))
+    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped).append (m_bIsExplicit ? " explicit" : " implicit");
+    if (aAlreadyDumped.add (this))
     {
-      sb.append (EOL).append (m_la_expansion.dump (indent + 1, alreadyDumped));
+      aSb.append (EOL).append (m_la_expansion.dump (nIndent + 1, aAlreadyDumped));
     }
-    return sb;
+    return aSb;
   }
 }

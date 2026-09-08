@@ -76,67 +76,67 @@ public abstract class JavaCCParserInternals
      * A set of accessors that indicate whether the specified modifier is in the set.
      */
 
-    public static boolean isPublic (final int modifiers)
+    public static boolean isPublic (final int nModifiers)
     {
-      return (modifiers & PUBLIC) != 0;
+      return (nModifiers & PUBLIC) != 0;
     }
 
-    public static boolean isProtected (final int modifiers)
+    public static boolean isProtected (final int nModifiers)
     {
-      return (modifiers & PROTECTED) != 0;
+      return (nModifiers & PROTECTED) != 0;
     }
 
-    public static boolean isPrivate (final int modifiers)
+    public static boolean isPrivate (final int nModifiers)
     {
-      return (modifiers & PRIVATE) != 0;
+      return (nModifiers & PRIVATE) != 0;
     }
 
-    public static boolean isStatic (final int modifiers)
+    public static boolean isStatic (final int nModifiers)
     {
-      return (modifiers & STATIC) != 0;
+      return (nModifiers & STATIC) != 0;
     }
 
-    public static boolean isAbstract (final int modifiers)
+    public static boolean isAbstract (final int nModifiers)
     {
-      return (modifiers & ABSTRACT) != 0;
+      return (nModifiers & ABSTRACT) != 0;
     }
 
-    public static boolean isFinal (final int modifiers)
+    public static boolean isFinal (final int nModifiers)
     {
-      return (modifiers & FINAL) != 0;
+      return (nModifiers & FINAL) != 0;
     }
 
-    public static boolean isNative (final int modifiers)
+    public static boolean isNative (final int nModifiers)
     {
-      return (modifiers & NATIVE) != 0;
+      return (nModifiers & NATIVE) != 0;
     }
 
-    public static boolean isStrictfp (final int modifiers)
+    public static boolean isStrictfp (final int nModifiers)
     {
-      return (modifiers & STRICTFP) != 0;
+      return (nModifiers & STRICTFP) != 0;
     }
 
-    public static boolean isSynchronized (final int modifiers)
+    public static boolean isSynchronized (final int nModifiers)
     {
-      return (modifiers & SYNCHRONIZED) != 0;
+      return (nModifiers & SYNCHRONIZED) != 0;
     }
 
-    public static boolean isTransient (final int modifiers)
+    public static boolean isTransient (final int nModifiers)
     {
-      return (modifiers & TRANSIENT) != 0;
+      return (nModifiers & TRANSIENT) != 0;
     }
 
-    public static boolean isVolatile (final int modifiers)
+    public static boolean isVolatile (final int nModifiers)
     {
-      return (modifiers & VOLATILE) != 0;
+      return (nModifiers & VOLATILE) != 0;
     }
 
     /**
      * Removes the given modifier.
      */
-    static int removeModifier (final int modifiers, final int modToRemove)
+    static int removeModifier (final int nModifiers, final int nModToRemove)
     {
-      return modifiers & ~modToRemove;
+      return nModifiers & ~nModToRemove;
     }
   }
 
@@ -148,20 +148,20 @@ public abstract class JavaCCParserInternals
     grammar ().simpleTokensTable ().put ("DEFAULT", new HashMap <> ());
   }
 
-  protected static void addcuname (final String id)
+  protected static void addcuname (final String sId)
   {
-    grammar ().setParserName (id);
+    grammar ().setParserName (sId);
   }
 
-  protected static void compare (final Token t, final String id1, final String id2)
+  protected static void compare (final Token t, final String sId1, final String sId2)
   {
-    if (!id2.equals (id1))
+    if (!sId2.equals (sId1))
     {
-      JavaCCErrors.parse_error (t, "Name " + id2 + " must be the same as that used at PARSER_BEGIN (" + id1 + ")");
+      JavaCCErrors.parse_error (t, "Name " + sId2 + " must be the same as that used at PARSER_BEGIN (" + sId1 + ")");
     }
   }
 
-  protected static void setinsertionpoint (final Token t, final int no)
+  protected static void setinsertionpoint (final Token t, final int nNo)
   {
     do
     {
@@ -171,7 +171,7 @@ public abstract class JavaCCParserInternals
                  .add (PGCCContext.current ().parserBuild ().getFirstToken ());
       PGCCContext.current ().parserBuild ().setFirstToken (PGCCContext.current ().parserBuild ().getFirstToken ().next);
     } while (PGCCContext.current ().parserBuild ().getFirstToken () != t);
-    if (no == 1)
+    if (nNo == 1)
     {
       if (PGCCContext.current ().parserBuild ().isInsertionPoint1Set ())
       {
@@ -251,15 +251,15 @@ public abstract class JavaCCParserInternals
       }
       if (grammar ().lexStateS2I ().get (p.m_lexStates[i]) == null)
       {
-        final Integer ii = Integer.valueOf (PGCCContext.current ().parserBuild ().getAndIncNextFreeLexState ());
-        grammar ().lexStateS2I ().put (p.m_lexStates[i], ii);
-        grammar ().lexStateI2S ().put (ii, p.m_lexStates[i]);
+        final Integer aIi = Integer.valueOf (PGCCContext.current ().parserBuild ().getAndIncNextFreeLexState ());
+        grammar ().lexStateS2I ().put (p.m_lexStates[i], aIi);
+        grammar ().lexStateI2S ().put (aIi, p.m_lexStates[i]);
         grammar ().simpleTokensTable ().put (p.m_lexStates[i], new HashMap <> ());
       }
     }
   }
 
-  protected static void add_token_manager_decls (final Token t, final List <Token> decls)
+  protected static void add_token_manager_decls (final Token t, final List <Token> aDecls)
   {
     if (grammar ().getTokenMgrDecls () != null)
     {
@@ -267,7 +267,7 @@ public abstract class JavaCCParserInternals
     }
     else
     {
-      grammar ().setTokenMgrDecls (new CommonsArrayList <> (decls));
+      grammar ().setTokenMgrDecls (new CommonsArrayList <> (aDecls));
       if (Options.isUserTokenManager ())
       {
         JavaCCErrors.warning (t,
@@ -285,143 +285,143 @@ public abstract class JavaCCParserInternals
       p.m_isExplicit = false;
       p.m_lexStates = new String [] { "DEFAULT" };
       p.m_kind = ETokenKind.TOKEN;
-      final RegExprSpec res = new RegExprSpec ();
-      res.m_aRexp = r;
-      res.m_aRexp.m_aTpContext = p;
-      res.m_aAct = new ExpAction ();
-      res.m_sNextState = null;
-      res.m_aNsTok = null;
-      p.m_respecs.add (res);
+      final RegExprSpec aRes = new RegExprSpec ();
+      aRes.m_aRexp = r;
+      aRes.m_aRexp.m_aTpContext = p;
+      aRes.m_aAct = new ExpAction ();
+      aRes.m_sNextState = null;
+      aRes.m_aNsTok = null;
+      p.m_respecs.add (aRes);
       grammar ().rexprList ().add (p);
     }
   }
 
-  private static boolean _isHexchar (final char ch)
+  private static boolean _isHexchar (final char cCh)
   {
-    if (ch >= '0' && ch <= '9')
+    if (cCh >= '0' && cCh <= '9')
       return true;
-    if (ch >= 'A' && ch <= 'F')
+    if (cCh >= 'A' && cCh <= 'F')
       return true;
-    if (ch >= 'a' && ch <= 'f')
+    if (cCh >= 'a' && cCh <= 'f')
       return true;
     return false;
   }
 
-  private static int _getHexVal (final char ch)
+  private static int _getHexVal (final char cCh)
   {
-    if (ch >= '0' && ch <= '9')
-      return (ch) - ('0');
-    if (ch >= 'A' && ch <= 'F')
-      return (ch) - ('A') + 10;
-    return (ch) - ('a') + 10;
+    if (cCh >= '0' && cCh <= '9')
+      return (cCh) - ('0');
+    if (cCh >= 'A' && cCh <= 'F')
+      return (cCh) - ('A') + 10;
+    return (cCh) - ('a') + 10;
   }
 
-  protected static String remove_escapes_and_quotes (final Token t, final String str)
+  protected static String remove_escapes_and_quotes (final Token t, final String sStr)
   {
-    String retval = "";
-    int index = 1;
-    char ch, ch1;
-    int ordinal;
-    while (index < str.length () - 1)
+    String sRetval = "";
+    int nIndex = 1;
+    char cCh, cCh1;
+    int nOrdinal;
+    while (nIndex < sStr.length () - 1)
     {
-      if (str.charAt (index) != '\\')
+      if (sStr.charAt (nIndex) != '\\')
       {
-        retval += str.charAt (index);
-        index++;
+        sRetval += sStr.charAt (nIndex);
+        nIndex++;
         continue;
       }
-      index++;
-      ch = str.charAt (index);
-      if (ch == 'b')
+      nIndex++;
+      cCh = sStr.charAt (nIndex);
+      if (cCh == 'b')
       {
-        retval += '\b';
-        index++;
+        sRetval += '\b';
+        nIndex++;
         continue;
       }
-      if (ch == 't')
+      if (cCh == 't')
       {
-        retval += '\t';
-        index++;
+        sRetval += '\t';
+        nIndex++;
         continue;
       }
-      if (ch == 'n')
+      if (cCh == 'n')
       {
-        retval += '\n';
-        index++;
+        sRetval += '\n';
+        nIndex++;
         continue;
       }
-      if (ch == 'f')
+      if (cCh == 'f')
       {
-        retval += '\f';
-        index++;
+        sRetval += '\f';
+        nIndex++;
         continue;
       }
-      if (ch == 'r')
+      if (cCh == 'r')
       {
-        retval += '\r';
-        index++;
+        sRetval += '\r';
+        nIndex++;
         continue;
       }
-      if (ch == '"')
+      if (cCh == '"')
       {
-        retval += '\"';
-        index++;
+        sRetval += '\"';
+        nIndex++;
         continue;
       }
-      if (ch == '\'')
+      if (cCh == '\'')
       {
-        retval += '\'';
-        index++;
+        sRetval += '\'';
+        nIndex++;
         continue;
       }
-      if (ch == '\\')
+      if (cCh == '\\')
       {
-        retval += '\\';
-        index++;
+        sRetval += '\\';
+        nIndex++;
         continue;
       }
-      if (ch >= '0' && ch <= '7')
+      if (cCh >= '0' && cCh <= '7')
       {
-        ordinal = (ch) - ('0');
-        index++;
-        ch1 = str.charAt (index);
-        if (ch1 >= '0' && ch1 <= '7')
+        nOrdinal = (cCh) - ('0');
+        nIndex++;
+        cCh1 = sStr.charAt (nIndex);
+        if (cCh1 >= '0' && cCh1 <= '7')
         {
-          ordinal = ordinal * 8 + (ch1) - ('0');
-          index++;
-          ch1 = str.charAt (index);
-          if (ch <= '3' && ch1 >= '0' && ch1 <= '7')
+          nOrdinal = nOrdinal * 8 + (cCh1) - ('0');
+          nIndex++;
+          cCh1 = sStr.charAt (nIndex);
+          if (cCh <= '3' && cCh1 >= '0' && cCh1 <= '7')
           {
-            ordinal = ordinal * 8 + (ch1) - ('0');
-            index++;
+            nOrdinal = nOrdinal * 8 + (cCh1) - ('0');
+            nIndex++;
           }
         }
-        retval += (char) ordinal;
+        sRetval += (char) nOrdinal;
         continue;
       }
-      if (ch == 'u')
+      if (cCh == 'u')
       {
-        index++;
-        ch = str.charAt (index);
-        if (_isHexchar (ch))
+        nIndex++;
+        cCh = sStr.charAt (nIndex);
+        if (_isHexchar (cCh))
         {
-          ordinal = _getHexVal (ch);
-          index++;
-          ch = str.charAt (index);
-          if (_isHexchar (ch))
+          nOrdinal = _getHexVal (cCh);
+          nIndex++;
+          cCh = sStr.charAt (nIndex);
+          if (_isHexchar (cCh))
           {
-            ordinal = ordinal * 16 + _getHexVal (ch);
-            index++;
-            ch = str.charAt (index);
-            if (_isHexchar (ch))
+            nOrdinal = nOrdinal * 16 + _getHexVal (cCh);
+            nIndex++;
+            cCh = sStr.charAt (nIndex);
+            if (_isHexchar (cCh))
             {
-              ordinal = ordinal * 16 + _getHexVal (ch);
-              index++;
-              ch = str.charAt (index);
-              if (_isHexchar (ch))
+              nOrdinal = nOrdinal * 16 + _getHexVal (cCh);
+              nIndex++;
+              cCh = sStr.charAt (nIndex);
+              if (_isHexchar (cCh))
               {
-                ordinal = ordinal * 16 + _getHexVal (ch);
-                index++;
+                nOrdinal = nOrdinal * 16 + _getHexVal (cCh);
+                nIndex++;
                 continue;
               }
             }
@@ -429,17 +429,17 @@ public abstract class JavaCCParserInternals
         }
         JavaCCErrors.parse_error (t,
                                   "Encountered non-hex character '" +
-                                     ch +
+                                     cCh +
                                      "' at position " +
-                                     index +
+                                     nIndex +
                                      " of string " +
                                      "- Unicode escape must have 4 hex digits after it.");
-        return retval;
+        return sRetval;
       }
-      JavaCCErrors.parse_error (t, "Illegal escape sequence '\\" + ch + "' at position " + index + " of string.");
-      return retval;
+      JavaCCErrors.parse_error (t, "Illegal escape sequence '\\" + cCh + "' at position " + nIndex + " of string.");
+      return sRetval;
     }
-    return retval;
+    return sRetval;
   }
 
   protected static char character_descriptor_assign (final Token t, final String s)
@@ -452,50 +452,50 @@ public abstract class JavaCCParserInternals
     return s.charAt (0);
   }
 
-  protected static char character_descriptor_assign (final Token t, final String s, final String left)
+  protected static char character_descriptor_assign (final Token t, final String s, final String sLeft)
   {
     if (s.length () != 1)
     {
       JavaCCErrors.parse_error (t, "String in character list may contain only one character.");
       return ' ';
     }
-    if (left.charAt (0) > s.charAt (0))
+    if (sLeft.charAt (0) > s.charAt (0))
     {
       JavaCCErrors.parse_error (t,
                                 "Right end of character range \'" +
                                    s +
                                    "\' has a lower ordinal value than the left end of character range \'" +
-                                   left +
+                                   sLeft +
                                    "\'.");
-      return left.charAt (0);
+      return sLeft.charAt (0);
     }
     return s.charAt (0);
   }
 
-  protected static void makeTryBlock (final Token tryLoc,
-                                      final Container result,
-                                      final Container nestedExp,
+  protected static void makeTryBlock (final Token aTryLoc,
+                                      final Container aResult,
+                                      final Container aNestedExp,
                                       final List <List <Token>> types,
                                       final List <Token> ids,
                                       final List <List <Token>> catchblks,
-                                      final List <Token> finallyblk)
+                                      final List <Token> aFinallyblk)
   {
-    if (catchblks.size () == 0 && finallyblk == null)
+    if (catchblks.size () == 0 && aFinallyblk == null)
     {
-      JavaCCErrors.parse_error (tryLoc, "Try block must contain at least one catch or finally block.");
+      JavaCCErrors.parse_error (aTryLoc, "Try block must contain at least one catch or finally block.");
       return;
     }
-    final ExpTryBlock tblk = new ExpTryBlock ();
-    tblk.setLine (tryLoc.beginLine);
-    tblk.setColumn (tryLoc.beginColumn);
-    tblk.m_exp = (Expansion) nestedExp.m_aMember;
-    tblk.m_exp.setParent (tblk);
-    tblk.m_exp.setOrdinalBase (0);
-    tblk.m_types = types;
-    tblk.m_ids = ids;
-    tblk.m_catchblks = catchblks;
-    tblk.m_finallyblk = finallyblk;
-    result.m_aMember = tblk;
+    final ExpTryBlock aTblk = new ExpTryBlock ();
+    aTblk.setLine (aTryLoc.beginLine);
+    aTblk.setColumn (aTryLoc.beginColumn);
+    aTblk.m_exp = (Expansion) aNestedExp.m_aMember;
+    aTblk.m_exp.setParent (aTblk);
+    aTblk.m_exp.setOrdinalBase (0);
+    aTblk.m_types = types;
+    aTblk.m_ids = ids;
+    aTblk.m_catchblks = catchblks;
+    aTblk.m_finallyblk = aFinallyblk;
+    aResult.m_aMember = aTblk;
   }
 
 }

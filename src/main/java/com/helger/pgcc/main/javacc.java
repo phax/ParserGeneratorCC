@@ -47,8 +47,8 @@ public final class javacc
   private javacc ()
   {}
 
-  public static void main (final String [] args) throws Exception
+  public static void main (final String [] aArgs) throws Exception
   {
-    JavaCCLauncher.main (args);
+    JavaCCLauncher.main (aArgs);
   }
 }

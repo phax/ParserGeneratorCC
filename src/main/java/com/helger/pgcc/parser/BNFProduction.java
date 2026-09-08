@@ -70,9 +70,9 @@ public class BNFProduction extends NormalProduction
    * @param jumpPatched
    *        the jumpPatched to set
    */
-  public void setJumpPatched (final boolean jumpPatched)
+  public void setJumpPatched (final boolean bJumpPatched)
   {
-    m_bJumpPatched = jumpPatched;
+    m_bJumpPatched = bJumpPatched;
   }
 
   /**

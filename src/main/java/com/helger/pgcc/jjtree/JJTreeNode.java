@@ -50,9 +50,9 @@ public class JJTreeNode extends SimpleNode
     this (nID);
   }
 
-  public static Node jjtCreate (final int id)
+  public static Node jjtCreate (final int nId)
   {
-    return new JJTreeNode (id);
+    return new JJTreeNode (nId);
   }
 
   @Override
@@ -109,17 +109,17 @@ public class JJTreeNode extends SimpleNode
 
   static String whiteOut (final Token t)
   {
-    final StringBuilder sb = new StringBuilder (t.image.length ());
+    final StringBuilder aSb = new StringBuilder (t.image.length ());
 
     for (final char ch : t.image.toCharArray ())
     {
       if (ch != '\t' && ch != '\n' && ch != '\r' && ch != '\f')
-        sb.append (' ');
+        aSb.append (' ');
       else
-        sb.append (ch);
+        aSb.append (ch);
     }
 
-    return sb.toString ();
+    return aSb.toString ();
   }
 
   /*
@@ -128,17 +128,17 @@ public class JJTreeNode extends SimpleNode
    */
   private boolean m_whitingOut = false;
 
-  protected void print (final Token t, final JJTreeIO io)
+  protected void print (final Token t, final JJTreeIO aIo)
   {
-    Token tt = t.specialToken;
-    if (tt != null)
+    Token aTt = t.specialToken;
+    if (aTt != null)
     {
-      while (tt.specialToken != null)
-        tt = tt.specialToken;
-      while (tt != null)
+      while (aTt.specialToken != null)
+        aTt = aTt.specialToken;
+      while (aTt != null)
       {
-        io.print (TokenUtils.addUnicodeEscapes (translateImage (tt)));
-        tt = tt.next;
+        aIo.print (TokenUtils.addUnicodeEscapes (translateImage (aTt)));
+        aTt = aTt.next;
       }
     }
 
@@ -154,13 +154,13 @@ public class JJTreeNode extends SimpleNode
       /*
        * Not within a node scope so we don't need to modify the source.
        */
-      io.print (TokenUtils.addUnicodeEscapes (translateImage (t)));
+      aIo.print (TokenUtils.addUnicodeEscapes (translateImage (t)));
       return;
     }
 
     if (t.image.equals ("jjtThis"))
     {
-      io.print (s.getNodeVariable ());
+      aIo.print (s.getNodeVariable ());
       return;
     }
     else
@@ -188,25 +188,25 @@ public class JJTreeNode extends SimpleNode
     {
       if (t.image.equals ("jjtree"))
       {
-        io.print (s.getNodeVariable ());
-        io.print (" ");
+        aIo.print (s.getNodeVariable ());
+        aIo.print (" ");
       }
       else
         if (t.image.equals (")"))
         {
-          io.print (" ");
+          aIo.print (" ");
           m_whitingOut = false;
         }
         else
         {
           for (int i = 0; i < t.image.length (); ++i)
           {
-            io.print (" ");
+            aIo.print (" ");
           }
         }
       return;
     }
 
-    io.print (TokenUtils.addUnicodeEscapes (translateImage (t)));
+    aIo.print (TokenUtils.addUnicodeEscapes (translateImage (t)));
   }
 }

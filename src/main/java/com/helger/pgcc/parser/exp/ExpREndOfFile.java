@@ -42,7 +42,7 @@ import com.helger.pgcc.parser.Nfa;
 public final class ExpREndOfFile extends AbstractExpRegularExpression
 {
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
     return null;
   }

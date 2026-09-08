@@ -103,52 +103,52 @@ public class TextGenerator implements IDocGenerator
     text ("TOKENS\n");
   }
 
-  public void handleTokenProduction (final TokenProduction tp) throws IOException
+  public void handleTokenProduction (final TokenProduction aTp) throws IOException
   {
-    final String text = JJDoc.getStandardTokenProductionText (tp);
-    text (text);
+    final String sText = JJDoc.getStandardTokenProductionText (aTp);
+    text (sText);
   }
 
   public void tokensEnd () throws IOException
   {}
 
-  public void javacode (final CodeProductionJava jp) throws IOException
+  public void javacode (final CodeProductionJava aJp) throws IOException
   {
-    productionStart (jp);
+    productionStart (aJp);
     text ("java code");
-    productionEnd (jp);
+    productionEnd (aJp);
   }
 
-  public void cppcode (final CodeProductionCpp cp) throws IOException
+  public void cppcode (final CodeProductionCpp aCp) throws IOException
   {
-    productionStart (cp);
+    productionStart (aCp);
     text ("c++ code");
-    productionEnd (cp);
+    productionEnd (aCp);
   }
 
-  public void productionStart (final NormalProduction np) throws IOException
+  public void productionStart (final NormalProduction aNp) throws IOException
   {
-    m_aPW.write ("\t" + np.getLhs () + "\t:=\t");
+    m_aPW.write ("\t" + aNp.getLhs () + "\t:=\t");
   }
 
-  public void productionEnd (final NormalProduction np) throws IOException
+  public void productionEnd (final NormalProduction aNp) throws IOException
   {
     m_aPW.write ("\n");
   }
 
-  public void expansionStart (final Expansion e, final boolean first) throws IOException
+  public void expansionStart (final Expansion e, final boolean bFirst) throws IOException
   {
-    if (!first)
+    if (!bFirst)
       m_aPW.write ("\n\t\t|\t");
   }
 
-  public void expansionEnd (final Expansion e, final boolean first) throws IOException
+  public void expansionEnd (final Expansion e, final boolean bFirst) throws IOException
   {}
 
-  public void nonTerminalStart (final ExpNonTerminal nt) throws IOException
+  public void nonTerminalStart (final ExpNonTerminal aNt) throws IOException
   {}
 
-  public void nonTerminalEnd (final ExpNonTerminal nt) throws IOException
+  public void nonTerminalEnd (final ExpNonTerminal aNt) throws IOException
   {}
 
   public void reStart (final AbstractExpRegularExpression r) throws IOException
@@ -166,14 +166,14 @@ public class TextGenerator implements IDocGenerator
   @NonNull
   protected static Writer createPrintWriter ()
   {
-    String ext = ".html";
+    String sExt = ".html";
     if (JJDocOptions.isText ())
-      ext = ".txt";
+      sExt = ".txt";
     else
       if (JJDocOptions.isXText ())
-        ext = ".xtext";
+        sExt = ".xtext";
 
-    return createPrintWriter (ext);
+    return createPrintWriter (sExt);
   }
 
   /**
@@ -183,7 +183,7 @@ public class TextGenerator implements IDocGenerator
    * @return Never <code>null</code>.
    */
   @NonNull
-  protected static Writer createPrintWriter (@NonNull final String ext)
+  protected static Writer createPrintWriter (@NonNull final String sExt)
   {
     if (StringHelper.isEmpty (JJDocOptions.getOutputFile ()))
     {
@@ -193,20 +193,20 @@ public class TextGenerator implements IDocGenerator
       final int i = PGCCContext.current ().jjdoc ().getInputFile ().lastIndexOf ('.');
       if (i == -1)
       {
-        PGCCContext.current ().jjdoc ().setOutputFile (PGCCContext.current ().jjdoc ().getInputFile () + ext);
+        PGCCContext.current ().jjdoc ().setOutputFile (PGCCContext.current ().jjdoc ().getInputFile () + sExt);
       }
       else
       {
-        final String suffix = PGCCContext.current ().jjdoc ().getInputFile ().substring (i);
-        if (suffix.equals (ext))
+        final String sSuffix = PGCCContext.current ().jjdoc ().getInputFile ().substring (i);
+        if (sSuffix.equals (sExt))
         {
-          PGCCContext.current ().jjdoc ().setOutputFile (PGCCContext.current ().jjdoc ().getInputFile () + ext);
+          PGCCContext.current ().jjdoc ().setOutputFile (PGCCContext.current ().jjdoc ().getInputFile () + sExt);
         }
         else
         {
           PGCCContext.current ()
                      .jjdoc ()
-                     .setOutputFile (PGCCContext.current ().jjdoc ().getInputFile ().substring (0, i) + ext);
+                     .setOutputFile (PGCCContext.current ().jjdoc ().getInputFile ().substring (0, i) + sExt);
         }
       }
     }

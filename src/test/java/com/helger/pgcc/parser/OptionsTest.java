@@ -355,9 +355,9 @@ public final class OptionsTest
   {
     Options.setCmdLineOption ("-CACHE_TOKENS=False");
     Options.setCmdLineOption ("-IGNORE_CASE=True");
-    final String [] options = { Options.USEROPTION__CACHE_TOKENS, Options.USEROPTION__IGNORE_CASE };
-    final String optionString = Options.getOptionsString (options);
-    assertEquals ("CACHE_TOKENS=false,IGNORE_CASE=true", optionString);
+    final String [] aOptions = { Options.USEROPTION__CACHE_TOKENS, Options.USEROPTION__IGNORE_CASE };
+    final String sOptionString = Options.getOptionsString (aOptions);
+    assertEquals ("CACHE_TOKENS=false,IGNORE_CASE=true", sOptionString);
   }
 
   @Test

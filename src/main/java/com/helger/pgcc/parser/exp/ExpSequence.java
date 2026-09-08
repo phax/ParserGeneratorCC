@@ -56,11 +56,11 @@ public final class ExpSequence extends Expansion
   public ExpSequence ()
   {}
 
-  public ExpSequence (final Token token, final ExpLookahead lookahead)
+  public ExpSequence (final Token aToken, final ExpLookahead aLookahead)
   {
-    setLine (token.beginLine);
-    setColumn (token.beginColumn);
-    m_units.add (lookahead);
+    setLine (aToken.beginLine);
+    setColumn (aToken.beginColumn);
+    m_units.add (aLookahead);
   }
 
   @NonNull
@@ -100,18 +100,18 @@ public final class ExpSequence extends Expansion
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    if (!alreadyDumped.add (this))
+    if (!aAlreadyDumped.add (this))
     {
-      return super.dump (0, alreadyDumped).insert (0, '[').append (']').insert (0, dumpPrefix (indent));
+      return super.dump (0, aAlreadyDumped).insert (0, '[').append (']').insert (0, dumpPrefix (nIndent));
     }
 
-    final StringBuilder sb = super.dump (indent, alreadyDumped);
+    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
     for (final Expansion next : m_units)
     {
-      sb.append (EOL).append (next.dump (indent + 1, alreadyDumped));
+      aSb.append (EOL).append (next.dump (nIndent + 1, aAlreadyDumped));
     }
-    return sb;
+    return aSb;
   }
 }

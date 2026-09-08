@@ -49,15 +49,15 @@ public final class ExpRJustName extends AbstractExpRegularExpression
   public AbstractExpRegularExpression m_regexpr;
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    return m_regexpr.generateNfa (ignoreCase);
+    return m_regexpr.generateNfa (bIgnoreCase);
   }
 
-  public ExpRJustName (final Token token, final String image)
+  public ExpRJustName (final Token aToken, final String sImage)
   {
-    setLine (token.beginLine);
-    setColumn (token.beginColumn);
-    setLabel (image);
+    setLine (aToken.beginLine);
+    setColumn (aToken.beginColumn);
+    setLabel (sImage);
   }
 }

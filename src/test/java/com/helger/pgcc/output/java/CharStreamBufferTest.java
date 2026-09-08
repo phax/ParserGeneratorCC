@@ -69,12 +69,12 @@ public final class CharStreamBufferTest
   @Parameters (name = "{0}, unicode={1}, lineColumn={2}")
   public static Collection <Object []> parameters ()
   {
-    final List <Object []> ret = new ArrayList <> ();
+    final List <Object []> aRet = new ArrayList <> ();
     for (final String sTemplate : new String [] { "classic", "modern" })
       for (final boolean bUnicode : new boolean [] { true, false })
         for (final boolean bLineColumn : new boolean [] { true, false })
-          ret.add (new Object [] { sTemplate, Boolean.valueOf (bUnicode), Boolean.valueOf (bLineColumn) });
-    return ret;
+          aRet.add (new Object [] { sTemplate, Boolean.valueOf (bUnicode), Boolean.valueOf (bLineColumn) });
+    return aRet;
   }
 
   private final String m_sTemplate;

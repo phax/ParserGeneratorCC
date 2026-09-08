@@ -43,8 +43,8 @@ public final class JJTreeLauncher
   private JJTreeLauncher ()
   {}
 
-  public static void main (final String [] args)
+  public static void main (final String [] aArgs)
   {
-    com.helger.pgcc.jjtree.Main.main (args);
+    com.helger.pgcc.jjtree.Main.main (aArgs);
   }
 }

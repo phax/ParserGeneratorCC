@@ -55,16 +55,16 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
   private final boolean m_hasMax;
 
   public ExpRRepetitionRange (final Token t,
-                              final int r1,
-                              final int r2,
-                              final boolean hasMax,
+                              final int nR1,
+                              final int nR2,
+                              final boolean bHasMax,
                               final AbstractExpRegularExpression r)
   {
     setLine (t.beginLine);
     setColumn (t.beginColumn);
-    m_min = r1;
-    m_max = r2;
-    m_hasMax = hasMax;
+    m_min = nR1;
+    m_max = nR2;
+    m_hasMax = bHasMax;
     m_regexpr = r;
   }
 
@@ -90,27 +90,27 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    final List <AbstractExpRegularExpression> units = new ArrayList <> ();
-    ExpRSequence seq;
+    final List <AbstractExpRegularExpression> aUnits = new ArrayList <> ();
+    ExpRSequence aSeq;
     int i;
 
     for (i = 0; i < m_min; i++)
     {
-      units.add (m_regexpr);
+      aUnits.add (m_regexpr);
     }
 
     if (m_hasMax && m_max == -1) // Unlimited
     {
-      units.add (new ExpRZeroOrMore (m_regexpr));
+      aUnits.add (new ExpRZeroOrMore (m_regexpr));
     }
 
     while (i++ < m_max)
     {
-      units.add (new ExpRZeroOrOne (m_regexpr));
+      aUnits.add (new ExpRZeroOrOne (m_regexpr));
     }
-    seq = new ExpRSequence (units);
-    return seq.generateNfa (ignoreCase);
+    aSeq = new ExpRSequence (aUnits);
+    return aSeq.generateNfa (bIgnoreCase);
   }
 }

@@ -81,6 +81,7 @@ v2.1.0 - work in progress
 * `PARSER_SUPER_CLASS` and `TOKEN_MANAGER_SUPER_CLASS` now warn when set with a Java target. Both are read by the C++ backend only and were silently ignored otherwise
 * Fixed the `jjtree` help output advertising `JDK_VERSION (default "1.5")` and `OUTPUT_DIRECTORY (default "")`, neither of which was the actual default
 * Removed a leftover debug line that made `jjtree` print `opt:java` on every run
+* Local variables and parameters throughout the code base now use the project's Hungarian notation. The public fields of `Token` keep their names - generated parsers and grammar action code read `token.kind` and `t.image`
 
 v2.0.3 - 2026-09-08
 * Added the new option `JAVA_CHAR_STREAM_TYPE` that allows to generate a `CharSequenceCharStream` that needs no internal buffer at all ([issue #21](https://github.com/tulipcc/ParserGeneratorCC/issues/21))

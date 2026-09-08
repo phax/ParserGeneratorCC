@@ -97,10 +97,10 @@ public final class OutputFileGeneratorLanguageTest
 
   private static Map <String, Object> _options (final Object... aNameValuePairs)
   {
-    final Map <String, Object> ret = new HashMap <> ();
+    final Map <String, Object> aRet = new HashMap <> ();
     for (int i = 0; i < aNameValuePairs.length; i += 2)
-      ret.put ((String) aNameValuePairs[i], aNameValuePairs[i + 1]);
-    return ret;
+      aRet.put ((String) aNameValuePairs[i], aNameValuePairs[i + 1]);
+    return aRet;
   }
 
   @Test
@@ -200,9 +200,9 @@ public final class OutputFileGeneratorLanguageTest
       _render ("#if FLAG\ninside\n", _options ("FLAG", Boolean.TRUE));
       fail ("Expected an error about the missing #fi");
     }
-    catch (final IOException ex)
+    catch (final IOException aEx)
     {
-      assertEquals ("Missing \"#fi\"", ex.getMessage ());
+      assertEquals ("Missing \"#fi\"", aEx.getMessage ());
     }
   }
 
@@ -214,7 +214,7 @@ public final class OutputFileGeneratorLanguageTest
       _render ("${UNCLOSED\n", _options ());
       fail ("Expected an error about the unbalanced braces");
     }
-    catch (final IOException ex)
+    catch (final IOException aEx)
     {
       // Expected
     }

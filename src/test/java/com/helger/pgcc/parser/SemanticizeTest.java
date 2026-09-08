@@ -106,9 +106,9 @@ public final class SemanticizeTest
       aParser.javacc_input ();
       Semanticize.start ();
     }
-    catch (final Exception ex)
+    catch (final Exception aEx)
     {
-      m_aPrinter.println ("EXCEPTION: " + ex.getMessage ());
+      m_aPrinter.println ("EXCEPTION: " + aEx.getMessage ());
     }
     return m_aPrinter.m_aLines;
   }

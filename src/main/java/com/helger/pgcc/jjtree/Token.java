@@ -108,9 +108,9 @@ public class Token
    * @param kind
    *        Token kind
    */
-  public Token (final int kind)
+  public Token (final int nKind)
   {
-    this (kind, null);
+    this (nKind, null);
   }
 
   /**
@@ -121,10 +121,10 @@ public class Token
    * @param image
    *        image string
    */
-  public Token (final int kind, final String image)
+  public Token (final int nKind, final String sImage)
   {
-    this.kind = kind;
-    this.image = image;
+    this.kind = nKind;
+    this.image = sImage;
   }
 
   /**
@@ -150,22 +150,22 @@ public class Token
    *        Image string
    * @return the correct token
    */
-  public static Token newToken (final int ofKind, final String image)
+  public static Token newToken (final int nOfKind, final String sImage)
   {
-    switch (ofKind)
+    switch (nOfKind)
     {
       default:
-        return new Token (ofKind, image);
+        return new Token (nOfKind, sImage);
       case JJTreeParserConstants.RUNSIGNEDSHIFT:
       case JJTreeParserConstants.RSIGNEDSHIFT:
       case JJTreeParserConstants.GT:
-        return new GTToken (ofKind, image);
+        return new GTToken (nOfKind, sImage);
     }
   }
 
-  public static Token newToken (final int ofKind)
+  public static Token newToken (final int nOfKind)
   {
-    return newToken (ofKind, null);
+    return newToken (nOfKind, null);
   }
 
   /**
@@ -175,9 +175,9 @@ public class Token
   {
     int m_realKind = JJTreeParserConstants.GT;
 
-    public GTToken (final int kind, final String image)
+    public GTToken (final int nKind, final String sImage)
     {
-      super (kind, image);
+      super (nKind, sImage);
     }
   }
 }

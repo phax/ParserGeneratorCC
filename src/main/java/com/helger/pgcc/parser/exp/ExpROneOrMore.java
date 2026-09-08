@@ -49,14 +49,14 @@ public final class ExpROneOrMore extends AbstractExpRegularExpression
    */
   private final AbstractExpRegularExpression m_regexpr;
 
-  public ExpROneOrMore (final AbstractExpRegularExpression re)
+  public ExpROneOrMore (final AbstractExpRegularExpression aRe)
   {
-    m_regexpr = re;
+    m_regexpr = aRe;
   }
 
-  public ExpROneOrMore (final Token t, final AbstractExpRegularExpression re)
+  public ExpROneOrMore (final Token t, final AbstractExpRegularExpression aRe)
   {
-    this (re);
+    this (aRe);
     setLine (t.beginLine);
     setColumn (t.beginColumn);
   }
@@ -68,18 +68,18 @@ public final class ExpROneOrMore extends AbstractExpRegularExpression
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    final Nfa retVal = new Nfa ();
-    final NfaState startState = retVal.start ();
-    final NfaState finalState = retVal.end ();
+    final Nfa aRetVal = new Nfa ();
+    final NfaState aStartState = aRetVal.start ();
+    final NfaState aFinalState = aRetVal.end ();
 
-    final Nfa temp = m_regexpr.generateNfa (ignoreCase);
+    final Nfa aTemp = m_regexpr.generateNfa (bIgnoreCase);
 
-    startState.addMove (temp.start ());
-    temp.end ().addMove (temp.start ());
-    temp.end ().addMove (finalState);
+    aStartState.addMove (aTemp.start ());
+    aTemp.end ().addMove (aTemp.start ());
+    aTemp.end ().addMove (aFinalState);
 
-    return retVal;
+    return aRetVal;
   }
 }

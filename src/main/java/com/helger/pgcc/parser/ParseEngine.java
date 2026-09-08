@@ -117,22 +117,22 @@ public class ParseEngine
    * Returns true if there is a JAVACODE production that the argument expansion may directly expand
    * to (without consuming tokens or encountering lookahead).
    */
-  private boolean _javaCodeCheck (final Expansion exp)
+  private boolean _javaCodeCheck (final Expansion aExp)
   {
-    if (exp instanceof AbstractExpRegularExpression)
+    if (aExp instanceof AbstractExpRegularExpression)
     {
       return false;
     }
 
-    if (exp instanceof final ExpNonTerminal aNonTerminal)
+    if (aExp instanceof final ExpNonTerminal aNonTerminal)
     {
-      final NormalProduction prod = aNonTerminal.getProd ();
-      if (prod instanceof AbstractCodeProduction)
+      final NormalProduction aProd = aNonTerminal.getProd ();
+      if (aProd instanceof AbstractCodeProduction)
         return true;
-      return _javaCodeCheck (prod.getExpansion ());
+      return _javaCodeCheck (aProd.getExpansion ());
     }
 
-    if (exp instanceof final ExpChoice ch)
+    if (aExp instanceof final ExpChoice ch)
     {
       for (final Expansion choice : ch.getChoices ())
         if (_javaCodeCheck (choice))
@@ -140,12 +140,12 @@ public class ParseEngine
       return false;
     }
 
-    if (exp instanceof final ExpSequence seq)
+    if (aExp instanceof final ExpSequence seq)
     {
       for (int i = 0; i < seq.getUnitCount (); i++)
       {
-        final Expansion unit = seq.getUnitAt (i);
-        if (unit instanceof ExpLookahead && ((ExpLookahead) unit).isExplicit ())
+        final Expansion aUnit = seq.getUnitAt (i);
+        if (aUnit instanceof ExpLookahead && ((ExpLookahead) aUnit).isExplicit ())
         {
           // An explicit lookahead (rather than one generated implicitly).
           // Assume
@@ -153,30 +153,30 @@ public class ParseEngine
           // "A" ( "B" | LOOKAHEAD("X") jcode() | "C" )* "D"
           return false;
         }
-        if (_javaCodeCheck (unit))
+        if (_javaCodeCheck (aUnit))
           return true;
-        if (!Semanticize.emptyExpansionExists (unit))
+        if (!Semanticize.emptyExpansionExists (aUnit))
           return false;
       }
       return false;
     }
 
-    if (exp instanceof final ExpOneOrMore om)
+    if (aExp instanceof final ExpOneOrMore om)
     {
       return _javaCodeCheck (om.getExpansion ());
     }
 
-    if (exp instanceof final ExpZeroOrMore zm)
+    if (aExp instanceof final ExpZeroOrMore zm)
     {
       return _javaCodeCheck (zm.getExpansion ());
     }
 
-    if (exp instanceof final ExpZeroOrOne zo)
+    if (aExp instanceof final ExpZeroOrOne zo)
     {
       return _javaCodeCheck (zo.getExpansion ());
     }
 
-    if (exp instanceof final ExpTryBlock tb)
+    if (aExp instanceof final ExpTryBlock tb)
     {
       return _javaCodeCheck (tb.m_exp);
     }
@@ -194,14 +194,14 @@ public class ParseEngine
    * Sets up the array "firstSet" above based on the Expansion argument passed to it. Since this is
    * a recursive function, it assumes that "firstSet" has been reset before the first call.
    */
-  private void _genFirstSet (final Expansion exp)
+  private void _genFirstSet (final Expansion aExp)
   {
-    if (exp instanceof final AbstractExpRegularExpression aRegularExpression)
+    if (aExp instanceof final AbstractExpRegularExpression aRegularExpression)
     {
       m_firstSet[aRegularExpression.getOrdinal ()] = true;
     }
     else
-      if (exp instanceof final ExpNonTerminal aExpNonTerminal)
+      if (aExp instanceof final ExpNonTerminal aExpNonTerminal)
       {
         if (!(aExpNonTerminal.getProd () instanceof AbstractCodeProduction))
         {
@@ -209,7 +209,7 @@ public class ParseEngine
         }
       }
       else
-        if (exp instanceof final ExpChoice ch)
+        if (aExp instanceof final ExpChoice ch)
         {
           for (final Expansion element : ch.getChoices ())
           {
@@ -217,28 +217,28 @@ public class ParseEngine
           }
         }
         else
-          if (exp instanceof final ExpSequence seq)
+          if (aExp instanceof final ExpSequence seq)
           {
-            final Object obj = seq.getUnitAt (0);
-            if (obj instanceof ExpLookahead && ((ExpLookahead) obj).getActionTokens ().isNotEmpty ())
+            final Object aObj = seq.getUnitAt (0);
+            if (aObj instanceof ExpLookahead && ((ExpLookahead) aObj).getActionTokens ().isNotEmpty ())
             {
               m_bJJ2LA = true;
             }
             for (int i = 0; i < seq.getUnitCount (); i++)
             {
-              final Expansion unit = seq.getUnitAt (i);
+              final Expansion aUnit = seq.getUnitAt (i);
               // Javacode productions can not have FIRST sets. Instead we
               // generate the FIRST set
               // for the preceding LOOKAHEAD (the semantic checks should have
               // made sure that
               // the LOOKAHEAD is suitable).
-              if (unit instanceof ExpNonTerminal &&
-                ((ExpNonTerminal) unit).getProd () instanceof AbstractCodeProduction)
+              if (aUnit instanceof ExpNonTerminal &&
+                ((ExpNonTerminal) aUnit).getProd () instanceof AbstractCodeProduction)
               {
                 if (i > 0 && seq.getUnitAt (i - 1) instanceof ExpLookahead)
                 {
-                  final ExpLookahead la = (ExpLookahead) seq.getUnitAt (i - 1);
-                  _genFirstSet (la.getLaExpansion ());
+                  final ExpLookahead aLa = (ExpLookahead) seq.getUnitAt (i - 1);
+                  _genFirstSet (aLa.getLaExpansion ());
                 }
               }
               else
@@ -252,22 +252,22 @@ public class ParseEngine
             }
           }
           else
-            if (exp instanceof final ExpOneOrMore om)
+            if (aExp instanceof final ExpOneOrMore om)
             {
               _genFirstSet (om.getExpansion ());
             }
             else
-              if (exp instanceof final ExpZeroOrMore zm)
+              if (aExp instanceof final ExpZeroOrMore zm)
               {
                 _genFirstSet (zm.getExpansion ());
               }
               else
-                if (exp instanceof final ExpZeroOrOne zo)
+                if (aExp instanceof final ExpZeroOrOne zo)
                 {
                   _genFirstSet (zo.getExpansion ());
                 }
                 else
-                  if (exp instanceof final ExpTryBlock tb)
+                  if (aExp instanceof final ExpTryBlock tb)
                   {
                     _genFirstSet (tb.m_exp);
                   }
@@ -284,12 +284,12 @@ public class ParseEngine
   }
 
   @SuppressWarnings ("unused")
-  private void _dumpLookaheads (final ExpLookahead [] conds, final String [] actions)
+  private void _dumpLookaheads (final ExpLookahead [] aConds, final String [] aActions)
   {
-    for (int i = 0; i < conds.length; i++)
+    for (int i = 0; i < aConds.length; i++)
     {
       PGPrinter.error ("Lookahead: " + i);
-      PGPrinter.error (conds[i].dump (0, new HashSet <> ()).toString ());
+      PGPrinter.error (aConds[i].dump (0, new HashSet <> ()).toString ());
       PGPrinter.error ("");
     }
   }
@@ -303,29 +303,29 @@ public class ParseEngine
    * actions[action.length-1] A particular action entry ("actions[i]") can be null, in which case, a
    * noop is generated for that action.
    */
-  String buildLookaheadChecker (final ExpLookahead [] conds, final String [] actions)
+  String buildLookaheadChecker (final ExpLookahead [] aConds, final String [] aActions)
   {
     // The state variables.
     EState eState = EState.NOOPENSTM;
-    int indentAmt = 0;
-    final boolean [] casedValues = new boolean [grammar ().getTokenCount ()];
-    String retval = "";
-    ExpLookahead la;
+    int nIndentAmt = 0;
+    final boolean [] aCasedValues = new boolean [grammar ().getTokenCount ()];
+    String sRetval = "";
+    ExpLookahead aLa;
     Token t = null;
-    final int tokenMaskSize = (grammar ().getTokenCount () - 1) / 32 + 1;
-    int [] tokenMask = null;
+    final int nTokenMaskSize = (grammar ().getTokenCount () - 1) / 32 + 1;
+    int [] aTokenMask = null;
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
 
     // Iterate over all the conditions.
-    int index = 0;
-    while (index < conds.length)
+    int nIndex = 0;
+    while (nIndex < aConds.length)
     {
-      la = conds[index];
+      aLa = aConds[nIndex];
       m_bJJ2LA = false;
 
-      if (la.getAmount () == 0 ||
-        Semanticize.emptyExpansionExists (la.getLaExpansion ()) ||
-        _javaCodeCheck (la.getLaExpansion ()))
+      if (aLa.getAmount () == 0 ||
+        Semanticize.emptyExpansionExists (aLa.getLaExpansion ()) ||
+        _javaCodeCheck (aLa.getLaExpansion ()))
       {
 
         // This handles the following cases:
@@ -335,7 +335,7 @@ public class ParseEngine
         // empty string - in which case the lookahead trivially passes.
         // . If the lookahead expansion has a JAVACODE production that it
         // directly expands to - in which case the lookahead trivially passes.
-        if (la.getActionTokens ().isEmpty ())
+        if (aLa.getActionTokens ().isEmpty ())
         {
           // In addition, if there is no semantic lookahead, then the
           // lookahead trivially succeeds. So break the main loop and
@@ -348,38 +348,38 @@ public class ParseEngine
         switch (eState)
         {
           case NOOPENSTM:
-            retval += "\n" + "if (";
-            indentAmt++;
+            sRetval += "\n" + "if (";
+            nIndentAmt++;
             break;
           case OPENIF:
-            retval += INDENT_DEC + "\n" + "} else if (";
+            sRetval += INDENT_DEC + "\n" + "} else if (";
             break;
           case OPENSWITCH:
-            retval += INDENT_DEC + "\n" + "default:" + INDENT_INC;
+            sRetval += INDENT_DEC + "\n" + "default:" + INDENT_INC;
             if (Options.isErrorReporting ())
             {
-              retval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
+              sRetval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
               grammar ().incMaskIndex ();
             }
-            grammar ().maskVals ().add (tokenMask);
-            retval += "\n" + "if (";
-            indentAmt++;
+            grammar ().maskVals ().add (aTokenMask);
+            sRetval += "\n" + "if (";
+            nIndentAmt++;
             break;
           default:
             throw new IllegalStateException ();
         }
-        m_codeGenerator.printTokenSetup (la.getActionTokens ().getFirstOrNull ());
-        for (final Token aElement : la.getActionTokens ())
+        m_codeGenerator.printTokenSetup (aLa.getActionTokens ().getFirstOrNull ());
+        for (final Token aElement : aLa.getActionTokens ())
         {
           t = aElement;
-          retval += m_codeGenerator.getStringToPrint (t);
+          sRetval += m_codeGenerator.getStringToPrint (t);
         }
-        retval += m_codeGenerator.getTrailingComments (t);
-        retval += ") {" + INDENT_INC + actions[index];
+        sRetval += m_codeGenerator.getTrailingComments (t);
+        sRetval += ") {" + INDENT_INC + aActions[nIndex];
         eState = EState.OPENIF;
       }
       else
-        if (la.getAmount () == 1 && la.getActionTokens ().isEmpty ())
+        if (aLa.getAmount () == 1 && aLa.getActionTokens ().isEmpty ())
         {
           /*
            * Special optimal processing when the lookahead is exactly 1, and there is no semantic
@@ -398,7 +398,7 @@ public class ParseEngine
            * immediately after the end of the same statement to determine if lookaheads are to be
            * performed using calls to the jj2 methods.
            */
-          _genFirstSet (la.getLaExpansion ());
+          _genFirstSet (aLa.getLaExpansion ());
           /*
            * genFirstSet may find that semantic attributes are appropriate for the next token. In
            * which case, it sets jj2LA to true.
@@ -412,27 +412,27 @@ public class ParseEngine
             switch (eState)
             {
               case OPENIF:
-                retval += INDENT_DEC + "\n" + "} else {" + INDENT_INC;
+                sRetval += INDENT_DEC + "\n" + "} else {" + INDENT_INC;
                 // Control flows through to next case.
                 // $FALL-THROUGH$
               case NOOPENSTM:
-                retval += "\n" + "switch (";
+                sRetval += "\n" + "switch (";
                 if (Options.isCacheTokens ())
                 {
-                  retval += "jj_nt" + _syntax ().getMemberAccess () + "kind";
+                  sRetval += "jj_nt" + _syntax ().getMemberAccess () + "kind";
                 }
                 else
-                  retval += "jj_ntk == -1 ? jj_ntk_f() : jj_ntk";
-                retval += ") {" + INDENT_INC;
+                  sRetval += "jj_ntk == -1 ? jj_ntk_f() : jj_ntk";
+                sRetval += ") {" + INDENT_INC;
                 for (int i = 0; i < grammar ().getTokenCount (); i++)
                 {
-                  casedValues[i] = false;
+                  aCasedValues[i] = false;
                 }
-                indentAmt++;
-                tokenMask = new int [tokenMaskSize];
-                for (int i = 0; i < tokenMaskSize; i++)
+                nIndentAmt++;
+                aTokenMask = new int [nTokenMaskSize];
+                for (int i = 0; i < nTokenMaskSize; i++)
                 {
-                  tokenMask[i] = 0;
+                  aTokenMask[i] = 0;
                 }
                 break;
               case OPENSWITCH:
@@ -443,25 +443,25 @@ public class ParseEngine
             }
             for (int i = 0; i < grammar ().getTokenCount (); i++)
             {
-              if (m_firstSet[i] && !casedValues[i])
+              if (m_firstSet[i] && !aCasedValues[i])
               {
-                casedValues[i] = true;
-                retval += INDENT_DEC + "\ncase ";
+                aCasedValues[i] = true;
+                sRetval += INDENT_DEC + "\ncase ";
 
-                final int j1 = i / 32;
-                final int j2 = i % 32;
-                tokenMask[j1] |= 1 << j2;
+                final int nJ1 = i / 32;
+                final int nJ2 = i % 32;
+                aTokenMask[nJ1] |= 1 << nJ2;
                 final String s = grammar ().namesOfTokens ().get (Integer.valueOf (i));
                 if (s == null)
-                  retval += i;
+                  sRetval += i;
                 else
-                  retval += s;
-                retval += ":" + INDENT_INC;
+                  sRetval += s;
+                sRetval += ":" + INDENT_INC;
               }
             }
-            retval += "{";
-            retval += actions[index];
-            retval += "\nbreak;\n}";
+            sRetval += "{";
+            sRetval += aActions[nIndex];
+            sRetval += "\nbreak;\n}";
             eState = EState.OPENSWITCH;
           }
         }
@@ -480,22 +480,22 @@ public class ParseEngine
         switch (eState)
         {
           case NOOPENSTM:
-            retval += "\nif (";
-            indentAmt++;
+            sRetval += "\nif (";
+            nIndentAmt++;
             break;
           case OPENIF:
-            retval += INDENT_DEC + "\n} else if (";
+            sRetval += INDENT_DEC + "\n} else if (";
             break;
           case OPENSWITCH:
-            retval += INDENT_DEC + "\ndefault:" + INDENT_INC;
+            sRetval += INDENT_DEC + "\ndefault:" + INDENT_INC;
             if (Options.isErrorReporting ())
             {
-              retval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
+              sRetval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
               grammar ().incMaskIndex ();
             }
-            grammar ().maskVals ().add (tokenMask);
-            retval += "\nif (";
-            indentAmt++;
+            grammar ().maskVals ().add (aTokenMask);
+            sRetval += "\nif (";
+            nIndentAmt++;
             break;
           default:
             throw new IllegalStateException ();
@@ -503,30 +503,30 @@ public class ParseEngine
 
         final int nInternalIndex = grammar ().incAndGetJJ2Index ();
         // At this point, la.la_expansion.internal_name must be "".
-        assert la.getLaExpansion ().getInternalName ().equals ("");
-        la.getLaExpansion ().setInternalName ("_", nInternalIndex);
+        assert aLa.getLaExpansion ().getInternalName ().equals ("");
+        aLa.getLaExpansion ().setInternalName ("_", nInternalIndex);
 
-        m_phase2list.add (la);
-        retval += "jj_2" + la.getLaExpansion ().getInternalName () + "(" + la.getAmount () + ")";
-        if (la.getActionTokens ().isNotEmpty ())
+        m_phase2list.add (aLa);
+        sRetval += "jj_2" + aLa.getLaExpansion ().getInternalName () + "(" + aLa.getAmount () + ")";
+        if (aLa.getActionTokens ().isNotEmpty ())
         {
           // In addition, there is also a semantic lookahead. So concatenate
           // the semantic check with the syntactic one.
-          retval += " && (";
-          m_codeGenerator.printTokenSetup (la.getActionTokens ().getFirstOrNull ());
-          for (final Token aElement : la.getActionTokens ())
+          sRetval += " && (";
+          m_codeGenerator.printTokenSetup (aLa.getActionTokens ().getFirstOrNull ());
+          for (final Token aElement : aLa.getActionTokens ())
           {
             t = aElement;
-            retval += m_codeGenerator.getStringToPrint (t);
+            sRetval += m_codeGenerator.getStringToPrint (t);
           }
-          retval += m_codeGenerator.getTrailingComments (t);
-          retval += ")";
+          sRetval += m_codeGenerator.getTrailingComments (t);
+          sRetval += ")";
         }
-        retval += ") {" + INDENT_INC + actions[index];
+        sRetval += ") {" + INDENT_INC + aActions[nIndex];
         eState = EState.OPENIF;
       }
 
-      index++;
+      nIndex++;
     }
 
     // Generate code for the default case. Note this may not
@@ -536,50 +536,50 @@ public class ParseEngine
     switch (eState)
     {
       case NOOPENSTM:
-        retval += actions[index];
+        sRetval += aActions[nIndex];
         break;
       case OPENIF:
-        retval += INDENT_DEC + "\n" + "} else {" + INDENT_INC + actions[index];
+        sRetval += INDENT_DEC + "\n" + "} else {" + INDENT_INC + aActions[nIndex];
         break;
       case OPENSWITCH:
-        retval += INDENT_DEC + "\n" + "default:" + INDENT_INC;
+        sRetval += INDENT_DEC + "\n" + "default:" + INDENT_INC;
         if (Options.isErrorReporting ())
         {
-          retval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
-          grammar ().maskVals ().add (tokenMask);
+          sRetval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
+          grammar ().maskVals ().add (aTokenMask);
           grammar ().incMaskIndex ();
         }
-        retval += actions[index];
+        sRetval += aActions[nIndex];
         break;
       default:
         throw new IllegalStateException ();
     }
-    for (int i = 0; i < indentAmt; i++)
+    for (int i = 0; i < nIndentAmt; i++)
     {
-      retval += INDENT_DEC + "\n}";
+      sRetval += INDENT_DEC + "\n}";
     }
 
-    return retval;
+    return sRetval;
   }
 
-  void dumpFormattedString (final String str)
+  void dumpFormattedString (final String sStr)
   {
-    char ch = ' ';
-    char prevChar;
-    boolean indentOn = true;
-    for (int i = 0; i < str.length (); i++)
+    char cCh = ' ';
+    char cPrevChar;
+    boolean bIndentOn = true;
+    for (int i = 0; i < sStr.length (); i++)
     {
-      prevChar = ch;
-      ch = str.charAt (i);
-      if (ch == '\n' && prevChar == '\r')
+      cPrevChar = cCh;
+      cCh = sStr.charAt (i);
+      if (cCh == '\n' && cPrevChar == '\r')
       {
         // do nothing - we've already printed a new line for the '\r'
         // during the previous iteration.
       }
       else
-        if (ch == '\n' || ch == '\r')
+        if (cCh == '\n' || cCh == '\r')
         {
-          if (indentOn)
+          if (bIndentOn)
           {
             phase1NewLine ();
           }
@@ -589,28 +589,28 @@ public class ParseEngine
           }
         }
         else
-          if (ch == INDENT_INC)
+          if (cCh == INDENT_INC)
           {
             m_nIndentCount += 2;
           }
           else
-            if (ch == INDENT_DEC)
+            if (cCh == INDENT_DEC)
             {
               m_nIndentCount -= 2;
             }
             else
-              if (ch == INDENT_OFF)
+              if (cCh == INDENT_OFF)
               {
-                indentOn = false;
+                bIndentOn = false;
               }
               else
-                if (ch == INDENT_ON)
+                if (cCh == INDENT_ON)
                 {
-                  indentOn = true;
+                  bIndentOn = true;
                 }
                 else
                 {
-                  m_codeGenerator.genCode (ch);
+                  m_codeGenerator.genCode (cCh);
                 }
     }
   }
@@ -618,126 +618,126 @@ public class ParseEngine
   // Print CPPCODE method header.
   private String _generateCPPMethodheader (final CodeProductionCpp p)
   {
-    final StringBuilder sig = new StringBuilder ();
-    String ret, params;
+    final StringBuilder aSig = new StringBuilder ();
+    String sRet, sParams;
     Token t = null;
 
     if (false)
     {
       m_codeGenerator.printTokenSetup (t);
       grammar ().setCurrentColumn (1);
-      final String comment1 = m_codeGenerator.getLeadingComments (t);
+      final String sComment1 = m_codeGenerator.getLeadingComments (t);
       grammar ().setCurrentLine (t.beginLine);
       grammar ().setCurrentColumn (t.beginColumn);
-      sig.append (t.image);
+      aSig.append (t.image);
     }
 
     for (final Token element : p.getReturnTypeTokens ())
     {
       t = element;
       final String s = m_codeGenerator.getStringToPrint (t);
-      sig.append (t.toString ());
-      sig.append (" ");
+      aSig.append (t.toString ());
+      aSig.append (" ");
     }
 
-    String comment2 = "";
+    String sComment2 = "";
     if (t != null)
-      comment2 = m_codeGenerator.getTrailingComments (t);
-    ret = sig.toString ();
+      sComment2 = m_codeGenerator.getTrailingComments (t);
+    sRet = aSig.toString ();
 
-    sig.setLength (0);
-    sig.append ("(");
+    aSig.setLength (0);
+    aSig.append ("(");
     if (p.getParameterListTokens ().size () != 0)
     {
       m_codeGenerator.printTokenSetup (p.getParameterListTokens ().get (0));
       for (final Token aElement : p.getParameterListTokens ())
       {
         t = aElement;
-        sig.append (m_codeGenerator.getStringToPrint (t));
+        aSig.append (m_codeGenerator.getStringToPrint (t));
       }
-      sig.append (m_codeGenerator.getTrailingComments (t));
+      aSig.append (m_codeGenerator.getTrailingComments (t));
     }
-    sig.append (")");
-    params = sig.toString ();
+    aSig.append (")");
+    sParams = aSig.toString ();
 
     // For now, just ignore comments
-    m_codeGenerator.generateMethodDefHeader (ret, grammar ().getParserName (), p.getLhs () + params, sig.toString ());
+    m_codeGenerator.generateMethodDefHeader (sRet, grammar ().getParserName (), p.getLhs () + sParams, aSig.toString ());
 
     return "";
   }
 
   // Print method header and return the ERROR_RETURN string.
-  private String _generateCPPMethodheader (final BNFProduction p, final Token t2)
+  private String _generateCPPMethodheader (final BNFProduction p, final Token aT2)
   {
-    final StringBuilder sig = new StringBuilder ();
-    Token t = t2;
+    final StringBuilder aSig = new StringBuilder ();
+    Token t = aT2;
 
-    final String method_name = p.getLhs ();
-    boolean void_ret = false;
-    boolean ptr_ret = false;
+    final String sMethod_name = p.getLhs ();
+    boolean bVoid_ret = false;
+    boolean bPtr_ret = false;
 
     m_codeGenerator.printTokenSetup (t);
     grammar ().setCurrentColumn (1);
-    final String comment1 = m_codeGenerator.getLeadingComments (t);
+    final String sComment1 = m_codeGenerator.getLeadingComments (t);
     grammar ().setCurrentLine (t.beginLine);
     grammar ().setCurrentColumn (t.beginColumn);
-    sig.append (t.image);
+    aSig.append (t.image);
     if (t.kind == JavaCCParserConstants.VOID)
-      void_ret = true;
+      bVoid_ret = true;
     if (t.kind == JavaCCParserConstants.STAR)
-      ptr_ret = true;
+      bPtr_ret = true;
 
     for (int i = 1; i < p.getReturnTypeTokens ().size (); i++)
     {
       t = p.getReturnTypeTokens ().get (i);
-      sig.append (m_codeGenerator.getStringToPrint (t));
+      aSig.append (m_codeGenerator.getStringToPrint (t));
       if (t.kind == JavaCCParserConstants.VOID)
-        void_ret = true;
+        bVoid_ret = true;
       if (t.kind == JavaCCParserConstants.STAR)
-        ptr_ret = true;
+        bPtr_ret = true;
     }
 
-    final String comment2 = m_codeGenerator.getTrailingComments (t);
-    final String ret = sig.toString ();
+    final String sComment2 = m_codeGenerator.getTrailingComments (t);
+    final String sRet = aSig.toString ();
 
-    sig.setLength (0);
-    sig.append ("(");
+    aSig.setLength (0);
+    aSig.append ("(");
     if (p.getParameterListTokens ().size () != 0)
     {
       m_codeGenerator.printTokenSetup (p.getParameterListTokens ().get (0));
       for (final Token aElement : p.getParameterListTokens ())
       {
         t = aElement;
-        sig.append (m_codeGenerator.getStringToPrint (t));
+        aSig.append (m_codeGenerator.getStringToPrint (t));
       }
-      sig.append (m_codeGenerator.getTrailingComments (t));
+      aSig.append (m_codeGenerator.getTrailingComments (t));
     }
-    sig.append (")");
-    final String params = sig.toString ();
+    aSig.append (")");
+    final String sParams = aSig.toString ();
 
     // For now, just ignore comments
-    m_codeGenerator.generateMethodDefHeader (ret, grammar ().getParserName (), p.getLhs () + params, sig.toString ());
+    m_codeGenerator.generateMethodDefHeader (sRet, grammar ().getParserName (), p.getLhs () + sParams, aSig.toString ());
 
     // Generate a default value for error return.
-    String default_return;
-    if (ptr_ret)
-      default_return = "NULL";
+    String sDefault_return;
+    if (bPtr_ret)
+      sDefault_return = "NULL";
     else
-      if (void_ret)
-        default_return = "";
+      if (bVoid_ret)
+        sDefault_return = "";
       else
       {
         // 0 converts to most (all?) basic types.
-        default_return = "0";
+        sDefault_return = "0";
       }
 
-    final String sDefine = "ERROR_RET_" + method_name;
+    final String sDefine = "ERROR_RET_" + sMethod_name;
     return "\n#if !defined " +
            sDefine +
            "\n#define " +
            sDefine +
            " " +
-           default_return +
+           sDefault_return +
            "\n" +
            "#endif\n" +
            "#define __ERROR_RET__ " +
@@ -745,7 +745,7 @@ public class ParseEngine
            "\n";
   }
 
-  private void _genStackCheck (final boolean voidReturn)
+  private void _genStackCheck (final boolean bVoidReturn)
   {
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
     if (Options.hasDepthLimit ())
@@ -760,7 +760,7 @@ public class ParseEngine
           m_codeGenerator.genCodeLine ("try {");
           break;
         case CPP:
-          if (!voidReturn)
+          if (!bVoidReturn)
           {
             m_codeGenerator.genCodeLine ("if(jj_depth_error){ return __ERROR_RET__; }");
           }
@@ -773,7 +773,7 @@ public class ParseEngine
           m_codeGenerator.genCodeLine ("  jj_depth_error = true;");
           m_codeGenerator.genCodeLine ("  jj_consume_token(-1);");
           m_codeGenerator.genCodeLine ("  errorHandler->handleParseError(token, getToken(1), __FUNCTION__, this), hasError = true;");
-          if (!voidReturn)
+          if (!bVoidReturn)
           {
             // Non-recoverable error
             m_codeGenerator.genCodeLine ("  return __ERROR_RET__;");
@@ -816,12 +816,12 @@ public class ParseEngine
   {
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
     Token t = p.getReturnTypeTokens ().get (0);
-    boolean voidReturn = false;
+    boolean bVoidReturn = false;
     if (t.kind == JavaCCParserConstants.VOID)
     {
-      voidReturn = true;
+      bVoidReturn = true;
     }
-    String error_ret_cpp = null;
+    String sError_ret_cpp = null;
     switch (eOutputLanguage)
     {
       case JAVA:
@@ -860,7 +860,7 @@ public class ParseEngine
         }
         break;
       case CPP:
-        error_ret_cpp = _generateCPPMethodheader (p, t);
+        sError_ret_cpp = _generateCPPMethodheader (p, t);
         break;
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -874,20 +874,20 @@ public class ParseEngine
         // Nothing
         break;
       case CPP:
-        if ((Options.booleanValue (Options.USEROPTION__CPP_STOP_ON_FIRST_ERROR) && error_ret_cpp != null) ||
-          (Options.hasDepthLimit () && !voidReturn))
+        if ((Options.booleanValue (Options.USEROPTION__CPP_STOP_ON_FIRST_ERROR) && sError_ret_cpp != null) ||
+          (Options.hasDepthLimit () && !bVoidReturn))
         {
-          m_codeGenerator.genCode (error_ret_cpp);
+          m_codeGenerator.genCode (sError_ret_cpp);
         }
         else
         {
-          error_ret_cpp = null;
+          sError_ret_cpp = null;
         }
         break;
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
-    _genStackCheck (voidReturn);
+    _genStackCheck (bVoidReturn);
 
     m_nIndentCount = 4;
     if (Options.isDebugParser ())
@@ -911,11 +911,11 @@ public class ParseEngine
       m_codeGenerator.printTrailingComments (t);
     }
 
-    final String code = _phase1ExpansionGen (p.getExpansion ());
-    dumpFormattedString (code);
+    final String sCode = _phase1ExpansionGen (p.getExpansion ());
+    dumpFormattedString (sCode);
     m_codeGenerator.genCodeNewLine ();
 
-    if (p.isJumpPatched () && !voidReturn)
+    if (p.isJumpPatched () && !bVoidReturn)
     {
       m_codeGenerator.genCodeLine (_syntax ().getMissingReturnStatement ());
     }
@@ -924,7 +924,7 @@ public class ParseEngine
       for (final String sLine : _syntax ().getTraceExitLines (JavaCCGlobals.addUnicodeEscapes (p.getLhs ())))
         m_codeGenerator.genCodeLine (sLine);
     }
-    if (!voidReturn)
+    if (!bVoidReturn)
     {
       switch (eOutputLanguage)
       {
@@ -939,7 +939,7 @@ public class ParseEngine
       }
     }
 
-    if (error_ret_cpp != null)
+    if (sError_ret_cpp != null)
     {
       m_codeGenerator.genCodeLine ("\n#undef __ERROR_RET__\n");
     }
@@ -956,45 +956,45 @@ public class ParseEngine
 
   private String _phase1ExpansionGen (final Expansion e)
   {
-    String retval = "";
+    String sRetval = "";
     Token t = null;
-    ExpLookahead [] conds;
-    String [] actions;
+    ExpLookahead [] aConds;
+    String [] aActions;
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
     if (e instanceof final AbstractExpRegularExpression e_nrw)
     {
-      retval += "\n";
+      sRetval += "\n";
       if (!e_nrw.getLhsTokens ().isEmpty ())
       {
         m_codeGenerator.printTokenSetup (e_nrw.getLhsTokens ().get (0));
         for (final Token aElement : e_nrw.getLhsTokens ())
         {
           t = aElement;
-          retval += m_codeGenerator.getStringToPrint (t);
+          sRetval += m_codeGenerator.getStringToPrint (t);
         }
-        retval += m_codeGenerator.getTrailingComments (t);
-        retval += " = ";
+        sRetval += m_codeGenerator.getTrailingComments (t);
+        sRetval += " = ";
       }
-      final String tail;
+      final String sTail;
       if (e_nrw.getRhsToken () == null)
-        tail = ");";
+        sTail = ");";
       else
-        tail = ")" + _syntax ().getMemberAccess () + e_nrw.getRhsToken ().image + ";";
+        sTail = ")" + _syntax ().getMemberAccess () + e_nrw.getRhsToken ().image + ";";
 
       if (e_nrw.hasLabel ())
       {
-        retval += "jj_consume_token(" + e_nrw.getLabel () + tail;
+        sRetval += "jj_consume_token(" + e_nrw.getLabel () + sTail;
       }
       else
       {
-        final String label = grammar ().namesOfTokens ().get (Integer.valueOf (e_nrw.getOrdinal ()));
-        if (label != null)
+        final String sLabel = grammar ().namesOfTokens ().get (Integer.valueOf (e_nrw.getOrdinal ()));
+        if (sLabel != null)
         {
-          retval += "jj_consume_token(" + label + tail;
+          sRetval += "jj_consume_token(" + sLabel + sTail;
         }
         else
         {
-          retval += "jj_consume_token(" + e_nrw.getOrdinal () + tail;
+          sRetval += "jj_consume_token(" + e_nrw.getOrdinal () + sTail;
         }
       }
 
@@ -1006,7 +1006,7 @@ public class ParseEngine
         case CPP:
           if (Options.booleanValue (Options.USEROPTION__CPP_STOP_ON_FIRST_ERROR))
           {
-            retval += "\n    { if (hasError) { return __ERROR_RET__; } }\n";
+            sRetval += "\n    { if (hasError) { return __ERROR_RET__; } }\n";
           }
           break;
         default:
@@ -1016,30 +1016,30 @@ public class ParseEngine
     else
       if (e instanceof final ExpNonTerminal e_nrw)
       {
-        retval += "\n";
+        sRetval += "\n";
         if (e_nrw.getLhsTokenCount () != 0)
         {
           m_codeGenerator.printTokenSetup (e_nrw.getLhsTokenAt (0));
           for (final Token aElement : e_nrw.getLhsTokens ())
           {
             t = aElement;
-            retval += m_codeGenerator.getStringToPrint (t);
+            sRetval += m_codeGenerator.getStringToPrint (t);
           }
-          retval += m_codeGenerator.getTrailingComments (t);
-          retval += " = ";
+          sRetval += m_codeGenerator.getTrailingComments (t);
+          sRetval += " = ";
         }
-        retval += e_nrw.getName () + "(";
+        sRetval += e_nrw.getName () + "(";
         if (e_nrw.getArgumentTokenCount () != 0)
         {
           m_codeGenerator.printTokenSetup (e_nrw.getArgumentTokenAt (0));
           for (final Token aElement : e_nrw.getArgumentTokens ())
           {
             t = aElement;
-            retval += m_codeGenerator.getStringToPrint (t);
+            sRetval += m_codeGenerator.getStringToPrint (t);
           }
-          retval += m_codeGenerator.getTrailingComments (t);
+          sRetval += m_codeGenerator.getTrailingComments (t);
         }
-        retval += ");";
+        sRetval += ");";
         switch (eOutputLanguage)
         {
           case JAVA:
@@ -1048,7 +1048,7 @@ public class ParseEngine
           case CPP:
             if (Options.booleanValue (Options.USEROPTION__CPP_STOP_ON_FIRST_ERROR))
             {
-              retval += "\n    { if (hasError) { return __ERROR_RET__; } }\n";
+              sRetval += "\n    { if (hasError) { return __ERROR_RET__; } }\n";
             }
             break;
           default:
@@ -1058,7 +1058,7 @@ public class ParseEngine
       else
         if (e instanceof final ExpAction e_nrw)
         {
-          retval += INDENT_OFF + "\n";
+          sRetval += INDENT_OFF + "\n";
           if (!Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) && e_nrw.getActionTokens ().size () != 0)
           {
             m_codeGenerator.printTokenSetup (e_nrw.getActionTokens ().get (0));
@@ -1066,17 +1066,17 @@ public class ParseEngine
             for (final Token aElement : e_nrw.getActionTokens ())
             {
               t = aElement;
-              retval += m_codeGenerator.getStringToPrint (t);
+              sRetval += m_codeGenerator.getStringToPrint (t);
             }
-            retval += m_codeGenerator.getTrailingComments (t);
+            sRetval += m_codeGenerator.getTrailingComments (t);
           }
-          retval += INDENT_ON;
+          sRetval += INDENT_ON;
         }
         else
           if (e instanceof final ExpChoice e_nrw)
           {
-            conds = new ExpLookahead [e_nrw.getChoiceCount ()];
-            actions = new String [e_nrw.getChoiceCount () + 1];
+            aConds = new ExpLookahead [e_nrw.getChoiceCount ()];
+            aActions = new String [e_nrw.getChoiceCount () + 1];
 
             String sChoice;
             switch (eOutputLanguage)
@@ -1094,18 +1094,18 @@ public class ParseEngine
               default:
                 throw new UnsupportedOutputLanguageException (eOutputLanguage);
             }
-            actions[e_nrw.getChoiceCount ()] = sChoice;
+            aActions[e_nrw.getChoiceCount ()] = sChoice;
 
             // In previous line, the "throw" never throws an exception since the
             // evaluation of jj_consume_token(-1) causes ParseException to be
             // thrown first.
             for (int i = 0; i < e_nrw.getChoiceCount (); i++)
             {
-              final ExpSequence nestedSeq = (ExpSequence) e_nrw.getChoiceAt (i);
-              actions[i] = _phase1ExpansionGen (nestedSeq);
-              conds[i] = (ExpLookahead) nestedSeq.getUnitAt (0);
+              final ExpSequence aNestedSeq = (ExpSequence) e_nrw.getChoiceAt (i);
+              aActions[i] = _phase1ExpansionGen (aNestedSeq);
+              aConds[i] = (ExpLookahead) aNestedSeq.getUnitAt (0);
             }
-            retval = buildLookaheadChecker (conds, actions);
+            sRetval = buildLookaheadChecker (aConds, aActions);
           }
           else
             if (e instanceof final ExpSequence e_nrw)
@@ -1118,7 +1118,7 @@ public class ParseEngine
                 // For C++, since we are not using exceptions, we will protect
                 // all the
                 // expansion choices with if (!error)
-                boolean wrap_in_block = false;
+                boolean bWrap_in_block = false;
                 if (!grammar ().isJJTreeGenerated ())
                 {
                   switch (eOutputLanguage)
@@ -1129,162 +1129,162 @@ public class ParseEngine
                     case CPP:
                       // for the last one, if it's an action, we will not
                       // protect it.
-                      final Expansion elem = e_nrw.getUnitAt (i);
-                      if (!(elem instanceof ExpAction) ||
+                      final Expansion aElem = e_nrw.getUnitAt (i);
+                      if (!(aElem instanceof ExpAction) ||
                         !(e.getParent () instanceof BNFProduction) ||
                         i != e_nrw.getUnitCount () - 1)
                       {
-                        wrap_in_block = true;
-                        retval += "\nif (!hasError) {";
+                        bWrap_in_block = true;
+                        sRetval += "\nif (!hasError) {";
                       }
                       break;
                     default:
                       throw new UnsupportedOutputLanguageException (eOutputLanguage);
                   }
                 }
-                retval += _phase1ExpansionGen (e_nrw.getUnitAt (i));
-                if (wrap_in_block)
+                sRetval += _phase1ExpansionGen (e_nrw.getUnitAt (i));
+                if (bWrap_in_block)
                 {
-                  retval += "\n}";
+                  sRetval += "\n}";
                 }
               }
             }
             else
               if (e instanceof final ExpOneOrMore e_nrw)
               {
-                final Expansion nested_e = e_nrw.getExpansion ();
-                ExpLookahead la;
-                if (nested_e instanceof final ExpSequence aSequence)
+                final Expansion aNested_e = e_nrw.getExpansion ();
+                ExpLookahead aLa;
+                if (aNested_e instanceof final ExpSequence aSequence)
                 {
-                  la = (ExpLookahead) (aSequence.getUnitAt (0));
+                  aLa = (ExpLookahead) (aSequence.getUnitAt (0));
                 }
                 else
                 {
-                  la = new ExpLookahead ();
-                  la.setAmount (Options.getLookahead ());
-                  la.setLaExpansion (nested_e);
+                  aLa = new ExpLookahead ();
+                  aLa.setAmount (Options.getLookahead ());
+                  aLa.setLaExpansion (aNested_e);
                 }
-                retval += "\n";
-                final int labelIndex = ++m_nGenSymbolIndex;
-                retval += _syntax ().getLoopStart (labelIndex) + INDENT_INC;
-                retval += _phase1ExpansionGen (nested_e);
-                conds = new ExpLookahead [1];
-                conds[0] = la;
-                actions = new String [2];
+                sRetval += "\n";
+                final int nLabelIndex = ++m_nGenSymbolIndex;
+                sRetval += _syntax ().getLoopStart (nLabelIndex) + INDENT_INC;
+                sRetval += _phase1ExpansionGen (aNested_e);
+                aConds = new ExpLookahead [1];
+                aConds[0] = aLa;
+                aActions = new String [2];
                 // [ph] empty statement needed???
-                actions[0] = true ? "" : "\n;";
+                aActions[0] = true ? "" : "\n;";
 
-                actions[1] = _syntax ().getLoopBreak (labelIndex);
+                aActions[1] = _syntax ().getLoopBreak (nLabelIndex);
 
-                retval += buildLookaheadChecker (conds, actions);
-                retval += INDENT_DEC + "\n" + "}";
+                sRetval += buildLookaheadChecker (aConds, aActions);
+                sRetval += INDENT_DEC + "\n" + "}";
 
-                retval += _syntax ().getLoopEnd (labelIndex);
+                sRetval += _syntax ().getLoopEnd (nLabelIndex);
               }
               else
                 if (e instanceof final ExpZeroOrMore e_nrw)
                 {
-                  final Expansion nested_e = e_nrw.getExpansion ();
-                  ExpLookahead la;
-                  if (nested_e instanceof final ExpSequence aExpSequence)
+                  final Expansion aNested_e = e_nrw.getExpansion ();
+                  ExpLookahead aLa;
+                  if (aNested_e instanceof final ExpSequence aExpSequence)
                   {
-                    la = (ExpLookahead) (aExpSequence.getUnitAt (0));
+                    aLa = (ExpLookahead) (aExpSequence.getUnitAt (0));
                   }
                   else
                   {
-                    la = new ExpLookahead ();
-                    la.setAmount (Options.getLookahead ());
-                    la.setLaExpansion (nested_e);
+                    aLa = new ExpLookahead ();
+                    aLa.setAmount (Options.getLookahead ());
+                    aLa.setLaExpansion (aNested_e);
                   }
-                  retval += "\n";
-                  final int labelIndex = ++m_nGenSymbolIndex;
-                  retval += _syntax ().getLoopStart (labelIndex) + INDENT_INC;
+                  sRetval += "\n";
+                  final int nLabelIndex = ++m_nGenSymbolIndex;
+                  sRetval += _syntax ().getLoopStart (nLabelIndex) + INDENT_INC;
 
-                  conds = new ExpLookahead [1];
-                  conds[0] = la;
-                  actions = new String [2];
+                  aConds = new ExpLookahead [1];
+                  aConds[0] = aLa;
+                  aActions = new String [2];
                   // [ph] empty statement needed???
-                  actions[0] = true ? "" : "\n;";
+                  aActions[0] = true ? "" : "\n;";
 
-                  actions[1] = _syntax ().getLoopBreak (labelIndex);
+                  aActions[1] = _syntax ().getLoopBreak (nLabelIndex);
 
-                  retval += buildLookaheadChecker (conds, actions);
-                  retval += _phase1ExpansionGen (nested_e);
-                  retval += INDENT_DEC + "\n" + "}";
+                  sRetval += buildLookaheadChecker (aConds, aActions);
+                  sRetval += _phase1ExpansionGen (aNested_e);
+                  sRetval += INDENT_DEC + "\n" + "}";
 
-                  retval += _syntax ().getLoopEnd (labelIndex);
+                  sRetval += _syntax ().getLoopEnd (nLabelIndex);
                 }
                 else
                   if (e instanceof final ExpZeroOrOne e_nrw)
                   {
-                    final Expansion nested_e = e_nrw.getExpansion ();
-                    ExpLookahead la;
-                    if (nested_e instanceof ExpSequence)
+                    final Expansion aNested_e = e_nrw.getExpansion ();
+                    ExpLookahead aLa;
+                    if (aNested_e instanceof ExpSequence)
                     {
-                      la = (ExpLookahead) (((ExpSequence) nested_e).getUnitAt (0));
+                      aLa = (ExpLookahead) (((ExpSequence) aNested_e).getUnitAt (0));
                     }
                     else
                     {
-                      la = new ExpLookahead ();
-                      la.setAmount (Options.getLookahead ());
-                      la.setLaExpansion (nested_e);
+                      aLa = new ExpLookahead ();
+                      aLa.setAmount (Options.getLookahead ());
+                      aLa.setLaExpansion (aNested_e);
                     }
-                    conds = new ExpLookahead [1];
-                    conds[0] = la;
-                    actions = new String [2];
-                    actions[0] = _phase1ExpansionGen (nested_e);
+                    aConds = new ExpLookahead [1];
+                    aConds[0] = aLa;
+                    aActions = new String [2];
+                    aActions[0] = _phase1ExpansionGen (aNested_e);
                     // Empty statement is relevant for Lookup!
-                    actions[1] = "\n;";
-                    retval += buildLookaheadChecker (conds, actions);
+                    aActions[1] = "\n;";
+                    sRetval += buildLookaheadChecker (aConds, aActions);
                   }
                   else
                     if (e instanceof final ExpTryBlock e_nrw)
                     {
-                      final Expansion nested_e = e_nrw.m_exp;
-                      List <Token> list;
-                      retval += "\n";
-                      retval += "try {" + INDENT_INC;
-                      retval += _phase1ExpansionGen (nested_e);
-                      retval += INDENT_DEC + "\n" + "}";
+                      final Expansion aNested_e = e_nrw.m_exp;
+                      List <Token> aList;
+                      sRetval += "\n";
+                      sRetval += "try {" + INDENT_INC;
+                      sRetval += _phase1ExpansionGen (aNested_e);
+                      sRetval += INDENT_DEC + "\n" + "}";
                       for (int i = 0; i < e_nrw.m_catchblks.size (); i++)
                       {
-                        retval += " catch (";
-                        list = e_nrw.m_types.get (i);
-                        if (list.size () != 0)
+                        sRetval += " catch (";
+                        aList = e_nrw.m_types.get (i);
+                        if (aList.size () != 0)
                         {
-                          m_codeGenerator.printTokenSetup (list.get (0));
-                          for (final Token aElement : list)
+                          m_codeGenerator.printTokenSetup (aList.get (0));
+                          for (final Token aElement : aList)
                           {
                             t = aElement;
-                            retval += m_codeGenerator.getStringToPrint (t);
+                            sRetval += m_codeGenerator.getStringToPrint (t);
                           }
-                          retval += m_codeGenerator.getTrailingComments (t);
+                          sRetval += m_codeGenerator.getTrailingComments (t);
                         }
-                        retval += " ";
+                        sRetval += " ";
                         t = e_nrw.m_ids.get (i);
                         m_codeGenerator.printTokenSetup (t);
-                        retval += m_codeGenerator.getStringToPrint (t);
-                        retval += m_codeGenerator.getTrailingComments (t);
-                        retval += ") {" + INDENT_OFF + "\n";
-                        list = e_nrw.m_catchblks.get (i);
-                        if (list.size () != 0)
+                        sRetval += m_codeGenerator.getStringToPrint (t);
+                        sRetval += m_codeGenerator.getTrailingComments (t);
+                        sRetval += ") {" + INDENT_OFF + "\n";
+                        aList = e_nrw.m_catchblks.get (i);
+                        if (aList.size () != 0)
                         {
-                          m_codeGenerator.printTokenSetup (list.get (0));
+                          m_codeGenerator.printTokenSetup (aList.get (0));
                           grammar ().setCurrentColumn (1);
-                          for (final Token aElement : list)
+                          for (final Token aElement : aList)
                           {
                             t = aElement;
-                            retval += m_codeGenerator.getStringToPrint (t);
+                            sRetval += m_codeGenerator.getStringToPrint (t);
                           }
-                          retval += m_codeGenerator.getTrailingComments (t);
+                          sRetval += m_codeGenerator.getTrailingComments (t);
                         }
-                        retval += INDENT_ON + "\n" + "}";
+                        sRetval += INDENT_ON + "\n" + "}";
                       }
                       if (e_nrw.m_finallyblk != null)
                       {
                         // Both languages emit the same thing here - C++ gets a "finally" block
                         // that its own runtime header defines
-                        retval += " finally {" + INDENT_OFF + "\n";
+                        sRetval += " finally {" + INDENT_OFF + "\n";
 
                         if (e_nrw.m_finallyblk.size () != 0)
                         {
@@ -1293,41 +1293,41 @@ public class ParseEngine
                           for (final Token aElement : e_nrw.m_finallyblk)
                           {
                             t = aElement;
-                            retval += m_codeGenerator.getStringToPrint (t);
+                            sRetval += m_codeGenerator.getStringToPrint (t);
                           }
-                          retval += m_codeGenerator.getTrailingComments (t);
+                          sRetval += m_codeGenerator.getTrailingComments (t);
                         }
-                        retval += INDENT_ON + "\n" + "}";
+                        sRetval += INDENT_ON + "\n" + "}";
                       }
                     }
-    return retval;
+    return sRetval;
   }
 
-  private void _buildPhase2Routine (final ExpLookahead la)
+  private void _buildPhase2Routine (final ExpLookahead aLa)
   {
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
-    final Expansion e = la.getLaExpansion ();
+    final Expansion e = aLa.getLaExpansion ();
     m_codeGenerator.genCodeLine (_syntax ().getLookaheadEntryDeclaration (e.getInternalName ()));
     m_codeGenerator.genCodeLine (" {");
     m_codeGenerator.genCodeLine ("    jj_la = xla;");
     m_codeGenerator.genCodeLine ("    jj_scanpos = token;");
     m_codeGenerator.genCodeLine ("    jj_lastpos = token;");
 
-    String ret_suffix = "";
+    String sRet_suffix = "";
     if (Options.hasDepthLimit ())
     {
-      ret_suffix = " && !jj_depth_error";
+      sRet_suffix = " && !jj_depth_error";
     }
 
     switch (eOutputLanguage)
     {
       case JAVA:
-        m_codeGenerator.genCodeLine ("    try { return (!jj_3" + e.getInternalName () + "()" + ret_suffix + "); }");
+        m_codeGenerator.genCodeLine ("    try { return (!jj_3" + e.getInternalName () + "()" + sRet_suffix + "); }");
         m_codeGenerator.genCodeLine ("    catch(LookaheadSuccess ls) { return true; }");
         break;
       case CPP:
         m_codeGenerator.genCodeLine ("    jj_done = false;");
-        m_codeGenerator.genCodeLine ("    return (!jj_3" + e.getInternalName () + "() || jj_done)" + ret_suffix + ";");
+        m_codeGenerator.genCodeLine ("    return (!jj_3" + e.getInternalName () + "() || jj_done)" + sRet_suffix + ";");
         break;
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -1348,60 +1348,60 @@ public class ParseEngine
     }
     m_codeGenerator.genCodeLine ("  }");
     m_codeGenerator.genCodeNewLine ();
-    final Phase3Data p3d = new Phase3Data (e, la.getAmount ());
-    m_phase3list.add (p3d);
-    m_phase3table.put (e, p3d);
+    final Phase3Data aP3d = new Phase3Data (e, aLa.getAmount ());
+    m_phase3list.add (aP3d);
+    m_phase3table.put (e, aP3d);
   }
 
   private boolean m_xsp_declared;
 
   private Expansion m_jj3_expansion;
 
-  private String _genReturn (final boolean value)
+  private String _genReturn (final boolean bValue)
   {
-    final String retval = (value ? "true" : "false");
+    final String sRetval = (bValue ? "true" : "false");
     if (Options.isDebugLookahead () && m_jj3_expansion != null)
     {
-      String tracecode = "trace_return(\"" +
+      String sTracecode = "trace_return(\"" +
                          JavaCCGlobals.addUnicodeEscapes (((NormalProduction) m_jj3_expansion.getParent ()).getLhs ()) +
                          "(LOOKAHEAD " +
-                         (value ? "FAILED" : "SUCCEEDED") +
+                         (bValue ? "FAILED" : "SUCCEEDED") +
                          ")\");";
       if (Options.isErrorReporting ())
       {
-        tracecode = "if (!jj_rescan) " + tracecode;
+        sTracecode = "if (!jj_rescan) " + sTracecode;
       }
-      return "{ " + tracecode + " return " + retval + "; }";
+      return "{ " + sTracecode + " return " + sRetval + "; }";
     }
-    return "return " + retval + ";";
+    return "return " + sRetval + ";";
   }
 
-  private void _generate3R (@NonNull final Expansion e, final Phase3Data inf)
+  private void _generate3R (@NonNull final Expansion e, final Phase3Data aInf)
   {
-    Expansion seq = e;
+    Expansion aSeq = e;
     if (e.hasNoInternalName ())
     {
       while (true)
       {
-        if (seq instanceof ExpSequence && ((ExpSequence) seq).getUnitCount () == 2)
+        if (aSeq instanceof ExpSequence && ((ExpSequence) aSeq).getUnitCount () == 2)
         {
-          seq = ((ExpSequence) seq).getUnitAt (1);
+          aSeq = ((ExpSequence) aSeq).getUnitAt (1);
         }
         else
-          if (seq instanceof final ExpNonTerminal e_nrw)
+          if (aSeq instanceof final ExpNonTerminal e_nrw)
           {
-            final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
-            if (ntprod instanceof AbstractCodeProduction)
+            final NormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
+            if (aNtprod instanceof AbstractCodeProduction)
             {
               break; // nothing to do here
             }
-            seq = ntprod.getExpansion ();
+            aSeq = aNtprod.getExpansion ();
           }
           else
             break;
       }
 
-      if (seq instanceof final AbstractExpRegularExpression aAbstractExpRegularExpression)
+      if (aSeq instanceof final AbstractExpRegularExpression aAbstractExpRegularExpression)
       {
         e.setInternalNameOnly ("jj_scan_token(" + aAbstractExpRegularExpression.getOrdinal () + ")");
         return;
@@ -1410,18 +1410,18 @@ public class ParseEngine
       m_nGenSymbolIndex++;
       e.setInternalName ("R_", m_nGenSymbolIndex);
     }
-    Phase3Data p3d = (m_phase3table.get (e));
-    if (p3d == null || p3d.m_count < inf.m_count)
+    Phase3Data aP3d = (m_phase3table.get (e));
+    if (aP3d == null || aP3d.m_count < aInf.m_count)
     {
-      p3d = new Phase3Data (e, inf.m_count);
-      m_phase3list.add (p3d);
-      m_phase3table.put (e, p3d);
+      aP3d = new Phase3Data (e, aInf.m_count);
+      m_phase3list.add (aP3d);
+      m_phase3table.put (e, aP3d);
     }
   }
 
-  void setupPhase3Builds (final Phase3Data inf)
+  void setupPhase3Builds (final Phase3Data aInf)
   {
-    final Expansion e = inf.m_exp;
+    final Expansion e = aInf.m_exp;
     if (e instanceof AbstractExpRegularExpression)
     {
       // nothing to here
@@ -1433,14 +1433,14 @@ public class ParseEngine
         // there's no need to check it below for "e_nrw" and "ntexp". In
         // fact, we rely here on the fact that the "name" fields of both these
         // variables are the same.
-        final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
-        if (ntprod instanceof AbstractCodeProduction)
+        final NormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
+        if (aNtprod instanceof AbstractCodeProduction)
         {
           // nothing to do here
         }
         else
         {
-          _generate3R (ntprod.getExpansion (), inf);
+          _generate3R (aNtprod.getExpansion (), aInf);
         }
       }
       else
@@ -1448,7 +1448,7 @@ public class ParseEngine
         {
           for (final Expansion element : e_nrw.getChoices ())
           {
-            _generate3R ((element), inf);
+            _generate3R ((element), aInf);
           }
         }
         else
@@ -1457,35 +1457,35 @@ public class ParseEngine
             // We skip the first element in the following iteration since it is
             // the
             // Lookahead object.
-            int cnt = inf.m_count;
+            int nCnt = aInf.m_count;
             for (int i = 1; i < e_nrw.getUnitCount (); i++)
             {
-              final Expansion eseq = (e_nrw.getUnitAt (i));
-              setupPhase3Builds (new Phase3Data (eseq, cnt));
-              cnt -= minimumSize (eseq);
-              if (cnt <= 0)
+              final Expansion aEseq = (e_nrw.getUnitAt (i));
+              setupPhase3Builds (new Phase3Data (aEseq, nCnt));
+              nCnt -= minimumSize (aEseq);
+              if (nCnt <= 0)
                 break;
             }
           }
           else
             if (e instanceof final ExpTryBlock e_nrw)
             {
-              setupPhase3Builds (new Phase3Data (e_nrw.m_exp, inf.m_count));
+              setupPhase3Builds (new Phase3Data (e_nrw.m_exp, aInf.m_count));
             }
             else
               if (e instanceof final ExpOneOrMore e_nrw)
               {
-                _generate3R (e_nrw.getExpansion (), inf);
+                _generate3R (e_nrw.getExpansion (), aInf);
               }
               else
                 if (e instanceof final ExpZeroOrMore e_nrw)
                 {
-                  _generate3R (e_nrw.getExpansion (), inf);
+                  _generate3R (e_nrw.getExpansion (), aInf);
                 }
                 else
                   if (e instanceof final ExpZeroOrOne e_nrw)
                   {
-                    _generate3R (e_nrw.getExpansion (), inf);
+                    _generate3R (e_nrw.getExpansion (), aInf);
                   }
   }
 
@@ -1507,15 +1507,15 @@ public class ParseEngine
     return "jj_3" + sInternalName + "()";
   }
 
-  void buildPhase3Routine (final Phase3Data inf, final boolean recursive_call)
+  void buildPhase3Routine (final Phase3Data aInf, final boolean bRecursive_call)
   {
-    final Expansion e = inf.m_exp;
+    final Expansion e = aInf.m_exp;
     Token t = null;
     if (e.getInternalName ().startsWith ("jj_scan_token"))
       return;
 
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
-    if (!recursive_call)
+    if (!bRecursive_call)
     {
       m_codeGenerator.genCodeLine (_syntax ().getLookaheadScanDeclaration (e.getInternalName ()));
 
@@ -1559,10 +1559,10 @@ public class ParseEngine
       }
       else
       {
-        final Object label = grammar ().namesOfTokens ().get (Integer.valueOf (e_nrw.getOrdinal ()));
-        if (label != null)
+        final Object aLabel = grammar ().namesOfTokens ().get (Integer.valueOf (e_nrw.getOrdinal ()));
+        if (aLabel != null)
         {
-          m_codeGenerator.genCodeLine ("    if (jj_scan_token(" + (String) label + ")) " + _genReturn (true));
+          m_codeGenerator.genCodeLine ("    if (jj_scan_token(" + (String) aLabel + ")) " + _genReturn (true));
         }
         else
         {
@@ -1579,8 +1579,8 @@ public class ParseEngine
         // there's no need to check it below for "e_nrw" and "ntexp". In
         // fact, we rely here on the fact that the "name" fields of both these
         // variables are the same.
-        final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
-        if (ntprod instanceof AbstractCodeProduction)
+        final NormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
+        if (aNtprod instanceof AbstractCodeProduction)
         {
           m_codeGenerator.genCodeLine ("    if (true) { jj_la = 0; jj_scanpos = jj_lastpos; " +
                                        _genReturn (false) +
@@ -1588,10 +1588,10 @@ public class ParseEngine
         }
         else
         {
-          final Expansion ntexp = ntprod.getExpansion ();
+          final Expansion aNtexp = aNtprod.getExpansion ();
           // codeGenerator.genCodeLine(" if (jj_3" + ntexp.internal_name + "())
           // " + genReturn(true));
-          m_codeGenerator.genCodeLine ("    if (" + _genjj_3Call (ntexp) + ") " + _genReturn (true));
+          m_codeGenerator.genCodeLine ("    if (" + _genjj_3Call (aNtexp) + ") " + _genReturn (true));
           // codeGenerator.genCodeLine(" if (jj_la == 0 && jj_scanpos ==
           // jj_lastpos) " + genReturn(false));
         }
@@ -1599,7 +1599,7 @@ public class ParseEngine
       else
         if (e instanceof final ExpChoice e_nrw)
         {
-          ExpSequence nested_seq;
+          ExpSequence aNested_seq;
           if (e_nrw.getChoiceCount () != 1)
           {
             if (!m_xsp_declared)
@@ -1611,16 +1611,16 @@ public class ParseEngine
           }
           for (int i = 0; i < e_nrw.getChoiceCount (); i++)
           {
-            nested_seq = (ExpSequence) (e_nrw.getChoiceAt (i));
-            final ExpLookahead la = (ExpLookahead) (nested_seq.getUnitAt (0));
-            if (la.getActionTokens ().isNotEmpty ())
+            aNested_seq = (ExpSequence) (e_nrw.getChoiceAt (i));
+            final ExpLookahead aLa = (ExpLookahead) (aNested_seq.getUnitAt (0));
+            if (aLa.getActionTokens ().isNotEmpty ())
             {
               // We have semantic lookahead that must be evaluated.
               JavaCCGlobals.setLookAheadNeeded (true);
               m_codeGenerator.genCodeLine ("    jj_lookingAhead = true;");
               m_codeGenerator.genCode ("    jj_semLA = ");
-              m_codeGenerator.printTokenSetup (la.getActionTokens ().getFirstOrNull ());
-              for (final Token aElement : la.getActionTokens ())
+              m_codeGenerator.printTokenSetup (aLa.getActionTokens ().getFirstOrNull ());
+              for (final Token aElement : aLa.getActionTokens ())
               {
                 t = aElement;
                 m_codeGenerator.printToken (t);
@@ -1630,7 +1630,7 @@ public class ParseEngine
               m_codeGenerator.genCodeLine ("    jj_lookingAhead = false;");
             }
             m_codeGenerator.genCode ("    if (");
-            if (la.getActionTokens ().isNotEmpty ())
+            if (aLa.getActionTokens ().isNotEmpty ())
             {
               m_codeGenerator.genCode ("!jj_semLA || ");
             }
@@ -1638,14 +1638,14 @@ public class ParseEngine
             {
               // codeGenerator.genCodeLine("jj_3" + nested_seq.internal_name +
               // "()) {");
-              m_codeGenerator.genCodeLine (_genjj_3Call (nested_seq) + ") {");
+              m_codeGenerator.genCodeLine (_genjj_3Call (aNested_seq) + ") {");
               m_codeGenerator.genCodeLine ("    jj_scanpos = xsp;");
             }
             else
             {
               // codeGenerator.genCodeLine("jj_3" + nested_seq.internal_name +
               // "()) " + genReturn(true));
-              m_codeGenerator.genCodeLine (_genjj_3Call (nested_seq) + ") " + _genReturn (true));
+              m_codeGenerator.genCodeLine (_genjj_3Call (aNested_seq) + ") " + _genReturn (true));
               // codeGenerator.genCodeLine(" if (jj_la == 0 && jj_scanpos ==
               // jj_lastpos) " + genReturn(false));
             }
@@ -1662,30 +1662,30 @@ public class ParseEngine
           {
             // We skip the first element in the following iteration since it is
             // the Lookahead object.
-            int cnt = inf.m_count;
+            int nCnt = aInf.m_count;
             for (int i = 1; i < e_nrw.getUnitCount (); i++)
             {
-              final Expansion eseq = e_nrw.getUnitAt (i);
-              buildPhase3Routine (new Phase3Data (eseq, cnt), true);
+              final Expansion aEseq = e_nrw.getUnitAt (i);
+              buildPhase3Routine (new Phase3Data (aEseq, nCnt), true);
 
               // Test Code
               if (false)
                 PGPrinter.info ("minimumSize: line: " +
-                                eseq.getLine () +
+                                aEseq.getLine () +
                                 ", column: " +
-                                eseq.getColumn () +
+                                aEseq.getColumn () +
                                 ": " +
-                                minimumSize (eseq));
+                                minimumSize (aEseq));
 
-              cnt -= minimumSize (eseq);
-              if (cnt <= 0)
+              nCnt -= minimumSize (aEseq);
+              if (nCnt <= 0)
                 break;
             }
           }
           else
             if (e instanceof final ExpTryBlock e_nrw)
             {
-              buildPhase3Routine (new Phase3Data (e_nrw.m_exp, inf.m_count), true);
+              buildPhase3Routine (new Phase3Data (e_nrw.m_exp, aInf.m_count), true);
             }
             else
               if (e instanceof final ExpOneOrMore e_nrw)
@@ -1695,17 +1695,17 @@ public class ParseEngine
                   m_xsp_declared = true;
                   m_codeGenerator.genCodeLine ("    " + _getTypeForToken () + " xsp;");
                 }
-                final Expansion nested_e = e_nrw.getExpansion ();
+                final Expansion aNested_e = e_nrw.getExpansion ();
                 // codeGenerator.genCodeLine(" if (jj_3" +
                 // nested_e.internal_name + "()) " + genReturn(true));
-                m_codeGenerator.genCodeLine ("    if (" + _genjj_3Call (nested_e) + ") " + _genReturn (true));
+                m_codeGenerator.genCodeLine ("    if (" + _genjj_3Call (aNested_e) + ") " + _genReturn (true));
                 // codeGenerator.genCodeLine(" if (jj_la == 0 && jj_scanpos ==
                 // jj_lastpos) " + genReturn(false));
                 m_codeGenerator.genCodeLine ("    while (true) {");
                 m_codeGenerator.genCodeLine ("      xsp = jj_scanpos;");
                 // codeGenerator.genCodeLine(" if (jj_3" +
                 // nested_e.internal_name + "()) { jj_scanpos = xsp; break; }");
-                m_codeGenerator.genCodeLine ("      if (" + _genjj_3Call (nested_e) + ") { jj_scanpos = xsp; break; }");
+                m_codeGenerator.genCodeLine ("      if (" + _genjj_3Call (aNested_e) + ") { jj_scanpos = xsp; break; }");
                 // codeGenerator.genCodeLine(" if (jj_la == 0 && jj_scanpos ==
                 // jj_lastpos) " + genReturn(false));
                 m_codeGenerator.genCodeLine ("    }");
@@ -1718,14 +1718,14 @@ public class ParseEngine
                     m_xsp_declared = true;
                     m_codeGenerator.genCodeLine ("    " + _getTypeForToken () + " xsp;");
                   }
-                  final Expansion nested_e = e_nrw.getExpansion ();
+                  final Expansion aNested_e = e_nrw.getExpansion ();
                   m_codeGenerator.genCodeLine ("    while (true) {");
                   m_codeGenerator.genCodeLine ("      xsp = jj_scanpos;");
                   // codeGenerator.genCodeLine(" if (jj_3" +
                   // nested_e.internal_name + "()) { jj_scanpos = xsp; break;
                   // }");
                   m_codeGenerator.genCodeLine ("      if (" +
-                                               _genjj_3Call (nested_e) +
+                                               _genjj_3Call (aNested_e) +
                                                ") { jj_scanpos = xsp; break; }");
                   // codeGenerator.genCodeLine(" if (jj_la == 0 && jj_scanpos ==
                   // jj_lastpos) " + genReturn(false));
@@ -1739,15 +1739,15 @@ public class ParseEngine
                       m_xsp_declared = true;
                       m_codeGenerator.genCodeLine ("    " + _getTypeForToken () + " xsp;");
                     }
-                    final Expansion nested_e = e_nrw.getExpansion ();
+                    final Expansion aNested_e = e_nrw.getExpansion ();
                     m_codeGenerator.genCodeLine ("    xsp = jj_scanpos;");
                     // codeGenerator.genCodeLine(" if (jj_3" +
                     // nested_e.internal_name + "()) jj_scanpos = xsp;");
-                    m_codeGenerator.genCodeLine ("    if (" + _genjj_3Call (nested_e) + ") jj_scanpos = xsp;");
+                    m_codeGenerator.genCodeLine ("    if (" + _genjj_3Call (aNested_e) + ") jj_scanpos = xsp;");
                     // codeGenerator.genCodeLine(" else if (jj_la == 0 &&
                     // jj_scanpos == jj_lastpos) " + genReturn(false));
                   }
-    if (!recursive_call)
+    if (!bRecursive_call)
     {
       m_codeGenerator.genCodeLine ("    " + _genReturn (false));
       genStackCheckEnd ();
@@ -1778,7 +1778,7 @@ public class ParseEngine
   /*
    * Returns the minimum number of tokens that can parse to this expansion.
    */
-  int minimumSize (final Expansion e, final int oldMin)
+  int minimumSize (final Expansion e, final int nOldMin)
   {
     if (e.isInMinimumSize ())
     {
@@ -1793,57 +1793,57 @@ public class ParseEngine
 
       if (e instanceof final ExpNonTerminal e_nrw)
       {
-        final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
-        if (ntprod instanceof AbstractCodeProduction)
+        final NormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
+        if (aNtprod instanceof AbstractCodeProduction)
         {
           return Integer.MAX_VALUE;
           // Make caller think this is unending (for we do not go beyond
           // JAVACODE during
           // phase3 execution).
         }
-        final Expansion ntexp = ntprod.getExpansion ();
-        return minimumSize (ntexp);
+        final Expansion aNtexp = aNtprod.getExpansion ();
+        return minimumSize (aNtexp);
       }
 
       if (e instanceof final ExpChoice e_nrw)
       {
-        int min = oldMin;
-        Expansion nested_e;
-        for (int i = 0; min > 1 && i < e_nrw.getChoiceCount (); i++)
+        int nMin = nOldMin;
+        Expansion aNested_e;
+        for (int i = 0; nMin > 1 && i < e_nrw.getChoiceCount (); i++)
         {
-          nested_e = (e_nrw.getChoiceAt (i));
-          final int min1 = minimumSize (nested_e, min);
-          if (min > min1)
-            min = min1;
+          aNested_e = (e_nrw.getChoiceAt (i));
+          final int nMin1 = minimumSize (aNested_e, nMin);
+          if (nMin > nMin1)
+            nMin = nMin1;
         }
-        return min;
+        return nMin;
       }
 
       if (e instanceof final ExpSequence e_nrw)
       {
-        int min = 0;
+        int nMin = 0;
         // We skip the first element in the following iteration since it
         // is
         // the
         // Lookahead object.
         for (int i = 1; i < e_nrw.getUnitCount (); i++)
         {
-          final Expansion eseq = (e_nrw.getUnitAt (i));
-          final int mineseq = minimumSize (eseq);
-          if (min == Integer.MAX_VALUE || mineseq == Integer.MAX_VALUE)
+          final Expansion aEseq = (e_nrw.getUnitAt (i));
+          final int nMineseq = minimumSize (aEseq);
+          if (nMin == Integer.MAX_VALUE || nMineseq == Integer.MAX_VALUE)
           {
-            min = Integer.MAX_VALUE; // Adding infinity to something
+            nMin = Integer.MAX_VALUE; // Adding infinity to something
                                      // results
                                      // in infinity.
           }
           else
           {
-            min += mineseq;
-            if (min > oldMin)
+            nMin += nMineseq;
+            if (nMin > nOldMin)
               break;
           }
         }
-        return min;
+        return nMin;
       }
 
       if (e instanceof final ExpTryBlock e_nrw)
@@ -1877,9 +1877,9 @@ public class ParseEngine
     }
   }
 
-  public void build (final CodeGenerator codeGenerator)
+  public void build (final CodeGenerator aCodeGenerator)
   {
-    m_codeGenerator = codeGenerator;
+    m_codeGenerator = aCodeGenerator;
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
     for (final NormalProduction p : grammar ().bnfProductions ())
     {
@@ -1896,65 +1896,65 @@ public class ParseEngine
         if (false)
         {
           Token t = (cp.getReturnTypeTokens ().get (0));
-          codeGenerator.printTokenSetup (t);
+          aCodeGenerator.printTokenSetup (t);
           grammar ().setCurrentColumn (1);
-          codeGenerator.printLeadingComments (t);
-          codeGenerator.genCode (" " + (p.getAccessMod () != null ? p.getAccessMod () + " " : ""));
+          aCodeGenerator.printLeadingComments (t);
+          aCodeGenerator.genCode (" " + (p.getAccessMod () != null ? p.getAccessMod () + " " : ""));
           grammar ().setCurrentLine (t.beginLine);
           grammar ().setCurrentColumn (t.beginColumn);
-          codeGenerator.printTokenOnly (t);
+          aCodeGenerator.printTokenOnly (t);
           for (int i = 1; i < cp.getReturnTypeTokens ().size (); i++)
           {
             t = (cp.getReturnTypeTokens ().get (i));
-            codeGenerator.printToken (t);
+            aCodeGenerator.printToken (t);
           }
-          codeGenerator.printTrailingComments (t);
-          codeGenerator.genCode (" " + cp.getLhs () + "(");
+          aCodeGenerator.printTrailingComments (t);
+          aCodeGenerator.genCode (" " + cp.getLhs () + "(");
           if (cp.getParameterListTokens ().size () != 0)
           {
-            codeGenerator.printTokenSetup (cp.getParameterListTokens ().get (0));
+            aCodeGenerator.printTokenSetup (cp.getParameterListTokens ().get (0));
             for (final Token aElement : cp.getParameterListTokens ())
             {
               t = aElement;
-              codeGenerator.printToken (t);
+              aCodeGenerator.printToken (t);
             }
-            codeGenerator.printTrailingComments (t);
+            aCodeGenerator.printTrailingComments (t);
           }
-          codeGenerator.genCode (")");
+          aCodeGenerator.genCode (")");
           for (final List <Token> aElement : cp.getThrowsList ())
           {
-            codeGenerator.genCode (", ");
+            aCodeGenerator.genCode (", ");
             for (final Token aElement2 : aElement)
             {
               t = aElement2;
-              codeGenerator.genCode (t.image);
+              aCodeGenerator.genCode (t.image);
             }
           }
         }
 
-        codeGenerator.genCodeLine (" {");
+        aCodeGenerator.genCodeLine (" {");
         if (Options.isDebugParser ())
         {
-          codeGenerator.genCodeNewLine ();
+          aCodeGenerator.genCodeNewLine ();
           for (final String sLine : IParserSyntax.of (eOutputLanguage)
                                                  .getTraceEnterLines (JavaCCGlobals.addUnicodeEscapes (cp.getLhs ())))
-            codeGenerator.genCodeLine (sLine);
-          codeGenerator.genCodeLine ("    try {");
+            aCodeGenerator.genCodeLine (sLine);
+          aCodeGenerator.genCodeLine ("    try {");
 
         }
         if (cp.getCodeTokens ().size () != 0)
         {
-          codeGenerator.printTokenSetup (cp.getCodeTokens ().get (0));
+          aCodeGenerator.printTokenSetup (cp.getCodeTokens ().get (0));
           grammar ().decCurrentLine ();
-          codeGenerator.printTokenList (cp.getCodeTokens ());
+          aCodeGenerator.printTokenList (cp.getCodeTokens ());
         }
-        codeGenerator.genCodeNewLine ();
+        aCodeGenerator.genCodeNewLine ();
         if (Options.isDebugParser ())
         {
-          codeGenerator.genCodeLine ("    } catch(...) { }");
+          aCodeGenerator.genCodeLine ("    } catch(...) { }");
         }
-        codeGenerator.genCodeLine ("  }");
-        codeGenerator.genCodeNewLine ();
+        aCodeGenerator.genCodeLine ("  }");
+        aCodeGenerator.genCodeNewLine ();
       }
       else
         if (p instanceof final CodeProductionJava jp)
@@ -1965,65 +1965,65 @@ public class ParseEngine
             continue;
           }
           Token t = jp.getReturnTypeTokens ().get (0);
-          codeGenerator.printTokenSetup (t);
+          aCodeGenerator.printTokenSetup (t);
           grammar ().setCurrentColumn (1);
-          codeGenerator.printLeadingComments (t);
-          codeGenerator.genCode ("  " + (p.getAccessMod () != null ? p.getAccessMod () + " " : ""));
+          aCodeGenerator.printLeadingComments (t);
+          aCodeGenerator.genCode ("  " + (p.getAccessMod () != null ? p.getAccessMod () + " " : ""));
           grammar ().setCurrentLine (t.beginLine);
           grammar ().setCurrentColumn (t.beginColumn);
-          codeGenerator.printTokenOnly (t);
+          aCodeGenerator.printTokenOnly (t);
           for (int i = 1; i < jp.getReturnTypeTokens ().size (); i++)
           {
             t = jp.getReturnTypeTokens ().get (i);
-            codeGenerator.printToken (t);
+            aCodeGenerator.printToken (t);
           }
-          codeGenerator.printTrailingComments (t);
-          codeGenerator.genCode (" " + jp.getLhs () + "(");
+          aCodeGenerator.printTrailingComments (t);
+          aCodeGenerator.genCode (" " + jp.getLhs () + "(");
           if (jp.getParameterListTokens ().size () != 0)
           {
-            codeGenerator.printTokenSetup (jp.getParameterListTokens ().get (0));
+            aCodeGenerator.printTokenSetup (jp.getParameterListTokens ().get (0));
             for (final Token aElement2 : jp.getParameterListTokens ())
             {
               t = aElement2;
-              codeGenerator.printToken (t);
+              aCodeGenerator.printToken (t);
             }
-            codeGenerator.printTrailingComments (t);
+            aCodeGenerator.printTrailingComments (t);
           }
-          codeGenerator.genCode (")");
-          codeGenerator.genCode (IParserSyntax.of (eOutputLanguage).getThrowsClause ());
+          aCodeGenerator.genCode (")");
+          aCodeGenerator.genCode (IParserSyntax.of (eOutputLanguage).getThrowsClause ());
           for (final List <Token> aElement2 : jp.getThrowsList ())
           {
-            codeGenerator.genCode (", ");
+            aCodeGenerator.genCode (", ");
             for (final Token x : aElement2)
             {
               t = x;
-              codeGenerator.genCode (t.image);
+              aCodeGenerator.genCode (t.image);
             }
           }
-          codeGenerator.genCode (" {");
+          aCodeGenerator.genCode (" {");
           if (Options.isDebugParser ())
           {
-            codeGenerator.genCodeNewLine ();
-            codeGenerator.genCodeLine ("    trace_call(\"" + JavaCCGlobals.addUnicodeEscapes (jp.getLhs ()) + "\");");
-            codeGenerator.genCode ("    try {");
+            aCodeGenerator.genCodeNewLine ();
+            aCodeGenerator.genCodeLine ("    trace_call(\"" + JavaCCGlobals.addUnicodeEscapes (jp.getLhs ()) + "\");");
+            aCodeGenerator.genCode ("    try {");
           }
           if (jp.getCodeTokens ().size () != 0)
           {
-            codeGenerator.printTokenSetup ((jp.getCodeTokens ().get (0)));
+            aCodeGenerator.printTokenSetup ((jp.getCodeTokens ().get (0)));
             grammar ().decCurrentLine ();
-            codeGenerator.printTokenList (jp.getCodeTokens ());
+            aCodeGenerator.printTokenList (jp.getCodeTokens ());
           }
-          codeGenerator.genCodeNewLine ();
+          aCodeGenerator.genCodeNewLine ();
           if (Options.isDebugParser ())
           {
-            codeGenerator.genCodeLine ("    } finally {");
-            codeGenerator.genCodeLine ("      trace_return(\"" +
+            aCodeGenerator.genCodeLine ("    } finally {");
+            aCodeGenerator.genCodeLine ("      trace_return(\"" +
                                        JavaCCGlobals.addUnicodeEscapes (jp.getLhs ()) +
                                        "\");");
-            codeGenerator.genCodeLine ("    }");
+            aCodeGenerator.genCodeLine ("    }");
           }
-          codeGenerator.genCodeLine ("  }");
-          codeGenerator.genCodeNewLine ();
+          aCodeGenerator.genCodeLine ("  }");
+          aCodeGenerator.genCodeNewLine ();
         }
         else
         {
@@ -2031,19 +2031,19 @@ public class ParseEngine
         }
     }
 
-    codeGenerator.switchToIncludeFile ();
+    aCodeGenerator.switchToIncludeFile ();
 
     for (final ExpLookahead element : m_phase2list)
     {
       _buildPhase2Routine (element);
     }
 
-    int phase3index = 0;
-    while (phase3index < m_phase3list.size ())
+    int nPhase3index = 0;
+    while (nPhase3index < m_phase3list.size ())
     {
-      for (; phase3index < m_phase3list.size (); phase3index++)
+      for (; nPhase3index < m_phase3list.size (); nPhase3index++)
       {
-        setupPhase3Builds (m_phase3list.get (phase3index));
+        setupPhase3Builds (m_phase3list.get (nPhase3index));
       }
     }
 
@@ -2062,7 +2062,7 @@ public class ParseEngine
       }
     }
 
-    codeGenerator.switchToMainFile ();
+    aCodeGenerator.switchToMainFile ();
   }
 
   public void reInit ()
@@ -2079,9 +2079,9 @@ public class ParseEngine
   }
 
   // Table driven.
-  void buildPhase3TableRec (final Phase3Data inf)
+  void buildPhase3TableRec (final Phase3Data aInf)
   {
-    final Expansion e = inf.m_exp;
+    final Expansion e = aInf.m_exp;
     if (e instanceof final AbstractExpRegularExpression e_nrw)
     {
       PGPrinter.info ("TOKEN, " + e_nrw.getOrdinal ());
@@ -2089,19 +2089,19 @@ public class ParseEngine
     else
       if (e instanceof final ExpNonTerminal e_nrw)
       {
-        final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
-        if (ntprod instanceof AbstractCodeProduction)
+        final NormalProduction aNtprod = (grammar ().productionTable ().get (e_nrw.getName ()));
+        if (aNtprod instanceof AbstractCodeProduction)
         {
           // javacode, true - always (warn?)
           PGPrinter.info ("JAVACODE_PROD, true");
         }
         else
         {
-          final Expansion ntexp = ntprod.getExpansion ();
+          final Expansion aNtexp = aNtprod.getExpansion ();
           // nt exp's table.
-          PGPrinter.info ("PRODUCTION, " + ntexp.getInternalIndex ());
+          PGPrinter.info ("PRODUCTION, " + aNtexp.getInternalIndex ());
           if (false)
-            buildPhase3TableRec (new Phase3Data (ntexp, inf.m_count));
+            buildPhase3TableRec (new Phase3Data (aNtexp, aInf.m_count));
         }
       }
       else
@@ -2112,16 +2112,16 @@ public class ParseEngine
           {
             if (i > 0)
               PGPrinter.info ("\n|");
-            final ExpSequence nested_seq = (ExpSequence) (e_nrw.getChoiceAt (i));
-            final ExpLookahead la = (ExpLookahead) (nested_seq.getUnitAt (0));
-            if (la.getActionTokens ().isNotEmpty ())
+            final ExpSequence aNested_seq = (ExpSequence) (e_nrw.getChoiceAt (i));
+            final ExpLookahead aLa = (ExpLookahead) (aNested_seq.getUnitAt (0));
+            if (aLa.getActionTokens ().isNotEmpty ())
             {
               PGPrinter.info ("SEMANTIC,");
             }
             else
             {
               PGPrinter.info ("<start recurse>");
-              buildPhase3TableRec (new Phase3Data (nested_seq, inf.m_count));
+              buildPhase3TableRec (new Phase3Data (aNested_seq, aInf.m_count));
               PGPrinter.info ("<end recurse>");
             }
           }
@@ -2130,37 +2130,37 @@ public class ParseEngine
         else
           if (e instanceof final ExpSequence e_nrw)
           {
-            int cnt = inf.m_count;
+            int nCnt = aInf.m_count;
             if (e_nrw.getUnitCount () > 2)
             {
-              PGPrinter.info ("SEQ, " + cnt);
+              PGPrinter.info ("SEQ, " + nCnt);
               for (int i = 1; i < e_nrw.getUnitCount (); i++)
               {
-                final Expansion eseq = (e_nrw.getUnitAt (i));
-                buildPhase3TableRec (new Phase3Data (eseq, cnt));
-                cnt -= minimumSize (eseq);
-                if (cnt <= 0)
+                final Expansion aEseq = (e_nrw.getUnitAt (i));
+                buildPhase3TableRec (new Phase3Data (aEseq, nCnt));
+                nCnt -= minimumSize (aEseq);
+                if (nCnt <= 0)
                   break;
               }
             }
             else
             {
-              Expansion tmp = e_nrw.getUnitAt (1);
-              while (tmp instanceof ExpNonTerminal)
+              Expansion aTmp = e_nrw.getUnitAt (1);
+              while (aTmp instanceof ExpNonTerminal)
               {
-                final NormalProduction ntprod = (grammar ().productionTable ().get (((ExpNonTerminal) tmp).getName ()));
-                if (ntprod instanceof AbstractCodeProduction)
+                final NormalProduction aNtprod = (grammar ().productionTable ().get (((ExpNonTerminal) aTmp).getName ()));
+                if (aNtprod instanceof AbstractCodeProduction)
                   break;
-                tmp = ntprod.getExpansion ();
+                aTmp = aNtprod.getExpansion ();
               }
-              buildPhase3TableRec (new Phase3Data (tmp, cnt));
+              buildPhase3TableRec (new Phase3Data (aTmp, nCnt));
             }
             PGPrinter.info ();
           }
           else
             if (e instanceof final ExpTryBlock e_nrw)
             {
-              buildPhase3TableRec (new Phase3Data (e_nrw.m_exp, inf.m_count));
+              buildPhase3TableRec (new Phase3Data (e_nrw.m_exp, aInf.m_count));
             }
             else
               if (e instanceof final ExpOneOrMore e_nrw)

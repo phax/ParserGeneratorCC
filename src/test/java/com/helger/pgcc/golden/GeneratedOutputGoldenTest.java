@@ -214,10 +214,10 @@ public final class GeneratedOutputGoldenTest
     _addJJTreeMatrix (aCases);
     _addGrammarCorpus (aCases);
 
-    final List <Object []> ret = new ArrayList <> (aCases.size ());
+    final List <Object []> aRet = new ArrayList <> (aCases.size ());
     for (final GoldenCase aCase : aCases)
-      ret.add (new Object [] { aCase });
-    return ret;
+      aRet.add (new Object [] { aCase });
+    return aRet;
   }
 
   private final GoldenCase m_aCase;

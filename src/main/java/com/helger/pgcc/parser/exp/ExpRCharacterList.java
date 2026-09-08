@@ -237,27 +237,27 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
 
   void toCaseNeutral ()
   {
-    final int cnt = m_descriptors.size ();
+    final int nCnt = m_descriptors.size ();
 
-    for (int i = 0; i < cnt; i++)
+    for (int i = 0; i < nCnt; i++)
     {
-      final ICCCharacter desc = m_descriptors.get (i);
-      if (desc instanceof final SingleCharacter aSingleCharacter)
+      final ICCCharacter aDesc = m_descriptors.get (i);
+      if (aDesc instanceof final SingleCharacter aSingleCharacter)
       {
-        final char ch = aSingleCharacter.getChar ();
+        final char cCh = aSingleCharacter.getChar ();
 
-        final char cLow = Character.toLowerCase (ch);
-        if (ch != cLow)
+        final char cLow = Character.toLowerCase (cCh);
+        if (cCh != cLow)
           m_descriptors.add (new SingleCharacter (cLow));
 
-        final char cUp = Character.toUpperCase (ch);
-        if (ch != cUp)
+        final char cUp = Character.toUpperCase (cCh);
+        if (cCh != cUp)
           m_descriptors.add (new SingleCharacter (cUp));
       }
       else
       {
-        final char l = ((CharacterRange) desc).getLeft ();
-        final char r = ((CharacterRange) desc).getRight ();
+        final char l = ((CharacterRange) aDesc).getLeft ();
+        final char r = ((CharacterRange) aDesc).getRight ();
         int j = 0;
 
         /* Add ranges for which lower case is different. */
@@ -383,11 +383,11 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
     if (!m_transformed)
     {
-      if (Options.isIgnoreCase () || ignoreCase)
+      if (Options.isIgnoreCase () || bIgnoreCase)
       {
         // Internal debug only
         if (false)
@@ -452,43 +452,43 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
     }
 
     m_transformed = true;
-    final Nfa retVal = new Nfa ();
-    final NfaState startState = retVal.start ();
-    final NfaState finalState = retVal.end ();
+    final Nfa aRetVal = new Nfa ();
+    final NfaState aStartState = aRetVal.start ();
+    final NfaState aFinalState = aRetVal.end ();
     int i;
 
     for (i = 0; i < m_descriptors.size (); i++)
     {
-      final ICCCharacter tmp = m_descriptors.get (i);
-      if (tmp instanceof SingleCharacter)
-        startState.addChar (((SingleCharacter) tmp).getChar ());
+      final ICCCharacter aTmp = m_descriptors.get (i);
+      if (aTmp instanceof SingleCharacter)
+        aStartState.addChar (((SingleCharacter) aTmp).getChar ());
       else // if (descriptors.get(i) instanceof CharacterRange)
       {
-        final CharacterRange cr = (CharacterRange) tmp;
+        final CharacterRange aCr = (CharacterRange) aTmp;
 
-        if (cr.getLeft () == cr.getRight ())
-          startState.addChar (cr.getLeft ());
+        if (aCr.getLeft () == aCr.getRight ())
+          aStartState.addChar (aCr.getLeft ());
         else
-          startState.addRange (cr.getLeft (), cr.getRight ());
+          aStartState.addRange (aCr.getLeft (), aCr.getRight ());
       }
     }
 
-    startState.m_next = finalState;
+    aStartState.m_next = aFinalState;
 
-    return retVal;
+    return aRetVal;
   }
 
-  private static boolean _overlaps (@NonNull final CharacterRange r1, @NonNull final CharacterRange r2)
+  private static boolean _overlaps (@NonNull final CharacterRange aR1, @NonNull final CharacterRange aR2)
   {
-    return r1.getLeft () <= r2.getRight () && r1.getRight () > r2.getRight ();
+    return aR1.getLeft () <= aR2.getRight () && aR1.getRight () > aR2.getRight ();
   }
 
   void sortDescriptors ()
   {
     int j;
 
-    final List <ICCCharacter> newDesc = new ArrayList <> (m_descriptors.size ());
-    int cnt = 0;
+    final List <ICCCharacter> aNewDesc = new ArrayList <> (m_descriptors.size ());
+    int nCnt = 0;
 
     Outer: for (int i = 0; i < m_descriptors.size (); i++)
     {
@@ -496,12 +496,12 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
       {
         final SingleCharacter s = (SingleCharacter) m_descriptors.get (i);
 
-        for (j = 0; j < cnt; j++)
+        for (j = 0; j < nCnt; j++)
         {
-          final ICCCharacter tmp2 = newDesc.get (j);
-          if (tmp2 instanceof SingleCharacter)
+          final ICCCharacter aTmp2 = aNewDesc.get (j);
+          if (aTmp2 instanceof SingleCharacter)
           {
-            final char c = ((SingleCharacter) tmp2).getChar ();
+            final char c = ((SingleCharacter) aTmp2).getChar ();
             if (c > s.getChar ())
               break;
             else
@@ -510,9 +510,9 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
           }
           else
           {
-            final char l = ((CharacterRange) tmp2).getLeft ();
+            final char l = ((CharacterRange) aTmp2).getLeft ();
 
-            if (((CharacterRange) tmp2).isInRange (s.getChar ()))
+            if (((CharacterRange) aTmp2).isInRange (s.getChar ()))
               continue Outer;
             else
               if (l > s.getChar ())
@@ -520,68 +520,68 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
           }
         }
 
-        newDesc.add (j, s);
-        cnt++;
+        aNewDesc.add (j, s);
+        nCnt++;
       }
       else
       {
-        CharacterRange range = (CharacterRange) m_descriptors.get (i);
+        CharacterRange aRange = (CharacterRange) m_descriptors.get (i);
 
-        for (j = 0; j < cnt; j++)
+        for (j = 0; j < nCnt; j++)
         {
-          final ICCCharacter tmp2 = newDesc.get (j);
-          if (tmp2 instanceof SingleCharacter)
+          final ICCCharacter aTmp2 = aNewDesc.get (j);
+          if (aTmp2 instanceof SingleCharacter)
           {
-            final char c = ((SingleCharacter) tmp2).getChar ();
-            final CharacterRange range1 = range;
-            if (range1.isInRange (c))
+            final char c = ((SingleCharacter) aTmp2).getChar ();
+            final CharacterRange aRange1 = aRange;
+            if (aRange1.isInRange (c))
             {
-              newDesc.remove (j--);
-              cnt--;
+              aNewDesc.remove (j--);
+              nCnt--;
             }
             else
-              if (c > range.getRight ())
+              if (c > aRange.getRight ())
                 break;
           }
           else
           {
-            final CharacterRange rtmp = (CharacterRange) tmp2;
+            final CharacterRange aRtmp = (CharacterRange) aTmp2;
 
-            if (range.isSubRangeOf (rtmp))
+            if (aRange.isSubRangeOf (aRtmp))
             {
               continue Outer;
             }
 
-            if (rtmp.isSubRangeOf (range))
+            if (aRtmp.isSubRangeOf (aRange))
             {
-              newDesc.set (j, range);
+              aNewDesc.set (j, aRange);
               continue Outer;
             }
 
-            if (_overlaps (range, rtmp))
+            if (_overlaps (aRange, aRtmp))
             {
-              range.setLeft ((char) (rtmp.getRight () + 1));
+              aRange.setLeft ((char) (aRtmp.getRight () + 1));
             }
             else
-              if (_overlaps (rtmp, range))
+              if (_overlaps (aRtmp, aRange))
               {
-                final CharacterRange tmp = range;
-                rtmp.setRight ((char) (range.getLeft () + 1));
-                range = rtmp;
-                newDesc.set (j, tmp);
+                final CharacterRange aTmp = aRange;
+                aRtmp.setRight ((char) (aRange.getLeft () + 1));
+                aRange = aRtmp;
+                aNewDesc.set (j, aTmp);
               }
               else
-                if (rtmp.getLeft () > range.getRight ())
+                if (aRtmp.getLeft () > aRange.getRight ())
                   break;
           }
         }
 
-        newDesc.add (j, range);
-        cnt++;
+        aNewDesc.add (j, aRange);
+        nCnt++;
       }
     }
 
-    m_descriptors = newDesc;
+    m_descriptors = aNewDesc;
   }
 
   void removeNegation ()
@@ -608,60 +608,60 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
       PGPrinter.info (aSB.toString ());
     }
 
-    final List <ICCCharacter> newDescriptors = new ArrayList <> ();
+    final List <ICCCharacter> aNewDescriptors = new ArrayList <> ();
     // One less than the first valid character.
-    int lastRemoved = -1;
+    int nLastRemoved = -1;
 
     for (int i = 0; i < m_descriptors.size (); i++)
     {
-      final ICCCharacter tmp = m_descriptors.get (i);
-      if (tmp instanceof SingleCharacter)
+      final ICCCharacter aTmp = m_descriptors.get (i);
+      if (aTmp instanceof SingleCharacter)
       {
-        final char c = ((SingleCharacter) tmp).getChar ();
+        final char c = ((SingleCharacter) aTmp).getChar ();
 
-        if (c >= 0 && c <= lastRemoved + 1)
+        if (c >= 0 && c <= nLastRemoved + 1)
         {
-          lastRemoved = c;
+          nLastRemoved = c;
           continue;
         }
 
         if (false)
-          PGPrinter.info ("lastRemoved : " + lastRemoved + "; char : " + (int) c);
-        newDescriptors.add (new CharacterRange ((char) (lastRemoved + 1), (char) ((lastRemoved = c) - 1)));
+          PGPrinter.info ("lastRemoved : " + nLastRemoved + "; char : " + (int) c);
+        aNewDescriptors.add (new CharacterRange ((char) (nLastRemoved + 1), (char) ((nLastRemoved = c) - 1)));
       }
       else
       {
-        final char l = ((CharacterRange) tmp).getLeft ();
-        final char r = ((CharacterRange) tmp).getRight ();
+        final char l = ((CharacterRange) aTmp).getLeft ();
+        final char r = ((CharacterRange) aTmp).getRight ();
 
-        if (l >= 0 && l <= lastRemoved + 1)
+        if (l >= 0 && l <= nLastRemoved + 1)
         {
-          lastRemoved = r;
+          nLastRemoved = r;
           continue;
         }
 
         if (false)
-          PGPrinter.info ("lastRemoved : " + lastRemoved + "; left : " + l + "; right : " + (int) r);
-        newDescriptors.add (new CharacterRange ((char) (lastRemoved + 1), (char) (l - 1)));
-        lastRemoved = r;
+          PGPrinter.info ("lastRemoved : " + nLastRemoved + "; left : " + l + "; right : " + (int) r);
+        aNewDescriptors.add (new CharacterRange ((char) (nLastRemoved + 1), (char) (l - 1)));
+        nLastRemoved = r;
       }
     }
 
     if (false)
-      PGPrinter.info ("lastRem : " + lastRemoved);
+      PGPrinter.info ("lastRem : " + nLastRemoved);
 
     if (NfaState.nfa ().isUnicodeWarningGiven () || Options.isJavaUnicodeEscape ())
     {
-      if (lastRemoved < (char) 0xffff)
-        newDescriptors.add (new CharacterRange ((char) (lastRemoved + 1), (char) 0xffff));
+      if (nLastRemoved < (char) 0xffff)
+        aNewDescriptors.add (new CharacterRange ((char) (nLastRemoved + 1), (char) 0xffff));
     }
     else
     {
-      if (lastRemoved < (char) 0xff)
-        newDescriptors.add (new CharacterRange ((char) (lastRemoved + 1), (char) 0xff));
+      if (nLastRemoved < (char) 0xff)
+        aNewDescriptors.add (new CharacterRange ((char) (nLastRemoved + 1), (char) 0xff));
     }
 
-    m_descriptors = newDescriptors;
+    m_descriptors = aNewDescriptors;
     m_negated_list = false;
 
     if (false)

@@ -64,9 +64,9 @@ public class HTMLGenerator extends TextGenerator
   public HTMLGenerator ()
   {}
 
-  protected String getID (final String nt)
+  protected String getID (final String sNt)
   {
-    return m_aIDMap.computeIfAbsent (nt, k -> "prod" + m_nID++);
+    return m_aIDMap.computeIfAbsent (sNt, k -> "prod" + m_nID++);
   }
 
   private void _println (@NonNull final String s) throws IOException
@@ -141,13 +141,13 @@ public class HTMLGenerator extends TextGenerator
   }
 
   @Override
-  public void handleTokenProduction (final TokenProduction tp) throws IOException
+  public void handleTokenProduction (final TokenProduction aTp) throws IOException
   {
     _println (" <!-- Token -->");
     _println (" <TR>");
     _println ("  <TD>");
     _println ("   <PRE>");
-    text (JJDoc.getStandardTokenProductionText (tp));
+    text (JJDoc.getStandardTokenProductionText (aTp));
     _println ("   </PRE>");
     _println ("  </TD>");
     _println (" </TR>");
@@ -186,38 +186,38 @@ public class HTMLGenerator extends TextGenerator
   }
 
   @Override
-  public void javacode (final CodeProductionJava jp) throws IOException
+  public void javacode (final CodeProductionJava aJp) throws IOException
   {
-    productionStart (jp);
+    productionStart (aJp);
     _println ("<I>java code</I></TD></TR>");
-    productionEnd (jp);
+    productionEnd (aJp);
   }
 
   @Override
-  public void cppcode (final CodeProductionCpp cp) throws IOException
+  public void cppcode (final CodeProductionCpp aCp) throws IOException
   {
-    productionStart (cp);
+    productionStart (aCp);
     _println ("<I>cpp code</I></TD></TR>");
-    productionEnd (cp);
+    productionEnd (aCp);
   }
 
   @Override
-  public void productionStart (final NormalProduction np) throws IOException
+  public void productionStart (final NormalProduction aNp) throws IOException
   {
     if (!JJDocOptions.isOneTable ())
     {
       _println ("");
       _println ("<TABLE ALIGN=CENTER>");
-      _println ("<CAPTION><STRONG>" + np.getLhs () + "</STRONG></CAPTION>");
+      _println ("<CAPTION><STRONG>" + aNp.getLhs () + "</STRONG></CAPTION>");
     }
     _println ("<TR>");
-    _println ("<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME=\"" + getID (np.getLhs ()) + "\">" + np.getLhs () + "</A></TD>");
+    _println ("<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME=\"" + getID (aNp.getLhs ()) + "\">" + aNp.getLhs () + "</A></TD>");
     _println ("<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>");
     print ("<TD ALIGN=LEFT VALIGN=BASELINE>");
   }
 
   @Override
-  public void productionEnd (final NormalProduction np) throws IOException
+  public void productionEnd (final NormalProduction aNp) throws IOException
   {
     if (!JJDocOptions.isOneTable ())
     {
@@ -227,9 +227,9 @@ public class HTMLGenerator extends TextGenerator
   }
 
   @Override
-  public void expansionStart (final Expansion e, final boolean first) throws IOException
+  public void expansionStart (final Expansion e, final boolean bFirst) throws IOException
   {
-    if (!first)
+    if (!bFirst)
     {
       _println ("<TR>");
       _println ("<TD ALIGN=RIGHT VALIGN=BASELINE></TD>");
@@ -239,20 +239,20 @@ public class HTMLGenerator extends TextGenerator
   }
 
   @Override
-  public void expansionEnd (final Expansion e, final boolean first) throws IOException
+  public void expansionEnd (final Expansion e, final boolean bFirst) throws IOException
   {
     _println ("</TD>");
     _println ("</TR>");
   }
 
   @Override
-  public void nonTerminalStart (final ExpNonTerminal nt) throws IOException
+  public void nonTerminalStart (final ExpNonTerminal aNt) throws IOException
   {
-    print ("<A HREF=\"#" + getID (nt.getName ()) + "\">");
+    print ("<A HREF=\"#" + getID (aNt.getName ()) + "\">");
   }
 
   @Override
-  public void nonTerminalEnd (final ExpNonTerminal nt) throws IOException
+  public void nonTerminalEnd (final ExpNonTerminal aNt) throws IOException
   {
     print ("</A>");
   }

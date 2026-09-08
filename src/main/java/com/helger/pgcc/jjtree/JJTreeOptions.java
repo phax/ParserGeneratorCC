@@ -285,9 +285,9 @@ public class JJTreeOptions extends Options
    */
   public static File getJJTreeOutputDirectory ()
   {
-    final String dirName = stringValue ("JJTREE_OUTPUT_DIRECTORY");
-    if (StringHelper.isEmpty (dirName))
+    final String sDirName = stringValue ("JJTREE_OUTPUT_DIRECTORY");
+    if (StringHelper.isEmpty (sDirName))
       return getOutputDirectory ();
-    return new File (dirName);
+    return new File (sDirName);
   }
 }

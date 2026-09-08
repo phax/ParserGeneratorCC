@@ -45,8 +45,8 @@ public final class Main
 
   public static void main (final String args[])
   {
-    final JJTree jjtree = new JJTree ();
-    final ESuccess eSuccess = jjtree.main (args);
+    final JJTree aJjtree = new JJTree ();
+    final ESuccess eSuccess = aJjtree.main (args);
     System.exit (eSuccess.isFailure () ? 1 : 0);
   }
 }

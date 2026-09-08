@@ -51,28 +51,28 @@ import com.helger.pgcc.parser.TokenizerData;
 
 public class JavaCCInterpreter
 {
-  public static void main (final String [] args) throws Exception
+  public static void main (final String [] aArgs) throws Exception
   {
     // Initialize all static state
     Main.reInitAll ();
-    for (int arg = 0; arg < args.length - 2; arg++)
+    for (int nArg = 0; nArg < aArgs.length - 2; nArg++)
     {
-      if (!Options.isOption (args[arg]))
+      if (!Options.isOption (aArgs[nArg]))
       {
-        PGPrinter.info ("Argument \"" + args[arg] + "\" must be an option setting.");
+        PGPrinter.info ("Argument \"" + aArgs[nArg] + "\" must be an option setting.");
         System.exit (1);
       }
-      Options.setCmdLineOption (args[arg]);
+      Options.setCmdLineOption (aArgs[nArg]);
     }
 
-    final File fp = new File (args[args.length - 2]);
-    final String grammar = SimpleFileIO.getFileAsString (fp, Options.getGrammarEncoding ());
+    final File aFp = new File (aArgs[aArgs.length - 2]);
+    final String sGrammar = SimpleFileIO.getFileAsString (aFp, Options.getGrammarEncoding ());
 
-    final File inputFile = new File (args[args.length - 1]);
-    final String input = SimpleFileIO.getFileAsString (inputFile, Options.getGrammarEncoding ());
+    final File aInputFile = new File (aArgs[aArgs.length - 1]);
+    final String sInput = SimpleFileIO.getFileAsString (aInputFile, Options.getGrammarEncoding ());
 
     final long l = System.currentTimeMillis ();
-    new JavaCCInterpreter ().runTokenizer (grammar, input);
+    new JavaCCInterpreter ().runTokenizer (sGrammar, sInput);
     PGPrinter.error ("Tokenized in: " + (System.currentTimeMillis () - l));
   }
 
@@ -88,20 +88,20 @@ public class JavaCCInterpreter
    * @param input
    *        The text to tokenize. May not be <code>null</code>.
    */
-  public void runTokenizer (final String grammar, final String input)
+  public void runTokenizer (final String sGrammar, final String sInput)
   {
     try
     {
-      final JavaCCParser parser = new JavaCCParser (grammar);
-      parser.javacc_input ();
+      final JavaCCParser aParser = new JavaCCParser (sGrammar);
+      aParser.javacc_input ();
       Semanticize.start ();
-      final LexGenJava lg = new LexGenJava ();
+      final LexGenJava aLg = new LexGenJava ();
       LexGenJava.lexer ().setGenerateDataOnly (true);
-      lg.start ();
-      final TokenizerData td = LexGenJava.lexer ().getTokenizerData ();
+      aLg.start ();
+      final TokenizerData aTd = LexGenJava.lexer ().getTokenizerData ();
       if (JavaCCErrors.getErrorCount () == 0)
       {
-        _tokenize (td, input);
+        _tokenize (aTd, sInput);
       }
     }
     catch (final MetaParseException e)
@@ -123,125 +123,125 @@ public class JavaCCInterpreter
     }
   }
 
-  private static void _tokenize (final TokenizerData td, final String input)
+  private static void _tokenize (final TokenizerData aTd, final String sInput)
   {
     // First match the string literals.
-    final int input_size = input.length ();
-    int curPos = 0;
-    int curLexState = td.m_defaultLexState;
-    Set <Integer> curStates = new HashSet <> ();
-    Set <Integer> newStates = new HashSet <> ();
+    final int nInput_size = sInput.length ();
+    int nCurPos = 0;
+    int nCurLexState = aTd.m_defaultLexState;
+    Set <Integer> aCurStates = new HashSet <> ();
+    Set <Integer> aNewStates = new HashSet <> ();
     // Where the token being assembled starts. A MORE production consumes characters and hands over
     // to the next match instead of producing a token, so the image of the token that finally comes
     // out starts before the match that produced it
-    int tokenBeg = -1;
-    while (curPos < input_size)
+    int nTokenBeg = -1;
+    while (nCurPos < nInput_size)
     {
-      final int beg = curPos;
-      if (tokenBeg == -1)
-        tokenBeg = beg;
-      int matchedPos = beg;
-      int matchedKind = Integer.MAX_VALUE;
-      int nfaStartState = td.m_initialStates.get (Integer.valueOf (curLexState)).intValue ();
+      final int nBeg = nCurPos;
+      if (nTokenBeg == -1)
+        nTokenBeg = nBeg;
+      int nMatchedPos = nBeg;
+      int nMatchedKind = Integer.MAX_VALUE;
+      int nNfaStartState = aTd.m_initialStates.get (Integer.valueOf (nCurLexState)).intValue ();
 
-      char c = input.charAt (curPos);
+      char c = sInput.charAt (nCurPos);
       if (Options.isIgnoreCase ())
         c = Character.toLowerCase (c);
-      final int key = curLexState << 16 | c;
-      final List <String> literals = td.m_literalSequence.get (Integer.valueOf (key));
-      if (literals != null)
+      final int nKey = nCurLexState << 16 | c;
+      final List <String> aLiterals = aTd.m_literalSequence.get (Integer.valueOf (nKey));
+      if (aLiterals != null)
       {
         // We need to go in order so that the longest match works.
-        int litIndex = 0;
-        for (final String s : literals)
+        int nLitIndex = 0;
+        for (final String s : aLiterals)
         {
-          int index = 1;
+          int nIndex = 1;
           // See which literal matches.
-          while (index < s.length () && curPos + index < input_size)
+          while (nIndex < s.length () && nCurPos + nIndex < nInput_size)
           {
-            c = input.charAt (curPos + index);
+            c = sInput.charAt (nCurPos + nIndex);
             if (Options.isIgnoreCase ())
               c = Character.toLowerCase (c);
-            if (c != s.charAt (index))
+            if (c != s.charAt (nIndex))
               break;
-            index++;
+            nIndex++;
           }
-          if (index == s.length ())
+          if (nIndex == s.length ())
           {
             // Found a string literal match.
-            matchedKind = td.m_literalKinds.get (Integer.valueOf (key)).get (litIndex).intValue ();
-            matchedPos = curPos + index - 1;
-            nfaStartState = td.m_kindToNfaStartState.get (Integer.valueOf (matchedKind)).intValue ();
-            curPos += index;
+            nMatchedKind = aTd.m_literalKinds.get (Integer.valueOf (nKey)).get (nLitIndex).intValue ();
+            nMatchedPos = nCurPos + nIndex - 1;
+            nNfaStartState = aTd.m_kindToNfaStartState.get (Integer.valueOf (nMatchedKind)).intValue ();
+            nCurPos += nIndex;
             break;
           }
-          litIndex++;
+          nLitIndex++;
         }
       }
 
-      if (nfaStartState != -1)
+      if (nNfaStartState != -1)
       {
         // We need to add the composite states first.
-        int kind = Integer.MAX_VALUE;
-        curStates.add (Integer.valueOf (nfaStartState));
-        curStates.addAll (td.m_nfa.get (Integer.valueOf (nfaStartState)).m_compositeStates);
+        int nKind = Integer.MAX_VALUE;
+        aCurStates.add (Integer.valueOf (nNfaStartState));
+        aCurStates.addAll (aTd.m_nfa.get (Integer.valueOf (nNfaStartState)).m_compositeStates);
         do
         {
-          c = input.charAt (curPos);
+          c = sInput.charAt (nCurPos);
           if (Options.isIgnoreCase ())
             c = Character.toLowerCase (c);
-          for (final int state : curStates)
+          for (final int state : aCurStates)
           {
-            final TokenizerData.NfaState nfaState = td.m_nfa.get (Integer.valueOf (state));
-            if (nfaState.m_characters.contains (Character.valueOf (c)))
+            final TokenizerData.NfaState aNfaState = aTd.m_nfa.get (Integer.valueOf (state));
+            if (aNfaState.m_characters.contains (Character.valueOf (c)))
             {
-              if (kind > nfaState.m_kind)
-                kind = nfaState.m_kind;
-              newStates.addAll (nfaState.m_nextStates);
+              if (nKind > aNfaState.m_kind)
+                nKind = aNfaState.m_kind;
+              aNewStates.addAll (aNfaState.m_nextStates);
             }
           }
-          final Set <Integer> tmp = newStates;
-          newStates = curStates;
-          curStates = tmp;
-          newStates.clear ();
-          if (kind != Integer.MAX_VALUE)
+          final Set <Integer> aTmp = aNewStates;
+          aNewStates = aCurStates;
+          aCurStates = aTmp;
+          aNewStates.clear ();
+          if (nKind != Integer.MAX_VALUE)
           {
-            matchedKind = kind;
-            matchedPos = curPos;
-            kind = Integer.MAX_VALUE;
+            nMatchedKind = nKind;
+            nMatchedPos = nCurPos;
+            nKind = Integer.MAX_VALUE;
           }
-        } while (!curStates.isEmpty () && ++curPos < input_size);
+        } while (!aCurStates.isEmpty () && ++nCurPos < nInput_size);
       }
-      if (matchedPos == beg && matchedKind > td.m_wildcardKind.get (Integer.valueOf (curLexState)).intValue ())
+      if (nMatchedPos == nBeg && nMatchedKind > aTd.m_wildcardKind.get (Integer.valueOf (nCurLexState)).intValue ())
       {
-        matchedKind = td.m_wildcardKind.get (Integer.valueOf (curLexState)).intValue ();
+        nMatchedKind = aTd.m_wildcardKind.get (Integer.valueOf (nCurLexState)).intValue ();
       }
-      if (matchedKind != Integer.MAX_VALUE)
+      if (nMatchedKind != Integer.MAX_VALUE)
       {
-        final TokenizerData.MatchInfo matchInfo = td.m_allMatches.get (Integer.valueOf (matchedKind));
-        if (matchInfo.m_action != null)
+        final TokenizerData.MatchInfo aMatchInfo = aTd.m_allMatches.get (Integer.valueOf (nMatchedKind));
+        if (aMatchInfo.m_action != null)
         {
           PGPrinter.error ("Actions not implemented (yet) in intererpreted mode");
         }
-        if (matchInfo.m_matchType == TokenizerData.EMatchType.TOKEN)
+        if (aMatchInfo.m_matchType == TokenizerData.EMatchType.TOKEN)
         {
-          PGPrinter.error ("Token: " + matchedKind + "; image: \"" + input.substring (tokenBeg, matchedPos + 1) + "\"");
+          PGPrinter.error ("Token: " + nMatchedKind + "; image: \"" + sInput.substring (nTokenBeg, nMatchedPos + 1) + "\"");
         }
-        if (matchInfo.m_matchType != TokenizerData.EMatchType.MORE)
+        if (aMatchInfo.m_matchType != TokenizerData.EMatchType.MORE)
         {
           // Anything that is not MORE finishes the token, whether it produced one or threw the
           // accumulated text away
-          tokenBeg = -1;
+          nTokenBeg = -1;
         }
-        if (matchInfo.m_newLexState != -1)
+        if (aMatchInfo.m_newLexState != -1)
         {
-          curLexState = matchInfo.m_newLexState;
+          nCurLexState = aMatchInfo.m_newLexState;
         }
-        curPos = matchedPos + 1;
+        nCurPos = nMatchedPos + 1;
       }
       else
       {
-        PGPrinter.error ("Encountered token error at char: " + input.charAt (curPos));
+        PGPrinter.error ("Encountered token error at char: " + sInput.charAt (nCurPos));
         return;
       }
     }

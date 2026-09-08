@@ -88,65 +88,65 @@ public final class ExpRChoice extends AbstractExpRegularExpression
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
     compressCharLists ();
 
     if (getChoiceCount () == 1)
-      return getChoiceAt (0).generateNfa (ignoreCase);
+      return getChoiceAt (0).generateNfa (bIgnoreCase);
 
-    final Nfa retVal = new Nfa ();
-    final NfaState startState = retVal.start ();
-    final NfaState finalState = retVal.end ();
+    final Nfa aRetVal = new Nfa ();
+    final NfaState aStartState = aRetVal.start ();
+    final NfaState aFinalState = aRetVal.end ();
 
     for (final AbstractExpRegularExpression curRE : getChoices ())
     {
-      final Nfa temp = curRE.generateNfa (ignoreCase);
+      final Nfa aTemp = curRE.generateNfa (bIgnoreCase);
 
-      startState.addMove (temp.start ());
-      temp.end ().addMove (finalState);
+      aStartState.addMove (aTemp.start ());
+      aTemp.end ().addMove (aFinalState);
     }
 
-    return retVal;
+    return aRetVal;
   }
 
   void compressCharLists ()
   {
     compressChoices (); // Unroll nested choices
-    AbstractExpRegularExpression curRE;
-    ExpRCharacterList curCharList = null;
+    AbstractExpRegularExpression aCurRE;
+    ExpRCharacterList aCurCharList = null;
 
     for (int i = 0; i < getChoiceCount (); i++)
     {
-      curRE = getChoiceAt (i);
+      aCurRE = getChoiceAt (i);
 
-      while (curRE instanceof ExpRJustName)
-        curRE = ((ExpRJustName) curRE).m_regexpr;
+      while (aCurRE instanceof ExpRJustName)
+        aCurRE = ((ExpRJustName) aCurRE).m_regexpr;
 
-      if (curRE instanceof ExpRStringLiteral && ((ExpRStringLiteral) curRE).m_image.length () == 1)
+      if (aCurRE instanceof ExpRStringLiteral && ((ExpRStringLiteral) aCurRE).m_image.length () == 1)
       {
-        curRE = new ExpRCharacterList (((ExpRStringLiteral) curRE).m_image.charAt (0));
-        getChoices ().set (i, curRE);
+        aCurRE = new ExpRCharacterList (((ExpRStringLiteral) aCurRE).m_image.charAt (0));
+        getChoices ().set (i, aCurRE);
       }
 
-      if (curRE instanceof final ExpRCharacterList aRCharacterList)
+      if (aCurRE instanceof final ExpRCharacterList aRCharacterList)
       {
         if (aRCharacterList.isNegatedList ())
           aRCharacterList.removeNegation ();
 
-        final List <ICCCharacter> tmp = aRCharacterList.getDescriptors ();
+        final List <ICCCharacter> aTmp = aRCharacterList.getDescriptors ();
 
-        if (curCharList == null)
+        if (aCurCharList == null)
         {
-          curCharList = new ExpRCharacterList ();
-          curRE = curCharList;
-          getChoices ().set (i, curRE);
+          aCurCharList = new ExpRCharacterList ();
+          aCurRE = aCurCharList;
+          getChoices ().set (i, aCurRE);
         }
         else
           getChoices ().remove (i--);
 
-        for (int j = tmp.size (); j-- > 0;)
-          curCharList.addDescriptor (tmp.get (j));
+        for (int j = aTmp.size (); j-- > 0;)
+          aCurCharList.addDescriptor (aTmp.get (j));
       }
 
     }
@@ -156,12 +156,12 @@ public final class ExpRChoice extends AbstractExpRegularExpression
   {
     for (int i = 0; i < getChoiceCount (); i++)
     {
-      AbstractExpRegularExpression curRE = getChoiceAt (i);
+      AbstractExpRegularExpression aCurRE = getChoiceAt (i);
 
-      while (curRE instanceof ExpRJustName)
-        curRE = ((ExpRJustName) curRE).m_regexpr;
+      while (aCurRE instanceof ExpRJustName)
+        aCurRE = ((ExpRJustName) aCurRE).m_regexpr;
 
-      if (curRE instanceof final ExpRChoice aRChoice)
+      if (aCurRE instanceof final ExpRChoice aRChoice)
       {
         getChoices ().remove (i--);
         for (int j = aRChoice.getChoiceCount (); j-- > 0;)
@@ -172,7 +172,7 @@ public final class ExpRChoice extends AbstractExpRegularExpression
 
   public int checkUnmatchability ()
   {
-    int numStrings = 0;
+    int nNumStrings = 0;
 
     for (final AbstractExpRegularExpression curRE : getChoices ())
     {
@@ -197,8 +197,8 @@ public final class ExpRChoice extends AbstractExpRegularExpression
       }
 
       if (!curRE.m_bPrivateRexp && curRE instanceof ExpRStringLiteral)
-        numStrings++;
+        nNumStrings++;
     }
-    return numStrings;
+    return nNumStrings;
   }
 }

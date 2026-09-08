@@ -93,18 +93,18 @@ public final class GoldenManifest
       final MessageDigest aDigest = MessageDigest.getInstance ("SHA-256");
       final byte [] aHash = aDigest.digest (_normalize (Files.readString (aFile, StandardCharsets.UTF_8))
                                                        .getBytes (StandardCharsets.UTF_8));
-      final StringBuilder ret = new StringBuilder (aHash.length * 2);
+      final StringBuilder aRet = new StringBuilder (aHash.length * 2);
       for (final byte b : aHash)
-        ret.append (Character.forDigit ((b >> 4) & 0xf, 16)).append (Character.forDigit (b & 0xf, 16));
-      return ret.toString ();
+        aRet.append (Character.forDigit ((b >> 4) & 0xf, 16)).append (Character.forDigit (b & 0xf, 16));
+      return aRet.toString ();
     }
-    catch (final NoSuchAlgorithmException ex)
+    catch (final NoSuchAlgorithmException aEx)
     {
-      throw new IllegalStateException ("SHA-256 is required by every JRE", ex);
+      throw new IllegalStateException ("SHA-256 is required by every JRE", aEx);
     }
-    catch (final IOException ex)
+    catch (final IOException aEx)
     {
-      throw new UncheckedIOException (ex);
+      throw new UncheckedIOException (aEx);
     }
   }
 
@@ -171,25 +171,25 @@ public final class GoldenManifest
   @NonNull
   public String getDifferences (@NonNull final GoldenManifest aExpected)
   {
-    final StringBuilder ret = new StringBuilder ();
+    final StringBuilder aRet = new StringBuilder ();
     final List <String> aExpectedNames = aExpected._getNames ();
     final List <String> aActualNames = _getNames ();
 
     for (final String sName : aExpectedNames)
       if (!aActualNames.contains (sName))
-        ret.append ("  missing: ").append (sName).append ('\n');
+        aRet.append ("  missing: ").append (sName).append ('\n');
 
     for (final String sName : aActualNames)
       if (!aExpectedNames.contains (sName))
-        ret.append ("  unexpected: ").append (sName).append ('\n');
+        aRet.append ("  unexpected: ").append (sName).append ('\n');
 
     for (final String sLine : m_aLines)
     {
       final String sName = _nameOf (sLine);
       if (aExpectedNames.contains (sName) && !aExpected.m_aLines.contains (sLine))
-        ret.append ("  content changed: ").append (sName).append ('\n');
+        aRet.append ("  content changed: ").append (sName).append ('\n');
     }
-    return ret.toString ();
+    return aRet.toString ();
   }
 
   @NonNull
@@ -202,9 +202,9 @@ public final class GoldenManifest
   @NonNull
   private List <String> _getNames ()
   {
-    final List <String> ret = new ArrayList <> (m_aLines.size ());
+    final List <String> aRet = new ArrayList <> (m_aLines.size ());
     for (final String sLine : m_aLines)
-      ret.add (_nameOf (sLine));
-    return ret;
+      aRet.add (_nameOf (sLine));
+    return aRet;
   }
 }

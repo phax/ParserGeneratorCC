@@ -52,44 +52,44 @@ public final class JavaCCErrors
   {}
 
   @NonNull
-  private static String _getLocationInfo (@Nullable final Object node)
+  private static String _getLocationInfo (@Nullable final Object aNode)
   {
-    if (node instanceof final NormalProduction n)
+    if (aNode instanceof final NormalProduction n)
     {
       return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
     }
-    if (node instanceof final TokenProduction n)
+    if (aNode instanceof final TokenProduction n)
     {
       return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
     }
-    if (node instanceof final Expansion n)
+    if (aNode instanceof final Expansion n)
     {
       return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
     }
-    if (node instanceof final CharacterRange n)
+    if (aNode instanceof final CharacterRange n)
     {
       return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
     }
-    if (node instanceof final SingleCharacter n)
+    if (aNode instanceof final SingleCharacter n)
     {
       return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
     }
-    if (node instanceof final Token t)
+    if (aNode instanceof final Token t)
     {
       return "Line " + t.beginLine + ", Column " + t.beginColumn + ": ";
     }
     return "";
   }
 
-  public static void parse_error (final Object node, final String mess)
+  public static void parse_error (final Object aNode, final String sMess)
   {
-    PGPrinter.error ("Error: " + _getLocationInfo (node) + mess);
+    PGPrinter.error ("Error: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onParseError ();
   }
 
-  public static void parse_error (final String mess)
+  public static void parse_error (final String sMess)
   {
-    PGPrinter.error ("Error: " + mess);
+    PGPrinter.error ("Error: " + sMess);
     PGCCContext.current ().errors ().onParseError ();
   }
 
@@ -98,21 +98,21 @@ public final class JavaCCErrors
     return PGCCContext.current ().errors ().getParseErrorCount ();
   }
 
-  public static void semantic_error (final Object node, final String mess)
+  public static void semantic_error (final Object aNode, final String sMess)
   {
-    PGPrinter.error ("Error: " + _getLocationInfo (node) + mess);
+    PGPrinter.error ("Error: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onSemanticError ();
   }
 
-  public static void semantic_error (final String mess)
+  public static void semantic_error (final String sMess)
   {
-    PGPrinter.error ("Error: " + mess);
+    PGPrinter.error ("Error: " + sMess);
     PGCCContext.current ().errors ().onSemanticError ();
   }
 
-  public static void semantic_error (final String mess, final Throwable t)
+  public static void semantic_error (final String sMess, final Throwable t)
   {
-    PGPrinter.error ("Error: " + mess, t);
+    PGPrinter.error ("Error: " + sMess, t);
     PGCCContext.current ().errors ().onSemanticError ();
   }
 
@@ -121,15 +121,15 @@ public final class JavaCCErrors
     return PGCCContext.current ().errors ().getSemanticErrorCount ();
   }
 
-  public static void warning (final Object node, final String mess)
+  public static void warning (final Object aNode, final String sMess)
   {
-    PGPrinter.warn ("Warning: " + _getLocationInfo (node) + mess);
+    PGPrinter.warn ("Warning: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onWarning ();
   }
 
-  public static void warning (final String mess)
+  public static void warning (final String sMess)
   {
-    PGPrinter.warn ("Warning: " + mess);
+    PGPrinter.warn ("Warning: " + sMess);
     PGCCContext.current ().errors ().onWarning ();
   }
 
@@ -143,10 +143,10 @@ public final class JavaCCErrors
     return PGCCContext.current ().errors ().getErrorCount ();
   }
 
-  public static void fatal (final String message) throws IllegalStateException
+  public static void fatal (final String sMessage) throws IllegalStateException
   {
-    PGPrinter.error ("Fatal Error: " + message);
-    throw new IllegalStateException ("Fatal Error: " + message);
+    PGPrinter.error ("Fatal Error: " + sMessage);
+    throw new IllegalStateException ("Fatal Error: " + sMessage);
   }
 
   public static void internalError () throws IllegalStateException
@@ -154,9 +154,9 @@ public final class JavaCCErrors
     fatal ("Internal error in JavaCC: Please file an issue at https://github.com/phax/ParserGeneratorCC/issues . Thank you.");
   }
 
-  public static void note (final String mess)
+  public static void note (final String sMess)
   {
-    PGPrinter.info ("Note: " + mess);
+    PGPrinter.info ("Note: " + sMess);
   }
 
   /**

@@ -47,9 +47,9 @@ public final class JJDocGlobals
    * @param generator
    *        The generator to set.
    */
-  public static void setGenerator (final IDocGenerator generator)
+  public static void setGenerator (final IDocGenerator aGenerator)
   {
-    PGCCContext.current ().jjdoc ().setGenerator (generator);
+    PGCCContext.current ().jjdoc ().setGenerator (aGenerator);
   }
 
   /**

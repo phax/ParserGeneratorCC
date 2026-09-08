@@ -47,11 +47,11 @@ public class ASTNodeDescriptor extends JJTreeNode
 {
   static ASTNodeDescriptor indefinite (final String s)
   {
-    final ASTNodeDescriptor nd = new ASTNodeDescriptor (JJTreeParserTreeConstants.JJTNODEDESCRIPTOR);
-    nd.m_name = s;
-    nd.setNodeIdValue ();
-    nd.m_faked = true;
-    return nd;
+    final ASTNodeDescriptor aNd = new ASTNodeDescriptor (JJTreeParserTreeConstants.JJTNODEDESCRIPTOR);
+    aNd.m_name = s;
+    aNd.setNodeIdValue ();
+    aNd.m_faked = true;
+    return aNd;
   }
 
   @NonNull
@@ -126,9 +126,9 @@ public class ASTNodeDescriptor extends JJTreeNode
     return m_name;
   }
 
-  String openNode (final String nodeVar)
+  String openNode (final String sNodeVar)
   {
-    return "jjtree.openNodeScope(" + nodeVar + ");";
+    return "jjtree.openNodeScope(" + sNodeVar + ");";
   }
 
   String expression_text ()
@@ -152,13 +152,13 @@ public class ASTNodeDescriptor extends JJTreeNode
     return s;
   }
 
-  String closeNode (final String nodeVar)
+  String closeNode (final String sNodeVar)
   {
     if (m_expression == null)
-      return "jjtree.closeNodeScope(" + nodeVar + ", true);";
+      return "jjtree.closeNodeScope(" + sNodeVar + ", true);";
     if (m_isGT)
-      return "jjtree.closeNodeScope(" + nodeVar + ", jjtree.nodeArity() > " + expression_text () + ");";
-    return "jjtree.closeNodeScope(" + nodeVar + ", " + expression_text () + ");";
+      return "jjtree.closeNodeScope(" + sNodeVar + ", jjtree.nodeArity() > " + expression_text () + ");";
+    return "jjtree.closeNodeScope(" + sNodeVar + ", " + expression_text () + ");";
   }
 
   @Override
@@ -169,9 +169,9 @@ public class ASTNodeDescriptor extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 
 }

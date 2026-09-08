@@ -64,13 +64,13 @@ public final class ExpOneOrMore extends Expansion
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder sb = super.dump (indent, alreadyDumped);
-    if (alreadyDumped.add (this))
+    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
+    if (aAlreadyDumped.add (this))
     {
-      sb.append (EOL).append (m_expansion.dump (indent + 1, alreadyDumped));
+      aSb.append (EOL).append (m_expansion.dump (nIndent + 1, aAlreadyDumped));
     }
-    return sb;
+    return aSb;
   }
 }

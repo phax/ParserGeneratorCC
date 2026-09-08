@@ -49,10 +49,10 @@ public final class Nfa
     m_aEnd = new NfaState ();
   }
 
-  public Nfa (@NonNull final NfaState startGiven, @NonNull final NfaState finalGiven)
+  public Nfa (@NonNull final NfaState aStartGiven, @NonNull final NfaState aFinalGiven)
   {
-    m_aStart = startGiven;
-    m_aEnd = finalGiven;
+    m_aStart = aStartGiven;
+    m_aEnd = aFinalGiven;
   }
 
   @NonNull

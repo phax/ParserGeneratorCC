@@ -61,80 +61,80 @@ public final class ExpansionTreeWalker
    * Visits the nodes of the tree rooted at "node" in pre-order. i.e., it executes opObj.action
    * first and then visits the children.
    */
-  static void preOrderWalk (final Expansion node, final ITreeWalkerOperation opObj)
+  static void preOrderWalk (final Expansion aNode, final ITreeWalkerOperation aOpObj)
   {
-    opObj.action (node);
-    if (opObj.goDeeper (node))
+    aOpObj.action (aNode);
+    if (aOpObj.goDeeper (aNode))
     {
-      if (node instanceof final ExpChoice aChoice)
+      if (aNode instanceof final ExpChoice aChoice)
       {
         for (final Expansion aElement : aChoice.getChoices ())
-          preOrderWalk (aElement, opObj);
+          preOrderWalk (aElement, aOpObj);
       }
       else
-        if (node instanceof final ExpSequence aSequence)
+        if (aNode instanceof final ExpSequence aSequence)
         {
           for (final Expansion aElement : aSequence.getUnits ())
-            preOrderWalk (aElement, opObj);
+            preOrderWalk (aElement, aOpObj);
         }
         else
-          if (node instanceof final ExpOneOrMore aOneOrMore)
+          if (aNode instanceof final ExpOneOrMore aOneOrMore)
           {
-            preOrderWalk (aOneOrMore.getExpansion (), opObj);
+            preOrderWalk (aOneOrMore.getExpansion (), aOpObj);
           }
           else
-            if (node instanceof final ExpZeroOrMore aZeroOrMore)
+            if (aNode instanceof final ExpZeroOrMore aZeroOrMore)
             {
-              preOrderWalk (aZeroOrMore.getExpansion (), opObj);
+              preOrderWalk (aZeroOrMore.getExpansion (), aOpObj);
             }
             else
-              if (node instanceof final ExpZeroOrOne aZeroOrOne)
+              if (aNode instanceof final ExpZeroOrOne aZeroOrOne)
               {
-                preOrderWalk (aZeroOrOne.getExpansion (), opObj);
+                preOrderWalk (aZeroOrOne.getExpansion (), aOpObj);
               }
               else
-                if (node instanceof final ExpLookahead aLookahead)
+                if (aNode instanceof final ExpLookahead aLookahead)
                 {
-                  final Expansion nested_e = aLookahead.getLaExpansion ();
-                  if (!(nested_e instanceof final ExpSequence aSeq && aSeq.getUnitAt (0) == node))
-                    preOrderWalk (nested_e, opObj);
+                  final Expansion aNested_e = aLookahead.getLaExpansion ();
+                  if (!(aNested_e instanceof final ExpSequence aSeq && aSeq.getUnitAt (0) == aNode))
+                    preOrderWalk (aNested_e, aOpObj);
                 }
                 else
-                  if (node instanceof final ExpTryBlock aTryBlock)
+                  if (aNode instanceof final ExpTryBlock aTryBlock)
                   {
-                    preOrderWalk (aTryBlock.m_exp, opObj);
+                    preOrderWalk (aTryBlock.m_exp, aOpObj);
                   }
                   else
-                    if (node instanceof final ExpRChoice aRChoice)
+                    if (aNode instanceof final ExpRChoice aRChoice)
                     {
                       for (final AbstractExpRegularExpression aExpansion : aRChoice.getChoices ())
-                        preOrderWalk (aExpansion, opObj);
+                        preOrderWalk (aExpansion, aOpObj);
                     }
                     else
-                      if (node instanceof final ExpRSequence aRSequence)
+                      if (aNode instanceof final ExpRSequence aRSequence)
                       {
                         for (final AbstractExpRegularExpression aElement : aRSequence.getUnits ())
-                          preOrderWalk (aElement, opObj);
+                          preOrderWalk (aElement, aOpObj);
                       }
                       else
-                        if (node instanceof final ExpROneOrMore aROneOrMore)
+                        if (aNode instanceof final ExpROneOrMore aROneOrMore)
                         {
-                          preOrderWalk (aROneOrMore.getRegExpr (), opObj);
+                          preOrderWalk (aROneOrMore.getRegExpr (), aOpObj);
                         }
                         else
-                          if (node instanceof final ExpRZeroOrMore aRZeroOrMore)
+                          if (aNode instanceof final ExpRZeroOrMore aRZeroOrMore)
                           {
-                            preOrderWalk (aRZeroOrMore.getRegExpr (), opObj);
+                            preOrderWalk (aRZeroOrMore.getRegExpr (), aOpObj);
                           }
                           else
-                            if (node instanceof final ExpRZeroOrOne aRZeroOrOne)
+                            if (aNode instanceof final ExpRZeroOrOne aRZeroOrOne)
                             {
-                              preOrderWalk (aRZeroOrOne.getRegExpr (), opObj);
+                              preOrderWalk (aRZeroOrOne.getRegExpr (), aOpObj);
                             }
                             else
-                              if (node instanceof final ExpRRepetitionRange aRRepetitionRange)
+                              if (aNode instanceof final ExpRRepetitionRange aRRepetitionRange)
                               {
-                                preOrderWalk (aRRepetitionRange.getRegExpr (), opObj);
+                                preOrderWalk (aRRepetitionRange.getRegExpr (), aOpObj);
                               }
     }
   }
@@ -143,82 +143,82 @@ public final class ExpansionTreeWalker
    * Visits the nodes of the tree rooted at "node" in post-order. i.e., it visits the children first
    * and then executes opObj.action.
    */
-  static void postOrderWalk (final Expansion node, final ITreeWalkerOperation opObj)
+  static void postOrderWalk (final Expansion aNode, final ITreeWalkerOperation aOpObj)
   {
-    if (opObj.goDeeper (node))
+    if (aOpObj.goDeeper (aNode))
     {
-      if (node instanceof final ExpChoice aExpChoice)
+      if (aNode instanceof final ExpChoice aExpChoice)
       {
         for (final Expansion aElement : aExpChoice.getChoices ())
-          postOrderWalk (aElement, opObj);
+          postOrderWalk (aElement, aOpObj);
       }
       else
-        if (node instanceof final ExpSequence aExpSequence)
+        if (aNode instanceof final ExpSequence aExpSequence)
         {
           for (final Expansion aElement : aExpSequence.getUnits ())
-            postOrderWalk (aElement, opObj);
+            postOrderWalk (aElement, aOpObj);
         }
         else
-          if (node instanceof final ExpOneOrMore aExpOneOrMore)
+          if (aNode instanceof final ExpOneOrMore aExpOneOrMore)
           {
-            postOrderWalk (aExpOneOrMore.getExpansion (), opObj);
+            postOrderWalk (aExpOneOrMore.getExpansion (), aOpObj);
           }
           else
-            if (node instanceof final ExpZeroOrMore aExpZeroOrMore)
+            if (aNode instanceof final ExpZeroOrMore aExpZeroOrMore)
             {
-              postOrderWalk (aExpZeroOrMore.getExpansion (), opObj);
+              postOrderWalk (aExpZeroOrMore.getExpansion (), aOpObj);
             }
             else
-              if (node instanceof final ExpZeroOrOne aExpZeroOrOne)
+              if (aNode instanceof final ExpZeroOrOne aExpZeroOrOne)
               {
-                postOrderWalk (aExpZeroOrOne.getExpansion (), opObj);
+                postOrderWalk (aExpZeroOrOne.getExpansion (), aOpObj);
               }
               else
-                if (node instanceof final ExpLookahead aExpLookahead)
+                if (aNode instanceof final ExpLookahead aExpLookahead)
                 {
-                  final Expansion nested_e = aExpLookahead.getLaExpansion ();
-                  if (!(nested_e instanceof final ExpSequence aSeq && aSeq.getUnitAt (0) == node))
-                    postOrderWalk (nested_e, opObj);
+                  final Expansion aNested_e = aExpLookahead.getLaExpansion ();
+                  if (!(aNested_e instanceof final ExpSequence aSeq && aSeq.getUnitAt (0) == aNode))
+                    postOrderWalk (aNested_e, aOpObj);
                 }
                 else
-                  if (node instanceof final ExpTryBlock aExpTryBlock)
+                  if (aNode instanceof final ExpTryBlock aExpTryBlock)
                   {
-                    postOrderWalk (aExpTryBlock.m_exp, opObj);
+                    postOrderWalk (aExpTryBlock.m_exp, aOpObj);
                   }
                   else
-                    if (node instanceof final ExpRChoice aExpRChoice)
+                    if (aNode instanceof final ExpRChoice aExpRChoice)
                     {
                       for (final AbstractExpRegularExpression aElement : aExpRChoice.getChoices ())
-                        postOrderWalk (aElement, opObj);
+                        postOrderWalk (aElement, aOpObj);
                     }
                     else
-                      if (node instanceof final ExpRSequence aExpRSequence)
+                      if (aNode instanceof final ExpRSequence aExpRSequence)
                       {
                         for (final AbstractExpRegularExpression aElement : aExpRSequence.getUnits ())
-                          postOrderWalk (aElement, opObj);
+                          postOrderWalk (aElement, aOpObj);
                       }
                       else
-                        if (node instanceof final ExpROneOrMore aExpROneOrMore)
+                        if (aNode instanceof final ExpROneOrMore aExpROneOrMore)
                         {
-                          postOrderWalk (aExpROneOrMore.getRegExpr (), opObj);
+                          postOrderWalk (aExpROneOrMore.getRegExpr (), aOpObj);
                         }
                         else
-                          if (node instanceof final ExpRZeroOrMore aExpRZeroOrMore)
+                          if (aNode instanceof final ExpRZeroOrMore aExpRZeroOrMore)
                           {
-                            postOrderWalk (aExpRZeroOrMore.getRegExpr (), opObj);
+                            postOrderWalk (aExpRZeroOrMore.getRegExpr (), aOpObj);
                           }
                           else
-                            if (node instanceof final ExpRZeroOrOne aExpRZeroOrOne)
+                            if (aNode instanceof final ExpRZeroOrOne aExpRZeroOrOne)
                             {
-                              postOrderWalk (aExpRZeroOrOne.getRegExpr (), opObj);
+                              postOrderWalk (aExpRZeroOrOne.getRegExpr (), aOpObj);
                             }
                             else
-                              if (node instanceof final ExpRRepetitionRange aExpRRepetitionRange)
+                              if (aNode instanceof final ExpRRepetitionRange aExpRRepetitionRange)
                               {
-                                postOrderWalk (aExpRRepetitionRange.getRegExpr (), opObj);
+                                postOrderWalk (aExpRRepetitionRange.getRegExpr (), aOpObj);
                               }
     }
-    opObj.action (node);
+    aOpObj.action (aNode);
   }
 
 }

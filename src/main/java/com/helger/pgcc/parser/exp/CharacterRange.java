@@ -106,9 +106,9 @@ public final class CharacterRange implements ICCCharacter
    * @param left
    *        the left to set
    */
-  public void setLeft (final char left)
+  public void setLeft (final char cLeft)
   {
-    m_nLeft = left;
+    m_nLeft = cLeft;
   }
 
   /**
@@ -123,9 +123,9 @@ public final class CharacterRange implements ICCCharacter
    * @param right
    *        the right to set
    */
-  public void setRight (final char right)
+  public void setRight (final char cRight)
   {
-    m_nRight = right;
+    m_nRight = cRight;
   }
 
   public boolean isInRange (final char c)
@@ -133,8 +133,8 @@ public final class CharacterRange implements ICCCharacter
     return c >= m_nLeft && c <= m_nRight;
   }
 
-  public boolean isSubRangeOf (@NonNull final CharacterRange r2)
+  public boolean isSubRangeOf (@NonNull final CharacterRange aR2)
   {
-    return m_nLeft >= r2.getLeft () && m_nRight <= r2.getRight ();
+    return m_nLeft >= aR2.getLeft () && m_nRight <= aR2.getRight ();
   }
 }

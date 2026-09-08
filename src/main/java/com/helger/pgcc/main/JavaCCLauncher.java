@@ -43,8 +43,8 @@ public final class JavaCCLauncher
   private JavaCCLauncher ()
   {}
 
-  public static void main (final String [] args) throws Exception
+  public static void main (final String [] aArgs) throws Exception
   {
-    com.helger.pgcc.parser.Main.main (args);
+    com.helger.pgcc.parser.Main.main (aArgs);
   }
 }
