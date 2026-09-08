@@ -38,7 +38,7 @@ Never commit the regenerated `www/doc/JavaCC.html` / `JavaCC.txt` — they are t
 
 ## Code generation and the bootstrap footgun
 
-`ph-javacc-maven-plugin:5.0.1` runs at `generate-sources` and produces the parser from
+The `ph-javacc-maven-plugin` runs at `generate-sources` and produces the parser from
 `src/main/javacc/{JavaCC.jj,ConditionParser.jj}` and `src/main/jjtree/JJTree.jjt` into
 `target/generated-sources/`. Generated sources are **not** checked in — never edit
 `target/generated-sources/**`; edit the `.jj` / `.jjt` sources.

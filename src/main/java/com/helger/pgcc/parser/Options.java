@@ -491,18 +491,41 @@ public class Options
     s_optionValues.put (sNameUC, aRealSrc);
     s_inputFileSetting.add (sNameUC);
 
-    // Special case logic block here for setting indirect flags
+    // Options that are not fully described by their map entry need extra handling
+    _applyIndirectOptionFlags (valueloc, sNameUC, name, aRealSrc);
+  }
 
+  /**
+   * Apply the side effects of those options that are not fully described by their entry in the
+   * option map. This is called for options from the grammar file as well as for options from the
+   * command line - previously it was only called for the former, so that e.g.
+   * <code>-OUTPUT_LANGUAGE=c++</code> on the command line was silently ignored.
+   *
+   * @param valueloc
+   *        Location of the option value, used for warnings. May be <code>null</code> for command
+   *        line options, where no location is available.
+   * @param sNameUC
+   *        Upper cased option name. Never <code>null</code>.
+   * @param sName
+   *        Option name as written by the user, used for warnings. Never <code>null</code>.
+   * @param aValue
+   *        The already upgraded option value. Never <code>null</code>.
+   */
+  private static void _applyIndirectOptionFlags (@Nullable final Object valueloc,
+                                                 @NonNull final String sNameUC,
+                                                 @NonNull final String sName,
+                                                 @NonNull final Object aValue)
+  {
     if (sNameUC.equalsIgnoreCase (USEROPTION__JAVA_TEMPLATE_TYPE))
     {
-      final String templateType = (String) aRealSrc;
+      final String templateType = (String) aValue;
       if (!_isValidJavaTemplateType (templateType))
       {
         JavaCCErrors.warning (valueloc,
                               "Bad option value \"" +
-                                        aRealSrc +
+                                        aValue +
                                         "\" for \"" +
-                                        name +
+                                        sName +
                                         "\".  Option setting will be ignored. Valid options are: " +
                                         StringImplode.imploder ()
                                                      .source (s_aSupportedJavaTemplateTypes)
@@ -513,14 +536,14 @@ public class Options
     else
       if (sNameUC.equalsIgnoreCase (USEROPTION__JAVA_CHAR_STREAM_TYPE))
       {
-        final String sCharStreamType = (String) aRealSrc;
+        final String sCharStreamType = (String) aValue;
         if (!_isValidJavaCharStreamType (sCharStreamType))
         {
           JavaCCErrors.warning (valueloc,
                                 "Bad option value \"" +
-                                          aRealSrc +
+                                          aValue +
                                           "\" for \"" +
-                                          name +
+                                          sName +
                                           "\".  Option setting will be ignored. Valid options are: " +
                                           StringImplode.imploder ()
                                                        .source (s_aSupportedJavaCharStreamTypes)
@@ -531,15 +554,15 @@ public class Options
       else
         if (sNameUC.equalsIgnoreCase (USEROPTION__OUTPUT_LANGUAGE))
         {
-          final String outputLanguage = (String) aRealSrc;
+          final String outputLanguage = (String) aValue;
           final EOutputLanguage eOutLanguage = EOutputLanguage.getFromIDCaseInsensitiveOrNull (outputLanguage);
           if (eOutLanguage == null)
           {
             JavaCCErrors.warning (valueloc,
                                   "Bad option value \"" +
-                                            aRealSrc +
+                                            aValue +
                                             "\" for \"" +
-                                            name +
+                                            sName +
                                             "\".  Option setting will be ignored. Valid options are: " +
                                             StringImplode.imploder ()
                                                          .source (EOutputLanguage.values (), EOutputLanguage::getID)
@@ -552,7 +575,7 @@ public class Options
         else
           if (sNameUC.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))
           {
-            processCPPNamespaceOption ((String) aRealSrc);
+            processCPPNamespaceOption ((String) aValue);
           }
   }
 
@@ -679,10 +702,9 @@ public class Options
 
     s_optionValues.put (sNameUC, val);
     s_cmdLineSetting.add (sNameUC);
-    if (sNameUC.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))
-    {
-      processCPPNamespaceOption ((String) val);
-    }
+
+    // Options that are not fully described by their map entry need extra handling
+    _applyIndirectOptionFlags (null, sNameUC, sNameUC, val);
   }
 
   public static void normalize ()

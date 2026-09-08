@@ -45,6 +45,7 @@ import org.junit.Test;
 
 import com.helger.base.system.SystemHelper;
 import com.helger.pgcc.EJDKVersion;
+import com.helger.pgcc.output.EOutputLanguage;
 
 /**
  * Test cases to prod at the valitity of Options a little.
@@ -97,6 +98,38 @@ public final class OptionsTest
     assertEquals (0, JavaCCErrors.getErrorCount ());
     assertEquals (0, JavaCCErrors.getParseErrorCount ());
     assertEquals (0, JavaCCErrors.getSemanticErrorCount ());
+  }
+
+  @Test
+  public void setOutputLanguageFromCommandLine ()
+  {
+    // Used to be ignored on the command line, because only the grammar file path assigned the
+    // indirect language flag
+    assertEquals (EOutputLanguage.JAVA, Options.getOutputLanguage ());
+
+    Options.setCmdLineOption ("-OUTPUT_LANGUAGE=c++");
+    assertEquals (EOutputLanguage.CPP, Options.getOutputLanguage ());
+
+    beforeEach ();
+
+    Options.setCmdLineOption ("-OUTPUT_LANGUAGE=java");
+    assertEquals (EOutputLanguage.JAVA, Options.getOutputLanguage ());
+
+    beforeEach ();
+
+    // An unknown language is warned about and leaves the default in place
+    Options.setCmdLineOption ("-OUTPUT_LANGUAGE=cobol");
+    assertEquals (EOutputLanguage.JAVA, Options.getOutputLanguage ());
+    assertEquals (1, JavaCCErrors.getWarningCount ());
+  }
+
+  @Test
+  public void setCppNamespaceFromCommandLine ()
+  {
+    Options.setCmdLineOption ("-NAMESPACE=foo::bar");
+    assertTrue (Options.booleanValue (Options.NONUSER_OPTION__HAS_NAMESPACE));
+    assertEquals ("foo {\nnamespace bar {", Options.stringValue (Options.NONUSER_OPTION__NAMESPACE_OPEN));
+    assertEquals ("}\n}", Options.stringValue (Options.NONUSER_OPTION__NAMESPACE_CLOSE));
   }
 
   @Test
