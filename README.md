@@ -77,6 +77,9 @@ v2.0.4 - work in progress
 * Fixed `JavaCCInterpreter` failing on the first character of any input for grammars with more than one character class token. The composite state the tokenizer starts in had no entry in the `TokenizerData`, so the NFA was skipped entirely. Only the interpreter is affected; generated code never used this path
 * Fixed `JavaCCInterpreter` losing the characters a `MORE` production consumed, so that a token assembled across a lexical state switch reported only its last piece - a string literal came out as its closing quote
 * **Breaking API change** No `static` non final field is left in the code base. The last per run collections - `ASTNodeDescriptor`'s node tables and `JJTreeGlobals.TOOL_LIST` - moved into `PGCCContext`, and the two genuinely process wide settings moved to the new `com.helger.pgcc.context.ProcessState`. `PGPrinter.init` and `FilesJava.setReadFromClassPath` are unchanged
+* Fixed a `NullPointerException` when setting `PARSER_SUPER_CLASS` or `TOKEN_MANAGER_SUPER_CLASS` on the command line. They are the only two options with a `null` default, so there was no existing value to take the expected type from. Setting them in the grammar file always worked
+* `PARSER_SUPER_CLASS` and `TOKEN_MANAGER_SUPER_CLASS` now warn when set with a Java target. Both are read by the C++ backend only and were silently ignored otherwise
+* Fixed the `jjtree` help output advertising `JDK_VERSION (default "1.5")` and `OUTPUT_DIRECTORY (default "")`, neither of which was the actual default
 
 v2.0.3 - 2026-09-08
 * Added the new option `JAVA_CHAR_STREAM_TYPE` that allows to generate a `CharSequenceCharStream` that needs no internal buffer at all ([issue #21](https://github.com/tulipcc/ParserGeneratorCC/issues/21))

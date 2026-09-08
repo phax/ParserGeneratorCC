@@ -299,6 +299,40 @@ public final class OptionsTest
   }
 
   @Test
+  public void testAnOptionWhoseDefaultIsNullCanBeSetOnTheCommandLine ()
+  {
+    // PARSER_SUPER_CLASS and TOKEN_MANAGER_SUPER_CLASS are the only two options with a null
+    // default, so setCmdLineOption had nothing to take the expected type from and threw a
+    // NullPointerException instead of setting them. Setting them in the grammar file always
+    // worked, because setInputFileOption checks for null first
+    Options.setCmdLineOption ("-PARSER_SUPER_CLASS=MySuperParser");
+    assertEquals ("MySuperParser", Options.stringValue (Options.USEROPTION__PARSER_SUPER_CLASS));
+
+    Options.setCmdLineOption ("-TOKEN_MANAGER_SUPER_CLASS=MySuperTokenManager");
+    assertEquals ("MySuperTokenManager", Options.stringValue (Options.USEROPTION__TOKEN_MANAGER_SUPER_CLASS));
+  }
+
+  @Test
+  public void testTheCppOnlyOptionsWarnWhenSetForJava ()
+  {
+    // Both are read by the C++ backend only, and used to be ignored without a word
+    JavaCCErrors.reInit ();
+    Options.setCmdLineOption ("-PARSER_SUPER_CLASS=MySuperParser");
+    Options.normalize ();
+    assertEquals (1, JavaCCErrors.getWarningCount ());
+  }
+
+  @Test
+  public void testTheCppOnlyOptionsDoNotWarnForCpp ()
+  {
+    JavaCCErrors.reInit ();
+    Options.setCmdLineOption ("-OUTPUT_LANGUAGE=c++");
+    Options.setCmdLineOption ("-PARSER_SUPER_CLASS=MySuperParser");
+    Options.normalize ();
+    assertEquals (0, JavaCCErrors.getWarningCount ());
+  }
+
+  @Test
   public void testNormalize ()
   {
     assertFalse (Options.isDebugLookahead ());

@@ -666,8 +666,12 @@ public class Options
 
     val = _upgradeValue (sNameUC, val);
 
+    // PARSER_SUPER_CLASS and TOKEN_MANAGER_SUPER_CLASS default to null, so there is no existing
+    // value to take the expected type from. setInputFileOption has always guarded against that;
+    // this path did not, and setting either of them on the command line threw a
+    // NullPointerException instead of generating anything
     final Object valOrig = optionValues ().get (sNameUC);
-    if (val.getClass () != valOrig.getClass ())
+    if (valOrig != null && val.getClass () != valOrig.getClass ())
     {
       PGPrinter.warn ("Warning: Bad option value in \"" + sArg + "\" will be ignored.");
       return;
@@ -708,6 +712,18 @@ public class Options
                             USEROPTION__JAVA_CHAR_STREAM_TYPE +
                             ".");
     }
+
+    // Both of these are read by the C++ backend only. For Java the parser class declaration comes
+    // from the grammar's own PARSER_BEGIN block, so a super class there is written by hand, and the
+    // token manager code that would have used the other one has been commented out upstream for as
+    // long as this fork exists. Setting either with Java output did nothing at all and said nothing
+    if (getOutputLanguage () != EOutputLanguage.CPP)
+      for (final String sCppOnly : new String [] { USEROPTION__PARSER_SUPER_CLASS,
+                                                   USEROPTION__TOKEN_MANAGER_SUPER_CLASS })
+        if (objectValue (sCppOnly) != null)
+          JavaCCErrors.warning ("Option " +
+                                sCppOnly +
+                                " only has an effect with OUTPUT_LANGUAGE=c++ and is ignored here.");
   }
 
   /**

@@ -81,14 +81,14 @@ public class JJTree
     PGPrinter.info ("");
     PGPrinter.info ("The string valued options are:");
     PGPrinter.info ("");
-    PGPrinter.info ("    JDK_VERSION              (default \"1.5\")");
+    PGPrinter.info ("    JDK_VERSION              (default \"1.8\")");
     PGPrinter.info ("    NODE_CLASS               (default \"\")");
     PGPrinter.info ("    NODE_PREFIX              (default \"AST\")");
     PGPrinter.info ("    NODE_PACKAGE             (default \"\")");
     PGPrinter.info ("    NODE_EXTENDS             (default \"\")");
     PGPrinter.info ("    NODE_FACTORY             (default \"\")");
     PGPrinter.info ("    OUTPUT_FILE              (default remove input file suffix, add .jj)");
-    PGPrinter.info ("    OUTPUT_DIRECTORY         (default \"\")");
+    PGPrinter.info ("    OUTPUT_DIRECTORY         (default \".\")");
     PGPrinter.info ("    JJTREE_OUTPUT_DIRECTORY  (default value of OUTPUT_DIRECTORY option)");
     PGPrinter.info ("    VISITOR_DATA_TYPE        (default \"\")");
     PGPrinter.info ("    VISITOR_RETURN_TYPE      (default \"Object\")");
