@@ -124,17 +124,17 @@ public class NfaState
   @NonNull
   private NfaState _createClone ()
   {
-    final NfaState aRetVal = new NfaState ();
+    final NfaState aResult = new NfaState ();
 
-    aRetVal.m_bIsFinal = m_bIsFinal;
-    aRetVal.m_nKind = m_nKind;
-    aRetVal.m_nLookingFor = m_nLookingFor;
-    aRetVal.m_nLexState = m_nLexState;
-    aRetVal.m_nInNextOf = m_nInNextOf;
+    aResult.m_bIsFinal = m_bIsFinal;
+    aResult.m_nKind = m_nKind;
+    aResult.m_nLookingFor = m_nLookingFor;
+    aResult.m_nLexState = m_nLexState;
+    aResult.m_nInNextOf = m_nInNextOf;
 
-    aRetVal._mergeMoves (this);
+    aResult._mergeMoves (this);
 
-    return aRetVal;
+    return aResult;
   }
 
   private static void _insertInOrder (@NonNull final List <NfaState> v, @NonNull final NfaState s)
@@ -142,10 +142,10 @@ public class NfaState
     int nPos = 0;
     for (; nPos < v.size (); nPos++)
     {
-      final NfaState aTmp = v.get (nPos);
-      if (aTmp.m_nId > s.m_nId)
+      final NfaState aState = v.get (nPos);
+      if (aState.m_nId > s.m_nId)
         break;
-      if (aTmp.m_nId == s.m_nId)
+      if (aState.m_nId == s.m_nId)
         return;
     }
 
@@ -456,23 +456,23 @@ public class NfaState
     aNfa.getMark ()[m_nId] = true;
 
     // Recursively do closure
-    for (final NfaState tmp : m_aEpsilonMoves)
-      tmp._recursiveEpsilonClosure ();
+    for (final NfaState aReached : m_aEpsilonMoves)
+      aReached._recursiveEpsilonClosure ();
 
     // Operate on copy!
-    for (final NfaState tmp : new ArrayList <> (m_aEpsilonMoves))
+    for (final NfaState aReached : new ArrayList <> (m_aEpsilonMoves))
     {
-      for (final NfaState tmp1 : tmp.m_aEpsilonMoves)
+      for (final NfaState aReachedFromThere : aReached.m_aEpsilonMoves)
       {
-        if (tmp1._isUsefulState () && !m_aEpsilonMoves.contains (tmp1))
+        if (aReachedFromThere._isUsefulState () && !m_aEpsilonMoves.contains (aReachedFromThere))
         {
-          _insertInOrder (m_aEpsilonMoves, tmp1);
+          _insertInOrder (m_aEpsilonMoves, aReachedFromThere);
           aNfa.setDone (false);
         }
       }
 
-      if (m_nKind > tmp.m_nKind)
-        m_nKind = tmp.m_nKind;
+      if (m_nKind > aReached.m_nKind)
+        m_nKind = aReached.m_nKind;
     }
 
     if (hasTransitions () && !m_aEpsilonMoves.contains (this))
@@ -492,51 +492,51 @@ public class NfaState
       (m_aRangeMoves != null && m_aRangeMoves[0] != 0));
   }
 
-  private void _mergeMoves (@NonNull final NfaState aOther)
+  private void _mergeMoves (@NonNull final NfaState aSource)
   {
     // Warning : This function does not merge epsilon moves
-    if (m_aAsciiMoves == aOther.m_aAsciiMoves)
+    if (m_aAsciiMoves == aSource.m_aAsciiMoves)
       JavaCCErrors.internalError ();
 
-    m_aAsciiMoves[0] = m_aAsciiMoves[0] | aOther.m_aAsciiMoves[0];
-    m_aAsciiMoves[1] = m_aAsciiMoves[1] | aOther.m_aAsciiMoves[1];
+    m_aAsciiMoves[0] = m_aAsciiMoves[0] | aSource.m_aAsciiMoves[0];
+    m_aAsciiMoves[1] = m_aAsciiMoves[1] | aSource.m_aAsciiMoves[1];
 
-    if (aOther.m_aCharMoves != null)
+    if (aSource.m_aCharMoves != null)
     {
       if (m_aCharMoves == null)
-        m_aCharMoves = aOther.m_aCharMoves;
+        m_aCharMoves = aSource.m_aCharMoves;
       else
       {
-        final char [] aTmpCharMoves = new char [m_aCharMoves.length + aOther.m_aCharMoves.length];
+        final char [] aTmpCharMoves = new char [m_aCharMoves.length + aSource.m_aCharMoves.length];
         System.arraycopy (m_aCharMoves, 0, aTmpCharMoves, 0, m_aCharMoves.length);
         m_aCharMoves = aTmpCharMoves;
 
-        for (final char aCharMove : aOther.m_aCharMoves)
+        for (final char aCharMove : aSource.m_aCharMoves)
           addChar (aCharMove);
       }
     }
 
-    if (aOther.m_aRangeMoves != null)
+    if (aSource.m_aRangeMoves != null)
     {
       if (m_aRangeMoves == null)
-        m_aRangeMoves = aOther.m_aRangeMoves;
+        m_aRangeMoves = aSource.m_aRangeMoves;
       else
       {
-        final char [] aTmpRangeMoves = new char [m_aRangeMoves.length + aOther.m_aRangeMoves.length];
+        final char [] aTmpRangeMoves = new char [m_aRangeMoves.length + aSource.m_aRangeMoves.length];
         System.arraycopy (m_aRangeMoves, 0, aTmpRangeMoves, 0, m_aRangeMoves.length);
         m_aRangeMoves = aTmpRangeMoves;
-        for (int i = 0; i < aOther.m_aRangeMoves.length; i += 2)
-          addRange (aOther.m_aRangeMoves[i], aOther.m_aRangeMoves[i + 1]);
+        for (int i = 0; i < aSource.m_aRangeMoves.length; i += 2)
+          addRange (aSource.m_aRangeMoves[i], aSource.m_aRangeMoves[i + 1]);
       }
     }
 
-    if (aOther.m_nKind < m_nKind)
-      m_nKind = aOther.m_nKind;
+    if (aSource.m_nKind < m_nKind)
+      m_nKind = aSource.m_nKind;
 
-    if (aOther.m_nKindToPrint < m_nKindToPrint)
-      m_nKindToPrint = aOther.m_nKindToPrint;
+    if (aSource.m_nKindToPrint < m_nKindToPrint)
+      m_nKindToPrint = aSource.m_nKindToPrint;
 
-    m_bIsFinal |= aOther.m_bIsFinal;
+    m_bIsFinal |= aSource.m_bIsFinal;
   }
 
   NfaState createEquivState (@NonNull final List <NfaState> aStates)
@@ -549,14 +549,14 @@ public class NfaState
 
     for (int i = 1; i < aStates.size (); i++)
     {
-      final NfaState aTmp2 = (aStates.get (i));
+      final NfaState aThirdState = (aStates.get (i));
 
-      if (aTmp2.m_nKind < aNewState.m_nKind)
-        aNewState.m_nKind = aTmp2.m_nKind;
+      if (aThirdState.m_nKind < aNewState.m_nKind)
+        aNewState.m_nKind = aThirdState.m_nKind;
 
-      aNewState.m_bIsFinal |= aTmp2.m_bIsFinal;
+      aNewState.m_bIsFinal |= aThirdState.m_bIsFinal;
 
-      _insertInOrder (aNewState.m_aNext.m_aEpsilonMoves, aTmp2.m_aNext);
+      _insertInOrder (aNewState.m_aNext.m_aEpsilonMoves, aThirdState.m_aNext);
     }
 
     return aNewState;
@@ -567,27 +567,27 @@ public class NfaState
     final List <NfaState> aAllStates = nfa ().getAllStates ();
     Outer: for (int i = aAllStates.size (); i-- > 0;)
     {
-      final NfaState aOther = aAllStates.get (i);
+      final NfaState aCandidate = aAllStates.get (i);
 
-      if (this != aOther &&
-        aOther.m_nStateName != -1 &&
-        m_nKindToPrint == aOther.m_nKindToPrint &&
-        m_aAsciiMoves[0] == aOther.m_aAsciiMoves[0] &&
-        m_aAsciiMoves[1] == aOther.m_aAsciiMoves[1] &&
-        Arrays.equals (m_aCharMoves, aOther.m_aCharMoves) &&
-        Arrays.equals (m_aRangeMoves, aOther.m_aRangeMoves))
+      if (this != aCandidate &&
+        aCandidate.m_nStateName != -1 &&
+        m_nKindToPrint == aCandidate.m_nKindToPrint &&
+        m_aAsciiMoves[0] == aCandidate.m_aAsciiMoves[0] &&
+        m_aAsciiMoves[1] == aCandidate.m_aAsciiMoves[1] &&
+        Arrays.equals (m_aCharMoves, aCandidate.m_aCharMoves) &&
+        Arrays.equals (m_aRangeMoves, aCandidate.m_aRangeMoves))
       {
-        if (m_aNext == aOther.m_aNext)
-          return aOther;
-        if (m_aNext != null && aOther.m_aNext != null)
+        if (m_aNext == aCandidate.m_aNext)
+          return aCandidate;
+        if (m_aNext != null && aCandidate.m_aNext != null)
         {
-          if (m_aNext.m_aEpsilonMoves.size () == aOther.m_aNext.m_aEpsilonMoves.size ())
+          if (m_aNext.m_aEpsilonMoves.size () == aCandidate.m_aNext.m_aEpsilonMoves.size ())
           {
             for (int j = 0; j < m_aNext.m_aEpsilonMoves.size (); j++)
-              if (m_aNext.m_aEpsilonMoves.get (j) != aOther.m_aNext.m_aEpsilonMoves.get (j))
+              if (m_aNext.m_aEpsilonMoves.get (j) != aCandidate.m_aNext.m_aEpsilonMoves.get (j))
                 continue Outer;
 
-            return aOther;
+            return aCandidate;
           }
         }
       }
@@ -612,11 +612,11 @@ public class NfaState
 
     if (m_nStateName == -1 && hasTransitions ())
     {
-      final NfaState aTmp = _getEquivalentRunTimeState ();
+      final NfaState aState = _getEquivalentRunTimeState ();
 
-      if (aTmp != null)
+      if (aState != null)
       {
-        m_nStateName = aTmp.m_nStateName;
+        m_nStateName = aState.m_nStateName;
         // ????
         // tmp.inNextOf += inNextOf;
         // ????
@@ -636,9 +636,9 @@ public class NfaState
     // Back to front
     for (int i = aNfa.getAllStates ().size () - 1; i >= 0; --i)
     {
-      final NfaState aTmp = aNfa.getAllStates ().get (i);
-      if (!aTmp.m_bClosureDone)
-        aTmp._optimizeEpsilonMoves (true);
+      final NfaState aState = aNfa.getAllStates ().get (i);
+      if (!aState.m_bClosureDone)
+        aState._optimizeEpsilonMoves (true);
     }
 
     // Operate on copy!
@@ -650,13 +650,25 @@ public class NfaState
     {
       for (int i = 0; i < aNfa.getAllStates ().size (); i++)
       {
-        final NfaState aTmp = aNfa.getAllStates ().get (i);
-        final NfaState [] aEpsilonMoveArray = new NfaState [aTmp.m_aEpsilonMoves.size ()];
-        aTmp.m_aEpsilonMoves.toArray (aEpsilonMoveArray);
+        final NfaState aState = aNfa.getAllStates ().get (i);
+        final NfaState [] aEpsilonMoveArray = new NfaState [aState.m_aEpsilonMoves.size ()];
+        aState.m_aEpsilonMoves.toArray (aEpsilonMoveArray);
       }
     }
   }
 
+  /**
+   * Close this state's epsilon moves over the whole graph, then shrink the resulting set.
+   * <p>
+   * After the closure the set can hold states that are indistinguishable, and every one of them
+   * costs a case in the generated token manager. Two passes remove them, repeated until neither
+   * finds anything: states that consume the same characters collapse into one equivalent state,
+   * and states that lead to the same place keep one of their number with the others' character
+   * moves merged in.
+   *
+   * @param bOptReqd
+   *        <code>false</code> to do the closure only and skip the shrinking.
+   */
   private void _optimizeEpsilonMoves (final boolean bOptReqd)
   {
     // First do epsilon closure. nfa () walks a ThreadLocal, so take it once rather than per element
@@ -677,8 +689,8 @@ public class NfaState
     final boolean [] aMark = aNfa.getMark ();
     for (int i = aNfa.getAllStates ().size (); i-- > 0;)
     {
-      final NfaState aTmp = aNfa.getAllStates ().get (i);
-      aTmp.m_bClosureDone = aMark[aTmp.m_nId];
+      final NfaState aState = aNfa.getAllStates ().get (i);
+      aState.m_bClosureDone = aMark[aState.m_nId];
     }
 
     // Warning : The following piece of code is just an optimization.
@@ -686,34 +698,37 @@ public class NfaState
     {
       boolean bSometingOptimized = true;
 
-      NfaState aNewState = null;
-      NfaState aTmp1, aTmp2;
+      NfaState aReplacement = null;
+      NfaState aMove, aOtherMove;
       List <NfaState> aEquivStates = null;
 
       while (bSometingOptimized)
       {
         bSometingOptimized = false;
+
+        // Pass one: states that consume exactly the same characters are interchangeable, so they
+        // collapse into a single equivalent state that carries all their kinds
         for (int i = 0; bOptReqd && i < m_aEpsilonMoves.size (); i++)
         {
-          aTmp1 = m_aEpsilonMoves.get (i);
-          if (aTmp1.hasTransitions ())
+          aMove = m_aEpsilonMoves.get (i);
+          if (aMove.hasTransitions ())
           {
             for (int j = i + 1; j < m_aEpsilonMoves.size (); j++)
             {
-              aTmp2 = m_aEpsilonMoves.get (j);
-              if (aTmp2.hasTransitions () &&
-                (aTmp1.m_aAsciiMoves[0] == aTmp2.m_aAsciiMoves[0] &&
-                  aTmp1.m_aAsciiMoves[1] == aTmp2.m_aAsciiMoves[1] &&
-                  Arrays.equals (aTmp1.m_aCharMoves, aTmp2.m_aCharMoves) &&
-                  Arrays.equals (aTmp1.m_aRangeMoves, aTmp2.m_aRangeMoves)))
+              aOtherMove = m_aEpsilonMoves.get (j);
+              if (aOtherMove.hasTransitions () &&
+                (aMove.m_aAsciiMoves[0] == aOtherMove.m_aAsciiMoves[0] &&
+                  aMove.m_aAsciiMoves[1] == aOtherMove.m_aAsciiMoves[1] &&
+                  Arrays.equals (aMove.m_aCharMoves, aOtherMove.m_aCharMoves) &&
+                  Arrays.equals (aMove.m_aRangeMoves, aOtherMove.m_aRangeMoves)))
               {
                 if (aEquivStates == null)
                 {
                   aEquivStates = new ArrayList <> ();
-                  aEquivStates.add (aTmp1);
+                  aEquivStates.add (aMove);
                 }
 
-                _insertInOrder (aEquivStates, aTmp2);
+                _insertInOrder (aEquivStates, aOtherMove);
                 m_aEpsilonMoves.remove (j--);
               }
             }
@@ -722,54 +737,55 @@ public class NfaState
           if (aEquivStates != null)
           {
             bSometingOptimized = true;
-            final StringBuilder aTmpSB = new StringBuilder (aEquivStates.size () * 6);
-            for (final NfaState equivState : aEquivStates)
-              aTmpSB.append (equivState.m_nId).append (", ");
-            final String sTmp = aTmpSB.toString ();
+            // The set of merged ids is the key, so that the same combination is only built once
+            final StringBuilder aKeySB = new StringBuilder (aEquivStates.size () * 6);
+            for (final NfaState aEquivState : aEquivStates)
+              aKeySB.append (aEquivState.m_nId).append (", ");
+            final String sEquivKey = aKeySB.toString ();
 
-            aNewState = aNfa.equivStatesTable ().get (sTmp);
-            if (aNewState == null)
+            aReplacement = aNfa.equivStatesTable ().get (sEquivKey);
+            if (aReplacement == null)
             {
-              aNewState = createEquivState (aEquivStates);
-              aNfa.equivStatesTable ().put (sTmp, aNewState);
+              aReplacement = createEquivState (aEquivStates);
+              aNfa.equivStatesTable ().put (sEquivKey, aReplacement);
             }
 
             m_aEpsilonMoves.remove (i--);
-            m_aEpsilonMoves.add (aNewState);
+            m_aEpsilonMoves.add (aReplacement);
             aEquivStates = null;
-            aNewState = null;
+            aReplacement = null;
           }
         }
 
+        // Pass two: states that lead to the same place can be replaced by one of them, with the
+        // character moves of the others merged into it
         for (int i = 0; i < m_aEpsilonMoves.size (); i++)
         {
-          // if ((tmp1 = (NfaState)epsilonMoves.elementAt(i)).next == null)
-          // continue;
-          aTmp1 = m_aEpsilonMoves.get (i);
+          aMove = m_aEpsilonMoves.get (i);
 
           for (int j = i + 1; j < m_aEpsilonMoves.size (); j++)
           {
-            aTmp2 = m_aEpsilonMoves.get (j);
+            aOtherMove = m_aEpsilonMoves.get (j);
 
-            if (aTmp1.m_aNext == aTmp2.m_aNext)
+            if (aMove.m_aNext == aOtherMove.m_aNext)
             {
-              if (aNewState == null)
+              if (aReplacement == null)
               {
-                aNewState = aTmp1._createClone ();
-                aNewState.m_aNext = aTmp1.m_aNext;
+                aReplacement = aMove._createClone ();
+                aReplacement.m_aNext = aMove.m_aNext;
                 bSometingOptimized = true;
               }
 
-              aNewState._mergeMoves (aTmp2);
+              aReplacement._mergeMoves (aOtherMove);
               m_aEpsilonMoves.remove (j--);
             }
           }
 
-          if (aNewState != null)
+          if (aReplacement != null)
           {
             m_aEpsilonMoves.remove (i--);
-            m_aEpsilonMoves.add (aNewState);
-            aNewState = null;
+            m_aEpsilonMoves.add (aReplacement);
+            aReplacement = null;
           }
         }
       }
@@ -852,11 +868,11 @@ public class NfaState
 
     final int [] aStates = aNfa.allNextStates ().get (s);
 
-    for (final int aState : aStates)
+    for (final int nStateName : aStates)
     {
-      final NfaState aTmp = aNfa.indexedAllStates ().get (aState);
+      final NfaState aState = aNfa.indexedAllStates ().get (nStateName);
 
-      if ((aTmp.m_aAsciiMoves[c / 64] & (1L << c % 64)) != 0L)
+      if ((aState.m_aAsciiMoves[c / 64] & (1L << c % 64)) != 0L)
         return true;
     }
 
@@ -954,26 +970,26 @@ public class NfaState
 
     for (int i = 0; i < nSz; i++)
     {
-      final NfaState aTmp1 = aStates[i];
-      if (aTmp1 == null)
+      final NfaState aOtherState = aStates[i];
+      if (aOtherState == null)
         break;
 
-      if (aTmp1._canMoveUsingChar (c))
+      if (aOtherState._canMoveUsingChar (c))
       {
-        if (aTmp1.m_nKindToPrint != Integer.MAX_VALUE)
+        if (aOtherState.m_nKindToPrint != Integer.MAX_VALUE)
         {
           aNewStates[nStart] = null;
           return 1;
         }
 
-        final List <NfaState> v = aTmp1.m_aNext.m_aEpsilonMoves;
+        final List <NfaState> v = aOtherState.m_aNext.m_aEpsilonMoves;
         for (int j = v.size () - 1; j >= 0; j--)
         {
-          final NfaState aTmp2 = v.get (j);
-          if (aTmp2.m_nRound != nRound)
+          final NfaState aThirdState = v.get (j);
+          if (aThirdState.m_nRound != nRound)
           {
-            aTmp2.m_nRound = nRound;
-            aNewStates[nStart++] = aTmp2;
+            aThirdState.m_nRound = nRound;
+            aNewStates[nStart++] = aThirdState;
           }
         }
       }
@@ -1195,9 +1211,9 @@ public class NfaState
     final NfaBuildState aNfa = nfa ();
     for (int i = 0; i < aNfa.nonAsciiTableForMethod ().size (); i++)
     {
-      final NfaState aTmp = aNfa.nonAsciiTableForMethod ().get (i);
-      if (_equalLoByteVectors (m_aLoByteVec, aTmp.m_aLoByteVec) &&
-        Arrays.equals (m_aNonAsciiMoveIndices, aTmp.m_aNonAsciiMoveIndices))
+      final NfaState aState = aNfa.nonAsciiTableForMethod ().get (i);
+      if (_equalLoByteVectors (m_aLoByteVec, aState.m_aLoByteVec) &&
+        Arrays.equals (m_aNonAsciiMoveIndices, aState.m_aNonAsciiMoveIndices))
       {
         m_nNonAsciiMethod = i;
         return;
@@ -1261,14 +1277,14 @@ public class NfaState
       return aNameSet[0];
     }
 
-    for (final int aElement : aNameSet)
+    for (final int aStateName : aNameSet)
     {
-      if (aElement == -1)
+      if (aStateName == -1)
         continue;
 
-      final NfaState aSt = aNfa.indexedAllStates ().get (aElement);
-      aSt.m_bIsComposite = true;
-      aSt.m_aCompositeStates = aNameSet;
+      final NfaState aMember = aNfa.indexedAllStates ().get (aStateName);
+      aMember.m_bIsComposite = true;
+      aMember.m_aCompositeStates = aNameSet;
     }
 
     while (nToRet < aNameSet.length && (bStarts && aNfa.indexedAllStates ().get (aNameSet[nToRet]).m_nInNextOf > 1))
@@ -1278,11 +1294,11 @@ public class NfaState
     {
       if (!s.equals (sStateSetString) && _intersect (sStateSetString, s))
       {
-        final int [] aOther = aNfa.compositeStateTable ().get (s);
+        final int [] aOverlappingSet = aNfa.compositeStateTable ().get (s);
 
         while (nToRet < aNameSet.length &&
           ((bStarts && aNfa.indexedAllStates ().get (aNameSet[nToRet]).m_nInNextOf > 1) ||
-            _elemOccurs (aNameSet[nToRet], aOther) >= 0))
+            _elemOccurs (aNameSet[nToRet], aOverlappingSet) >= 0))
           nToRet++;
       }
     }
@@ -1364,12 +1380,12 @@ public class NfaState
       int nCnt = 0;
       for (final int [] set : aNfa.orderedStateSet ())
       {
-        for (final int aElement : set)
+        for (final int nStateName : set)
         {
           if (nCnt++ % 16 == 0)
             aCodeGenerator.genCode ("\n   ");
 
-          aCodeGenerator.genCode (aElement + ", ");
+          aCodeGenerator.genCode (nStateName + ", ");
         }
       }
     }
@@ -1603,13 +1619,13 @@ public class NfaState
       return false;
 
     final Map <String, int []> aOccursIn = new HashMap <> ();
-    final NfaState aTmp = aNfa.getAllStates ().get (aNameSet[0]);
+    final NfaState aState = aNfa.getAllStates ().get (aNameSet[0]);
 
     for (int i = 1; i < aNameSet.length; i++)
     {
-      final NfaState aTmp1 = aNfa.getAllStates ().get (aNameSet[i]);
+      final NfaState aOtherState = aNfa.getAllStates ().get (aNameSet[i]);
 
-      if (aTmp.m_nInNextOf != aTmp1.m_nInNextOf)
+      if (aState.m_nInNextOf != aOtherState.m_nInNextOf)
         return false;
     }
 
@@ -1623,9 +1639,9 @@ public class NfaState
 
       int nIsPresent = 0;
       int j = 0;
-      for (final int aElement : aNameSet)
+      for (final int nStateName : aNameSet)
       {
-        if (_elemOccurs (aElement, aTmpSet) >= 0)
+        if (_elemOccurs (nStateName, aTmpSet) >= 0)
           nIsPresent++;
         else
           if (nIsPresent > 0)
@@ -1672,7 +1688,7 @@ public class NfaState
   {
     final NfaBuildState aNfa = nfa ();
     final Map <String, int []> aFixedSets = new HashMap <> ();
-    final int [] aTmp = new int [aNfa.getGeneratedStates ()];
+    final int [] aFixedSet = new int [aNfa.getGeneratedStates ()];
 
     for (final Map.Entry <String, int []> aEntry : aNfa.stateSetsToFix ().entrySet ())
     {
@@ -1681,15 +1697,15 @@ public class NfaState
       int nCnt = 0;
 
       // System.out.print("Fixing : ");
-      for (final int aElement : aToFix)
+      for (final int nStateName : aToFix)
       {
         // System.out.print(toFix[i] + ", ");
-        if (aElement != -1)
-          aTmp[nCnt++] = aElement;
+        if (nStateName != -1)
+          aFixedSet[nCnt++] = nStateName;
       }
 
       final int [] aFixed = new int [nCnt];
-      System.arraycopy (aTmp, 0, aFixed, 0, nCnt);
+      System.arraycopy (aFixedSet, 0, aFixed, 0, nCnt);
       aFixedSets.put (s, aFixed);
       aNfa.allNextStates ().put (s, aFixed);
       // System.out.println(" as " + GetStateSetString(fixed));
@@ -1799,7 +1815,7 @@ public class NfaState
     final int [] aCardinalities = new int [aStates.length];
     List <NfaState> aOriginal = new ArrayList <> ();
     final List <List <NfaState>> aPartition = new ArrayList <> ();
-    NfaState aTmp;
+    NfaState aState;
 
     for (@SuppressWarnings ("unused")
     final int x : aStates)
@@ -1808,12 +1824,12 @@ public class NfaState
     int nCnt = 0;
     for (int i = 0; i < aStates.length; i++)
     {
-      aTmp = nfa ().getAllStates ().get (aStates[i]);
+      aState = nfa ().getAllStates ().get (aStates[i]);
 
-      if (aTmp.m_aAsciiMoves[nByteNum] != 0L)
+      if (aState.m_aAsciiMoves[nByteNum] != 0L)
       {
         int j;
-        final int p = _numberOfBitsSet (aTmp.m_aAsciiMoves[nByteNum]);
+        final int p = _numberOfBitsSet (aState.m_aAsciiMoves[nByteNum]);
 
         for (j = 0; j < i; j++)
           if (aCardinalities[j] <= p)
@@ -1824,7 +1840,7 @@ public class NfaState
 
         aCardinalities[j] = p;
 
-        aOriginal.add (j, aTmp);
+        aOriginal.add (j, aState);
         nCnt++;
       }
     }
@@ -1837,20 +1853,20 @@ public class NfaState
 
     while (!aOriginal.isEmpty ())
     {
-      aTmp = aOriginal.remove (0);
+      aState = aOriginal.remove (0);
 
-      long nBitVec = aTmp.m_aAsciiMoves[nByteNum];
+      long nBitVec = aState.m_aAsciiMoves[nByteNum];
       final List <NfaState> aSubSet = new ArrayList <> ();
-      aSubSet.add (aTmp);
+      aSubSet.add (aState);
 
       for (int j = 0; j < aOriginal.size (); j++)
       {
-        final NfaState aTmp1 = aOriginal.get (j);
+        final NfaState aOtherState = aOriginal.get (j);
 
-        if ((aTmp1.m_aAsciiMoves[nByteNum] & nBitVec) == 0L)
+        if ((aOtherState.m_aAsciiMoves[nByteNum] & nBitVec) == 0L)
         {
-          nBitVec |= aTmp1.m_aAsciiMoves[nByteNum];
-          aSubSet.add (aTmp1);
+          nBitVec |= aOtherState.m_aAsciiMoves[nByteNum];
+          aSubSet.add (aOtherState);
           aOriginal.remove (j--);
         }
       }
@@ -1907,25 +1923,25 @@ public class NfaState
     String sToPrint = "";
     final boolean bStateBlock = (aNfa.stateBlockTable ().get (sKey) != null);
 
-    for (final int aElement : aNameSet)
+    for (final int nStateName : aNameSet)
     {
-      final NfaState aTmp = aNfa.getAllStates ().get (aElement);
+      final NfaState aState = aNfa.getAllStates ().get (nStateName);
 
-      if (aTmp.m_aAsciiMoves[nByteNum] != 0L)
+      if (aState.m_aAsciiMoves[nByteNum] != 0L)
       {
         if (nNeededStates++ == 1)
           break;
-        aToBePrinted = aTmp;
+        aToBePrinted = aState;
       }
       else
-        aDumped[aTmp.m_nStateName] = true;
+        aDumped[aState.m_nStateName] = true;
 
-      if (aTmp.m_aStateForCase != null)
+      if (aState.m_aStateForCase != null)
       {
         if (aStateForCase != null)
           JavaCCErrors.internalError ();
 
-        aStateForCase = aTmp.m_aStateForCase;
+        aStateForCase = aState.m_aStateForCase;
       }
     }
 
@@ -2367,30 +2383,30 @@ public class NfaState
 
     NfaState aToBePrinted = null;
     int nNeededStates = 0;
-    NfaState aTmp;
+    NfaState aState;
     NfaState aStateForCase = null;
     String sToPrint = "";
     final boolean bStateBlock = (aNfa.stateBlockTable ().get (sKey) != null);
 
-    for (final int aElement : aNameSet)
+    for (final int nStateName : aNameSet)
     {
-      aTmp = aNfa.getAllStates ().get (aElement);
+      aState = aNfa.getAllStates ().get (nStateName);
 
-      if (aTmp.m_nNonAsciiMethod != -1)
+      if (aState.m_nNonAsciiMethod != -1)
       {
         if (nNeededStates++ == 1)
           break;
-        aToBePrinted = aTmp;
+        aToBePrinted = aState;
       }
       else
-        aDumped[aTmp.m_nStateName] = true;
+        aDumped[aState.m_nStateName] = true;
 
-      if (aTmp.m_aStateForCase != null)
+      if (aState.m_aStateForCase != null)
       {
         if (aStateForCase != null)
           JavaCCErrors.internalError ();
 
-        aStateForCase = aTmp.m_aStateForCase;
+        aStateForCase = aState.m_aStateForCase;
       }
     }
 
@@ -2429,15 +2445,15 @@ public class NfaState
     if (nKeyState < aNfa.getGeneratedStates ())
       aDumped[nKeyState] = true;
 
-    for (final int aElement : aNameSet)
+    for (final int nStateName : aNameSet)
     {
-      aTmp = aNfa.getAllStates ().get (aElement);
+      aState = aNfa.getAllStates ().get (nStateName);
 
-      if (aTmp.m_nNonAsciiMethod != -1)
+      if (aState.m_nNonAsciiMethod != -1)
       {
         if (bStateBlock)
-          aDumped[aTmp.m_nStateName] = true;
-        aTmp._dumpNonAsciiMoveForCompositeState (aCodeGenerator);
+          aDumped[aState.m_nStateName] = true;
+        aState._dumpNonAsciiMoveForCompositeState (aCodeGenerator);
       }
     }
 
@@ -2858,9 +2874,9 @@ public class NfaState
 
     for (int j = 0; j < v.size (); j++)
     {
-      final NfaState aTmp = v.get (j);
-      if (aTmp.m_nStateName != -1 && !aTmp.m_bDummy)
-        aNfa.getAllStates ().set (aTmp.m_nStateName, aTmp);
+      final NfaState aState = v.get (j);
+      if (aState.m_nStateName != -1 && !aState.m_bDummy)
+        aNfa.getAllStates ().set (aState.m_nStateName, aState);
     }
   }
 
@@ -3002,16 +3018,16 @@ public class NfaState
         if (nState == -1)
           continue;
 
-        final NfaState aTmp = aNfa.getAllStates ().get (nState);
+        final NfaState aState = aNfa.getAllStates ().get (nState);
 
-        if (!aTmp.m_bIsComposite && aTmp.m_nInNextOf == 1)
+        if (!aState.m_bIsComposite && aState.m_nInNextOf == 1)
         {
           if (aPut[nState])
             JavaCCErrors.internalError ();
 
           nFoundAt = i;
           nCnt++;
-          aStateForCase = aTmp;
+          aStateForCase = aState;
           aPut[nState] = true;
 
           // System.out.print(state + " : " + tmp.inNextOf + ", ");
@@ -3029,9 +3045,9 @@ public class NfaState
         if (nState == -1)
           continue;
 
-        final NfaState aTmp = aNfa.getAllStates ().get (nState);
+        final NfaState aState = aNfa.getAllStates ().get (nState);
 
-        if (!aPut[nState] && aTmp.m_nInNextOf > 1 && !aTmp.m_bIsComposite && aTmp.m_aStateForCase == null)
+        if (!aPut[nState] && aState.m_nInNextOf > 1 && !aState.m_bIsComposite && aState.m_aStateForCase == null)
         {
           nCnt++;
           aNexts[i] = -1;
@@ -3041,8 +3057,8 @@ public class NfaState
           aNexts[0] = aNexts[nFoundAt];
           aNexts[nFoundAt] = nToSwap;
 
-          aTmp.m_aStateForCase = aStateForCase;
-          aStateForCase.m_aStateForCase = aTmp;
+          aState.m_aStateForCase = aStateForCase;
+          aStateForCase.m_aStateForCase = aState;
           aNfa.stateSetsToFix ().put (s, aNexts);
 
           // System.out.println("For : " + s + "; " + stateForCase.stateName +
@@ -3058,8 +3074,8 @@ public class NfaState
         if (nState == -1)
           continue;
 
-        final NfaState aTmp = aNfa.getAllStates ().get (nState);
-        if (aTmp.m_nInNextOf <= 1)
+        final NfaState aState = aNfa.getAllStates ().get (nState);
+        if (aState.m_nInNextOf <= 1)
           aPut[nState] = false;
       }
     }
@@ -3429,8 +3445,8 @@ public class NfaState
 
         aCodeGenerator.genCode ("   { ");
 
-        for (final int aElement : aStateSet)
-          aCodeGenerator.genCode (aElement + ", ");
+        for (final int nStateName : aStateSet)
+          aCodeGenerator.genCode (nStateName + ", ");
 
         aCodeGenerator.genCodeLine ("};");
       }
@@ -3497,8 +3513,8 @@ public class NfaState
           else
           {
             aCodeGenerator.genCode ("   { ");
-            for (final int aElement : aStateSet)
-              aCodeGenerator.genCode (aElement + ", ");
+            for (final int nStateName : aStateSet)
+              aCodeGenerator.genCode (nStateName + ", ");
             aCodeGenerator.genCodeLine ("},");
           }
         }
@@ -3564,7 +3580,7 @@ public class NfaState
         {
           nCnt = 0;
           aCodeGenerator.genCode ("{ ");
-          for (final int aElement : aKind)
+          for (final int nStateName : aKind)
           {
             if (nCnt % 15 == 0)
               aCodeGenerator.genCode ("\n  ");
@@ -3572,7 +3588,7 @@ public class NfaState
               if (nCnt > 1)
                 aCodeGenerator.genCode (" ");
 
-            aCodeGenerator.genCode (aElement + ", ");
+            aCodeGenerator.genCode (nStateName + ", ");
           }
 
           aCodeGenerator.genCode ("}");
@@ -3629,15 +3645,15 @@ public class NfaState
     NfaState aStartState = null;
     for (int i = 0; i < aNfa.getAllStates ().size (); i++)
     {
-      final NfaState aTmp = aNfa.getAllStates ().get (i);
-      if (aTmp.m_nStateName == -1)
+      final NfaState aState = aNfa.getAllStates ().get (i);
+      if (aState.m_nStateName == -1)
         continue;
-      if (!aDone.add (Integer.valueOf (aTmp.m_nStateName)))
+      if (!aDone.add (Integer.valueOf (aState.m_nStateName)))
         continue;
-      aCleanStates.add (aTmp);
-      if (aTmp.m_nStateName == nStartStateName)
+      aCleanStates.add (aState);
+      if (aState.m_nStateName == nStartStateName)
       {
-        aStartState = aTmp;
+        aStartState = aState;
       }
     }
 

@@ -39,9 +39,25 @@ import com.helger.pgcc.context.LookaheadState;
  * Describes a match, within a given lookahead. The depth of that lookahead comes from
  * {@link LookaheadState}, which is per generator run.
  */
+/**
+ * One possible sequence of token kinds, of length up to {@link LookaheadState#getLimit()}. The
+ * FIRST and FOLLOW computation in {@code LookaheadWalk} extends these, and two expansions are
+ * ambiguous at length k exactly when their sets share one.
+ * <p>
+ * Not a record, although it looks like one. The fill level is assigned from outside in four places
+ * - {@code LookaheadCalc} resets it to 0 to reuse an instance, {@code LookaheadWalk} advances it
+ * after writing a kind - so this is mutable state rather than a value, and a record's components
+ * are final. Making it one would mean allocating a new instance per token appended, which is the
+ * opposite of cheaper. A record would not give direct field access either: components are exposed
+ * as accessor methods, exactly like the getters here.
+ * <p>
+ * Performance does not argue for it in any case. Everything that touches this type accounts for
+ * under one percent of a generator run.
+ */
 public class MatchInfo
 {
   private int [] m_aMatch = new int [LookaheadState.current ().getLimit ()];
+  private int m_nFirstFreeLoc;
 
   /**
    * @return The value of m_aMatch.
@@ -59,7 +75,6 @@ public class MatchInfo
   {
     m_aMatch = aValue;
   }
-  private int m_nFirstFreeLoc;
 
   /**
    * @return The value of m_nFirstFreeLoc.
