@@ -348,16 +348,17 @@ public final class JavaCCGlobals
   {
     String sRetval = "";
     int nIndex = 1;
-    char cCh, cCh1;
-    int nOrdinal;
     while (nIndex < sStr.length () - 1)
     {
-      if (sStr.charAt (nIndex) != '\\')
+      char cCh = sStr.charAt (nIndex);
+      if (cCh != '\\')
       {
-        sRetval += sStr.charAt (nIndex);
+        sRetval += cCh;
         nIndex++;
         continue;
       }
+
+      // Skip backslash
       nIndex++;
       cCh = sStr.charAt (nIndex);
       if (cCh == 'b')
@@ -410,9 +411,9 @@ public final class JavaCCGlobals
       }
       if (cCh >= '0' && cCh <= '7')
       {
-        nOrdinal = (cCh) - ('0');
+        int nOrdinal = (cCh) - ('0');
         nIndex++;
-        cCh1 = sStr.charAt (nIndex);
+        char cCh1 = sStr.charAt (nIndex);
         if (cCh1 >= '0' && cCh1 <= '7')
         {
           nOrdinal = nOrdinal * 8 + (cCh1) - ('0');
@@ -433,7 +434,7 @@ public final class JavaCCGlobals
         cCh = sStr.charAt (nIndex);
         if (_isHexchar (cCh))
         {
-          nOrdinal = _getHexVal (cCh);
+          int nOrdinal = _getHexVal (cCh);
           nIndex++;
           cCh = sStr.charAt (nIndex);
           if (_isHexchar (cCh))
@@ -471,7 +472,7 @@ public final class JavaCCGlobals
     return sRetval;
   }
 
-  public static String addEscapes (@NonNull final String sStr)
+  public static @NonNull String addEscapes (@NonNull final String sStr)
   {
     final StringBuilder aRetVal = new StringBuilder (sStr.length () * 2);
     for (final char ch : sStr.toCharArray ())

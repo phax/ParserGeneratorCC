@@ -46,9 +46,12 @@ import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.base.string.StringHelper;
 import com.helger.base.io.nonblocking.NonBlockingBufferedWriter;
 import com.helger.base.io.nonblocking.NonBlockingStringWriter;
 import com.helger.io.file.FileHelper;
+import com.helger.pgcc.context.LexerState;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.utils.OutputFileGenerator;
@@ -77,7 +80,19 @@ public abstract class AbstractCodeGenerator
   protected AbstractCodeGenerator ()
   {}
 
+  /**
+   * The token manager generation of the current run.
+   * <p>
+   * This lives here rather than on one of the two lexer generators because both of them need it
+   * and neither is a kind of the other.
+   *
+   * @return The lexer state of the current run. Never <code>null</code>.
+   */
   @NonNull
+
+
+
+
   /**
    * @return The language being generated. Never <code>null</code>.
    */

@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.helger.pgcc.CPG;
-import com.helger.pgcc.output.java.ParseGenJava;
+import com.helger.pgcc.parser.AbstractCodeGenerator;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.MetaParseException;
@@ -52,7 +52,7 @@ import com.helger.pgcc.parser.Token;
 /**
  * Generate the parser.
  */
-public class ParseGenCpp extends ParseGenJava
+public class ParseGenCpp extends AbstractCodeGenerator
 {
   /** Default constructor. */
   public ParseGenCpp ()

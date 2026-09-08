@@ -54,6 +54,7 @@ import com.helger.base.string.StringHelper;
 import com.helger.pgcc.CPG;
 import com.helger.pgcc.context.LexerState;
 import com.helger.pgcc.context.PGCCContext;
+import com.helger.pgcc.output.AbstractLexGenJavaLike;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.OutputHelper;
 import com.helger.pgcc.parser.AbstractCodeGenerator;
@@ -74,21 +75,11 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
 /**
  * Generate lexer.
  */
-public class LexGenJava extends AbstractCodeGenerator
+public class LexGenJava extends AbstractLexGenJavaLike
 {
   /** Default constructor. */
   public LexGenJava ()
   {}
-
-  /**
-   * @return The token manager generation state of the current run. Never <code>null</code>. This
-   *         replaces the 43 static fields this class used to keep.
-   */
-  @NonNull
-  public static LexerState lexer ()
-  {
-    return PGCCContext.current ().lexer ();
-  }
 
   private static final String DUMP_STATIC_VAR_DECLARATIONS_TEMPLATE_RESOURCE_URL = "/templates/java/DumpStaticVarDeclarations.template";
   private static final String DUMP_DEBUG_METHODS_TEMPLATE_RESOURCE_URL = "/templates/java/DumpDebugMethods.template";
@@ -240,39 +231,6 @@ public class LexGenJava extends AbstractCodeGenerator
     }
   }
 
-  @Override
-  public void writeTemplate (final String sName, @Nullable final Map <String, Object> aAdditionalOptions)
-                                                                                                          throws IOException
-  {
-    final Map <String, Object> aOptions = Options.getAllOptions ();
-    aOptions.put ("maxOrdinal", Integer.valueOf (lexer ().getMaxOrdinal ()));
-    aOptions.put ("maxLexStates", Integer.valueOf (lexer ().getMaxLexStates ()));
-    aOptions.put ("hasEmptyMatch", Boolean.valueOf (lexer ().isHasEmptyMatch ()));
-    aOptions.put ("hasSkip", Boolean.valueOf (lexer ().isHasSkip ()));
-    aOptions.put ("hasMore", Boolean.valueOf (lexer ().isHasMore ()));
-    aOptions.put ("hasSpecial", Boolean.valueOf (lexer ().isHasSpecial ()));
-    aOptions.put ("hasMoreActions", Boolean.valueOf (lexer ().isHasMoreActions ()));
-    aOptions.put ("hasSkipActions", Boolean.valueOf (lexer ().isHasSkipActions ()));
-    aOptions.put ("hasTokenActions", Boolean.valueOf (lexer ().isHasTokenActions ()));
-    aOptions.put ("stateSetSize", Integer.valueOf (lexer ().getStateSetSize ()));
-    aOptions.put ("hasActions",
-                  Boolean.valueOf (lexer ().isHasMoreActions () ||
-                                   lexer ().isHasSkipActions () ||
-                                   lexer ().isHasTokenActions ()));
-    aOptions.put ("tokMgrClassName", lexer ().getTokenMgrClassName ());
-    int x = 0;
-    for (final int l : lexer ().getMaxLongsReqd ())
-      x = Math.max (x, l);
-    aOptions.put ("maxLongs", Integer.valueOf (x));
-    aOptions.put ("cu_name", grammar ().getParserName ());
-
-    // options.put("", .valueOf(maxOrdinal));
-    if (aAdditionalOptions != null)
-      aOptions.putAll (aAdditionalOptions);
-
-    super.writeTemplate (sName, aOptions);
-  }
-
   private void _dumpDebugMethods () throws IOException
   {
     writeTemplate (DUMP_DEBUG_METHODS_TEMPLATE_RESOURCE_URL, null);
@@ -348,14 +306,6 @@ public class LexGenJava extends AbstractCodeGenerator
     lexer ().setCanReachOnMore (new boolean [lexer ().getMaxLexStates ()]);
   }
 
-  private static int _getIndex (final String sName)
-  {
-    for (int i = 0; i < lexer ().getLexStateName ().length; i++)
-      if (lexer ().getLexStateName ()[i] != null && lexer ().getLexStateName ()[i].equals (sName))
-        return i;
-
-    throw new IllegalStateException ("Should never come here");
-  }
 
   public static void addCharToSkip (final char c, final int nKind)
   {
@@ -697,91 +647,6 @@ public class LexGenJava extends AbstractCodeGenerator
     }
   }
 
-  protected static void checkEmptyStringMatch ()
-  {
-    final boolean [] aSeen = new boolean [lexer ().getMaxLexStates ()];
-    final boolean [] aDone = new boolean [lexer ().getMaxLexStates ()];
-
-    Outer: for (int i = 0; i < lexer ().getMaxLexStates (); i++)
-    {
-      if (aDone[i] ||
-          lexer ().getInitMatch ()[i] == 0 ||
-          lexer ().getInitMatch ()[i] == Integer.MAX_VALUE ||
-          lexer ().getCanMatchAnyChar ()[i] != -1)
-        continue;
-
-      aDone[i] = true;
-      int nLen = 0;
-      final StringBuilder aCycle = new StringBuilder ();
-      String sReList = "";
-
-      for (int k = 0; k < lexer ().getMaxLexStates (); k++)
-        aSeen[k] = false;
-
-      int j = i;
-      aSeen[i] = true;
-      aCycle.append (lexer ().getLexStateName ()[j]).append ("-->");
-      while (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]] != null)
-      {
-        aCycle.append (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]]);
-        if (aSeen[j = _getIndex (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]])])
-          break;
-
-        aCycle.append ("-->");
-        aDone[j] = true;
-        aSeen[j] = true;
-        if (lexer ().getInitMatch ()[j] == 0 ||
-            lexer ().getInitMatch ()[j] == Integer.MAX_VALUE ||
-            lexer ().getCanMatchAnyChar ()[j] != -1)
-          continue Outer;
-        if (nLen != 0)
-          sReList += "; ";
-        sReList += "line " +
-                   lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getLineNumber () +
-                   ", column " +
-                   lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getColumnNumber ();
-        nLen++;
-      }
-
-      if (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]] == null)
-        aCycle.append (lexer ().getLexStateName ()[lexer ().getLexStates ()[lexer ().getInitMatch ()[j]]]);
-
-      for (int k = 0; k < lexer ().getMaxLexStates (); k++)
-        lexer ().getCanLoop ()[k] |= aSeen[k];
-
-      lexer ().setHasLoop (true);
-      final String sLabel = lexer ().getRexprs ()[lexer ().getInitMatch ()[i]].getLabel ();
-      if (nLen == 0)
-      {
-        JavaCCErrors.warning (lexer ().getRexprs ()[lexer ().getInitMatch ()[i]],
-                              "Regular expression" +
-                                                                                  (StringHelper.isEmpty (sLabel) ? ""
-                                                                                                                 : " for " +
-                                                                                                                   sLabel) +
-                                                                                  " can be matched by the empty string (\"\") in lexical state " +
-                                                                                  lexer ().getLexStateName ()[i] +
-                                                                                  ". This can result in an endless loop of " +
-                                                                                  "empty string matches.");
-      }
-      else
-      {
-        JavaCCErrors.warning (lexer ().getRexprs ()[lexer ().getInitMatch ()[i]],
-                              "Regular expression" +
-                                                                                  (StringHelper.isEmpty (sLabel) ? ""
-                                                                                                                 : " for " +
-                                                                                                                   sLabel) +
-                                                                                  " can be matched by the empty string (\"\") in lexical state " +
-                                                                                  lexer ().getLexStateName ()[i] +
-                                                                                  ". This regular expression along with the " +
-                                                                                  "regular expressions at " +
-                                                                                  sReList +
-                                                                                  " forms the cycle \n   " +
-                                                                                  aCycle.append ("\ncontaining regular expressions with empty matches.")
-                                                                                        .append (" This can result in an endless loop of empty string matches.")
-                                                                                        .toString ());
-      }
-    }
-  }
 
   private void _dumpStaticVarDeclarations (final String sCharStreamName) throws IOException
   {
@@ -870,14 +735,6 @@ public class LexGenJava extends AbstractCodeGenerator
   }
 
   // Assumes l != 0L
-  protected static char maxChar (final long l)
-  {
-    for (int i = 64; i-- > 0;)
-      if ((l & (1L << i)) != 0L)
-        return (char) i;
-
-    return 0xffff;
-  }
 
   private void _dumpFillToken ()
   {

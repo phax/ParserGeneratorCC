@@ -51,6 +51,7 @@ import com.helger.pgcc.CPG;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.OutputHelper;
 import com.helger.pgcc.output.java.LexGenJava;
+import com.helger.pgcc.output.AbstractLexGenJavaLike;
 import com.helger.pgcc.parser.ETokenKind;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCParserConstants;
@@ -68,7 +69,7 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
 /**
  * Generate lexer.
  */
-public class LexGenCpp extends LexGenJava
+public class LexGenCpp extends AbstractLexGenJavaLike
 {
   /** Default constructor. */
   public LexGenCpp ()
@@ -314,16 +315,7 @@ public class LexGenCpp extends LexGenJava
     lexer ().setCanReachOnMore (new boolean [lexer ().getMaxLexStates ()]);
   }
 
-  private static int _getIndex (final String sName)
-  {
-    for (int i = 0; i < lexer ().getLexStateName ().length; i++)
-      if (lexer ().getLexStateName ()[i] != null && lexer ().getLexStateName ()[i].equals (sName))
-        return i;
 
-    throw new IllegalStateException ("Should never come here");
-  }
-
-  @Override
   public void start () throws IOException
   {
     if (!Options.isBuildTokenManager () || Options.isUserTokenManager () || JavaCCErrors.getErrorCount () > 0)

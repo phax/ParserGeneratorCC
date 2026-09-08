@@ -91,6 +91,7 @@ v3.0.0 - work in progress
 * Generation of grammars whose tokens are built from character classes is about three times faster. The NFA construction was resolving the `ThreadLocal` that holds the run's state once per element rather than once per call - in one case for every state, for every state
 * **Breaking API change** Method names use camel case throughout: `JavaCCErrors.parse_error` is `parseError`, `semantic_error` is `semanticError`, `FilesJava.gen_Token` is `genToken` and so on for 27 names. The `jj_` and `trace_` methods of *generated* parsers keep their names - grammar action code calls them
 * **Breaking API change** `CodeGenerator` is `AbstractCodeGenerator` and is abstract - nothing outside the tests ever instantiated it. The two C++ only methods it carried, `genStringLiteralArrayCPP` and `genStringLiteralInCPP`, moved into `LexGenCpp` where the only caller is
+* **Breaking API change** The C++ generators no longer extend the Java ones. `LexGenCpp` and `LexGenJava` share the new `com.helger.pgcc.output.AbstractLexGenJavaLike`, and `ParseGenCpp` extends `AbstractCodeGenerator` directly - it inherited nothing from `ParseGenJava` at all
 * **Breaking API change** Removed `JavaCCErrors.reInit ()`, deprecated since the error counters moved into `PGCCContext`
 
 v2.0.3 - 2026-09-08
