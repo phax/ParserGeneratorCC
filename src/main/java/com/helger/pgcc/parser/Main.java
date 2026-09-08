@@ -168,17 +168,8 @@ public class Main
 
   private static String _padRight (@NonNull final String sName, final int nMaxLengthInt)
   {
-    final int nNameLength = sName.length ();
-    if (nNameLength == nMaxLengthInt)
-      return sName;
-
-    final int nCharsToPad = nMaxLengthInt - nNameLength;
-    final StringBuilder aSB = new StringBuilder (nCharsToPad);
-    aSB.append (sName);
-    for (int i = 0; i < nCharsToPad; i++)
-      aSB.append (" ");
-
-    return aSB.toString ();
+    final int nCharsToPad = nMaxLengthInt - sName.length ();
+    return nCharsToPad <= 0 ? sName : sName + " ".repeat (nCharsToPad);
   }
 
   /**

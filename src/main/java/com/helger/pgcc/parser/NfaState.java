@@ -1197,7 +1197,7 @@ public class NfaState
     {
       final NfaState aTmp = aNfa.nonAsciiTableForMethod ().get (i);
       if (_equalLoByteVectors (m_aLoByteVec, aTmp.m_aLoByteVec) &&
-        _equalNonAsciiMoveIndices (m_aNonAsciiMoveIndices, aTmp.m_aNonAsciiMoveIndices))
+        Arrays.equals (m_aNonAsciiMoveIndices, aTmp.m_aNonAsciiMoveIndices))
       {
         m_nNonAsciiMethod = i;
         return;
@@ -1208,45 +1208,25 @@ public class NfaState
     aNfa.nonAsciiTableForMethod ().add (this);
   }
 
-  private static boolean _equalLoByteVectors (@Nullable final List <Integer> vec1, @Nullable final List <Integer> aVec2)
+  /**
+   * Compare two low byte vectors.
+   * <p>
+   * This is {@link List#equals(Object)} with one deliberate difference: two <code>null</code>
+   * vectors are <em>not</em> equal here. A state with no low byte vector is not interchangeable
+   * with another one that has none, so {@code Objects.equals} would be wrong.
+   *
+   * @param aVec1
+   *        The first vector. May be <code>null</code>.
+   * @param aVec2
+   *        The second vector. May be <code>null</code>.
+   * @return <code>true</code> if both are present and hold the same values.
+   */
+  private static boolean _equalLoByteVectors (@Nullable final List <Integer> aVec1,
+                                              @Nullable final List <Integer> aVec2)
   {
-    if (vec1 == null || aVec2 == null)
-      return false;
-
-    if (vec1 == aVec2)
-      return true;
-
-    if (vec1.size () != aVec2.size ())
-      return false;
-
-    for (int i = 0; i < vec1.size (); i++)
-    {
-      if (vec1.get (i).intValue () != aVec2.get (i).intValue ())
-        return false;
-    }
-
-    return true;
+    return aVec1 != null && aVec2 != null && aVec1.equals (aVec2);
   }
 
-  private static boolean _equalNonAsciiMoveIndices (@Nullable final int [] aMoves1, @Nullable final int [] aMoves2)
-  {
-    if (aMoves1 == aMoves2)
-      return true;
-
-    if (aMoves1 == null || aMoves2 == null)
-      return false;
-
-    if (aMoves1.length != aMoves2.length)
-      return false;
-
-    for (int i = 0; i < aMoves1.length; i++)
-    {
-      if (aMoves1[i] != aMoves2[i])
-        return false;
-    }
-
-    return true;
-  }
 
   static boolean allBitsSet (@NonNull final String sBitVec)
   {
