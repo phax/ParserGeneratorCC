@@ -1889,8 +1889,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   @Override
   public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped).append (' ').append (m_sImage);
-    return aSb;
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped).append (' ').append (m_sImage);
+    return aSB;
   }
 
   @Override

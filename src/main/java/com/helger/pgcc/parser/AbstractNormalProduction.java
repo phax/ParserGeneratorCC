@@ -120,10 +120,10 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
 
   protected StringBuilder dumpPrefix (final int nIndent)
   {
-    final StringBuilder aSb = new StringBuilder (128);
+    final StringBuilder aSB = new StringBuilder (128);
     for (int i = 0; i < nIndent; i++)
-      aSb.append ("  ");
-    return aSb;
+      aSB.append ("  ");
+    return aSB;
   }
 
   protected String getSimpleName ()

@@ -109,17 +109,17 @@ public class JJTreeNode extends SimpleNode
 
   static String whiteOut (final Token t)
   {
-    final StringBuilder aSb = new StringBuilder (t.image.length ());
+    final StringBuilder aSB = new StringBuilder (t.image.length ());
 
     for (final char ch : t.image.toCharArray ())
     {
       if (ch != '\t' && ch != '\n' && ch != '\r' && ch != '\f')
-        aSb.append (' ');
+        aSB.append (' ');
       else
-        aSb.append (ch);
+        aSB.append (ch);
     }
 
-    return aSb.toString ();
+    return aSB.toString ();
   }
 
   /*

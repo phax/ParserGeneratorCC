@@ -226,12 +226,12 @@ public class CodeGenerator
     saveOutput (sFileName, m_aMainBuffer);
   }
 
-  public final void saveOutput (final String sFileName, final StringBuilder aSb)
+  public final void saveOutput (final String sFileName, final StringBuilder aSB)
   {
     try (final NonBlockingBufferedWriter aFw = FileHelper.getBufferedWriter (new File (sFileName),
                                                                             Options.getOutputEncoding ()))
     {
-      aFw.write (aSb.toString ());
+      aFw.write (aSB.toString ());
     }
     catch (final IOException aIoe)
     {

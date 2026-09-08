@@ -58,19 +58,19 @@ public class XTextGenerator implements IDocGenerator
 
   public void handleTokenProduction (final TokenProduction aTp)
   {
-    final StringBuilder aSb = new StringBuilder ();
+    final StringBuilder aSB = new StringBuilder ();
 
     for (final RegExprSpec res : aTp.getRespecs ())
     {
       final String sRegularExpressionText = JJDoc.emitRE (res.getRexp ());
-      aSb.append (sRegularExpressionText);
+      aSB.append (sRegularExpressionText);
 
       if (res.getNsTok () != null)
       {
-        aSb.append (" : " + res.getNsTok ().image);
+        aSB.append (" : " + res.getNsTok ().image);
       }
 
-      aSb.append ("\n");
+      aSB.append ("\n");
     }
   }
 

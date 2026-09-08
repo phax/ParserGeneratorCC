@@ -107,11 +107,11 @@ public final class ExpSequence extends Expansion
       return super.dump (0, aAlreadyDumped).insert (0, '[').append (']').insert (0, dumpPrefix (nIndent));
     }
 
-    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
     for (final Expansion next : m_aUnits)
     {
-      aSb.append (EOL).append (next.dump (nIndent + 1, aAlreadyDumped));
+      aSB.append (EOL).append (next.dump (nIndent + 1, aAlreadyDumped));
     }
-    return aSb;
+    return aSB;
   }
 }

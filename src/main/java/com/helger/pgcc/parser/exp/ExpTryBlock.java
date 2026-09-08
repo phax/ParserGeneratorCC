@@ -156,11 +156,11 @@ public final class ExpTryBlock extends Expansion
   @Override
   public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
     if (aAlreadyDumped.add (this))
     {
-      aSb.append (EOL).append (m_aExp.dump (nIndent + 1, aAlreadyDumped));
+      aSB.append (EOL).append (m_aExp.dump (nIndent + 1, aAlreadyDumped));
     }
-    return aSb;
+    return aSB;
   }
 }

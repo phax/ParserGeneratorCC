@@ -615,10 +615,10 @@ public class LexGenJava extends CodeGenerator
         if (aAct == null)
           continue;
 
-        final StringBuilder aSb = new StringBuilder ();
+        final StringBuilder aSB = new StringBuilder ();
         for (final Token t : aAct.getActionTokens ())
-          aSb.append (t.image).append (' ');
-        aActionStrings.put (Integer.valueOf (i), aSb.toString ());
+          aSB.append (t.image).append (' ');
+        aActionStrings.put (Integer.valueOf (i), aSB.toString ());
       }
       lexer ().getTokenizerData ().setDefaultLexState (lexer ().getDefaultLexState ());
       lexer ().getTokenizerData ().setLexStateNames (lexer ().getLexStateName ());

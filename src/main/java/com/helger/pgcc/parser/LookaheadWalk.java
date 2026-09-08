@@ -238,8 +238,8 @@ public final class LookaheadWalk
    * @return The extended sequences. Never <code>null</code>.
    */
   public static List <MatchInfo> genFollowSetRecursive (final List <MatchInfo> aPartialMatches,
-                                               final Expansion aExp,
-                                               final long nGeneration)
+                                                        final Expansion aExp,
+                                                        final long nGeneration)
   {
     if (aExp.getMyGeneration () == nGeneration)
     {
@@ -301,18 +301,18 @@ public final class LookaheadWalk
       while (true)
       {
         v = genFirstSetRecursive (v, aExp);
-        if (v.size () == 0)
+        if (v.isEmpty ())
           break;
         aMoreMatches.addAll (v);
       }
       List <MatchInfo> aV1 = new ArrayList <> ();
       List <MatchInfo> aV2 = new ArrayList <> ();
       _listSplit (aMoreMatches, aPartialMatches, aV1, aV2);
-      if (aV1.size () != 0)
+      if (!aV1.isEmpty ())
       {
         aV1 = genFollowSetRecursive (aV1, aParent, nGeneration);
       }
-      if (aV2.size () != 0)
+      if (!aV2.isEmpty ())
       {
         aV2 = genFollowSetRecursive (aV2, aParent, Expansion.getNextGenerationIndex ());
       }

@@ -267,13 +267,13 @@ public final class NodeFilesJava
 
   private static String _getVisitMethodName (final String sClassName)
   {
-    final StringBuilder aSb = new StringBuilder ("visit");
+    final StringBuilder aSB = new StringBuilder ("visit");
     if (Options.booleanValue ("VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME"))
     {
-      aSb.append (Character.toUpperCase (sClassName.charAt (0)));
-      aSb.append (sClassName.substring (1));
+      aSB.append (Character.toUpperCase (sClassName.charAt (0)));
+      aSB.append (sClassName.substring (1));
     }
-    return aSb.toString ();
+    return aSB.toString ();
   }
 
   public static void generateDefaultVisitor_java ()

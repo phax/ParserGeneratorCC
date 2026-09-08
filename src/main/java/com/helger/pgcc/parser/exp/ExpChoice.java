@@ -99,10 +99,10 @@ public final class ExpChoice extends Expansion
   @Override
   public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
     if (aAlreadyDumped.add (this))
       for (final Expansion next : getChoices ())
-        aSb.append (EOL).append (next.dump (nIndent + 1, aAlreadyDumped));
-    return aSb;
+        aSB.append (EOL).append (next.dump (nIndent + 1, aAlreadyDumped));
+    return aSB;
   }
 }

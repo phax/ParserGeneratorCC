@@ -69,12 +69,12 @@ public final class ExpAction extends Expansion
   @Override
   public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
     aAlreadyDumped.add (this);
     if (getActionTokens ().size () > 0)
     {
-      aSb.append (' ').append (getActionTokens ().get (0));
+      aSB.append (' ').append (getActionTokens ().get (0));
     }
-    return aSb;
+    return aSB;
   }
 }

@@ -33,8 +33,6 @@
  */
 package com.helger.pgcc.parser.exp;
 
-import com.helger.pgcc.parser.IGrammarLocation;
-
 import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
@@ -42,6 +40,7 @@ import org.jspecify.annotations.NonNull;
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.context.PGCCContext;
+import com.helger.pgcc.parser.IGrammarLocation;
 
 /**
  * Describes expansions - entities that may occur on the right hand sides of productions. This is
@@ -87,9 +86,9 @@ public sealed class Expansion implements IGrammarLocation permits
 
   /**
    * To avoid right-recursive loops when calculating follow sets, we use a generation number which
-   * indicates if this expansion was visited by LookaheadWalk.genFollowSetRecursive in the same generation.
-   * New generations are obtained by incrementing the static counter below, and the current
-   * generation is stored in the non-static variable below.
+   * indicates if this expansion was visited by LookaheadWalk.genFollowSetRecursive in the same
+   * generation. New generations are obtained by incrementing the static counter below, and the
+   * current generation is stored in the non-static variable below.
    */
   private long m_nMyGeneration = 0;
 
@@ -139,10 +138,10 @@ public sealed class Expansion implements IGrammarLocation permits
   @NonNull
   protected static StringBuilder dumpPrefix (final int nIndent)
   {
-    final StringBuilder aSb = new StringBuilder (nIndent * 2);
+    final StringBuilder aSB = new StringBuilder (nIndent * 2);
     for (int i = 0; i < nIndent; i++)
-      aSb.append ("  ");
-    return aSb;
+      aSB.append ("  ");
+    return aSB;
   }
 
   /**
@@ -155,7 +154,7 @@ public sealed class Expansion implements IGrammarLocation permits
   @OverrideOnDemand
   public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    return dumpPrefix (nIndent).append (System.identityHashCode (this)).append (" ").append (_getSimpleName ());
+    return dumpPrefix (nIndent).append (System.identityHashCode (this)).append (' ').append (_getSimpleName ());
   }
 
   /**
@@ -233,9 +232,9 @@ public sealed class Expansion implements IGrammarLocation permits
   }
 
   /**
-   * A reimplementing of Object.hashCode() to be deterministic. This uses the line and column fields
-   * to generate an arbitrary number - we assume that this method is called only after line and
-   * column are set to their actual values.
+   * A re-implementing of Object.hashCode() to be deterministic. This uses the line and column
+   * fields to generate an arbitrary number - we assume that this method is called only after line
+   * and column are set to their actual values.
    */
   @Override
   public int hashCode ()
@@ -246,6 +245,14 @@ public sealed class Expansion implements IGrammarLocation permits
   @Override
   public String toString ()
   {
-    return "[" + getLineNumber () + "," + getColumnNumber () + " " + System.identityHashCode (this) + " " + _getSimpleName () + "]";
+    return "[" +
+           getLineNumber () +
+           "," +
+           getColumnNumber () +
+           " " +
+           System.identityHashCode (this) +
+           " " +
+           _getSimpleName () +
+           "]";
   }
 }

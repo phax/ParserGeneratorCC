@@ -339,17 +339,17 @@ public class Options
   @NonNull
   public static String getOptionsString (final String [] aInterestingOptions)
   {
-    final StringBuilder aSb = new StringBuilder ();
+    final StringBuilder aSB = new StringBuilder ();
 
     for (final String key : aInterestingOptions)
     {
-      if (aSb.length () > 0)
-        aSb.append (',');
+      if (aSB.length () > 0)
+        aSB.append (',');
 
-      aSb.append (key).append ('=').append (optionValues ().get (key));
+      aSB.append (key).append ('=').append (optionValues ().get (key));
     }
 
-    return aSb.toString ();
+    return aSB.toString ();
   }
 
   @NonNull

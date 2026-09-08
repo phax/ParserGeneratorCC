@@ -458,17 +458,17 @@ public final class NodeFilesCpp
 
   private static String _getVisitMethodName (final String sClassName)
   {
-    final StringBuilder aSb = new StringBuilder ("visit");
+    final StringBuilder aSB = new StringBuilder ("visit");
     if (Options.booleanValue ("VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME"))
     {
-      aSb.append (Character.toUpperCase (sClassName.charAt (0)));
+      aSB.append (Character.toUpperCase (sClassName.charAt (0)));
       for (int i = 1; i < sClassName.length (); i++)
       {
-        aSb.append (sClassName.charAt (i));
+        aSB.append (sClassName.charAt (i));
       }
     }
 
-    return aSb.toString ();
+    return aSB.toString ();
   }
 
   private static String _getVisitorArgumentType ()

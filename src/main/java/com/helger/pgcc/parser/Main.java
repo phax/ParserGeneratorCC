@@ -171,12 +171,12 @@ public class Main
       return sName;
 
     final int nCharsToPad = nMaxLengthInt - nNameLength;
-    final StringBuilder aSb = new StringBuilder (nCharsToPad);
-    aSb.append (sName);
+    final StringBuilder aSB = new StringBuilder (nCharsToPad);
+    aSB.append (sName);
     for (int i = 0; i < nCharsToPad; i++)
-      aSb.append (" ");
+      aSB.append (" ");
 
-    return aSb.toString ();
+    return aSB.toString ();
   }
 
   /**
