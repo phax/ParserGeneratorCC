@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 
@@ -162,46 +164,41 @@ public abstract class JavaCCParserInternals
     }
   }
 
-  private static List <Token> s_add_cu_token_here = grammar ().cuToInsertionPoint1 ();
-  private static Token s_first_cu_token;
-  private static boolean s_insertionpoint1set = false;
-  private static boolean s_insertionpoint2set = false;
-
   protected static void setinsertionpoint (final Token t, final int no)
   {
     do
     {
-      s_add_cu_token_here.add (s_first_cu_token);
-      s_first_cu_token = s_first_cu_token.next;
-    } while (s_first_cu_token != t);
+      PGCCContext.current ().parserBuild ().getAddTokenHere ().add (PGCCContext.current ().parserBuild ().getFirstToken ());
+      PGCCContext.current ().parserBuild ().setFirstToken (PGCCContext.current ().parserBuild ().getFirstToken ().next);
+    } while (PGCCContext.current ().parserBuild ().getFirstToken () != t);
     if (no == 1)
     {
-      if (s_insertionpoint1set)
+      if (PGCCContext.current ().parserBuild ().isInsertionPoint1Set ())
       {
         JavaCCErrors.parse_error (t, "Multiple declaration of parser class.");
       }
       else
       {
-        s_insertionpoint1set = true;
-        s_add_cu_token_here = grammar ().cuToInsertionPoint2 ();
+        PGCCContext.current ().parserBuild ().setInsertionPoint1Set (true);
+        PGCCContext.current ().parserBuild ().switchToInsertionPoint2 ();
       }
     }
     else
     {
-      s_add_cu_token_here = grammar ().cuFromInsertionPoint2 ();
-      s_insertionpoint2set = true;
+      PGCCContext.current ().parserBuild ().switchToAfterInsertionPoint2 ();
+      PGCCContext.current ().parserBuild ().setInsertionPoint2Set (true);
     }
-    s_first_cu_token = t;
+    PGCCContext.current ().parserBuild ().setFirstToken (t);
   }
 
   protected static void insertionpointerrors (final Token t)
   {
-    while (s_first_cu_token != t)
+    while (PGCCContext.current ().parserBuild ().getFirstToken () != t)
     {
-      s_add_cu_token_here.add (s_first_cu_token);
-      s_first_cu_token = s_first_cu_token.next;
+      PGCCContext.current ().parserBuild ().getAddTokenHere ().add (PGCCContext.current ().parserBuild ().getFirstToken ());
+      PGCCContext.current ().parserBuild ().setFirstToken (PGCCContext.current ().parserBuild ().getFirstToken ().next);
     }
-    if (!s_insertionpoint1set || !s_insertionpoint2set)
+    if (!PGCCContext.current ().parserBuild ().isInsertionPoint1Set () || !PGCCContext.current ().parserBuild ().isInsertionPoint2Set ())
     {
       JavaCCErrors.parse_error (t, "Parser class has not been defined between PARSER_BEGIN and PARSER_END.");
     }
@@ -209,7 +206,7 @@ public abstract class JavaCCParserInternals
 
   protected static void set_initial_cu_token (final Token t)
   {
-    s_first_cu_token = t;
+    PGCCContext.current ().parserBuild ().setFirstToken (t);
   }
 
   protected static void addProduction (final NormalProduction p)
@@ -222,8 +219,6 @@ public abstract class JavaCCParserInternals
     e.setParent (p);
     p.setExpansion (e);
   }
-
-  private static int s_nextFreeLexState = 1;
 
   protected static void addregexpr (final TokenProduction p)
   {
@@ -250,8 +245,7 @@ public abstract class JavaCCParserInternals
       }
       if (grammar ().lexStateS2I ().get (p.m_lexStates[i]) == null)
       {
-        final Integer ii = Integer.valueOf (s_nextFreeLexState);
-        s_nextFreeLexState++;
+        final Integer ii = Integer.valueOf (PGCCContext.current ().parserBuild ().getAndIncNextFreeLexState ());
         grammar ().lexStateS2I ().put (p.m_lexStates[i], ii);
         grammar ().lexStateI2S ().put (ii, p.m_lexStates[i]);
         grammar ().simpleTokensTable ().put (p.m_lexStates[i], new HashMap <> ());
@@ -496,12 +490,4 @@ public abstract class JavaCCParserInternals
     result.member = tblk;
   }
 
-  public static void reInit ()
-  {
-    s_add_cu_token_here = grammar ().cuToInsertionPoint1 ();
-    s_first_cu_token = null;
-    s_insertionpoint1set = false;
-    s_insertionpoint2set = false;
-    s_nextFreeLexState = 1;
-  }
 }

@@ -92,6 +92,7 @@ public final class GrammarState
   private Token m_aOtherLanguageDeclTokenEnd;
   private int m_nCurrentLine;
   private int m_nCurrentColumn;
+  private long m_nNextExpansionGeneration = 1;
 
   /** @return The tokens from the start of the file to the first insertion point */
   @NonNull
@@ -373,6 +374,15 @@ public final class GrammarState
   public void decCurrentLine ()
   {
     m_nCurrentLine--;
+  }
+
+  /**
+   * @return A generation number that is unique within this run. Used by the lookahead computation
+   *         to mark the expansions it has already visited.
+   */
+  public long getAndIncNextExpansionGeneration ()
+  {
+    return m_nNextExpansionGeneration++;
   }
 
   /** @return The column of the token that is currently being printed */

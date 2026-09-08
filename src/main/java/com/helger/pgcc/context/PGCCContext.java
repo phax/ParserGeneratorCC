@@ -61,6 +61,8 @@ public final class PGCCContext
   private final OptionState m_aOptions = new OptionState ();
   private final LookaheadState m_aLookahead = new LookaheadState ();
   private final GrammarState m_aGrammar = new GrammarState ();
+  private final ParserBuildState m_aParserBuild = new ParserBuildState (m_aGrammar);
+  private final SemanticizeState m_aSemanticize = new SemanticizeState ();
 
   private PGCCContext ()
   {}
@@ -106,5 +108,17 @@ public final class PGCCContext
   public GrammarState grammar ()
   {
     return m_aGrammar;
+  }
+
+  @NonNull
+  public ParserBuildState parserBuild ()
+  {
+    return m_aParserBuild;
+  }
+
+  @NonNull
+  public SemanticizeState semanticize ()
+  {
+    return m_aSemanticize;
   }
 }

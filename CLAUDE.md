@@ -64,8 +64,9 @@ The generator historically kept everything in static fields. That state is movin
   (`OptionState`, which includes the output language), the lookahead analysis scratch state
   (`LookaheadState`), and the whole parsed grammar (`GrammarState` - what `JavaCCGlobals` used to
   hold). `JavaCCGlobals` is now a facade whose `grammar ()` returns that model.
-- still static: `LexGenJava`, `NfaState`, `ExpRStringLiteral`, `JavaCCParserInternals`,
-  `Semanticize`, `Expansion`, `JJTreeGlobals`, `JJDocGlobals`
+- also migrated: the grammar file reading scratch (`ParserBuildState`), the semantic check scratch
+  (`SemanticizeState`) and the expansion generation counter
+- still static: `LexGenJava`, `NfaState`, `ExpRStringLiteral`, `JJTreeGlobals`, `JJDocGlobals`
 
 `LexGenJava` and `NfaState` are deliberately last: their statics are the working set of a single
 `LexGenJava.start ()` call, so they belong as instance fields of the lexer backend once the target

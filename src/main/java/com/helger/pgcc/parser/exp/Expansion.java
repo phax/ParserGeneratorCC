@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser.exp;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
@@ -83,7 +85,6 @@ public class Expansion
    * obtained by incrementing the static counter below, and the current
    * generation is stored in the non-static variable below.
    */
-  private static long s_nextGenerationIndex = 1;
   private long m_myGeneration = 0;
 
   /**
@@ -92,14 +93,9 @@ public class Expansion
    */
   private boolean m_inMinimumSize = false;
 
-  public static void reInit ()
-  {
-    s_nextGenerationIndex = 1;
-  }
-
   public static long getNextGenerationIndex ()
   {
-    return s_nextGenerationIndex++;
+    return PGCCContext.current ().grammar ().getAndIncNextExpansionGeneration ();
   }
 
   public final void setInternalName (final String sPrefix, final int nIndex)

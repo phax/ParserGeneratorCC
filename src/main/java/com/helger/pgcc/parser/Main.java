@@ -396,13 +396,10 @@ public class Main
     // Everything that has already been migrated out of a static field
     com.helger.pgcc.context.PGCCContext.reset ();
 
-    com.helger.pgcc.parser.exp.Expansion.reInit ();
     com.helger.pgcc.parser.Options.init ();
-    com.helger.pgcc.parser.JavaCCParserInternals.reInit ();
     com.helger.pgcc.parser.exp.ExpRStringLiteral.reInit ();
     com.helger.pgcc.output.java.FilesJava.reInit ();
     com.helger.pgcc.parser.NfaState.reInit ();
-    com.helger.pgcc.parser.Semanticize.reInit ();
     com.helger.pgcc.output.java.OtherFilesGenJava.reInit ();
     com.helger.pgcc.parser.LexGenJava.reInit ();
   }

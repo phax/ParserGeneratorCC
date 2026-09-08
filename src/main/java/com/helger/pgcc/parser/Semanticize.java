@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import org.jspecify.annotations.Nullable;
@@ -48,24 +50,14 @@ import com.helger.pgcc.parser.exp.*;
 
 public class Semanticize
 {
-  private static List <List <RegExprSpec>> s_aRemoveList = new ArrayList <> ();
-  private static List <Object> s_aItemList = new ArrayList <> ();
-
   private static void prepareToRemove (final List <RegExprSpec> vec, final Object item)
   {
-    s_aRemoveList.add (vec);
-    s_aItemList.add (item);
+    PGCCContext.current ().semanticize ().prepareToRemove (vec, item);
   }
 
   private static void removePreparedItems ()
   {
-    for (int i = 0; i < s_aRemoveList.size (); i++)
-    {
-      final List <RegExprSpec> list = s_aRemoveList.get (i);
-      list.remove (s_aItemList.get (i));
-    }
-    s_aRemoveList.clear ();
-    s_aItemList.clear ();
+    PGCCContext.current ().semanticize ().removePreparedItems ();
   }
 
   public static void start () throws MetaParseException
@@ -584,8 +576,8 @@ public class Semanticize
               rexp.setWalkStatus (-1);
               if (_rexpWalk (rexp))
               {
-                s_loopString = "..." + rexp.getLabel () + "... --> " + s_loopString;
-                JavaCCErrors.semantic_error (rexp, "Loop in regular expression detected: \"" + s_loopString + "\"");
+                PGCCContext.current ().semanticize ().setLoopString ("..." + rexp.getLabel () + "... --> " + PGCCContext.current ().semanticize ().getLoopString ());
+                JavaCCErrors.semantic_error (rexp, "Loop in regular expression detected: \"" + PGCCContext.current ().semanticize ().getLoopString () + "\"");
               }
               rexp.setWalkStatus (1);
             }
@@ -751,7 +743,6 @@ public class Semanticize
   }
 
   // The string in which the following methods store information.
-  private static String s_loopString;
 
   // Returns true to indicate an unraveling of a detected left recursion loop,
   // and returns false otherwise.
@@ -763,11 +754,11 @@ public class Semanticize
       if (prod.getLeftExpansions ()[i].getWalkStatus () == -1)
       {
         prod.getLeftExpansions ()[i].setWalkStatus (-2);
-        s_loopString = prod.getLhs () + "... --> " + prod.getLeftExpansions ()[i].getLhs () + "...";
+        PGCCContext.current ().semanticize ().setLoopString (prod.getLhs () + "... --> " + prod.getLeftExpansions ()[i].getLhs () + "...");
         if (prod.getWalkStatus () == -2)
         {
           prod.setWalkStatus (1);
-          JavaCCErrors.semantic_error (prod, "Left recursion detected: \"" + s_loopString + "\"");
+          JavaCCErrors.semantic_error (prod, "Left recursion detected: \"" + PGCCContext.current ().semanticize ().getLoopString () + "\"");
           return false;
         }
         prod.setWalkStatus (1);
@@ -778,11 +769,11 @@ public class Semanticize
         {
           if (_prodWalk (prod.getLeftExpansions ()[i]))
           {
-            s_loopString = prod.getLhs () + "... --> " + s_loopString;
+            PGCCContext.current ().semanticize ().setLoopString (prod.getLhs () + "... --> " + PGCCContext.current ().semanticize ().getLoopString ());
             if (prod.getWalkStatus () == -2)
             {
               prod.setWalkStatus (1);
-              JavaCCErrors.semantic_error (prod, "Left recursion detected: \"" + s_loopString + "\"");
+              JavaCCErrors.semantic_error (prod, "Left recursion detected: \"" + PGCCContext.current ().semanticize ().getLoopString () + "\"");
               return false;
             }
             prod.setWalkStatus (1);
@@ -804,7 +795,7 @@ public class Semanticize
       if (jn.m_regexpr.getWalkStatus () == -1)
       {
         jn.m_regexpr.setWalkStatus (-2);
-        s_loopString = "..." + jn.m_regexpr.getLabel () + "...";
+        PGCCContext.current ().semanticize ().setLoopString ("..." + jn.m_regexpr.getLabel () + "...");
         // Note: Only the regexpr's of RJustName nodes and the top leve
         // regexpr's can have labels. Hence it is only in these cases that
         // the labels are checked for to be added to the loopString.
@@ -816,11 +807,11 @@ public class Semanticize
           jn.m_regexpr.setWalkStatus (-1);
           if (_rexpWalk (jn.m_regexpr))
           {
-            s_loopString = "..." + jn.m_regexpr.getLabel () + "... --> " + s_loopString;
+            PGCCContext.current ().semanticize ().setLoopString ("..." + jn.m_regexpr.getLabel () + "... --> " + PGCCContext.current ().semanticize ().getLoopString ());
             if (jn.m_regexpr.getWalkStatus () == -2)
             {
               jn.m_regexpr.setWalkStatus (1);
-              JavaCCErrors.semantic_error (jn.m_regexpr, "Loop in regular expression detected: \"" + s_loopString + "\"");
+              JavaCCErrors.semantic_error (jn.m_regexpr, "Loop in regular expression detected: \"" + PGCCContext.current ().semanticize ().getLoopString () + "\"");
               return false;
             }
             jn.m_regexpr.setWalkStatus (1);
@@ -1128,10 +1119,4 @@ public class Semanticize
     }
   }
 
-  public static void reInit ()
-  {
-    s_aRemoveList.clear ();
-    s_aItemList.clear ();
-    s_loopString = null;
-  }
 }
