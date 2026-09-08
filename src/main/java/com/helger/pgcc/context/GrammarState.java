@@ -81,7 +81,6 @@ public final class GrammarState
   private final List <int []> m_aMaskVals = new ArrayList <> ();
 
   private String m_sFileName;
-  private String m_sOrigFileName;
   private boolean m_bJJTreeGenerated;
   private List <String> m_aToolNames;
   private String m_sParserName;
@@ -207,16 +206,7 @@ public final class GrammarState
     m_sFileName = sFileName;
   }
 
-  @Nullable
-  public String getOrigFileName ()
-  {
-    return m_sOrigFileName;
-  }
 
-  public void setOrigFileName (@Nullable final String sOrigFileName)
-  {
-    m_sOrigFileName = sOrigFileName;
-  }
 
   public boolean isJJTreeGenerated ()
   {
@@ -284,10 +274,6 @@ public final class GrammarState
     return m_nMaskIndex;
   }
 
-  public void setMaskIndex (final int nMaskIndex)
-  {
-    m_nMaskIndex = nMaskIndex;
-  }
 
   public void incMaskIndex ()
   {
@@ -299,10 +285,6 @@ public final class GrammarState
     return m_nJJ2Index;
   }
 
-  public void setJJ2Index (final int nJJ2Index)
-  {
-    m_nJJ2Index = nJJ2Index;
-  }
 
   /** @return The jj2 index after incrementing it. */
   public int incAndGetJJ2Index ()

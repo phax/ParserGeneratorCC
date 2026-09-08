@@ -93,7 +93,6 @@ public class NfaStateTest extends AbstractJavaCCTestCase
                                                                                                        Options.getGrammarEncoding ())));
       aParser.javacc_input ();
       grammar ().setFileName (sParserInputFile);
-      grammar ().setOrigFileName (sParserInputFile);
       grammar ().setJJTreeGenerated (JavaCCGlobals.isGeneratedBy ("JJTree", sParserInputFile));
       grammar ().setToolNameList (JavaCCGlobals.getToolNames (sParserInputFile));
       Semanticize.start ();

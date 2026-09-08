@@ -292,7 +292,6 @@ public class LexGenCpp extends AbstractLexGenJavaLike
     lexer ().initStates ().clear ();
     lexer ().setCanMatchAnyChar (new int [lexer ().getMaxLexStates ()]);
     lexer ().setCanLoop (new boolean [lexer ().getMaxLexStates ()]);
-    lexer ().setStateHasActions (new boolean [lexer ().getMaxLexStates ()]);
     lexer ().setLexStateName (new String [lexer ().getMaxLexStates ()]);
     lexer ().setSinglesToSkip (new NfaState [lexer ().getMaxLexStates ()]);
     System.arraycopy (aTmpLexStateName, 0, lexer ().getLexStateName (), 0, lexer ().getMaxLexStates ());

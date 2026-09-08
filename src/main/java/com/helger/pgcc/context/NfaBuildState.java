@@ -106,10 +106,6 @@ public final class NfaBuildState
     return m_nGeneratedStates;
   }
 
-  public void setGeneratedStates (final int nGeneratedStates)
-  {
-    m_nGeneratedStates = nGeneratedStates;
-  }
 
   /** @return The current value, and increments it afterwards. */
   public int getAndIncGeneratedStates ()
@@ -117,15 +113,7 @@ public final class NfaBuildState
     return m_nGeneratedStates++;
   }
 
-  public int getIdCnt ()
-  {
-    return m_nIdCnt;
-  }
 
-  public void setIdCnt (final int nIdCnt)
-  {
-    m_nIdCnt = nIdCnt;
-  }
 
   /** @return The current value, and increments it afterwards. */
   public int getAndIncIdCnt ()
@@ -138,10 +126,6 @@ public final class NfaBuildState
     return m_nLoHiByteCnt;
   }
 
-  public void setLoHiByteCnt (final int nLoHiByteCnt)
-  {
-    m_nLoHiByteCnt = nLoHiByteCnt;
-  }
 
   /** @return The current value, and increments it afterwards. */
   public int getAndIncLoHiByteCnt ()
@@ -224,30 +208,18 @@ public final class NfaBuildState
     return m_aAllBitVectors;
   }
 
-  public void setAllBitVectors (final List <String> aAllBitVectors)
-  {
-    m_aAllBitVectors = aAllBitVectors;
-  }
 
   public int [] getTmpIndices ()
   {
     return m_aTmpIndices;
   }
 
-  public void setTmpIndices (final int [] aTmpIndices)
-  {
-    m_aTmpIndices = aTmpIndices;
-  }
 
   public String getAllBits ()
   {
     return m_sAllBits;
   }
 
-  public void setAllBits (final String sAllBits)
-  {
-    m_sAllBits = sAllBits;
-  }
 
   public int getLastIndex ()
   {

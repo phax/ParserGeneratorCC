@@ -104,20 +104,12 @@ public final class StringLiteralBuildState
     return m_aCharPosKind;
   }
 
-  public void setCharPosKind (final List <Map <String, KindInfo>> aCharPosKind)
-  {
-    m_aCharPosKind = aCharPosKind;
-  }
 
   public int [] getMaxLenForActive ()
   {
     return m_aMaxLenForActive;
   }
 
-  public void setMaxLenForActive (final int [] aMaxLenForActive)
-  {
-    m_aMaxLenForActive = aMaxLenForActive;
-  }
 
   public String [] getAllImages ()
   {

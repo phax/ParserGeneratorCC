@@ -69,65 +69,251 @@ import com.helger.pgcc.utils.OptionInfo;
 public class Options
 {
   /**
-   * These are options that are not settable by the user themselves, and that are set indirectly via
-   * some configuration of user options
+   * Not settable in the grammar: the closing braces of the C++ namespace, derived from
+   * {@link #USEROPTION__CPP_NAMESPACE} by {@link #processCppNamespaceOption(String)}.
    */
   public static final String NONUSER_OPTION__NAMESPACE_CLOSE = "NAMESPACE_CLOSE";
+
+  /**
+   * Not settable in the grammar: whether a C++ namespace was requested at all, derived from
+   * {@link #USEROPTION__CPP_NAMESPACE} by {@link #processCppNamespaceOption(String)}.
+   */
   public static final String NONUSER_OPTION__HAS_NAMESPACE = "HAS_NAMESPACE";
+
+  /**
+   * Not settable in the grammar: the opening declarations of the C++ namespace, derived from
+   * {@link #USEROPTION__CPP_NAMESPACE} by {@link #processCppNamespaceOption(String)}.
+   */
   public static final String NONUSER_OPTION__NAMESPACE_OPEN = "NAMESPACE_OPEN";
+
+  /**
+   * Not settable in the grammar: the parser name, put here by Main so that the templates can
+   * substitute it.
+   */
   public static final String NONUSER_OPTION__PARSER_NAME = "PARSER_NAME";
 
   /**
    * Options that the user can specify from .javacc file
    */
 
+  /**
+   * The {@value} grammar option, read by ParseGenCpp.
+   */
   public static final String USEROPTION__PARSER_SUPER_CLASS = "PARSER_SUPER_CLASS";
+
+  /**
+   * The {@value} grammar option, read by {@link #getJavaTemplateType()}.
+   */
   public static final String USEROPTION__JAVA_TEMPLATE_TYPE = "JAVA_TEMPLATE_TYPE";
+
+  /**
+   * The {@value} grammar option, read by {@link #getJavaCharStreamType()}.
+   */
   public static final String USEROPTION__JAVA_CHAR_STREAM_TYPE = "JAVA_CHAR_STREAM_TYPE";
+
+  /**
+   * The {@value} grammar option, read by {@link #isGenerateJavaBoilerplateCode()}.
+   */
   public static final String USEROPTION__GENERATE_BOILERPLATE = "GENERATE_BOILERPLATE";
+
+  /**
+   * The {@value} grammar option. It is turned into an {@link EOutputLanguage} while the option is
+   * being set, so nothing reads it back by name.
+   */
   public static final String USEROPTION__OUTPUT_LANGUAGE = "OUTPUT_LANGUAGE";
+
+  /**
+   * The {@value} grammar option, read by {@link #isNoDfa()}.
+   */
   public static final String USEROPTION__NO_DFA = "NO_DFA";
+
+  /**
+   * The {@value} grammar option, read by LexGenCpp.
+   */
   public static final String USEROPTION__TOKEN_MANAGER_SUPER_CLASS = "TOKEN_MANAGER_SUPER_CLASS";
+
+  /**
+   * The {@value} grammar option, read by {@link #getLookahead()}.
+   */
   public static final String USEROPTION__LOOKAHEAD = "LOOKAHEAD";
+
+  /**
+   * The {@value} grammar option, read by {@link #isIgnoreCase()}.
+   */
   public static final String USEROPTION__IGNORE_CASE = "IGNORE_CASE";
+
+  /**
+   * The {@value} grammar option, read by {@link #isUnicodeInput()}.
+   */
   public static final String USEROPTION__UNICODE_INPUT = "UNICODE_INPUT";
+
+  /**
+   * The {@value} grammar option, read by {@link #isJavaUnicodeEscape()}.
+   */
   public static final String USEROPTION__JAVA_UNICODE_ESCAPE = "JAVA_UNICODE_ESCAPE";
+
+  /**
+   * The {@value} grammar option, read by {@link #isErrorReporting()}.
+   */
   public static final String USEROPTION__ERROR_REPORTING = "ERROR_REPORTING";
+
+  /**
+   * The {@value} grammar option, read by {@link #isDebugTokenManager()}.
+   */
   public static final String USEROPTION__DEBUG_TOKEN_MANAGER = "DEBUG_TOKEN_MANAGER";
+
+  /**
+   * The {@value} grammar option, read by {@link #isDebugLookahead()}.
+   */
   public static final String USEROPTION__DEBUG_LOOKAHEAD = "DEBUG_LOOKAHEAD";
+
+  /**
+   * The {@value} grammar option, read by {@link #isDebugParser()}.
+   */
   public static final String USEROPTION__DEBUG_PARSER = "DEBUG_PARSER";
+
+  /**
+   * The {@value} grammar option, read by {@link #getOtherAmbiguityCheck()}.
+   */
   public static final String USEROPTION__OTHER_AMBIGUITY_CHECK = "OTHER_AMBIGUITY_CHECK";
+
+  /**
+   * The {@value} grammar option, read by {@link #getChoiceAmbiguityCheck()}.
+   */
   public static final String USEROPTION__CHOICE_AMBIGUITY_CHECK = "CHOICE_AMBIGUITY_CHECK";
+
+  /**
+   * The {@value} grammar option, read by {@link #isCacheTokens()}.
+   */
   public static final String USEROPTION__CACHE_TOKENS = "CACHE_TOKENS";
+
+  /**
+   * The {@value} grammar option, read by {@link #isCommonTokenAction()}.
+   */
   public static final String USEROPTION__COMMON_TOKEN_ACTION = "COMMON_TOKEN_ACTION";
+
+  /**
+   * The {@value} grammar option, read by {@link #isForceLaCheck()}.
+   */
   public static final String USEROPTION__FORCE_LA_CHECK = "FORCE_LA_CHECK";
+
+  /**
+   * The {@value} grammar option, read by {@link #isSanityCheck()}.
+   */
   public static final String USEROPTION__SANITY_CHECK = "SANITY_CHECK";
+
+  /**
+   * The {@value} grammar option, read by {@link #isTokenManagerUsesParser()}.
+   */
   public static final String USEROPTION__TOKEN_MANAGER_USES_PARSER = "TOKEN_MANAGER_USES_PARSER";
+
+  /**
+   * The {@value} grammar option, read by {@link #isBuildTokenManager()}.
+   */
   public static final String USEROPTION__BUILD_TOKEN_MANAGER = "BUILD_TOKEN_MANAGER";
+
+  /**
+   * The {@value} grammar option, read by {@link #isBuildParser()}.
+   */
   public static final String USEROPTION__BUILD_PARSER = "BUILD_PARSER";
+
+  /**
+   * The {@value} grammar option, read by {@link #isJavaUserCharStream()}.
+   */
   public static final String USEROPTION__USER_CHAR_STREAM = "USER_CHAR_STREAM";
+
+  /**
+   * The {@value} grammar option, read by {@link #isUserTokenManager()}.
+   */
   public static final String USEROPTION__USER_TOKEN_MANAGER = "USER_TOKEN_MANAGER";
+
+  /**
+   * The {@value} grammar option, read by {@link #getJdkVersion()}.
+   */
   public static final String USEROPTION__JDK_VERSION = "JDK_VERSION";
+
+  /**
+   * The {@value} grammar option, read by {@link #isJavaSupportClassVisibilityPublic()}.
+   */
   public static final String USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC = "SUPPORT_CLASS_VISIBILITY_PUBLIC";
+
+  /**
+   * The {@value} grammar option, read by {@link #getOutputDirectory()}.
+   */
   public static final String USEROPTION__OUTPUT_DIRECTORY = "OUTPUT_DIRECTORY";
+
+  /**
+   * The {@value} grammar option, read by {@link #isKeepLineColumn()}.
+   */
   public static final String USEROPTION__KEEP_LINE_COLUMN = "KEEP_LINE_COLUMN";
+
+  /**
+   * The {@value} grammar option, read by {@link #getGrammarEncoding()}.
+   */
   public static final String USEROPTION__GRAMMAR_ENCODING = "GRAMMAR_ENCODING";
+
+  /**
+   * The {@value} grammar option, read by {@link #getOutputEncoding()}.
+   */
   public static final String USEROPTION__OUTPUT_ENCODING = "OUTPUT_ENCODING";
+
+  /**
+   * The {@value} grammar option, read by {@link #getTokenFactory()}.
+   */
   public static final String USEROPTION__TOKEN_FACTORY = "TOKEN_FACTORY";
+
+  /**
+   * The {@value} grammar option, read by {@link #getTokenExtends()}.
+   */
   public static final String USEROPTION__TOKEN_EXTENDS = "TOKEN_EXTENDS";
+
+  /**
+   * The {@value} grammar option, read by {@link #getDepthLimit()}.
+   */
   public static final String USEROPTION__DEPTH_LIMIT = "DEPTH_LIMIT";
 
+  /**
+   * The {@value} grammar option, C++ only. Setting it fills in the three
+   * <code>NONUSER_OPTION__NAMESPACE...</code> entries, which is what the templates read.
+   */
   public static final String USEROPTION__CPP_NAMESPACE = "NAMESPACE";
+
+  /**
+   * The {@value} grammar option, read by FilesCpp.
+   */
   public static final String USEROPTION__CPP_TOKEN_INCLUDES = "TOKEN_INCLUDES";
+
+  /**
+   * The {@value} grammar option, read by ParseGenCpp.
+   */
   public static final String USEROPTION__CPP_PARSER_INCLUDES = "PARSER_INCLUDES";
+
+  /**
+   * The {@value} grammar option, read by ParseEngine.
+   */
   public static final String USEROPTION__CPP_IGNORE_ACTIONS = "IGNORE_ACTIONS";
+
+  /**
+   * The {@value} grammar option, read by LexGenCpp.
+   */
   public static final String USEROPTION__CPP_TOKEN_MANAGER_INCLUDES = "TOKEN_MANAGER_INCLUDES";
+
+  /**
+   * The {@value} grammar option, C++ only. Accepted and then ignored - nothing reads it. The
+   * option that does have an effect is {@link #USEROPTION__TOKEN_MANAGER_SUPER_CLASS}.
+   */
   public static final String USEROPTION__CPP_TOKEN_MANAGER_SUPERCLASS = "TOKEN_MANAGER_SUPERCLASS";
+
+  /**
+   * The {@value} grammar option, read by ParseEngine.
+   */
   public static final String USEROPTION__CPP_STOP_ON_FIRST_ERROR = "STOP_ON_FIRST_ERROR";
+
+  /**
+   * The {@value} grammar option, read by {@link #getCppStackLimit()}.
+   */
   public static final String USEROPTION__CPP_STACK_LIMIT = "STACK_LIMIT";
 
-  public static final String USEROPTION__CPP_TOKEN_INCLUDE = "TOKEN_INCLUDE";
-  public static final String USEROPTION__CPP_PARSER_INCLUDE = "PARSER_INCLUDE";
 
   /**
    * 2013/07/22 -- GWT Compliant Output -- no external dependencies on GWT, but generated code adds
@@ -233,7 +419,9 @@ public class Options
    * values too.
    */
   /**
-   * @return The option values of the current run. Never <code>null</code>.
+   * The option values of the current run, the map that every accessor here reads from.
+   *
+   * @return The live map, not a copy. Never <code>null</code>.
    */
   @NonNull
   protected static Map <String, Object> optionValues ()
@@ -256,6 +444,13 @@ public class Options
     PGCCContext.current ().options ().setLanguage (EOutputLanguage.JAVA);
   }
 
+  /**
+   * The raw value of one option, whatever type it was stored with.
+   *
+   * @param sOption
+   *        The option name. May be <code>null</code>.
+   * @return <code>null</code> if the option is unknown.
+   */
   @Nullable
   public static Object objectValue (final String sOption)
   {
@@ -299,6 +494,11 @@ public class Options
     return (String) objectValue (sOption);
   }
 
+  /**
+   * Every option of the current run, for the code that has to hand the whole set to a template.
+   *
+   * @return A copy of the option map. Never <code>null</code>.
+   */
   @NonNull
   @ReturnsMutableCopy
   public static Map <String, Object> getAllOptions ()
@@ -352,6 +552,12 @@ public class Options
     return aSB.toString ();
   }
 
+  /**
+   * The class the generated token manager throws when it cannot match. The two languages call it
+   * differently, which is why this is not a plain option lookup.
+   *
+   * @return The class name. Never <code>null</code> nor empty.
+   */
   @NonNull
   @Nonempty
   public static String getTokenMgrErrorClass ()
@@ -411,6 +617,19 @@ public class Options
     return aValue;
   }
 
+  /**
+   * Apply one option from the grammar file, warning about anything the command line already set,
+   * anything unknown and anything of the wrong type.
+   *
+   * @param aNameloc
+   *        Where the option name stands in the grammar, for the warning. May be <code>null</code>.
+   * @param aValueloc
+   *        Where the value stands in the grammar, for the warning. May be <code>null</code>.
+   * @param sName
+   *        The option name, in any casing. May not be <code>null</code>.
+   * @param aSrcValue
+   *        The value as the grammar parser produced it. May not be <code>null</code>.
+   */
   public static void setInputFileOption (@Nullable final IGrammarLocation aNameloc,
                                          @Nullable final IGrammarLocation aValueloc,
                                          @NonNull final String sName,
@@ -688,6 +907,11 @@ public class Options
     _applyIndirectOptionFlags (null, sNameUC, sNameUC, aVal);
   }
 
+  /**
+   * Settle the options that depend on one another once all of them have been read: turn on
+   * DEBUG_PARSER for DEBUG_LOOKAHEAD, reject the char stream combinations that cannot work, and
+   * complain about C++ only options in a Java run.
+   */
   public static void normalize ()
   {
     if (isDebugLookahead () && !isDebugParser ())
@@ -755,6 +979,11 @@ public class Options
     return intValue (USEROPTION__OTHER_AMBIGUITY_CHECK);
   }
 
+  /**
+   * Whether to skip the string literal DFA and match every token through the NFA instead.
+   *
+   * @return The NO_DFA option.
+   */
   public static boolean isNoDfa ()
   {
     return booleanValue (USEROPTION__NO_DFA);
@@ -941,6 +1170,12 @@ public class Options
     return (EJavaVersion) objectValue (USEROPTION__JDK_VERSION);
   }
 
+  /**
+   * Whether to write the supporting Java classes - Token, ParseException, the char streams - next
+   * to the parser, or to leave them to an existing runtime.
+   *
+   * @return The GENERATE_BOILERPLATE option.
+   */
   public static boolean isGenerateJavaBoilerplateCode ()
   {
     return booleanValue (USEROPTION__GENERATE_BOILERPLATE);
@@ -1045,12 +1280,24 @@ public class Options
     return sType == null ? false : SUPPORTED_JAVA_TEMPLATE_TYPES.contains (sType.toLowerCase (Locale.US));
   }
 
+  /**
+   * The language to generate. Unlike the other options this is kept as an enum rather than as a
+   * map entry, because almost everything in the generator branches on it.
+   *
+   * @return The output language. Never <code>null</code>.
+   */
   @NonNull
   public static EOutputLanguage getOutputLanguage ()
   {
     return PGCCContext.current ().options ().getLanguage ();
   }
 
+  /**
+   * Which set of Java templates to generate from, {@link #JAVA_TEMPLATE_TYPE_CLASSIC} or
+   * {@link #JAVA_TEMPLATE_TYPE_MODERN}.
+   *
+   * @return The JAVA_TEMPLATE_TYPE option.
+   */
   public static String getJavaTemplateType ()
   {
     return stringValue (USEROPTION__JAVA_TEMPLATE_TYPE);
@@ -1064,21 +1311,38 @@ public class Options
     return sType == null ? false : SUPPORTED_JAVA_CHAR_STREAM_TYPES.contains (sType.toLowerCase (Locale.US));
   }
 
+  /**
+   * Which Java char stream to generate, {@link #JAVA_CHAR_STREAM_TYPE_SIMPLE} or
+   * {@link #JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE}.
+   *
+   * @return The JAVA_CHAR_STREAM_TYPE option.
+   */
   public static String getJavaCharStreamType ()
   {
     return stringValue (USEROPTION__JAVA_CHAR_STREAM_TYPE);
   }
 
   /**
+   * Which of the two Java char stream implementations to generate. The CharSequence variant cannot
+   * be combined with <code>JAVA_UNICODE_ESCAPE</code>, so that combination silently falls back.
+   *
    * @return <code>true</code> if the <code>CharSequenceCharStream</code> should be generated
-   *         instead of the <code>SimpleCharStream</code>. This is not possible in combination with
-   *         <code>JAVA_UNICODE_ESCAPE</code>.
+   *         instead of the <code>SimpleCharStream</code>.
    */
   public static boolean isCharSequenceCharStream ()
   {
     return JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE.equalsIgnoreCase (getJavaCharStreamType ()) && !isJavaUnicodeEscape ();
   }
 
+  /**
+   * Set one option to a String value, without any of the checking
+   * {@link #setInputFileOption(IGrammarLocation, IGrammarLocation, String, Object)} does.
+   *
+   * @param sOptionName
+   *        The option name. May not be <code>null</code>.
+   * @param sOptionValue
+   *        The value. May be <code>null</code>.
+   */
   public static void setStringOption (@NonNull final String sOptionName, final String sOptionValue)
   {
     optionValues ().put (sOptionName, sOptionValue);
@@ -1088,6 +1352,13 @@ public class Options
     }
   }
 
+  /**
+   * Split a C++ namespace like <code>a::b</code> into the opening and closing text the templates
+   * need, and store both under their NONUSER_OPTION names.
+   *
+   * @param sOptionValue
+   *        The namespace, :: separated. May not be <code>null</code>.
+   */
   public static void processCppNamespaceOption (final String sOptionValue)
   {
     final String sNs = sOptionValue;
@@ -1108,6 +1379,11 @@ public class Options
     }
   }
 
+  /**
+   * Whether the generated token manager needs a reference back to the parser.
+   *
+   * @return The TOKEN_MANAGER_USES_PARSER option.
+   */
   public static boolean isTokenManagerRequiresParserAccess ()
   {
     return isTokenManagerUsesParser ();
@@ -1123,6 +1399,11 @@ public class Options
     return intValue (USEROPTION__DEPTH_LIMIT);
   }
 
+  /**
+   * Whether the generated parser guards against runaway recursion.
+   *
+   * @return <code>true</code> if DEPTH_LIMIT is greater than zero.
+   */
   public static boolean hasDepthLimit ()
   {
     return getDepthLimit () > 0;
@@ -1141,6 +1422,11 @@ public class Options
     return sLimit;
   }
 
+  /**
+   * Whether the generated C++ parser guards against running out of stack.
+   *
+   * @return <code>true</code> if STACK_LIMIT is set.
+   */
   public static boolean hasCppStackLimit ()
   {
     return StringHelper.isNotEmpty (getCppStackLimit ());

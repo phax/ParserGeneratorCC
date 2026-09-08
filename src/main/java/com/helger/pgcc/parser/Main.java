@@ -263,7 +263,6 @@ public class Main
     {
       PGPrinter.info ("Reading from file " + aArgs[aArgs.length - 1] + " ...");
       grammar ().setFileName (aArgs[aArgs.length - 1]);
-      grammar ().setOrigFileName (grammar ().getFileName ());
       grammar ().setJJTreeGenerated (JavaCCGlobals.isGeneratedBy ("JJTree", aArgs[aArgs.length - 1]));
       grammar ().setToolNameList (JavaCCGlobals.getToolNames (aArgs[aArgs.length - 1]));
       aParser.javacc_input ();

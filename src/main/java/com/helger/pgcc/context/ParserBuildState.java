@@ -127,8 +127,4 @@ public final class ParserBuildState
     return m_nNextFreeLexState++;
   }
 
-  public int getNextFreeLexState ()
-  {
-    return m_nNextFreeLexState;
-  }
 }
