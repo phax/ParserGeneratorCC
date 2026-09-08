@@ -60,10 +60,14 @@ work with what is on Maven Central.
 The generator historically kept everything in static fields. That state is moving into
 `com.helger.pgcc.context.PGCCContext`, one piece at a time:
 
-- already migrated: the error/warning counters (`ErrorCollector`) and every option value
-  (`OptionState`, which includes the output language)
+- already migrated: the error/warning counters (`ErrorCollector`), every option value
+  (`OptionState`, which includes the output language), and the lookahead analysis scratch state
+  (`LookaheadState`, formerly `MatchInfo.s_laLimit` and the two `LookaheadWalk` fields)
 - still static: `JavaCCGlobals`, `NfaState`, `LexGenJava`, `ExpRStringLiteral`, `Semanticize`,
-  `MatchInfo`, `LookaheadWalk`, `JJTreeGlobals`, `JJDocGlobals`
+  `Expansion`, `JJTreeGlobals`, `JJDocGlobals`
+
+Where a static is really a scratch variable rather than state, prefer removing it over moving it -
+`Semanticize.other` became the return value of `findIgnoreCase`.
 
 The context is a `ThreadLocal`, so migrated state is already isolated per thread. `Main.reInitAll`
 calls `PGCCContext.reset ()` first and then the `reInit` methods of whatever has not moved yet; a

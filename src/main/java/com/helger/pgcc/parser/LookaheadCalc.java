@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.context.LookaheadState;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.REXPS_OF_TOKENS;
 import static com.helger.pgcc.parser.JavaCCGlobals.addEscapes;
 
@@ -151,28 +153,28 @@ public final class LookaheadCalc
     boolean overlapDetected;
     for (int la = 1; la <= Options.getChoiceAmbiguityCheck (); la++)
     {
-      MatchInfo.s_laLimit = la;
-      LookaheadWalk.s_considerSemanticLA = !Options.isForceLaCheck ();
+      LookaheadState.current ().setLimit (la);
+      LookaheadState.current ().setConsiderSemanticLA (!Options.isForceLaCheck ());
       for (int i = first; i < ch.getChoiceCount () - 1; i++)
       {
-        LookaheadWalk.s_sizeLimitedMatches = new ArrayList <> ();
+        LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
         m = new MatchInfo ();
         m.m_firstFreeLoc = 0;
         v = new ArrayList <> ();
         v.add (m);
         LookaheadWalk.genFirstSet (v, ch.getChoiceAt (i));
-        dbl[i] = LookaheadWalk.s_sizeLimitedMatches;
+        dbl[i] = LookaheadState.current ().getSizeLimitedMatches ();
       }
-      LookaheadWalk.s_considerSemanticLA = false;
+      LookaheadState.current ().setConsiderSemanticLA (false);
       for (int i = first + 1; i < ch.getChoiceCount (); i++)
       {
-        LookaheadWalk.s_sizeLimitedMatches = new ArrayList <> ();
+        LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
         m = new MatchInfo ();
         m.m_firstFreeLoc = 0;
         v = new ArrayList <> ();
         v.add (m);
         LookaheadWalk.genFirstSet (v, ch.getChoiceAt (i));
-        dbr[i] = LookaheadWalk.s_sizeLimitedMatches;
+        dbr[i] = LookaheadState.current ().getSizeLimitedMatches ();
       }
       if (la == 1)
       {
@@ -310,19 +312,19 @@ public final class LookaheadCalc
     int la;
     for (la = 1; la <= Options.getOtherAmbiguityCheck (); la++)
     {
-      MatchInfo.s_laLimit = la;
-      LookaheadWalk.s_sizeLimitedMatches = new ArrayList <> ();
+      LookaheadState.current ().setLimit (la);
+      LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
       m = new MatchInfo ();
       m.m_firstFreeLoc = 0;
       v = new ArrayList <> ();
       v.add (m);
-      LookaheadWalk.s_considerSemanticLA = !Options.isForceLaCheck ();
+      LookaheadState.current ().setConsiderSemanticLA (!Options.isForceLaCheck ());
       LookaheadWalk.genFirstSet (v, nested);
-      first = LookaheadWalk.s_sizeLimitedMatches;
-      LookaheadWalk.s_sizeLimitedMatches = new ArrayList <> ();
-      LookaheadWalk.s_considerSemanticLA = false;
+      first = LookaheadState.current ().getSizeLimitedMatches ();
+      LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
+      LookaheadState.current ().setConsiderSemanticLA (false);
       LookaheadWalk.genFollowSet (v, exp, Expansion.getNextGenerationIndex ());
-      follow = LookaheadWalk.s_sizeLimitedMatches;
+      follow = LookaheadState.current ().getSizeLimitedMatches ();
       if (la == 1)
       {
         if (_isJavaCodeCheck (first))

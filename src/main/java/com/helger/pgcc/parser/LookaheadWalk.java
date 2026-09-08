@@ -45,13 +45,11 @@ import com.helger.pgcc.parser.exp.ExpSequence;
 import com.helger.pgcc.parser.exp.ExpTryBlock;
 import com.helger.pgcc.parser.exp.ExpZeroOrMore;
 import com.helger.pgcc.parser.exp.ExpZeroOrOne;
+import com.helger.pgcc.context.LookaheadState;
 import com.helger.pgcc.parser.exp.Expansion;
 
 public final class LookaheadWalk
 {
-  static boolean s_considerSemanticLA;
-  static List <MatchInfo> s_sizeLimitedMatches;
-
   private LookaheadWalk ()
   {}
 
@@ -70,9 +68,9 @@ public final class LookaheadWalk
         }
         mnew.m_firstFreeLoc = m.m_firstFreeLoc;
         mnew.m_match[mnew.m_firstFreeLoc++] = ((AbstractExpRegularExpression) exp).getOrdinal ();
-        if (mnew.m_firstFreeLoc == MatchInfo.s_laLimit)
+        if (mnew.m_firstFreeLoc == LookaheadState.current ().getLimit ())
         {
-          s_sizeLimitedMatches.add (mnew);
+          LookaheadState.current ().getSizeLimitedMatches ().add (mnew);
         }
         else
         {
@@ -160,7 +158,7 @@ public final class LookaheadWalk
       return genFirstSet (partialMatches, ((ExpTryBlock) exp).m_exp);
     }
 
-    if (s_considerSemanticLA && exp instanceof ExpLookahead && ((ExpLookahead) exp).getActionTokens ().isNotEmpty ())
+    if (LookaheadState.current ().isConsiderSemanticLA () && exp instanceof ExpLookahead && ((ExpLookahead) exp).getActionTokens ().isNotEmpty ())
     {
       return new ArrayList <> ();
     }
@@ -273,11 +271,5 @@ public final class LookaheadWalk
 
     // System.out.println("6; gen: " + generation + "; exp: " + exp);
     return genFollowSet (partialMatches, (Expansion) exp.getParent (), generation);
-  }
-
-  public static void reInit ()
-  {
-    s_considerSemanticLA = false;
-    s_sizeLimitedMatches = null;
   }
 }

@@ -33,18 +33,14 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.context.LookaheadState;
+
 /**
- * Describes a match, within a given lookahead.
+ * Describes a match, within a given lookahead. The depth of that lookahead comes from
+ * {@link LookaheadState}, which is per generator run.
  */
 public class MatchInfo
 {
-  public static int s_laLimit;
-
-  int [] m_match = new int [s_laLimit];
+  int [] m_match = new int [LookaheadState.current ().getLimit ()];
   int m_firstFreeLoc;
-
-  public static void reInitStatic ()
-  {
-    s_laLimit = 0;
-  }
 }

@@ -33,71 +33,78 @@
  */
 package com.helger.pgcc.context;
 
+import java.util.List;
+
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+import com.helger.pgcc.parser.MatchInfo;
 
 /**
- * The state of one generator run.
+ * The scratch state of the lookahead analysis of a single generator run: how many tokens deep the
+ * current lookahead computation goes, whether semantic lookahead is taken into account, and the
+ * matches that hit the depth limit.
  * <p>
- * Historically the generator kept everything in static fields, which made two runs in the same JVM
- * depend on each other and ruled out running two of them at once. This class is where that state is
- * moving to, one piece at a time: whatever has already been migrated lives here, the old static
- * classes delegate to {@link #current()}, and the static shims disappear once nothing references
- * them any more.
- * <p>
- * The context is per thread, so two threads can generate independently. Within a thread,
- * {@link #reset()} starts a fresh run - that is what <code>Main.reInitAll</code> does.
- * <p>
- * <code>StateIsolationTest</code> is the guard rail for this migration: it generates a grammar,
- * generates something else, generates the first grammar again, and requires the results to be
- * identical.
+ * This is the instance state behind the static fields of
+ * {@link com.helger.pgcc.parser.MatchInfo} and {@link com.helger.pgcc.parser.LookaheadWalk}.
  *
  * @author Philip Helger
  */
-public final class PGCCContext
+public final class LookaheadState
 {
-  private static final ThreadLocal <PGCCContext> CURRENT = ThreadLocal.withInitial (PGCCContext::new);
-
-  private final ErrorCollector m_aErrors = new ErrorCollector ();
-  private final OptionState m_aOptions = new OptionState ();
-  private final LookaheadState m_aLookahead = new LookaheadState ();
-
-  private PGCCContext ()
-  {}
+  private int m_nLimit;
+  private boolean m_bConsiderSemanticLA;
+  private List <MatchInfo> m_aSizeLimitedMatches;
 
   /**
-   * @return The context of the current thread, creating it on first access. Never
-   *         <code>null</code>.
+   * @return How many tokens deep the current lookahead computation goes. 0 if no computation is
+   *         running.
    */
-  @NonNull
-  public static PGCCContext current ()
+  public int getLimit ()
   {
-    return CURRENT.get ();
+    return m_nLimit;
+  }
+
+  public void setLimit (final int nLimit)
+  {
+    m_nLimit = nLimit;
+  }
+
+  public boolean isConsiderSemanticLA ()
+  {
+    return m_bConsiderSemanticLA;
+  }
+
+  public void setConsiderSemanticLA (final boolean bConsiderSemanticLA)
+  {
+    m_bConsiderSemanticLA = bConsiderSemanticLA;
   }
 
   /**
-   * Start a fresh run on the current thread. Everything that has been migrated into the context is
-   * reset by this single call.
+   * @return The matches that reached the lookahead limit. <code>null</code> if they are not being
+   *         collected.
    */
-  public static void reset ()
+  @Nullable
+  public List <MatchInfo> getSizeLimitedMatches ()
   {
-    CURRENT.remove ();
+    return m_aSizeLimitedMatches;
+  }
+
+  public void setSizeLimitedMatches (@Nullable final List <MatchInfo> aMatches)
+  {
+    m_aSizeLimitedMatches = aMatches;
+  }
+
+  public void reset ()
+  {
+    m_nLimit = 0;
+    m_bConsiderSemanticLA = false;
+    m_aSizeLimitedMatches = null;
   }
 
   @NonNull
-  public ErrorCollector errors ()
+  public static LookaheadState current ()
   {
-    return m_aErrors;
-  }
-
-  @NonNull
-  public OptionState options ()
-  {
-    return m_aOptions;
-  }
-
-  @NonNull
-  public LookaheadState lookahead ()
-  {
-    return m_aLookahead;
+    return PGCCContext.current ().lookahead ();
   }
 }

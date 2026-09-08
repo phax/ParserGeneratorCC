@@ -401,8 +401,6 @@ public class Main
     com.helger.pgcc.parser.exp.ExpRStringLiteral.reInit ();
     com.helger.pgcc.output.java.FilesJava.reInit ();
     com.helger.pgcc.parser.NfaState.reInit ();
-    com.helger.pgcc.parser.MatchInfo.reInitStatic ();
-    com.helger.pgcc.parser.LookaheadWalk.reInit ();
     com.helger.pgcc.parser.Semanticize.reInit ();
     com.helger.pgcc.output.java.OtherFilesGenJava.reInit ();
     com.helger.pgcc.parser.LexGenJava.reInit ();

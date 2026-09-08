@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.Nullable;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.BNF_PRODUCTIONS;
 import static com.helger.pgcc.parser.JavaCCGlobals.LEXSTATE_I2S;
 import static com.helger.pgcc.parser.JavaCCGlobals.LEXSTATE_S2I;
@@ -267,10 +269,11 @@ public class Semanticize
               table[i].put (sl.m_image.toUpperCase (Locale.US), table2);
             }
             else
-              if (hasIgnoreCase (table2, sl.m_image))
-              { // hasIgnoreCase sets "other" if it is found.
+              if (findIgnoreCase (table2, sl.m_image) != null)
+              {
                 // Since IGNORE_CASE version exists, current one is useless and
                 // bad.
+                final AbstractExpRegularExpression aOther = findIgnoreCase (table2, sl.m_image);
                 if (!sl.m_tpContext.m_isExplicit)
                 {
                   // inline BNF string is used earlier with an IGNORE_CASE.
@@ -280,9 +283,9 @@ public class Semanticize
                                                    "\" can never be matched " +
                                                    "due to presence of more general (IGNORE_CASE) regular expression " +
                                                    "at line " +
-                                                   other.getLine () +
+                                                   aOther.getLine () +
                                                    ", column " +
-                                                   other.getColumn () +
+                                                   aOther.getColumn () +
                                                    ".");
                 }
                 else
@@ -617,27 +620,28 @@ public class Semanticize
       throw new MetaParseException ("Error count is already present!");
   }
 
-  public static AbstractExpRegularExpression other;
-
-  // Checks to see if the "str" is superceded by another equal (except case)
-  // string in table.
-  public static boolean hasIgnoreCase (final Map <String, AbstractExpRegularExpression> table, final String str)
+  /**
+   * Check whether "str" is superceded by another equal (except case) string in the table.
+   *
+   * @param table
+   *        The string literals to search. May not be <code>null</code>.
+   * @param str
+   *        The image to check. May not be <code>null</code>.
+   * @return The <code>IGNORE_CASE</code> regular expression that supercedes "str", or
+   *         <code>null</code> if there is none. Used to be returned through a static field.
+   */
+  @Nullable
+  public static AbstractExpRegularExpression findIgnoreCase (final Map <String, AbstractExpRegularExpression> table,
+                                                             final String str)
   {
     final AbstractExpRegularExpression rexp = table.get (str);
     if (rexp != null && !rexp.m_tpContext.m_ignoreCase)
-    {
-      return false;
-    }
+      return null;
 
     for (final AbstractExpRegularExpression aRegEx : table.values ())
-    {
       if (aRegEx.m_tpContext.m_ignoreCase)
-      {
-        other = aRegEx;
-        return true;
-      }
-    }
-    return false;
+        return aRegEx;
+    return null;
   }
 
   // returns true if "exp" can expand to the empty string, returns false
@@ -1139,7 +1143,6 @@ public class Semanticize
   {
     s_aRemoveList.clear ();
     s_aItemList.clear ();
-    other = null;
     s_loopString = null;
   }
 }
