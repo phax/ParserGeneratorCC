@@ -944,7 +944,7 @@ void regexpr_spec(TokenProduction p) :
   regular_expression(c)
   {
     res.rexp = (AbstractExpRegularExpression)c.member;
-    res.rexp.m_tpContext = p;
+    res.rexp.m_aTpContext = p;
   }
   [
   {
@@ -955,7 +955,7 @@ void regexpr_spec(TokenProduction p) :
     if (Options.isUserTokenManager()) {
       JavaCCErrors.warning(t, "Ignoring action in regular expression specification since option USER_TOKEN_MANAGER has been set to true.");
     }
-    if (res.rexp.m_private_rexp) {
+    if (res.rexp.m_bPrivateRexp) {
       JavaCCErrors.parse_error(t, "Actions are not permitted on private (#) regular expressions.");
     }
   }
@@ -963,7 +963,7 @@ void regexpr_spec(TokenProduction p) :
   [ ":" t=<IDENTIFIER>
   {
     res.nextState = t.image;
-    if (res.rexp.m_private_rexp) {
+    if (res.rexp.m_bPrivateRexp) {
       JavaCCErrors.parse_error(t, "Lexical state changes are not permitted after private (#) regular expressions.");
     }
   }
@@ -1333,7 +1333,7 @@ void regular_expression(Container c) :
       re = (AbstractExpRegularExpression)c.member;
     }
     re.setLabel (image);
-    re.m_private_rexp = private_rexp;
+    re.m_bPrivateRexp = private_rexp;
     re.setLine(t.beginLine);
     re.setColumn(t.beginColumn);
     c.member = re;
