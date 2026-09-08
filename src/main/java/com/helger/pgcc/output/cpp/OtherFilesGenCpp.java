@@ -51,7 +51,7 @@ import java.util.Locale;
 
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.CPG;
-import com.helger.pgcc.output.java.LexGenJava;
+import com.helger.pgcc.output.AbstractLexGenJavaLike;
 import com.helger.pgcc.parser.ETokenKind;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCParserConstants;
@@ -164,10 +164,10 @@ public class OtherFilesGenCpp
 
       if (!Options.isUserTokenManager () && Options.isBuildTokenManager ())
       {
-        for (int i = 0; i < LexGenJava.lexer ().getLexStateName ().length; i++)
+        for (int i = 0; i < AbstractLexGenJavaLike.lexer ().getLexStateName ().length; i++)
         {
           s_ostr.println ("  /** Lexical state. */");
-          s_ostr.println (sConstPrefix + "  int " + LexGenJava.lexer ().getLexStateName ()[i] + " = " + i + ";");
+          s_ostr.println (sConstPrefix + "  int " + AbstractLexGenJavaLike.lexer ().getLexStateName ()[i] + " = " + i + ";");
         }
         s_ostr.println ("");
       }

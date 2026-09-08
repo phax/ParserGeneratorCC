@@ -50,7 +50,6 @@ import com.helger.base.string.StringHelper;
 import com.helger.pgcc.CPG;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.OutputHelper;
-import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.output.AbstractLexGenJavaLike;
 import com.helger.pgcc.parser.ETokenKind;
 import com.helger.pgcc.parser.JavaCCErrors;
