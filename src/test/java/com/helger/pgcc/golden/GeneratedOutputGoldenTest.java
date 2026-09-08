@@ -138,6 +138,21 @@ public final class GeneratedOutputGoldenTest
     aCases.add (new GoldenCase ("options-jdk17", aGrammar, false, "-JDK_VERSION=17"));
   }
 
+  private static void _addCppMatrix (final List <GoldenCase> aCases)
+  {
+    // The C++ backend is frozen but supported. It had exactly one test - a round trip through the
+    // compiler - which says nothing about what changed when the output changes. These cases pin the
+    // emitted C++ so that a refactor of the shared code cannot alter it unnoticed.
+    final File aGrammar = new File ("src/test/resources/cpp/calc.jj");
+    aCases.add (new GoldenCase ("cpp-default", aGrammar, false));
+    aCases.add (new GoldenCase ("cpp-nolinecolumn", aGrammar, false, "-KEEP_LINE_COLUMN=false"));
+    aCases.add (new GoldenCase ("cpp-cachetokens", aGrammar, false, "-CACHE_TOKENS=true"));
+    aCases.add (new GoldenCase ("cpp-debug", aGrammar, false, "-DEBUG_PARSER=true", "-DEBUG_TOKEN_MANAGER=true"));
+    aCases.add (new GoldenCase ("cpp-noerrorreporting", aGrammar, false, "-ERROR_REPORTING=false"));
+    aCases.add (new GoldenCase ("cpp-namespace", aGrammar, false, "-NAMESPACE=demo::calc"));
+    aCases.add (new GoldenCase ("cpp-depthlimit", aGrammar, false, "-DEPTH_LIMIT=100"));
+  }
+
   private static void _addJJTreeMatrix (final List <GoldenCase> aCases)
   {
     // The JJTree option matrix decides what the node classes look like and was not covered at all
@@ -186,6 +201,7 @@ public final class GeneratedOutputGoldenTest
   {
     final List <GoldenCase> aCases = new ArrayList <> ();
     _addTemplateMatrix (aCases);
+    _addCppMatrix (aCases);
     _addJJTreeMatrix (aCases);
     _addGrammarCorpus (aCases);
 
