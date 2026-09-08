@@ -129,7 +129,7 @@ public final class GeneratedOutputGoldenTest
                                   "-JAVA_CHAR_STREAM_TYPE=charsequence"));
 
     // Options that visibly change the emitted parser
-    aCases.add (new GoldenCase ("options-static", aGrammar, false, "-STATIC=true"));
+    aCases.add (new GoldenCase ("options-tokenmanagerusesparser", aGrammar, false, "-TOKEN_MANAGER_USES_PARSER=true"));
     aCases.add (new GoldenCase ("options-usercharstream", aGrammar, false, "-USER_CHAR_STREAM=true"));
     aCases.add (new GoldenCase ("options-cachetokens", aGrammar, false, "-CACHE_TOKENS=true"));
     aCases.add (new GoldenCase ("options-debug", aGrammar, false, "-DEBUG_PARSER=true", "-DEBUG_TOKEN_MANAGER=true"));

@@ -369,9 +369,10 @@ public class Options
    * the options must be boolean values.
    *
    * @param interestingOptions
-   *        the options of interest, eg {Options.USEROPTION__STATIC,
+   *        the options of interest, eg {Options.USEROPTION__KEEP_LINE_COLUMN,
    *        Options.USEROPTION__CACHE_TOKENS}
-   * @return the string representation of the options, eg "STATIC=true,CACHE_TOKENS=false"
+   * @return the string representation of the options, eg
+   *         "KEEP_LINE_COLUMN=true,CACHE_TOKENS=false"
    */
   @NonNull
   public static String getOptionsString (final String [] interestingOptions)

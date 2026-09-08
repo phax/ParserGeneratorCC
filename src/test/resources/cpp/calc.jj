@@ -34,7 +34,6 @@
 
 options {
   OUTPUT_LANGUAGE = "c++";
-  STATIC = false;
 }
 
 PARSER_BEGIN(Calc)
