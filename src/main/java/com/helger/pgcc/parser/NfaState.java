@@ -53,6 +53,7 @@ import com.helger.pgcc.context.NfaBuildState;
 import com.helger.pgcc.context.TokenizerDataBuildState;
 import com.helger.pgcc.context.TokenizerDataBuildState.CompositeStartState;
 import com.helger.pgcc.output.EOutputLanguage;
+import com.helger.pgcc.output.TokenManagerDebug;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.output.java.LexGenJava;
 
@@ -3271,26 +3272,7 @@ public class NfaState
 
     if (Options.isDebugTokenManager ())
     {
-      switch (eOutputLanguage)
-      {
-        case JAVA ->
-        {
-          aCodeGenerator.genCodeLine ("      if (jjmatchedKind != 0 && jjmatchedKind != 0x" +
-                                      Integer.toHexString (Integer.MAX_VALUE) +
-                                      ")");
-          aCodeGenerator.genCodeLine ("         debugStream.println(" +
-                                      "\"   Currently matched the first \" + (jjmatchedPos + 1) + \" characters as" +
-                                      " a \" + tokenImage[jjmatchedKind] + \" token.\");");
-        }
-        case CPP ->
-        {
-          aCodeGenerator.genCodeLine ("      if (jjmatchedKind != 0 && jjmatchedKind != 0x" +
-                                      Integer.toHexString (Integer.MAX_VALUE) +
-                                      ")");
-          aCodeGenerator.genCodeLine ("   fprintf(debugStream, \"   Currently matched the first %d characters as a \\\"%s\\\" token.\\n\",  (jjmatchedPos + 1),  addUnicodeEscapes(tokenImage[jjmatchedKind]).c_str());");
-        }
-        default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      TokenManagerDebug.genCurrentlyMatchedIfAny (aCodeGenerator, "      ");
     }
 
     switch (eOutputLanguage)

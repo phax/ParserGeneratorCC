@@ -102,6 +102,12 @@ public enum EOutputLanguage implements IHasID <String>
     }
 
     @Override
+    public String getDebugStreamPrintLine (final String sMessage)
+    {
+      return "debugStream.println(\"" + sMessage + "\");";
+    }
+
+    @Override
     public String getModifier (final String sModifier)
     {
       return sModifier;
@@ -178,6 +184,13 @@ public enum EOutputLanguage implements IHasID <String>
       // C++ puts none on a definition: the access comes from the section label in the header file,
       // and a member function is non virtual unless its declaration says otherwise
       return "";
+    }
+
+    @Override
+    public String getDebugStreamPrintLine (final String sMessage)
+    {
+      // printf does not end the line by itself
+      return "fprintf(debugStream, \"" + sMessage + "\\n\");";
     }
 
     @Override
@@ -312,6 +325,17 @@ public enum EOutputLanguage implements IHasID <String>
    */
   @NonNull
   public abstract String getMethodModifiers (@NonNull String sModifiers);
+
+  /**
+   * The statement that writes one fixed line to the token manager debug stream.
+   *
+   * @param sMessage
+   *        The message, already escaped for a string literal in this language. May not be
+   *        <code>null</code>.
+   * @return The complete statement including the trailing semicolon. Never <code>null</code>.
+   */
+  @NonNull
+  public abstract String getDebugStreamPrintLine (@NonNull String sMessage);
 
   /**
    * @param sType
