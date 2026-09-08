@@ -138,6 +138,29 @@ public final class GeneratedOutputGoldenTest
     aCases.add (new GoldenCase ("options-jdk17", aGrammar, false, "-JDK_VERSION=17"));
   }
 
+  private static void _addJJTreeMatrix (final List <GoldenCase> aCases)
+  {
+    // The JJTree option matrix decides what the node classes look like and was not covered at all
+    final File aGrammar = new File ("src/test/resources/issues/45/grammar.jjt");
+    aCases.add (new GoldenCase ("jjtree-opt-default", aGrammar, true));
+    aCases.add (new GoldenCase ("jjtree-opt-multi", aGrammar, true, "-MULTI=true"));
+    aCases.add (new GoldenCase ("jjtree-opt-visitor", aGrammar, true, "-VISITOR=true"));
+    aCases.add (new GoldenCase ("jjtree-opt-multi-visitor",
+                                aGrammar,
+                                true,
+                                "-MULTI=true",
+                                "-VISITOR=true",
+                                "-VISITOR_RETURN_TYPE=String",
+                                "-VISITOR_DATA_TYPE=Object"));
+    aCases.add (new GoldenCase ("jjtree-opt-tracktokens", aGrammar, true, "-TRACK_TOKENS=true"));
+    aCases.add (new GoldenCase ("jjtree-opt-defaultvoid", aGrammar, true, "-NODE_DEFAULT_VOID=true"));
+    aCases.add (new GoldenCase ("jjtree-opt-prefix", aGrammar, true, "-NODE_PREFIX=Nd", "-MULTI=true"));
+    aCases.add (new GoldenCase ("jjtree-opt-package", aGrammar, true, "-NODE_PACKAGE=com.example.nodes"));
+    aCases.add (new GoldenCase ("jjtree-opt-usesparser", aGrammar, true, "-NODE_USES_PARSER=true"));
+    aCases.add (new GoldenCase ("jjtree-opt-scopehook", aGrammar, true, "-NODE_SCOPE_HOOK=true"));
+    aCases.add (new GoldenCase ("jjtree-opt-nonodefiles", aGrammar, true, "-BUILD_NODE_FILES=false"));
+  }
+
   private static void _addGrammarCorpus (final List <GoldenCase> aCases)
   {
     final File [] aFiles = new File ("grammars").listFiles ();
@@ -163,6 +186,7 @@ public final class GeneratedOutputGoldenTest
   {
     final List <GoldenCase> aCases = new ArrayList <> ();
     _addTemplateMatrix (aCases);
+    _addJJTreeMatrix (aCases);
     _addGrammarCorpus (aCases);
 
     final List <Object []> ret = new ArrayList <> (aCases.size ());

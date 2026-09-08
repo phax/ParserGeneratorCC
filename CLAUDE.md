@@ -93,10 +93,11 @@ available. Note that `OUTPUT_LANGUAGE` is the only way to reach this path.
 
 ## Golden files - the specification for the generated output
 
-`GeneratedOutputGoldenTest` generates from 38 cases (the template/option matrix plus every grammar
-in `grammars/`) and compares a SHA-256 of every emitted file against a manifest checked in below
-`src/test/resources/golden/`. 386 generated files are under byte level watch, so **any** change to
-the code generation fails the build until it is looked at.
+`GeneratedOutputGoldenTest` generates from 49 cases - the Java template/option matrix, the JJTree
+option matrix, and every grammar in `grammars/` - and compares a SHA-256 of every emitted file
+against a manifest checked in below `src/test/resources/golden/`. Around 450 generated files are
+under byte level watch, so **any** change to the code generation fails the build until it is looked
+at.
 
 After a deliberate codegen change:
 
