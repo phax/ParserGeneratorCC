@@ -732,9 +732,10 @@ public class NfaState
         if (aEquivStates != null)
         {
           bSometingOptimized = true;
-          String sTmp = "";
+          final StringBuilder aTmpSB = new StringBuilder (aEquivStates.size () * 6);
           for (final NfaState equivState : aEquivStates)
-            sTmp += String.valueOf (equivState.m_nId) + ", ";
+            aTmpSB.append (equivState.m_nId).append (", ");
+          final String sTmp = aTmpSB.toString ();
 
           if ((aNewState = nfa ().equivStatesTable ().get (sTmp)) == null)
           {
