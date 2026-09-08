@@ -12,7 +12,8 @@ something breaks, primarily for its main consumer [ph-css](https://github.com/ph
 ## Build and test
 
 Run everything from the repository root — tests use relative paths (`grammars`, `examples`,
-`src/test/resources/issues/...`, `src/main/resources`, `www/doc/`) and fail elsewhere.
+`src/test/resources/...`, `src/main/resources`) and fail elsewhere. A test run leaves the working
+tree untouched; if `git status` is dirty afterwards, that is a bug in the test.
 
 ```
 mvn clean install          # full build
