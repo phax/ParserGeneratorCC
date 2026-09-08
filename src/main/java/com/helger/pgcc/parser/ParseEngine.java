@@ -893,22 +893,8 @@ public class ParseEngine
     if (Options.isDebugParser ())
     {
       m_codeGenerator.genCodeNewLine ();
-      switch (eOutputLanguage)
-      {
-        case JAVA:
-          m_codeGenerator.genCodeLine ("    trace_call(\"" + JavaCCGlobals.addUnicodeEscapes (p.getLhs ()) + "\");");
-          break;
-        case CPP:
-          m_codeGenerator.genCodeLine ("    JJEnter<std::function<void()>> jjenter([this]() {trace_call  (\"" +
-                                       JavaCCGlobals.addUnicodeEscapes (p.getLhs ()) +
-                                       "\"); });");
-          m_codeGenerator.genCodeLine ("    JJExit <std::function<void()>> jjexit ([this]() {trace_return(\"" +
-                                       JavaCCGlobals.addUnicodeEscapes (p.getLhs ()) +
-                                       "\"); });");
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      for (final String sLine : _syntax ().getTraceEnterLines (JavaCCGlobals.addUnicodeEscapes (p.getLhs ())))
+        m_codeGenerator.genCodeLine (sLine);
       m_codeGenerator.genCodeLine ("    try {");
       m_nIndentCount += 2;
     }
@@ -935,21 +921,8 @@ public class ParseEngine
     }
     if (Options.isDebugParser ())
     {
-      switch (eOutputLanguage)
-      {
-        case JAVA:
-          m_codeGenerator.genCodeLine ("    } finally {");
-          m_codeGenerator.genCodeLine ("      trace_return(\"" +
-                                       JavaCCGlobals.addUnicodeEscapes (p.getLhs ()) +
-                                       "\");");
-          m_codeGenerator.genCodeLine ("    }");
-          break;
-        case CPP:
-          m_codeGenerator.genCodeLine ("    } catch(...) { }");
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      for (final String sLine : _syntax ().getTraceExitLines (JavaCCGlobals.addUnicodeEscapes (p.getLhs ())))
+        m_codeGenerator.genCodeLine (sLine);
     }
     if (!voidReturn)
     {
@@ -1997,24 +1970,10 @@ public class ParseEngine
         if (Options.isDebugParser ())
         {
           codeGenerator.genCodeNewLine ();
-          switch (eOutputLanguage)
-          {
-            case JAVA:
-              codeGenerator.genCodeLine ("    trace_call(\"" + JavaCCGlobals.addUnicodeEscapes (cp.getLhs ()) + "\");");
-              codeGenerator.genCodeLine ("    try {");
-              break;
-            case CPP:
-              codeGenerator.genCodeLine ("    JJEnter<std::function<void()>> jjenter([this]() {trace_call  (\"" +
-                                         JavaCCGlobals.addUnicodeEscapes (cp.getLhs ()) +
-                                         "\"); });");
-              codeGenerator.genCodeLine ("    JJExit <std::function<void()>> jjexit ([this]() {trace_return(\"" +
-                                         JavaCCGlobals.addUnicodeEscapes (cp.getLhs ()) +
-                                         "\"); });");
-              codeGenerator.genCodeLine ("    try {");
-              break;
-            default:
-              throw new UnsupportedOutputLanguageException (eOutputLanguage);
-          }
+          for (final String sLine : IParserSyntax.of (eOutputLanguage)
+                                                  .getTraceEnterLines (JavaCCGlobals.addUnicodeEscapes (cp.getLhs ())))
+            codeGenerator.genCodeLine (sLine);
+          codeGenerator.genCodeLine ("    try {");
 
         }
         if (cp.getCodeTokens ().size () != 0)

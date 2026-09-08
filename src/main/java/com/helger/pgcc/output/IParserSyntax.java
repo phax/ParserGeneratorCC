@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.output;
 
+import java.util.List;
+
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonempty;
@@ -103,6 +105,28 @@ public interface IParserSyntax
    */
   @NonNull
   String getThrowsClause ();
+
+  /**
+   * The tracing that {@code DEBUG_PARSER} adds when a production is entered. Java prints on entry
+   * and prints again from a finally block; C++ has no finally, so it declares scope guards that do
+   * both.
+   *
+   * @param sProductionName
+   *        The name of the production, already escaped. May not be <code>null</code>.
+   * @return The lines to emit, in order. Never <code>null</code>.
+   */
+  @NonNull
+  List <String> getTraceEnterLines (@NonNull String sProductionName);
+
+  /**
+   * The counterpart of {@link #getTraceEnterLines(String)} that closes the production's try block.
+   *
+   * @param sProductionName
+   *        The name of the production, already escaped. May not be <code>null</code>.
+   * @return The lines to emit, in order. Never <code>null</code>.
+   */
+  @NonNull
+  List <String> getTraceExitLines (@NonNull String sProductionName);
 
   /**
    * @param eLanguage

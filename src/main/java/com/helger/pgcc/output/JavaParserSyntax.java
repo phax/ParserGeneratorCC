@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.output;
 
+import java.util.List;
+
 import org.jspecify.annotations.NonNull;
 
 /**
@@ -81,5 +83,17 @@ final class JavaParserSyntax implements IParserSyntax
   public String getThrowsClause ()
   {
     return " throws ParseException";
+  }
+
+  @NonNull
+  public List <String> getTraceEnterLines (@NonNull final String sProductionName)
+  {
+    return List.of ("    trace_call(\"" + sProductionName + "\");");
+  }
+
+  @NonNull
+  public List <String> getTraceExitLines (@NonNull final String sProductionName)
+  {
+    return List.of ("    } finally {", "      trace_return(\"" + sProductionName + "\");", "    }");
   }
 }

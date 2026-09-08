@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.output;
 
+import java.util.List;
+
 import org.jspecify.annotations.NonNull;
 
 /**
@@ -81,5 +83,23 @@ final class CppParserSyntax implements IParserSyntax
   public String getThrowsClause ()
   {
     return "";
+  }
+
+  @NonNull
+  public List <String> getTraceEnterLines (@NonNull final String sProductionName)
+  {
+    // No finally in C++, so a pair of scope guards does the entry and the exit
+    return List.of ("    JJEnter<std::function<void()>> jjenter([this]() {trace_call  (\"" +
+                    sProductionName +
+                    "\"); });",
+                    "    JJExit <std::function<void()>> jjexit ([this]() {trace_return(\"" +
+                                                                                              sProductionName +
+                                                                                              "\"); });");
+  }
+
+  @NonNull
+  public List <String> getTraceExitLines (@NonNull final String sProductionName)
+  {
+    return List.of ("    } catch(...) { }");
   }
 }
