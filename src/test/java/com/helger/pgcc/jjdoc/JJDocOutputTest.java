@@ -131,15 +131,15 @@ public final class JJDocOutputTest
   public void testBnf () throws Exception
   {
     final String s = _run ("sample.bnf", "-BNF:true");
-    assertTrue (s, s.contains ("sum ::="));
     assertTrue (s, !s.contains ("<HTML>"));
 
-    // Note what is NOT in there: BNFGenerator.reStart switches printing off for ExpRJustName and
-    // ExpRCharacterList, so every reference to a named token disappears from the production and
-    // "sum ::= ( )* <EOF>" is what comes out. That is inherited from upstream JavaCC and is pinned
-    // here as the current behaviour, not endorsed as correct.
-    assertTrue (s, !s.contains ("NUMBER"));
-    assertTrue (s, !s.contains ("PLUS"));
+    // The whole production, terminals included. Up to and including 2.0.3 the terminals were
+    // dropped and this read "sum ::= ( )* <EOF>"
+    assertTrue (s, s.contains ("sum ::= <NUMBER> ( <PLUS> <NUMBER> )* <EOF>"));
+
+    // The .bnf format lists the productions only, so a token definition does not appear - the
+    // character class of NUMBER is nowhere in the file
+    assertTrue (s, !s.contains ("\"0\"-\"9\""));
   }
 
   @Test

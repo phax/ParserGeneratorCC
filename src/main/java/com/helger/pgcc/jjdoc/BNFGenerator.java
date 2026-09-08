@@ -44,8 +44,6 @@ import com.helger.pgcc.parser.NormalProduction;
 import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpNonTerminal;
-import com.helger.pgcc.parser.exp.ExpRCharacterList;
-import com.helger.pgcc.parser.exp.ExpRJustName;
 import com.helger.pgcc.parser.exp.Expansion;
 
 public class BNFGenerator implements IDocGenerator
@@ -141,15 +139,17 @@ public class BNFGenerator implements IDocGenerator
 
   public void reStart (final AbstractExpRegularExpression r)
   {
-    if (r.getClass ().equals (ExpRJustName.class) || r.getClass ().equals (ExpRCharacterList.class))
-    {
-      m_bPrinting = false;
-    }
+    // Nothing to do. Upstream switched printing off here for ExpRJustName and ExpRCharacterList,
+    // which are exactly the two shapes a terminal takes inside a BNF production - a reference to a
+    // named token and an inline character class. The result was a BNF with no terminals in it at
+    // all: "sum ::= ( )* <EOF>" for a production reading "<NUMBER> ( <PLUS> <NUMBER> )* <EOF>".
+    // Token productions are suppressed by handleTokenProduction, which is a separate path, so
+    // nothing here needs to switch printing off.
   }
 
   public void reEnd (final AbstractExpRegularExpression r)
   {
-    m_bPrinting = true;
+    // Nothing to do
   }
 
   @Override
