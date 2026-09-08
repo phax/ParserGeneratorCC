@@ -2827,28 +2827,16 @@ public class NfaState
   {
     final NfaBuildState aNfa = nfa ();
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
-    switch (eOutputLanguage)
-    {
-      case JAVA -> aCodeGenerator.genCodeLine ("private static final " +
-                                               eOutputLanguage.getTypeBoolean () +
-                                               " jjCanMove_" +
-                                               m_nNonAsciiMethod +
-                                               "(int hiByte, int i1, int i2, " +
-                                               eOutputLanguage.getTypeLong () +
-                                               " l1, " +
-                                               eOutputLanguage.getTypeLong () +
-                                               " l2)");
-      case CPP -> aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getTypeBoolean (),
-                                                          LexGenJava.lexer ().getTokenMgrClassName (),
-                                                          "jjCanMove_" +
-                                                                                                       m_nNonAsciiMethod +
-                                                                                                       "(int hiByte, int i1, int i2, " +
-                                                                                                       eOutputLanguage.getTypeLong () +
-                                                                                                       " l1, " +
-                                                                                                       eOutputLanguage.getTypeLong () +
-                                                                                                       " l2)");
-      default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private static final") +
+                                            eOutputLanguage.getTypeBoolean (),
+                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            "jjCanMove_" +
+                                                           m_nNonAsciiMethod +
+                                                           "(int hiByte, int i1, int i2, " +
+                                                           eOutputLanguage.getTypeLong () +
+                                                           " l1, " +
+                                                           eOutputLanguage.getTypeLong () +
+                                                           " l2)");
     aCodeGenerator.genCodeLine ("{");
     aCodeGenerator.genCodeLine ("   switch(hiByte)");
     aCodeGenerator.genCodeLine ("   {");
@@ -3172,19 +3160,11 @@ public class NfaState
 
     aNfa.getKinds ()[LexGenJava.lexer ().getLexStateIndex ()] = aKindsForStates;
 
-    switch (eOutputLanguage)
-    {
-      case JAVA -> aCodeGenerator.genCodeLine ("private int jjMoveNfa" +
-                                               LexGenJava.lexer ().getLexStateSuffix () +
-                                               "(int startState, int curPos)");
-      case CPP -> aCodeGenerator.generateMethodDefHeader ("int",
-                                                          LexGenJava.lexer ().getTokenMgrClassName (),
-                                                          "jjMoveNfa" +
-                                                                                                       LexGenJava.lexer ()
-                                                                                                                 .getLexStateSuffix () +
-                                                                                                       "(int startState, int curPos)");
-      default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
+                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            "jjMoveNfa" +
+                                                         LexGenJava.lexer ().getLexStateSuffix () +
+                                                         "(int startState, int curPos)");
     aCodeGenerator.genCodeLine ("{");
     if (aNfa.getGeneratedStates () == 0)
     {

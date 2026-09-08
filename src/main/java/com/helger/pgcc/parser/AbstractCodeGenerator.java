@@ -471,6 +471,31 @@ public abstract class AbstractCodeGenerator
                                              final String sNameAndParams,
                                              @Nullable final String sExceptions)
   {
+    generateMethodDefHeader (sQualifiedModsAndRetType, sClassName, sNameAndParams, sExceptions, true);
+  }
+
+  /**
+   * @param sQualifiedModsAndRetType
+   *        The modifiers and the return type, as this language spells them. May not be
+   *        <code>null</code>.
+   * @param sClassName
+   *        The class the method belongs to. Only C++ needs it, to qualify the out of line
+   *        definition. May be <code>null</code>.
+   * @param sNameAndParams
+   *        The method name and its parameter list. May not be <code>null</code>.
+   * @param sExceptions
+   *        The checked exceptions. May be <code>null</code>.
+   * @param bEndLine
+   *        <code>true</code> to end the line after the signature. Java only - the C++ buffers never
+   *        carry a line break here, so the caller's opening brace follows on the same line either
+   *        way.
+   */
+  public final void generateMethodDefHeader (@NonNull final String sQualifiedModsAndRetType,
+                                             final String sClassName,
+                                             final String sNameAndParams,
+                                             @Nullable final String sExceptions,
+                                             final boolean bEndLine)
+  {
     final EOutputLanguage eOutputLanguage = getOutputLanguage ();
     switch (eOutputLanguage)
     {
@@ -480,7 +505,8 @@ public abstract class AbstractCodeGenerator
         {
           genCode (" throws " + sExceptions);
         }
-        genCodeNewLine ();
+        if (bEndLine)
+          genCodeNewLine ();
         break;
       case CPP:
         // for C++, we generate the signature in the header file and body in

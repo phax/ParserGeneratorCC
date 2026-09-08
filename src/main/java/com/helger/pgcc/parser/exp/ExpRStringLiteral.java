@@ -624,19 +624,11 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   static void dumpStartWithStates (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
-    switch (eOutputLanguage)
-    {
-      case JAVA -> aCodeGenerator.genCodeLine ("private int jjStartNfaWithStates" +
-                                               LexGenJava.lexer ().getLexStateSuffix () +
-                                               "(int pos, int kind, int state)");
-      case CPP -> aCodeGenerator.generateMethodDefHeader ("int",
-                                                          LexGenJava.lexer ().getTokenMgrClassName (),
-                                                          "jjStartNfaWithStates" +
-                                                                                                       LexGenJava.lexer ()
-                                                                                                                 .getLexStateSuffix () +
-                                                                                                       "(int pos, int kind, int state)");
-      default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
+                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            "jjStartNfaWithStates" +
+                                                                    LexGenJava.lexer ().getLexStateSuffix () +
+                                                                    "(int pos, int kind, int state)");
     aCodeGenerator.genCodeLine ("{");
     aCodeGenerator.genCodeLine ("   jjmatchedKind = kind;");
     aCodeGenerator.genCodeLine ("   jjmatchedPos = pos;");
@@ -701,14 +693,9 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   static void dumpBoilerPlate (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
-    switch (eOutputLanguage)
-    {
-      case JAVA -> aCodeGenerator.genCodeLine ("private int jjStopAtPos(int pos, int kind)");
-      case CPP -> aCodeGenerator.generateMethodDefHeader (" int ",
-                                                          LexGenJava.lexer ().getTokenMgrClassName (),
-                                                          "jjStopAtPos(int pos, int kind)");
-      default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
+                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            "jjStopAtPos(int pos, int kind)");
     aCodeGenerator.genCodeLine ("{");
     aCodeGenerator.genCodeLine ("   jjmatchedKind = kind;");
     aCodeGenerator.genCodeLine ("   jjmatchedPos = pos;");
@@ -790,19 +777,11 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
     if (strLit ().getMaxLen () == 0)
     {
-      switch (eOutputLanguage)
-      {
-        case JAVA -> aCodeGenerator.genCodeLine ("private int jjMoveStringLiteralDfa0" +
-                                                 LexGenJava.lexer ().getLexStateSuffix () +
-                                                 "()");
-        case CPP -> aCodeGenerator.generateMethodDefHeader (" int ",
-                                                            LexGenJava.lexer ().getTokenMgrClassName (),
-                                                            "jjMoveStringLiteralDfa0" +
-                                                                                                         LexGenJava.lexer ()
-                                                                                                                   .getLexStateSuffix () +
-                                                                                                         "()");
-        default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
+                                              LexGenJava.lexer ().getTokenMgrClassName (),
+                                              "jjMoveStringLiteralDfa0" +
+                                                                         LexGenJava.lexer ().getLexStateSuffix () +
+                                                                         "()");
       dumpNullStrLiterals (aCodeGenerator);
       return;
     }
@@ -880,21 +859,14 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       }
       aParams.append (")");
 
-      switch (eOutputLanguage)
-      {
-        case JAVA -> aCodeGenerator.genCode ("private int jjMoveStringLiteralDfa" +
-                                             i +
-                                             LexGenJava.lexer ().getLexStateSuffix () +
-                                             aParams);
-        case CPP -> aCodeGenerator.generateMethodDefHeader (" int ",
-                                                            LexGenJava.lexer ().getTokenMgrClassName (),
-                                                            "jjMoveStringLiteralDfa" +
-                                                                                                         i +
-                                                                                                         LexGenJava.lexer ()
-                                                                                                                   .getLexStateSuffix () +
-                                                                                                         aParams);
-        default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
+                                              LexGenJava.lexer ().getTokenMgrClassName (),
+                                              "jjMoveStringLiteralDfa" +
+                                                                        i +
+                                                                        LexGenJava.lexer ().getLexStateSuffix () +
+                                                                        aParams,
+                                              null,
+                                              false);
 
       aCodeGenerator.genCodeLine ("{");
 
@@ -1684,21 +1656,14 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       aParams.append (eOutputLanguage.getTypeLong () + " active" + i + ", ");
     aParams.append (eOutputLanguage.getTypeLong () + " active" + i + ")");
 
-    switch (eOutputLanguage)
-    {
-      case JAVA -> aCodeGenerator.genCode ("private final int jjStopStringLiteralDfa" +
-                                           LexGenJava.lexer ().getLexStateSuffix () +
-                                           "(int pos, " +
-                                           aParams);
-      case CPP -> aCodeGenerator.generateMethodDefHeader (" int",
-                                                          LexGenJava.lexer ().getTokenMgrClassName (),
-                                                          "jjStopStringLiteralDfa" +
-                                                                                                       LexGenJava.lexer ()
-                                                                                                                 .getLexStateSuffix () +
-                                                                                                       "(int pos, " +
-                                                                                                       aParams);
-      default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private final") + "int",
+                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            "jjStopStringLiteralDfa" +
+                                                                      LexGenJava.lexer ().getLexStateSuffix () +
+                                                                      "(int pos, " +
+                                                                      aParams,
+                                            null,
+                                            false);
 
     aCodeGenerator.genCodeLine ("{");
 
@@ -1827,19 +1792,11 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       aParams.append (eOutputLanguage.getTypeLong () + " active" + i + ", ");
     aParams.append (eOutputLanguage.getTypeLong () + " active" + i + ")");
 
-    switch (eOutputLanguage)
-    {
-      case JAVA -> aCodeGenerator.genCode ("private final int jjStartNfa" +
-                                           LexGenJava.lexer ().getLexStateSuffix () +
-                                           aParams);
-      case CPP -> aCodeGenerator.generateMethodDefHeader ("int ",
-                                                          LexGenJava.lexer ().getTokenMgrClassName (),
-                                                          "jjStartNfa" +
-                                                                                                       LexGenJava.lexer ()
-                                                                                                                 .getLexStateSuffix () +
-                                                                                                       aParams);
-      default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private final") + "int",
+                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            "jjStartNfa" + LexGenJava.lexer ().getLexStateSuffix () + aParams,
+                                            null,
+                                            false);
     aCodeGenerator.genCodeLine ("{");
 
     if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])

@@ -96,6 +96,12 @@ public enum EOutputLanguage implements IHasID <String>
     }
 
     @Override
+    public String getMethodModifiers (final String sModifiers)
+    {
+      return sModifiers.isEmpty () ? "" : sModifiers + " ";
+    }
+
+    @Override
     public String getModifier (final String sModifier)
     {
       return sModifier;
@@ -164,6 +170,14 @@ public enum EOutputLanguage implements IHasID <String>
     {
       // C++ has no annotations, so it becomes a comment
       return "/*" + sAnnotation + "*/";
+    }
+
+    @Override
+    public String getMethodModifiers (final String sModifiers)
+    {
+      // C++ puts none on a definition: the access comes from the section label in the header file,
+      // and a member function is non virtual unless its declaration says otherwise
+      return "";
     }
 
     @Override
@@ -285,6 +299,19 @@ public enum EOutputLanguage implements IHasID <String>
    */
   @NonNull
   public abstract String getModifier (@NonNull String sModifier);
+
+  /**
+   * The modifiers a method definition carries in this language, ready to be prefixed to the return
+   * type.
+   *
+   * @param sModifiers
+   *        The Java modifiers, e.g. <code>private static final</code>. May be empty but not
+   *        <code>null</code>.
+   * @return The modifiers including a trailing space, or an empty String for a language that puts
+   *         none on a definition. Never <code>null</code>.
+   */
+  @NonNull
+  public abstract String getMethodModifiers (@NonNull String sModifiers);
 
   /**
    * @param sType
