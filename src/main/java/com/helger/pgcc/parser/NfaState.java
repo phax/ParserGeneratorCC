@@ -1236,14 +1236,6 @@ public class NfaState
       else
         tmp = ++s_dummyStateIndex;
 
-      // TODO(sreeni) : Fix this
-      if (Options.getTokenManagerCodeGenerator () != null)
-      {
-        final NfaState dummyState = new NfaState ();
-        dummyState.m_isComposite = true;
-        dummyState.m_compositeStates = nameSet;
-        dummyState.m_stateName = tmp;
-      }
     }
     else
       tmp = nameSet[toRet];

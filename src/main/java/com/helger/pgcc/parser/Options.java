@@ -123,8 +123,6 @@ public class Options
   public static final String USEROPTION__JAVA_CHAR_STREAM_TYPE = "JAVA_CHAR_STREAM_TYPE";
   public static final String USEROPTION__GENERATE_BOILERPLATE = "GENERATE_BOILERPLATE";
   public static final String USEROPTION__OUTPUT_LANGUAGE = "OUTPUT_LANGUAGE";
-  public static final String USEROPTION__PARSER_CODE_GENERATOR = "PARSER_CODE_GENERATOR";
-  public static final String USEROPTION__TOKEN_MANAGER_CODE_GENERATOR = "TOKEN_MANAGER_CODE_GENERATOR";
   public static final String USEROPTION__NO_DFA = "NO_DFA";
   public static final String USEROPTION__TOKEN_MANAGER_SUPER_CLASS = "TOKEN_MANAGER_SUPER_CLASS";
   public static final String USEROPTION__LOOKAHEAD = "LOOKAHEAD";
@@ -212,8 +210,6 @@ public class Options
 
     temp.add (new OptionInfo (USEROPTION__CHOICE_AMBIGUITY_CHECK, EOptionType.INTEGER, Integer.valueOf (2)));
     temp.add (new OptionInfo (USEROPTION__OTHER_AMBIGUITY_CHECK, EOptionType.INTEGER, Integer.valueOf (1)));
-    temp.add (new OptionInfo (USEROPTION__PARSER_CODE_GENERATOR, EOptionType.STRING, ""));
-    temp.add (new OptionInfo (USEROPTION__TOKEN_MANAGER_CODE_GENERATOR, EOptionType.STRING, ""));
     temp.add (new OptionInfo (USEROPTION__NO_DFA, EOptionType.BOOLEAN, Boolean.FALSE));
     temp.add (new OptionInfo (USEROPTION__DEBUG_PARSER, EOptionType.BOOLEAN, Boolean.FALSE));
 
@@ -767,20 +763,6 @@ public class Options
   public static int getOtherAmbiguityCheck ()
   {
     return intValue (USEROPTION__OTHER_AMBIGUITY_CHECK);
-  }
-
-  @Nullable
-  public static String getParserCodeGenerator ()
-  {
-    final String retVal = stringValue (USEROPTION__PARSER_CODE_GENERATOR);
-    return StringHelper.isEmpty (retVal) ? null : retVal;
-  }
-
-  @Nullable
-  public static String getTokenManagerCodeGenerator ()
-  {
-    final String retVal = stringValue (USEROPTION__TOKEN_MANAGER_CODE_GENERATOR);
-    return StringHelper.isEmpty (retVal) ? null : retVal;
   }
 
   public static boolean isNoDfa ()

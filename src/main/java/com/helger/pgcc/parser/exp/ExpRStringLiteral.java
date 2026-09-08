@@ -1608,11 +1608,7 @@ public class ExpRStringLiteral extends AbstractExpRegularExpression
       }
     }
 
-    // TODO(Sreeni) : Fix this mess.
-    if (Options.getTokenManagerCodeGenerator () == null)
-    {
-      dumpNfaStartStatesCode (s_statesForPos, codeGenerator);
-    }
+    dumpNfaStartStatesCode (s_statesForPos, codeGenerator);
   }
 
   static void dumpNfaStartStatesCode (final Map <String, long []> [] statesForPos, final CodeGenerator codeGenerator)

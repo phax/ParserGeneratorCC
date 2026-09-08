@@ -92,7 +92,6 @@ import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpAction;
 import com.helger.pgcc.parser.exp.ExpRChoice;
 import com.helger.pgcc.parser.exp.ExpRStringLiteral;
-import com.helger.pgcc.parser.table.TokenManagerCodeGenerator;
 
 /**
  * Generate lexer.
@@ -418,14 +417,13 @@ public class LexGenJava extends CodeGenerator
     if (!Options.isBuildTokenManager () || Options.isUserTokenManager () || JavaCCErrors.getErrorCount () > 0)
       return;
 
-    final String codeGeneratorClass = Options.getTokenManagerCodeGenerator ();
     s_keepLineCol = Options.isKeepLineColumn ();
     s_errorHandlingClass = Options.getTokenMgrErrorClass ();
     final List <ExpRChoice> choices = new ArrayList <> ();
 
     s_tokMgrClassName = s_cu_name + "TokenManager";
 
-    if (!s_generateDataOnly && codeGeneratorClass == null)
+    if (!s_generateDataOnly)
       _printClassHead ();
     _buildLexStatesTable ();
 
@@ -596,7 +594,7 @@ public class LexGenJava extends CodeGenerator
       if (s_hasNfa[s_lexStateIndex] && !s_mixed[s_lexStateIndex])
         ExpRStringLiteral.generateNfaStartStates (this, s_initialState);
 
-      if (s_generateDataOnly || codeGeneratorClass != null)
+      if (s_generateDataOnly)
       {
         ExpRStringLiteral.updateStringLiteralData (s_lexStateIndex);
         NfaState.updateNfaData (s_totalNumStates, startState, s_lexStateIndex, s_canMatchAnyChar[s_lexStateIndex]);
@@ -619,7 +617,7 @@ public class LexGenJava extends CodeGenerator
 
     checkEmptyStringMatch ();
 
-    if (s_generateDataOnly || codeGeneratorClass != null)
+    if (s_generateDataOnly)
     {
       s_tokenizerData.setParserName (s_cu_name);
       NfaState.buildTokenizerData (s_tokenizerData);
@@ -657,25 +655,6 @@ public class LexGenJava extends CodeGenerator
       s_tokenizerData.setDefaultLexState (s_defaultLexState);
       s_tokenizerData.setLexStateNames (s_lexStateName);
       s_tokenizerData.updateMatchInfo (actionStrings, newLexStateIndices, s_toSkip, s_toSpecial, s_toMore, s_toToken);
-      if (!s_generateDataOnly)
-      {
-        TokenManagerCodeGenerator gen;
-        try
-        {
-          final Class <?> codeGenClazz = Class.forName (codeGeneratorClass);
-          gen = (TokenManagerCodeGenerator) codeGenClazz.getDeclaredConstructor ().newInstance ();
-        }
-        catch (final Exception ee)
-        {
-          JavaCCErrors.semantic_error ("Cound not load the token manager code generator class: " +
-                                       codeGeneratorClass +
-                                       "\nError: " +
-                                       ee.getMessage ());
-          return;
-        }
-        gen.generateCode (s_tokenizerData);
-        gen.finish (s_tokenizerData);
-      }
       return;
     }
 
