@@ -310,88 +310,35 @@ public final class JavaCCGlobals
   @NonNull
   public static String addEscapes (@NonNull final String sStr)
   {
-    final StringBuilder aRetval = new StringBuilder (sStr.length () * 2);
+    final StringBuilder aRetVal = new StringBuilder (sStr.length () * 2);
     for (final char ch : sStr.toCharArray ())
-    {
-      if (ch == '\b')
+      switch (ch)
       {
-        aRetval.append ("\\b");
-      }
-      else
-        if (ch == '\t')
+        case '\b' -> aRetVal.append ("\\b");
+        case '\t' -> aRetVal.append ("\\t");
+        case '\n' -> aRetVal.append ("\\n");
+        case '\f' -> aRetVal.append ("\\f");
+        case '\r' -> aRetVal.append ("\\r");
+        case '"' -> aRetVal.append ("\\\"");
+        case '\'' -> aRetVal.append ("\\'");
+        case '\\' -> aRetVal.append ("\\\\");
+        default ->
         {
-          aRetval.append ("\\t");
-        }
-        else
-          if (ch == '\n')
+          if (ch < 0x20 || ch > 0x7e)
           {
-            aRetval.append ("\\n");
+            final String s = "0000" + Integer.toString (ch, 16);
+            aRetVal.append ("\\u").append (s.substring (s.length () - 4));
           }
           else
-            if (ch == '\f')
-            {
-              aRetval.append ("\\f");
-            }
-            else
-              if (ch == '\r')
-              {
-                aRetval.append ("\\r");
-              }
-              else
-                if (ch == '\"')
-                {
-                  aRetval.append ("\\\"");
-                }
-                else
-                  if (ch == '\'')
-                  {
-                    aRetval.append ("\\\'");
-                  }
-                  else
-                    if (ch == '\\')
-                    {
-                      aRetval.append ("\\\\");
-                    }
-                    else
-                      if (ch < 0x20 || ch > 0x7e)
-                      {
-                        final String s = "0000" + Integer.toString (ch, 16);
-                        aRetval.append ("\\u").append (s.substring (s.length () - 4));
-                      }
-                      else
-                      {
-                        aRetval.append (ch);
-                      }
-    }
-    return aRetval.toString ();
+            aRetVal.append (ch);
+        }
+      }
+    return aRetVal.toString ();
   }
 
   public static String addUnicodeEscapes (final String sStr)
   {
-    switch (Options.getOutputLanguage ())
-    {
-      case JAVA:
-      {
-        final StringBuilder aRetval = new StringBuilder (sStr.length () * 2);
-        for (final char ch : sStr.toCharArray ())
-        {
-          if (ch < 0x20 || ch > 0x7e /* || ch == '\\' -- cba commented out 20140305 */ )
-          {
-            final String s = "0000" + Integer.toString (ch, 16);
-            aRetval.append ("\\u").append (s.substring (s.length () - 4));
-          }
-          else
-          {
-            aRetval.append (ch);
-          }
-        }
-        return aRetval.toString ();
-      }
-      case CPP:
-        return sStr;
-      default:
-        throw new UnsupportedOutputLanguageException (Options.getOutputLanguage ());
-    }
+    return Options.getOutputLanguage ().addUnicodeEscapes (sStr);
   }
 
   public static void printTokenSetup (final Token t)
@@ -564,11 +511,7 @@ public final class JavaCCGlobals
    */
   public static String getFileExtension ()
   {
-    return switch (Options.getOutputLanguage ())
-    {
-      case JAVA -> ".java";
-      case CPP -> ".cc";
-    };
+    return Options.getOutputLanguage ().getFileExtension ();
   }
 
   /**

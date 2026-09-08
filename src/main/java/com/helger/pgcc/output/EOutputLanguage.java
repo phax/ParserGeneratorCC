@@ -65,6 +65,27 @@ public enum EOutputLanguage implements IHasID <String>
     {
       return "boolean";
     }
+
+    @Override
+    public String getFileExtension ()
+    {
+      return ".java";
+    }
+
+    @Override
+    public String addUnicodeEscapes (final String sStr)
+    {
+      final StringBuilder aRetVal = new StringBuilder (sStr.length () * 2);
+      for (final char ch : sStr.toCharArray ())
+        if (ch < 0x20 || ch > 0x7e)
+        {
+          final String s = "0000" + Integer.toString (ch, 16);
+          aRetVal.append ("\\u").append (s.substring (s.length () - 4));
+        }
+        else
+          aRetVal.append (ch);
+      return aRetVal.toString ();
+    }
   },
   CPP ("c++")
   {
@@ -84,6 +105,19 @@ public enum EOutputLanguage implements IHasID <String>
     public String getTypeBoolean ()
     {
       return "bool";
+    }
+
+    @Override
+    public String getFileExtension ()
+    {
+      return ".cc";
+    }
+
+    @Override
+    public String addUnicodeEscapes (final String sStr)
+    {
+      // C++ source is written as it is
+      return sStr;
     }
   };
 
@@ -134,6 +168,25 @@ public enum EOutputLanguage implements IHasID <String>
   @NonNull
   @Nonempty
   public abstract String getTypeBoolean ();
+
+  /**
+   * @return The file extension for a generated source file in this language, dot included. Never
+   *         <code>null</code>.
+   */
+  @NonNull
+  @Nonempty
+  public abstract String getFileExtension ();
+
+  /**
+   * Escape everything that is not printable ASCII, the way a string literal in this language wants
+   * it.
+   *
+   * @param sStr
+   *        The string to escape. May not be <code>null</code>.
+   * @return The escaped string. Never <code>null</code>.
+   */
+  @NonNull
+  public abstract String addUnicodeEscapes (@NonNull String sStr);
 
   public boolean isJava ()
   {
