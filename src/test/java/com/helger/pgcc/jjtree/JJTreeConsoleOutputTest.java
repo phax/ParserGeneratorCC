@@ -63,11 +63,8 @@ public final class JJTreeConsoleOutputTest
   private static final File WORK_DIR = new File ("target/jjtree-console");
 
   /** What a normal run is allowed to say */
-  private static final String [] EXPECTED_PREFIXES = { "ParserGeneratorCC Version",
-                                                       "(type \"jjtree\"",
-                                                       "Reading from file ",
-                                                       "Warning: Output directory ",
-                                                       "File \"",
+  private static final String [] EXPECTED_PREFIXES = { "ParserGeneratorCC Version", "(type \"jjtree\"",
+                                                       "Reading from file ", "Warning: Output directory ", "File \"",
                                                        "Annotated grammar generated successfully" };
 
   private static final class CollectingPrinter implements IPrinter
@@ -106,11 +103,9 @@ public final class JJTreeConsoleOutputTest
   {
     FileOperationManager.INSTANCE.deleteDirRecursiveIfExisting (WORK_DIR);
 
-    final ESuccess eSuccess = new JJTree ().main (new String [] { "-OUTPUT_DIRECTORY=" +
-                                                                  WORK_DIR.getAbsolutePath (),
-                                                                  "-MULTI=true",
-                                                                  "-VISITOR=true",
-                                                                  new File ("src/test/resources/roundtrip/tree.jjt").getAbsolutePath () });
+    final ESuccess eSuccess = new JJTree ().main (new String [] { "-OUTPUT_DIRECTORY=" + WORK_DIR.getAbsolutePath (),
+                                                                  "-MULTI=true", "-VISITOR=true", new File (
+                                                                                                            "src/test/resources/roundtrip/tree.jjt").getAbsolutePath () });
     assertTrue ("JJTree failed", eSuccess.isSuccess ());
 
     final List <String> aUnexpected = new ArrayList <> ();
@@ -127,7 +122,8 @@ public final class JJTreeConsoleOutputTest
     }
 
     assertTrue ("JJTree printed lines that look like leftover debugging. Either the line should go, " +
-                "or EXPECTED_PREFIXES should learn about it:\n" + String.join ("\n", aUnexpected),
+                "or EXPECTED_PREFIXES should learn about it:\n" +
+                String.join ("\n", aUnexpected),
                 aUnexpected.isEmpty ());
     assertTrue ("JJTree printed nothing at all", m_aPrinter.m_aLines.size () > 3);
   }

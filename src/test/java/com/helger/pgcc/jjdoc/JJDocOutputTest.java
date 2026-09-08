@@ -45,6 +45,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.helger.base.state.ESuccess;
+import com.helger.pgcc.jjdoc.test.JJDocMainTest;
 
 /**
  * Test class for the four JJDoc output formats. {@link JJDocMainTest} only checked that a run

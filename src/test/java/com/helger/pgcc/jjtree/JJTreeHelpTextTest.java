@@ -121,11 +121,11 @@ public final class JJTreeHelpTextTest
     {
       // Stored as an EJavaVersion, so compare what the option parser would make of the claim
       return JavaVersionHelper.getFromStringOrNull (sClaim) == aActual ? null
-                                                                      : sName +
-                                                                        ": help says \"" +
-                                                                        sClaim +
-                                                                        "\", actual is " +
-                                                                        aActual;
+                                                                       : sName +
+                                                                         ": help says \"" +
+                                                                         sClaim +
+                                                                         "\", actual is " +
+                                                                         aActual;
     }
 
     final String sActual = String.valueOf (aActual);
@@ -169,8 +169,7 @@ public final class JJTreeHelpTextTest
     }
 
     assertTrue ("The help text advertises no defaults at all - did its layout change?", nChecked >= 15);
-    assertTrue (nChecked + " defaults checked, these disagree with the real value:\n" +
-                String.join ("\n", aMismatches),
+    assertTrue (nChecked + " defaults checked, these disagree with the real value:\n" + String.join ("\n", aMismatches),
                 aMismatches.isEmpty ());
   }
 }

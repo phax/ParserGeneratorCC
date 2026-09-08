@@ -34,7 +34,6 @@
 package com.helger.pgcc.parser.test;
 
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -46,10 +45,10 @@ import org.junit.Test;
 import com.helger.base.exception.InitializationException;
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.AbstractJavaCCTestCase;
+import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.parser.CodeGenerator;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.JavaCCParser;
-import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.parser.Main;
 import com.helger.pgcc.parser.NfaState;
 import com.helger.pgcc.parser.Options;
@@ -84,7 +83,7 @@ public class NfaStateTest extends AbstractJavaCCTestCase
     try
     {
       final JavaCCParser aParser = new JavaCCParser (new StreamProvider (FileHelper.getBufferedReader (new File (sParserInputFile),
-                                                                                                      Options.getGrammarEncoding ())));
+                                                                                                       Options.getGrammarEncoding ())));
       aParser.javacc_input ();
       grammar ().setFileName (sParserInputFile);
       grammar ().setOrigFileName (sParserInputFile);
@@ -170,7 +169,8 @@ public class NfaStateTest extends AbstractJavaCCTestCase
                    "            {\n" +
                    "               default : if (i1 == 0 || l1 == 0 || i2 == 0 ||  l2 == 0) break; else break;\n" +
                    "            }\n" +
-                   "         } while(i != startsAt);\n").trim (), aCg.getGeneratedCode ().replaceAll ("\r", "").trim ());
+                   "         } while(i != startsAt);\n").trim (),
+                  aCg.getGeneratedCode ().replaceAll ("\r", "").trim ());
   }
 
   /**

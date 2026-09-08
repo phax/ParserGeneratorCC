@@ -91,8 +91,8 @@ public final class GoldenManifest
     try
     {
       final MessageDigest aDigest = MessageDigest.getInstance ("SHA-256");
-      final byte [] aHash = aDigest.digest (_normalize (Files.readString (aFile, StandardCharsets.UTF_8))
-                                                       .getBytes (StandardCharsets.UTF_8));
+      final byte [] aHash = aDigest.digest (_normalize (Files.readString (aFile, StandardCharsets.UTF_8)).getBytes (
+                                                                                                                    StandardCharsets.UTF_8));
       final StringBuilder aRet = new StringBuilder (aHash.length * 2);
       for (final byte b : aHash)
         aRet.append (Character.forDigit ((b >> 4) & 0xf, 16)).append (Character.forDigit (b & 0xf, 16));

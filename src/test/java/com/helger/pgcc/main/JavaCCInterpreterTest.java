@@ -45,9 +45,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.helger.pgcc.PGPrinter;
-import com.helger.pgcc.parser.Main;
 import com.helger.pgcc.PGPrinter.IPrinter;
 import com.helger.pgcc.PGPrinter.PSPrinter;
+import com.helger.pgcc.parser.Main;
 
 /**
  * Test class for {@link JavaCCInterpreter}, which tokenizes input against a grammar without

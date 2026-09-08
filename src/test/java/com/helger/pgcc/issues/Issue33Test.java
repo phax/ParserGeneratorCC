@@ -81,10 +81,10 @@ public class Issue33Test
     try (final InputStream aIn = new FileInputStream (aData))
     {
       final ClassLoader aLoader = URLClassLoader.newInstance (new URL [] { aOutDir.toURI ().toURL () },
-                                                             getClass ().getClassLoader ());
+                                                              getClass ().getClassLoader ());
       final Class <?> aClazz = Class.forName ("IssueParser", true, aLoader);
       final Constructor <? extends Object> aConstructor = aClazz.getConstructor (new Class [] { InputStream.class,
-                                                                                              Charset.class });
+                                                                                                Charset.class });
       final Object aObj = aConstructor.newInstance (new Object [] { aIn, Charset.defaultCharset () });
       final Method aParse = aClazz.getDeclaredMethod ("parse", new Class [] {});
       final int i = ((Integer) aParse.invoke (aObj, new Object [] {})).intValue ();
