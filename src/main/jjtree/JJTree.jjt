@@ -33,8 +33,6 @@
  */
 options {
   JAVA_UNICODE_ESCAPE = true;
-  LEGACY_EXCEPTION_HANDLING = false;
-  STATIC = false;
 
   MULTI = true;
   NODE_DEFAULT_VOID = true;

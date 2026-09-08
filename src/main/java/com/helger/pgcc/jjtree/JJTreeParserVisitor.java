@@ -33,6 +33,24 @@
  */
 package com.helger.pgcc.jjtree;
 
+/**
+ * The visitor over JJTree's own AST.
+ * <p>
+ * It stays on {@link Object} rather than becoming generic, and that is not an oversight. This
+ * interface is one half of a generated pair: JJTree emits <code>&lt;Parser&gt;Visitor</code>,
+ * <code>&lt;Parser&gt;DefaultVisitor</code>, <code>Node.jjtAccept</code> and the
+ * <code>jjtAccept</code> of every node class together, and they have to agree. Only this file
+ * happens to be checked in - the generator skips it because it exists - while
+ * {@code JJTreeParserDefaultVisitor} and half of the AST classes below
+ * <code>target/generated-sources</code> are generated and name this type about thirty times.
+ * Parameterising it here would leave generated code implementing a raw type.
+ * <p>
+ * Making it generic properly means changing what JJTree emits for everyone, which would break
+ * every existing visitor implementation. And the generator already has the mechanism for choosing
+ * those types: <code>VISITOR_RETURN_TYPE</code> and <code>VISITOR_DATA_TYPE</code> produce, for
+ * example, <code>Integer visit (ASTSum node, String data)</code> with <code>jjtAccept</code>
+ * following suit.
+ */
 public interface JJTreeParserVisitor
 {
   Object visit (SimpleNode node, Object data);
