@@ -168,7 +168,7 @@ public final class JavaCCInterpreterTest
    * members - unless every member is already used elsewhere, in which case it allocates a name one
    * past the end that belongs to no object at all. {@code updateNfaData} then stored a
    * <code>null</code> start state, {@code buildTokenizerData} wrote -1 into
-   * {@code TokenizerData.m_initialStates}, and the interpreter's {@code if (nfaStartState != -1)}
+   * {@code TokenizerData.m_aInitialStates}, and the interpreter's {@code if (nfaStartState != -1)}
    * skipped the NFA entirely - so every input failed on its first character.
    * <p>
    * {@code buildTokenizerData} now emits a state for that name which matches nothing itself and
@@ -232,7 +232,7 @@ public final class JavaCCInterpreterTest
    * identifier "ing" instead of one identifier.
    * <p>
    * The reason is {@code ExpRStringLiteral._getStateSetForKind}, which returns -1 for a mixed state
-   * before looking at anything else, so {@code TokenizerData.m_kindToNfaStartState} holds -1 for
+   * before looking at anything else, so {@code TokenizerData.m_aKindToNfaStartState} holds -1 for
    * every literal and the interpreter has nowhere to continue. The generated token manager does not
    * use that table at all; it emits {@code jjStartNfaWithStates} calls instead. Closing this means
    * giving the interpreter the equivalent, which is more than it looks.

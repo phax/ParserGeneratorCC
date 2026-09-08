@@ -54,19 +54,19 @@ public final class ExpLookahead extends Expansion
    * If this list contains something, then it is the boolean expression that forms the semantic
    * lookahead. In this case, the following fields "amount" and "la_expansion" are ignored.
    */
-  private final ICommonsList <Token> m_action_tokens = new CommonsArrayList <> ();
+  private final ICommonsList <Token> m_aActionTokens = new CommonsArrayList <> ();
 
   /**
    * The lookahead amount. Its default value essentially gives us infinite lookahead.
    */
-  private int m_amount = Integer.MAX_VALUE;
+  private int m_nAmount = Integer.MAX_VALUE;
 
   /**
    * The expansion used to determine whether or not to choose the corresponding parse option. This
    * expansion is parsed upto "amount" tokens of lookahead or until a complete match for it is
    * found. Usually, this is the same as the expansion to be parsed.
    */
-  private Expansion m_la_expansion;
+  private Expansion m_aLaExpansion;
 
   /**
    * Is set to true if this is an explicit lookahead specification.
@@ -79,7 +79,7 @@ public final class ExpLookahead extends Expansion
   @NonNull
   public final ICommonsList <Token> getActionTokens ()
   {
-    return m_action_tokens;
+    return m_aActionTokens;
   }
 
   /**
@@ -87,7 +87,7 @@ public final class ExpLookahead extends Expansion
    */
   public final int getAmount ()
   {
-    return m_amount;
+    return m_nAmount;
   }
 
   /**
@@ -96,7 +96,7 @@ public final class ExpLookahead extends Expansion
    */
   public final void setAmount (final int nAmount)
   {
-    m_amount = nAmount;
+    m_nAmount = nAmount;
   }
 
   /**
@@ -104,7 +104,7 @@ public final class ExpLookahead extends Expansion
    */
   public final Expansion getLaExpansion ()
   {
-    return m_la_expansion;
+    return m_aLaExpansion;
   }
 
   /**
@@ -113,7 +113,7 @@ public final class ExpLookahead extends Expansion
    */
   public final void setLaExpansion (final Expansion aLa_expansion)
   {
-    m_la_expansion = aLa_expansion;
+    m_aLaExpansion = aLa_expansion;
   }
 
   /**
@@ -139,7 +139,7 @@ public final class ExpLookahead extends Expansion
     final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped).append (m_bIsExplicit ? " explicit" : " implicit");
     if (aAlreadyDumped.add (this))
     {
-      aSb.append (EOL).append (m_la_expansion.dump (nIndent + 1, aAlreadyDumped));
+      aSb.append (EOL).append (m_aLaExpansion.dump (nIndent + 1, aAlreadyDumped));
     }
     return aSb;
   }

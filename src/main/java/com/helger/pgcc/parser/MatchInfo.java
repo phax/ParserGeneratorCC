@@ -41,6 +41,6 @@ import com.helger.pgcc.context.LookaheadState;
  */
 public class MatchInfo
 {
-  int [] m_match = new int [LookaheadState.current ().getLimit ()];
-  int m_firstFreeLoc;
+  int [] m_aMatch = new int [LookaheadState.current ().getLimit ()];
+  int m_nFirstFreeLoc;
 }

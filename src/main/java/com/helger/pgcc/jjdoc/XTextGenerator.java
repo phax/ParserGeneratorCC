@@ -60,7 +60,7 @@ public class XTextGenerator implements IDocGenerator
   {
     final StringBuilder aSb = new StringBuilder ();
 
-    for (final RegExprSpec res : aTp.m_respecs)
+    for (final RegExprSpec res : aTp.m_aRespecs)
     {
       final String sRegularExpressionText = JJDoc.emitRE (res.m_aRexp);
       aSb.append (sRegularExpressionText);

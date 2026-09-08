@@ -33,11 +33,8 @@
  */
 package com.helger.pgcc.jjtree;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
 
@@ -48,9 +45,9 @@ public class ASTNodeDescriptor extends JJTreeNode
   static ASTNodeDescriptor indefinite (final String s)
   {
     final ASTNodeDescriptor aNd = new ASTNodeDescriptor (JJTreeParserTreeConstants.JJTNODEDESCRIPTOR);
-    aNd.m_name = s;
+    aNd.m_sName = s;
     aNd.setNodeIdValue ();
-    aNd.m_faked = true;
+    aNd.m_bFaked = true;
     return aNd;
   }
 
@@ -66,10 +63,10 @@ public class ASTNodeDescriptor extends JJTreeNode
     return PGCCContext.current ().jjtree ().nodeNames ();
   }
 
-  private boolean m_faked = false;
-  String m_name;
-  boolean m_isGT;
-  ASTNodeDescriptorExpression m_expression;
+  private boolean m_bFaked = false;
+  String m_sName;
+  boolean m_bIsGT;
+  ASTNodeDescriptorExpression m_aExpression;
 
   ASTNodeDescriptor (final int nID)
   {
@@ -82,48 +79,48 @@ public class ASTNodeDescriptor extends JJTreeNode
     if (!PGCCContext.current ().jjtree ().nodeSeen ().containsKey (k))
     {
       PGCCContext.current ().jjtree ().nodeSeen ().put (k, k);
-      PGCCContext.current ().jjtree ().nodeNames ().add (m_name);
+      PGCCContext.current ().jjtree ().nodeNames ().add (m_sName);
       PGCCContext.current ().jjtree ().nodeIds ().add (k);
     }
   }
 
   String getNodeId ()
   {
-    return "JJT" + m_name.toUpperCase (Locale.US).replace ('.', '_');
+    return "JJT" + m_sName.toUpperCase (Locale.US).replace ('.', '_');
   }
 
   boolean isVoid ()
   {
-    return m_name.equals ("void");
+    return m_sName.equals ("void");
   }
 
   @Override
   public String toString ()
   {
-    if (m_faked)
-      return "(faked) " + m_name;
-    return super.toString () + ": " + m_name;
+    if (m_bFaked)
+      return "(faked) " + m_sName;
+    return super.toString () + ": " + m_sName;
   }
 
   String getDescriptor ()
   {
-    if (m_expression == null)
+    if (m_aExpression == null)
     {
-      return m_name;
+      return m_sName;
     }
-    return "#" + m_name + "(" + (m_isGT ? ">" : "") + expression_text () + ")";
+    return "#" + m_sName + "(" + (m_bIsGT ? ">" : "") + expression_text () + ")";
   }
 
   String getNodeType ()
   {
     if (JJTreeOptions.isMulti ())
-      return JJTreeOptions.getNodePrefix () + m_name;
+      return JJTreeOptions.getNodePrefix () + m_sName;
     return "SimpleNode";
   }
 
   String getNodeName ()
   {
-    return m_name;
+    return m_sName;
   }
 
   String openNode (final String sNodeVar)
@@ -133,17 +130,17 @@ public class ASTNodeDescriptor extends JJTreeNode
 
   String expression_text ()
   {
-    if (m_expression.getFirstToken ().image.equals (")") && m_expression.getLastToken ().image.equals ("("))
+    if (m_aExpression.getFirstToken ().image.equals (")") && m_aExpression.getLastToken ().image.equals ("("))
     {
       return "true";
     }
 
     String s = "";
-    Token t = m_expression.getFirstToken ();
+    Token t = m_aExpression.getFirstToken ();
     while (true)
     {
       s += " " + t.image;
-      if (t == m_expression.getLastToken ())
+      if (t == m_aExpression.getLastToken ())
       {
         break;
       }
@@ -154,9 +151,9 @@ public class ASTNodeDescriptor extends JJTreeNode
 
   String closeNode (final String sNodeVar)
   {
-    if (m_expression == null)
+    if (m_aExpression == null)
       return "jjtree.closeNodeScope(" + sNodeVar + ", true);";
-    if (m_isGT)
+    if (m_bIsGT)
       return "jjtree.closeNodeScope(" + sNodeVar + ", jjtree.nodeArity() > " + expression_text () + ");";
     return "jjtree.closeNodeScope(" + sNodeVar + ", " + expression_text () + ");";
   }

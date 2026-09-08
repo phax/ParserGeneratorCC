@@ -102,7 +102,7 @@ public final class ExpansionTreeWalker
                 else
                   if (aNode instanceof final ExpTryBlock aTryBlock)
                   {
-                    preOrderWalk (aTryBlock.m_exp, aOpObj);
+                    preOrderWalk (aTryBlock.m_aExp, aOpObj);
                   }
                   else
                     if (aNode instanceof final ExpRChoice aRChoice)
@@ -183,7 +183,7 @@ public final class ExpansionTreeWalker
                 else
                   if (aNode instanceof final ExpTryBlock aExpTryBlock)
                   {
-                    postOrderWalk (aExpTryBlock.m_exp, aOpObj);
+                    postOrderWalk (aExpTryBlock.m_aExp, aOpObj);
                   }
                   else
                     if (aNode instanceof final ExpRChoice aExpRChoice)

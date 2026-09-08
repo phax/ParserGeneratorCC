@@ -51,7 +51,7 @@ public final class ExpSequence extends Expansion
   /**
    * The list of units in this expansion sequence. Each List component will narrow to Expansion.
    */
-  private final List <Expansion> m_units = new ArrayList <> ();
+  private final List <Expansion> m_aUnits = new ArrayList <> ();
 
   public ExpSequence ()
   {}
@@ -60,43 +60,43 @@ public final class ExpSequence extends Expansion
   {
     setLine (aToken.beginLine);
     setColumn (aToken.beginColumn);
-    m_units.add (aLookahead);
+    m_aUnits.add (aLookahead);
   }
 
   @NonNull
   public final Iterable <Expansion> getUnits ()
   {
-    return m_units;
+    return m_aUnits;
   }
 
   @Nonnegative
   public final int getUnitCount ()
   {
-    return m_units.size ();
+    return m_aUnits.size ();
   }
 
   @NonNull
   public final Expansion getUnitAt (final int nIndex)
   {
-    return m_units.get (nIndex);
+    return m_aUnits.get (nIndex);
   }
 
   public final void addUnit (final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
-    m_units.add (aObj);
+    m_aUnits.add (aObj);
   }
 
   public final void addUnit (final int n, final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
-    m_units.add (n, aObj);
+    m_aUnits.add (n, aObj);
   }
 
   public final void setUnit (final int n, final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
-    m_units.set (n, aObj);
+    m_aUnits.set (n, aObj);
   }
 
   @Override
@@ -108,7 +108,7 @@ public final class ExpSequence extends Expansion
     }
 
     final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
-    for (final Expansion next : m_units)
+    for (final Expansion next : m_aUnits)
     {
       aSb.append (EOL).append (next.dump (nIndent + 1, aAlreadyDumped));
     }

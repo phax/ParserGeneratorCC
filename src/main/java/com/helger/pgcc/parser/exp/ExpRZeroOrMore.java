@@ -47,11 +47,11 @@ public final class ExpRZeroOrMore extends AbstractExpRegularExpression
   /**
    * The regular expression which is repeated zero or more times.
    */
-  private final AbstractExpRegularExpression m_regexpr;
+  private final AbstractExpRegularExpression m_aRegexpr;
 
   public ExpRZeroOrMore (final AbstractExpRegularExpression r)
   {
-    m_regexpr = r;
+    m_aRegexpr = r;
   }
 
   public ExpRZeroOrMore (final Token t, final AbstractExpRegularExpression r)
@@ -64,7 +64,7 @@ public final class ExpRZeroOrMore extends AbstractExpRegularExpression
   @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {
-    return m_regexpr;
+    return m_aRegexpr;
   }
 
   @Override
@@ -74,7 +74,7 @@ public final class ExpRZeroOrMore extends AbstractExpRegularExpression
     final NfaState aStartState = aRetVal.start ();
     final NfaState aFinalState = aRetVal.end ();
 
-    final Nfa aTemp = m_regexpr.generateNfa (bIgnoreCase);
+    final Nfa aTemp = m_aRegexpr.generateNfa (bIgnoreCase);
 
     aStartState.addMove (aTemp.start ());
     aStartState.addMove (aFinalState);

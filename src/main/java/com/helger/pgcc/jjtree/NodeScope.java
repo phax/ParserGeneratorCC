@@ -37,61 +37,61 @@ import org.jspecify.annotations.Nullable;
 
 public class NodeScope
 {
-  ASTProduction m_production;
-  ASTNodeDescriptor m_node_descriptor;
+  ASTProduction m_aProduction;
+  ASTNodeDescriptor m_aNodeDescriptor;
 
-  String m_closedVar;
-  String m_exceptionVar;
-  String m_nodeVar;
-  int m_scopeNumber;
+  String m_sClosedVar;
+  String m_sExceptionVar;
+  String m_sNodeVar;
+  int m_nScopeNumber;
 
   NodeScope (final ASTProduction p, @Nullable final ASTNodeDescriptor n)
   {
-    m_production = p;
+    m_aProduction = p;
 
     if (n == null)
     {
-      String sNm = m_production.m_name;
+      String sNm = m_aProduction.m_sName;
       if (JJTreeOptions.isNodeDefaultVoid ())
       {
         sNm = "void";
       }
-      m_node_descriptor = ASTNodeDescriptor.indefinite (sNm);
+      m_aNodeDescriptor = ASTNodeDescriptor.indefinite (sNm);
     }
     else
     {
-      m_node_descriptor = n;
+      m_aNodeDescriptor = n;
     }
 
-    m_scopeNumber = m_production.getNodeScopeNumber (this);
-    m_nodeVar = constructVariable ("n");
-    m_closedVar = constructVariable ("c");
-    m_exceptionVar = constructVariable ("e");
+    m_nScopeNumber = m_aProduction.getNodeScopeNumber (this);
+    m_sNodeVar = constructVariable ("n");
+    m_sClosedVar = constructVariable ("c");
+    m_sExceptionVar = constructVariable ("e");
   }
 
   boolean isVoid ()
   {
-    return m_node_descriptor.isVoid ();
+    return m_aNodeDescriptor.isVoid ();
   }
 
   ASTNodeDescriptor getNodeDescriptor ()
   {
-    return m_node_descriptor;
+    return m_aNodeDescriptor;
   }
 
   String getNodeDescriptorText ()
   {
-    return m_node_descriptor.getDescriptor ();
+    return m_aNodeDescriptor.getDescriptor ();
   }
 
   String getNodeVariable ()
   {
-    return m_nodeVar;
+    return m_sNodeVar;
   }
 
   private String constructVariable (final String sId)
   {
-    final String s = "000" + m_scopeNumber;
+    final String s = "000" + m_nScopeNumber;
     return "jjt" + sId + s.substring (s.length () - 3, s.length ());
   }
 
@@ -105,23 +105,23 @@ public class NodeScope
   {
     if (aNode instanceof final ASTBNFDeclaration aASTBNFDeclaration)
     {
-      return aASTBNFDeclaration.m_node_scope;
+      return aASTBNFDeclaration.m_aNodeScope;
     }
     for (Node n = aNode.jjtGetParent (); n != null; n = n.jjtGetParent ())
     {
       if (n instanceof ASTBNFDeclaration)
       {
-        return ((ASTBNFDeclaration) n).m_node_scope;
+        return ((ASTBNFDeclaration) n).m_aNodeScope;
       }
       else
         if (n instanceof final ASTBNFNodeScope aASTBNFNodeScope)
         {
-          return aASTBNFNodeScope.m_node_scope;
+          return aASTBNFNodeScope.m_aNodeScope;
         }
         else
           if (n instanceof final ASTExpansionNodeScope aASTExpansionNodeScope)
           {
-            return aASTExpansionNodeScope.m_node_scope;
+            return aASTExpansionNodeScope.m_aNodeScope;
           }
     }
     return null;

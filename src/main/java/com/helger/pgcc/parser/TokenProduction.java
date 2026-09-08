@@ -54,36 +54,36 @@ public class TokenProduction
    * null value is replaced by a String array that includes all lexical state names during the
    * semanticization phase.
    */
-  public String [] m_lexStates;
+  public String [] m_aLexStates;
 
   /**
    * The kind of this token production - TOKEN, SKIP, MORE, or SPECIAL.
    */
-  public ETokenKind m_kind;
+  public ETokenKind m_eKind;
 
   /**
    * The list of regular expression specifications that comprise this production. Each entry is a
    * "RegExprSpec".
    */
-  public List <RegExprSpec> m_respecs = new ArrayList <> ();
+  public List <RegExprSpec> m_aRespecs = new ArrayList <> ();
 
   /**
    * This is true if this corresponds to a production that actually appears in the input grammar.
    * Otherwise (if this is created to describe a regular expression that is part of the BNF) this is
    * set to false.
    */
-  public boolean m_isExplicit = true;
+  public boolean m_bIsExplicit = true;
 
   /**
    * This is true if case is to be ignored within the regular expressions of this token production.
    */
-  public boolean m_ignoreCase = false;
+  public boolean m_bIgnoreCase = false;
 
   /**
    * The first and last tokens from the input stream that represent this production.
    */
-  public Token m_firstToken;
-  public Token m_lastToken;
+  public Token m_aFirstToken;
+  public Token m_aLastToken;
 
   /**
    * @return the column

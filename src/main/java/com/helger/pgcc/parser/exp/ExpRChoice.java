@@ -55,7 +55,7 @@ public final class ExpRChoice extends AbstractExpRegularExpression
    * The list of choices of this regular expression. Each list component will narrow to
    * RegularExpression.
    */
-  private final List <AbstractExpRegularExpression> m_choices = new ArrayList <> ();
+  private final List <AbstractExpRegularExpression> m_aChoices = new ArrayList <> ();
 
   public ExpRChoice ()
   {}
@@ -66,25 +66,25 @@ public final class ExpRChoice extends AbstractExpRegularExpression
   @NonNull
   public final List <AbstractExpRegularExpression> getChoices ()
   {
-    return m_choices;
+    return m_aChoices;
   }
 
   @Nonnegative
   public final int getChoiceCount ()
   {
-    return m_choices.size ();
+    return m_aChoices.size ();
   }
 
   @NonNull
   public final AbstractExpRegularExpression getChoiceAt (final int nIndex)
   {
-    return m_choices.get (nIndex);
+    return m_aChoices.get (nIndex);
   }
 
   public final void addChoice (@NonNull final AbstractExpRegularExpression a)
   {
     ValueEnforcer.notNull (a, "Expansion");
-    m_choices.add (a);
+    m_aChoices.add (a);
   }
 
   @Override
@@ -121,11 +121,11 @@ public final class ExpRChoice extends AbstractExpRegularExpression
       aCurRE = getChoiceAt (i);
 
       while (aCurRE instanceof ExpRJustName)
-        aCurRE = ((ExpRJustName) aCurRE).m_regexpr;
+        aCurRE = ((ExpRJustName) aCurRE).m_aRegexpr;
 
-      if (aCurRE instanceof ExpRStringLiteral && ((ExpRStringLiteral) aCurRE).m_image.length () == 1)
+      if (aCurRE instanceof ExpRStringLiteral && ((ExpRStringLiteral) aCurRE).m_sImage.length () == 1)
       {
-        aCurRE = new ExpRCharacterList (((ExpRStringLiteral) aCurRE).m_image.charAt (0));
+        aCurRE = new ExpRCharacterList (((ExpRStringLiteral) aCurRE).m_sImage.charAt (0));
         getChoices ().set (i, aCurRE);
       }
 
@@ -159,7 +159,7 @@ public final class ExpRChoice extends AbstractExpRegularExpression
       AbstractExpRegularExpression aCurRE = getChoiceAt (i);
 
       while (aCurRE instanceof ExpRJustName)
-        aCurRE = ((ExpRJustName) aCurRE).m_regexpr;
+        aCurRE = ((ExpRJustName) aCurRE).m_aRegexpr;
 
       if (aCurRE instanceof final ExpRChoice aRChoice)
       {

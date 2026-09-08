@@ -114,7 +114,7 @@ public final class ExpansionTest
     final ExpRStringLiteral r = new ExpRStringLiteral (m_aToken, "hey");
     assertEquals (m_aToken.beginColumn, r.getColumn ());
     assertEquals (m_aToken.beginLine, r.getLine ());
-    assertEquals ("hey", r.m_image);
+    assertEquals ("hey", r.m_sImage);
   }
 
   @Test

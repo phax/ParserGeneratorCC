@@ -49,10 +49,10 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
   /**
    * The regular expression which is repeated one or more times.
    */
-  private final AbstractExpRegularExpression m_regexpr;
-  private int m_min = 0;
-  private int m_max = -1;
-  private final boolean m_hasMax;
+  private final AbstractExpRegularExpression m_aRegexpr;
+  private int m_nMin = 0;
+  private int m_nMax = -1;
+  private final boolean m_bHasMax;
 
   public ExpRRepetitionRange (final Token t,
                               final int nR1,
@@ -62,31 +62,31 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
   {
     setLine (t.beginLine);
     setColumn (t.beginColumn);
-    m_min = nR1;
-    m_max = nR2;
-    m_hasMax = bHasMax;
-    m_regexpr = r;
+    m_nMin = nR1;
+    m_nMax = nR2;
+    m_bHasMax = bHasMax;
+    m_aRegexpr = r;
   }
 
   @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {
-    return m_regexpr;
+    return m_aRegexpr;
   }
 
   public final int getMin ()
   {
-    return m_min;
+    return m_nMin;
   }
 
   public final boolean hasMax ()
   {
-    return m_hasMax;
+    return m_bHasMax;
   }
 
   public final int getMax ()
   {
-    return m_max;
+    return m_nMax;
   }
 
   @Override
@@ -96,19 +96,19 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
     ExpRSequence aSeq;
     int i;
 
-    for (i = 0; i < m_min; i++)
+    for (i = 0; i < m_nMin; i++)
     {
-      aUnits.add (m_regexpr);
+      aUnits.add (m_aRegexpr);
     }
 
-    if (m_hasMax && m_max == -1) // Unlimited
+    if (m_bHasMax && m_nMax == -1) // Unlimited
     {
-      aUnits.add (new ExpRZeroOrMore (m_regexpr));
+      aUnits.add (new ExpRZeroOrMore (m_aRegexpr));
     }
 
-    while (i++ < m_max)
+    while (i++ < m_nMax)
     {
-      aUnits.add (new ExpRZeroOrOne (m_regexpr));
+      aUnits.add (new ExpRZeroOrOne (m_aRegexpr));
     }
     aSeq = new ExpRSequence (aUnits);
     return aSeq.generateNfa (bIgnoreCase);

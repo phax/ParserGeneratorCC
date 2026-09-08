@@ -351,14 +351,14 @@ TOKEN :
   < RUNSIGNEDSHIFT: ">>>" >
   {
      matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).m_realKind = RUNSIGNEDSHIFT;
+     ((Token.GTToken)matchedToken).m_nRealKind = RUNSIGNEDSHIFT;
      input_stream.backup(2);
      matchedToken.image = ">";
   }
 | < RSIGNEDSHIFT: ">>" >
   {
      matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).m_realKind = RSIGNEDSHIFT;
+     ((Token.GTToken)matchedToken).m_nRealKind = RSIGNEDSHIFT;
      input_stream.backup(1);
      matchedToken.image = ">";
   }
@@ -498,11 +498,11 @@ void javacode_production() #Javacode :
     [
       "throws" n=Name()
 	{
-	  prod.m_throws_list.add(n);
+	  prod.m_aThrowsList.add(n);
 	}
       ( "," n=Name()
 	{
-	  prod.m_throws_list.add(n);
+	  prod.m_aThrowsList.add(n);
 	}
       )*
     ]
@@ -511,7 +511,7 @@ void javacode_production() #Javacode :
     // This is really a Block()
     t2="{"
         {
-	  prod.m_name = t1.image;
+	  prod.m_sName = t1.image;
 	  prod.m_aStmBeginLoc = t2;
           if (!isJavaLanguage) {
             eatUptoCloseBrace();
@@ -520,12 +520,12 @@ void javacode_production() #Javacode :
     (
       ( BlockStatement() )*
         {
-	  jjtThis.m_node_scope = new NodeScope(prod, nd);
+	  jjtThis.m_aNodeScope = new NodeScope(prod, nd);
 	}
     ) #JavacodeBody
     "}"
         {
-	  PGCCContext.current ().jjtree ().productions ().put(prod.m_name, prod);
+	  PGCCContext.current ().jjtree ().productions ().put(prod.m_sName, prod);
 	}
 }
 
@@ -553,11 +553,11 @@ void bnf_production() #BNF :
   [
     "throws" n=Name()
         {
-	  prod.m_throws_list.add(n);
+	  prod.m_aThrowsList.add(n);
 	}
     ( "," n=Name()
         {
-	  prod.m_throws_list.add(n);
+	  prod.m_aThrowsList.add(n);
 	}
     )*
   ]
@@ -567,7 +567,7 @@ void bnf_production() #BNF :
   // This is really a Block()
   t2="{"
         {
-	  prod.m_name = t1.image;
+	  prod.m_sName = t1.image;
 	  prod.m_aDeclBeginLoc = t2;
 	  ns = new NodeScope(prod, nd);
           if (!isJavaLanguage) {
@@ -577,7 +577,7 @@ void bnf_production() #BNF :
   (
     ( BlockStatement() )*
         {
-	  jjtThis.m_node_scope = ns;
+	  jjtThis.m_aNodeScope = ns;
 	}
   ) #BNFDeclaration
   "}"
@@ -586,13 +586,13 @@ void bnf_production() #BNF :
   (
     eu=expansion_choices(prod)
         {
-	  jjtThis.m_node_scope = ns;
-	  jjtThis.m_expansion_unit = eu;
+	  jjtThis.m_aNodeScope = ns;
+	  jjtThis.m_aExpansionUnit = eu;
 	}
   ) #BNFNodeScope
  "}"
         {
-	  PGCCContext.current ().jjtree ().productions ().put(prod.m_name, prod);
+	  PGCCContext.current ().jjtree ().productions ().put(prod.m_sName, prod);
 	}
 }
 
@@ -678,8 +678,8 @@ void expansion(ASTProduction p) #BNFSequence(>1) :
      [ nd=node_descriptor() ]
         {
 	  if (jjtree.nodeCreated()) {
-	    jjtThis.m_node_scope = new NodeScope(p, nd);
-	    jjtThis.m_expansion_unit = eu;
+	    jjtThis.m_aNodeScope = new NodeScope(p, nd);
+	    jjtThis.m_aExpansionUnit = eu;
 	  }
 	}
    ) #ExpansionNodeScope(>1)
@@ -906,11 +906,11 @@ ASTNodeDescriptor node_descriptor() #NodeDescriptor :
   (
     s=Name()
                    {
-                     jjtThis.m_name = s;
+                     jjtThis.m_sName = s;
 		   }
   | t=<VOID>
                    {
-                     jjtThis.m_name = t.image;
+                     jjtThis.m_sName = t.image;
 		   }
   )
   [
@@ -918,12 +918,12 @@ ASTNodeDescriptor node_descriptor() #NodeDescriptor :
    "("
       [ ">"
                    {
-		     jjtThis.m_isGT = true;
+		     jjtThis.m_bIsGT = true;
 		   }
       ]
       node_descriptor_expression()
 	           {
-		     jjtThis.m_expression =
+		     jjtThis.m_aExpression =
 		       (ASTNodeDescriptorExpression)jjtree.peekNode();
 		   }
    ")"
@@ -1981,7 +1981,7 @@ void RUNSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).m_realKind == RUNSIGNEDSHIFT} )
+                ((Token.GTToken)getToken(1)).m_nRealKind == RUNSIGNEDSHIFT} )
    ">" ">" ">"
   )
 }
@@ -1990,7 +1990,7 @@ void RSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).m_realKind == RSIGNEDSHIFT} )
+                ((Token.GTToken)getToken(1)).m_nRealKind == RSIGNEDSHIFT} )
   ">" ">"
   )
 }

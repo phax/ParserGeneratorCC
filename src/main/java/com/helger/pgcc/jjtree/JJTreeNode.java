@@ -78,27 +78,27 @@ public class JJTreeNode extends SimpleNode
    * specified output stream.
    *****************************************************************/
 
-  private Token m_first;
-  private Token m_last;
+  private Token m_aFirst;
+  private Token m_aLast;
 
   public Token getFirstToken ()
   {
-    return m_first;
+    return m_aFirst;
   }
 
   public void setFirstToken (final Token t)
   {
-    m_first = t;
+    m_aFirst = t;
   }
 
   public Token getLastToken ()
   {
-    return m_last;
+    return m_aLast;
   }
 
   public void setLastToken (final Token t)
   {
-    m_last = t;
+    m_aLast = t;
   }
 
   @OverrideOnDemand
@@ -126,7 +126,7 @@ public class JJTreeNode extends SimpleNode
    * Indicates whether the token should be replaced by white space or replaced with the actual node
    * variable.
    */
-  private boolean m_whitingOut = false;
+  private boolean m_bWhitingOut = false;
 
   protected void print (final Token t, final JJTreeIO aIo)
   {
@@ -178,13 +178,13 @@ public class JJTreeNode extends SimpleNode
                  * Found `jjtree.currentNode()' so go into white out mode. We'll stay in this mode
                  * until we find the closing parenthesis.
                  */
-                m_whitingOut = true;
+                m_bWhitingOut = true;
               }
             }
           }
         }
       }
-    if (m_whitingOut)
+    if (m_bWhitingOut)
     {
       if (t.image.equals ("jjtree"))
       {
@@ -195,7 +195,7 @@ public class JJTreeNode extends SimpleNode
         if (t.image.equals (")"))
         {
           aIo.print (" ");
-          m_whitingOut = false;
+          m_bWhitingOut = false;
         }
         else
         {

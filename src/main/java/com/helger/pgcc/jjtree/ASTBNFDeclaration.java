@@ -35,7 +35,7 @@ package com.helger.pgcc.jjtree;
 
 public class ASTBNFDeclaration extends JJTreeNode
 {
-  NodeScope m_node_scope;
+  NodeScope m_aNodeScope;
 
   ASTBNFDeclaration (final int nID)
   {

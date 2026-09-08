@@ -46,12 +46,12 @@ public final class ExpRJustName extends AbstractExpRegularExpression
   /**
    * "regexpr" points to the regular expression denoted by the name.
    */
-  public AbstractExpRegularExpression m_regexpr;
+  public AbstractExpRegularExpression m_aRegexpr;
 
   @Override
   public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    return m_regexpr.generateNfa (bIgnoreCase);
+    return m_aRegexpr.generateNfa (bIgnoreCase);
   }
 
   public ExpRJustName (final Token aToken, final String sImage)

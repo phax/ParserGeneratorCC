@@ -62,13 +62,13 @@ public final class LookaheadWalk
       {
         final MatchInfo m = aPartialMatches.get (i);
         final MatchInfo aMnew = new MatchInfo ();
-        for (int j = 0; j < m.m_firstFreeLoc; j++)
+        for (int j = 0; j < m.m_nFirstFreeLoc; j++)
         {
-          aMnew.m_match[j] = m.m_match[j];
+          aMnew.m_aMatch[j] = m.m_aMatch[j];
         }
-        aMnew.m_firstFreeLoc = m.m_firstFreeLoc;
-        aMnew.m_match[aMnew.m_firstFreeLoc++] = aRegularExpression.getOrdinal ();
-        if (aMnew.m_firstFreeLoc == LookaheadState.current ().getLimit ())
+        aMnew.m_nFirstFreeLoc = m.m_nFirstFreeLoc;
+        aMnew.m_aMatch[aMnew.m_nFirstFreeLoc++] = aRegularExpression.getOrdinal ();
+        if (aMnew.m_nFirstFreeLoc == LookaheadState.current ().getLimit ())
         {
           LookaheadState.current ().getSizeLimitedMatches ().add (aMnew);
         }
@@ -151,7 +151,7 @@ public final class LookaheadWalk
 
     if (aExp instanceof final ExpTryBlock aTryBlock)
     {
-      return genFirstSet (aPartialMatches, aTryBlock.m_exp);
+      return genFirstSet (aPartialMatches, aTryBlock.m_aExp);
     }
 
     if (LookaheadState.current ().isConsiderSemanticLA () &&

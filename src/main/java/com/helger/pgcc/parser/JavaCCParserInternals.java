@@ -229,32 +229,32 @@ public abstract class JavaCCParserInternals
     grammar ().rexprList ().add (p);
     if (Options.isUserTokenManager ())
     {
-      if (p.m_lexStates == null || p.m_lexStates.length != 1 || !p.m_lexStates[0].equals ("DEFAULT"))
+      if (p.m_aLexStates == null || p.m_aLexStates.length != 1 || !p.m_aLexStates[0].equals ("DEFAULT"))
       {
         JavaCCErrors.warning (p,
                               "Ignoring lexical state specifications since option " +
                                  "USER_TOKEN_MANAGER has been set to true.");
       }
     }
-    if (p.m_lexStates == null)
+    if (p.m_aLexStates == null)
     {
       return;
     }
-    for (int i = 0; i < p.m_lexStates.length; i++)
+    for (int i = 0; i < p.m_aLexStates.length; i++)
     {
       for (int j = 0; j < i; j++)
       {
-        if (p.m_lexStates[i].equals (p.m_lexStates[j]))
+        if (p.m_aLexStates[i].equals (p.m_aLexStates[j]))
         {
-          JavaCCErrors.parse_error (p, "Multiple occurrence of \"" + p.m_lexStates[i] + "\" in lexical state list.");
+          JavaCCErrors.parse_error (p, "Multiple occurrence of \"" + p.m_aLexStates[i] + "\" in lexical state list.");
         }
       }
-      if (grammar ().lexStateS2I ().get (p.m_lexStates[i]) == null)
+      if (grammar ().lexStateS2I ().get (p.m_aLexStates[i]) == null)
       {
         final Integer aIi = Integer.valueOf (PGCCContext.current ().parserBuild ().getAndIncNextFreeLexState ());
-        grammar ().lexStateS2I ().put (p.m_lexStates[i], aIi);
-        grammar ().lexStateI2S ().put (aIi, p.m_lexStates[i]);
-        grammar ().simpleTokensTable ().put (p.m_lexStates[i], new HashMap <> ());
+        grammar ().lexStateS2I ().put (p.m_aLexStates[i], aIi);
+        grammar ().lexStateI2S ().put (aIi, p.m_aLexStates[i]);
+        grammar ().simpleTokensTable ().put (p.m_aLexStates[i], new HashMap <> ());
       }
     }
   }
@@ -282,16 +282,16 @@ public abstract class JavaCCParserInternals
     if (!(r instanceof ExpREndOfFile))
     {
       final TokenProduction p = new TokenProduction ();
-      p.m_isExplicit = false;
-      p.m_lexStates = new String [] { "DEFAULT" };
-      p.m_kind = ETokenKind.TOKEN;
+      p.m_bIsExplicit = false;
+      p.m_aLexStates = new String [] { "DEFAULT" };
+      p.m_eKind = ETokenKind.TOKEN;
       final RegExprSpec aRes = new RegExprSpec ();
       aRes.m_aRexp = r;
       aRes.m_aRexp.m_aTpContext = p;
       aRes.m_aAct = new ExpAction ();
       aRes.m_sNextState = null;
       aRes.m_aNsTok = null;
-      p.m_respecs.add (aRes);
+      p.m_aRespecs.add (aRes);
       grammar ().rexprList ().add (p);
     }
   }
@@ -488,13 +488,13 @@ public abstract class JavaCCParserInternals
     final ExpTryBlock aTblk = new ExpTryBlock ();
     aTblk.setLine (aTryLoc.beginLine);
     aTblk.setColumn (aTryLoc.beginColumn);
-    aTblk.m_exp = (Expansion) aNestedExp.m_aMember;
-    aTblk.m_exp.setParent (aTblk);
-    aTblk.m_exp.setOrdinalBase (0);
-    aTblk.m_types = types;
-    aTblk.m_ids = ids;
-    aTblk.m_catchblks = catchblks;
-    aTblk.m_finallyblk = aFinallyblk;
+    aTblk.m_aExp = (Expansion) aNestedExp.m_aMember;
+    aTblk.m_aExp.setParent (aTblk);
+    aTblk.m_aExp.setOrdinalBase (0);
+    aTblk.m_aTypes = types;
+    aTblk.m_aIds = ids;
+    aTblk.m_aCatchblks = catchblks;
+    aTblk.m_aFinallyblk = aFinallyblk;
     aResult.m_aMember = aTblk;
   }
 

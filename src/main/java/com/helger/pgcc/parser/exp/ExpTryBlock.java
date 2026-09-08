@@ -48,30 +48,30 @@ public final class ExpTryBlock extends Expansion
   /**
    * The expansion contained within the try block.
    */
-  public Expansion m_exp;
+  public Expansion m_aExp;
 
   /**
    * The types of each catch block. Each list entry is itself a list which in turn contains tokens
    * as entries.
    */
-  public List <List <Token>> m_types;
+  public List <List <Token>> m_aTypes;
 
   /**
    * The exception identifiers of each catch block. Each list entry is a token.
    */
-  public List <Token> m_ids;
+  public List <Token> m_aIds;
 
   /**
    * The block part of each catch block. Each list entry is itself a list which in turn contains
    * tokens as entries.
    */
-  public List <List <Token>> m_catchblks;
+  public List <List <Token>> m_aCatchblks;
 
   /**
    * The block part of the finally block. Each list entry is a token. If there is no finally block,
    * this is null.
    */
-  public List <Token> m_finallyblk;
+  public List <Token> m_aFinallyblk;
 
   @Override
   public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
@@ -79,7 +79,7 @@ public final class ExpTryBlock extends Expansion
     final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
     if (aAlreadyDumped.add (this))
     {
-      aSb.append (EOL).append (m_exp.dump (nIndent + 1, aAlreadyDumped));
+      aSb.append (EOL).append (m_aExp.dump (nIndent + 1, aAlreadyDumped));
     }
     return aSb;
   }

@@ -35,8 +35,8 @@ package com.helger.pgcc.jjtree;
 
 public class ASTOptionBinding extends JJTreeNode
 {
-  private boolean m_suppressed = false;
-  private String m_name;
+  private boolean m_bSuppressed = false;
+  private String m_sName;
 
   ASTOptionBinding (final int nID)
   {
@@ -53,31 +53,31 @@ public class ASTOptionBinding extends JJTreeNode
    */
   void initialize (final String sName, final String sValue)
   {
-    m_name = sName;
+    m_sName = sName;
 
     // If an option is specific to JJTree it should not be written out
     // to the output file for JavaCC.
 
-    if (JJTreeGlobals.isOptionJJTreeOnly (m_name))
+    if (JJTreeGlobals.isOptionJJTreeOnly (m_sName))
     {
-      m_suppressed = true;
+      m_bSuppressed = true;
     }
   }
 
   boolean isSuppressed ()
   {
-    return m_suppressed;
+    return m_bSuppressed;
   }
 
   void suppressOption (final boolean bSuppressed)
   {
-    m_suppressed = bSuppressed;
+    m_bSuppressed = bSuppressed;
   }
 
   @Override
   String translateImage (final Token t)
   {
-    if (m_suppressed)
+    if (m_bSuppressed)
     {
       return whiteOut (t);
     }

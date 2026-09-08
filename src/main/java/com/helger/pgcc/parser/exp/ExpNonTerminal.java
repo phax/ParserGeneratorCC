@@ -54,29 +54,29 @@ public final class ExpNonTerminal extends Expansion
    * The LHS to which the return value of the non-terminal is assigned. In case there is no LHS,
    * then the vector remains empty.
    */
-  private final ICommonsList <Token> m_lhsTokens = new CommonsArrayList <> ();
+  private final ICommonsList <Token> m_aLhsTokens = new CommonsArrayList <> ();
 
   /**
    * The name of the non-terminal.
    */
-  private String m_name;
+  private String m_sName;
 
   /**
    * The list of all tokens in the argument list.
    */
-  private final ICommonsList <Token> m_argumentTokens = new CommonsArrayList <> ();
+  private final ICommonsList <Token> m_aArgumentTokens = new CommonsArrayList <> ();
 
-  private final ICommonsList <Token> m_parametrizedTypeTokens = new CommonsArrayList <> ();
+  private final ICommonsList <Token> m_aParametrizedTypeTokens = new CommonsArrayList <> ();
 
   /**
    * The production this non-terminal corresponds to.
    */
-  private NormalProduction m_prod;
+  private NormalProduction m_aProd;
 
   @Override
   public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    return super.dump (nIndent, aAlreadyDumped).append (' ').append (m_name);
+    return super.dump (nIndent, aAlreadyDumped).append (' ').append (m_sName);
   }
 
   /**
@@ -85,19 +85,19 @@ public final class ExpNonTerminal extends Expansion
   @NonNull
   public final Iterable <Token> getLhsTokens ()
   {
-    return m_lhsTokens;
+    return m_aLhsTokens;
   }
 
   @Nonnegative
   public final int getLhsTokenCount ()
   {
-    return m_lhsTokens.size ();
+    return m_aLhsTokens.size ();
   }
 
   @NonNull
   public final Token getLhsTokenAt (final int nIndex)
   {
-    return m_lhsTokens.get (nIndex);
+    return m_aLhsTokens.get (nIndex);
   }
 
   /**
@@ -106,7 +106,7 @@ public final class ExpNonTerminal extends Expansion
    */
   public final void setLhsTokens (@NonNull final List <Token> aLhsTokens)
   {
-    m_lhsTokens.setAll (aLhsTokens);
+    m_aLhsTokens.setAll (aLhsTokens);
   }
 
   /**
@@ -114,7 +114,7 @@ public final class ExpNonTerminal extends Expansion
    */
   public final String getName ()
   {
-    return m_name;
+    return m_sName;
   }
 
   /**
@@ -123,13 +123,13 @@ public final class ExpNonTerminal extends Expansion
    */
   public final void setName (final String sName)
   {
-    m_name = sName;
+    m_sName = sName;
   }
 
   @NonNull
   public final List <Token> getMutableArgumentTokens ()
   {
-    return m_argumentTokens;
+    return m_aArgumentTokens;
   }
 
   /**
@@ -138,25 +138,25 @@ public final class ExpNonTerminal extends Expansion
   @NonNull
   public final Iterable <Token> getArgumentTokens ()
   {
-    return m_argumentTokens;
+    return m_aArgumentTokens;
   }
 
   @Nonnegative
   public final int getArgumentTokenCount ()
   {
-    return m_argumentTokens.size ();
+    return m_aArgumentTokens.size ();
   }
 
   @NonNull
   public final Token getArgumentTokenAt (final int n)
   {
-    return m_argumentTokens.get (n);
+    return m_aArgumentTokens.get (n);
   }
 
   @NonNull
   public final List <Token> getMutableParametrizedTypeTokens ()
   {
-    return m_parametrizedTypeTokens;
+    return m_aParametrizedTypeTokens;
   }
 
   /**
@@ -165,7 +165,7 @@ public final class ExpNonTerminal extends Expansion
   @NonNull
   public final Iterable <Token> getParametrizedTypeTokens ()
   {
-    return m_parametrizedTypeTokens;
+    return m_aParametrizedTypeTokens;
   }
 
   /**
@@ -173,7 +173,7 @@ public final class ExpNonTerminal extends Expansion
    */
   public final NormalProduction getProd ()
   {
-    return m_prod;
+    return m_aProd;
   }
 
   /**
@@ -182,6 +182,6 @@ public final class ExpNonTerminal extends Expansion
    */
   public final void setProd (final NormalProduction aProd)
   {
-    m_prod = aProd;
+    m_aProd = aProd;
   }
 }

@@ -50,11 +50,11 @@ public final class SingleCharacter implements ICCCharacter
   /**
    * The character of this descriptor.
    */
-  private final char m_ch;
+  private final char m_cCh;
 
   public SingleCharacter (final char c)
   {
-    m_ch = c;
+    m_cCh = c;
   }
 
   public SingleCharacter (final Token t, final char c)
@@ -82,6 +82,6 @@ public final class SingleCharacter implements ICCCharacter
 
   public char getChar ()
   {
-    return m_ch;
+    return m_cCh;
   }
 }

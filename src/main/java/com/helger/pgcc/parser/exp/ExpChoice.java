@@ -51,7 +51,7 @@ public final class ExpChoice extends Expansion
   /**
    * The list of choices of this expansion unit. Each List component will narrow to ExpansionUnit.
    */
-  private final List <Expansion> m_choices = new ArrayList <> ();
+  private final List <Expansion> m_aChoices = new ArrayList <> ();
 
   public ExpChoice ()
   {}
@@ -66,7 +66,7 @@ public final class ExpChoice extends Expansion
   {
     setLine (aExpansion.getLine ());
     setColumn (aExpansion.getColumn ());
-    m_choices.add (aExpansion);
+    m_aChoices.add (aExpansion);
   }
 
   /**
@@ -75,25 +75,25 @@ public final class ExpChoice extends Expansion
   @NonNull
   public final Iterable <Expansion> getChoices ()
   {
-    return m_choices;
+    return m_aChoices;
   }
 
   @Nonnegative
   public final int getChoiceCount ()
   {
-    return m_choices.size ();
+    return m_aChoices.size ();
   }
 
   @NonNull
   public final Expansion getChoiceAt (final int nIndex)
   {
-    return m_choices.get (nIndex);
+    return m_aChoices.get (nIndex);
   }
 
   public final void addChoice (@NonNull final Expansion a)
   {
     ValueEnforcer.notNull (a, "Expansion");
-    m_choices.add (a);
+    m_aChoices.add (a);
   }
 
   @Override

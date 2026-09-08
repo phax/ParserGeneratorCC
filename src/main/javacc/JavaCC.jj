@@ -98,7 +98,7 @@ public class JavaCCParser extends JavaCCParserInternals {
    * This flag is set to true when the part between PARSER_BEGIN and
    * PARSER_END is being parsed.
    */
-  private boolean m_processing_cu = false;
+  private boolean m_bProcessingCU = false;
 
   /**
    * The level of class nesting.
@@ -523,14 +523,14 @@ TOKEN :
   < RUNSIGNEDSHIFT: ">>>" >
   {
      matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).m_realKind = RUNSIGNEDSHIFT;
+     ((Token.GTToken)matchedToken).m_nRealKind = RUNSIGNEDSHIFT;
      input_stream.backup(2);
      matchedToken.image = ">";
   }
 | < RSIGNEDSHIFT: ">>" >
   {
      matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).m_realKind = RSIGNEDSHIFT;
+     ((Token.GTToken)matchedToken).m_nRealKind = RSIGNEDSHIFT;
      input_stream.backup(1);
      matchedToken.image = ">";
   }
@@ -557,7 +557,7 @@ void javacc_input() :
   }
     ")"
   {
-    m_processing_cu = true;
+    m_bProcessingCU = true;
     m_sParserClassName = id1;
 
     if (!isJavaLanguage()) {
@@ -570,7 +570,7 @@ void javacc_input() :
   }
     CompilationUnit()
   {
-    m_processing_cu = false;
+    m_bProcessingCU = false;
   }
     "PARSER_END" "(" id2=identifier()
   {
@@ -828,20 +828,20 @@ void regular_expr_production() :
     List<String> states;
     Token t = getToken(1);
     TokenProduction p = new TokenProduction();
-    p.m_firstToken = t;
+    p.m_aFirstToken = t;
     p.setLine(t.beginLine);
     p.setColumn(t.beginColumn);
   }
 {
   {
-    // set p.m_lexStates assuming there is no state spec.
+    // set p.m_aLexStates assuming there is no state spec.
     // and then override if necessary.
-    p.m_lexStates = new String[] {"DEFAULT"};
+    p.m_aLexStates = new String[] {"DEFAULT"};
   }
   [
     LOOKAHEAD(2) "<" "*" ">"
   {
-    p.m_lexStates = null;
+    p.m_aLexStates = null;
   }
   |
     "<"
@@ -859,22 +859,22 @@ void regular_expr_production() :
       )*
     ">"
   {
-    p.m_lexStates = new String[states.size()];
+    p.m_aLexStates = new String[states.size()];
     for (int i = 0; i < states.size(); i++) {
-      p.m_lexStates[i] = (String)states.get(i);
+      p.m_aLexStates[i] = (String)states.get(i);
     }
   }
   ]
   regexpr_kind(p)
   {
-    if (p.m_kind != ETokenKind.TOKEN && Options.isUserTokenManager()) {
+    if (p.m_eKind != ETokenKind.TOKEN && Options.isUserTokenManager()) {
       JavaCCErrors.warning(getToken(0), "Regular expression is being treated as if it were a TOKEN since option USER_TOKEN_MANAGER has been set to true.");
     }
   }
   [
     "[" t="IGNORE_CASE" "]"
   {
-    p.m_ignoreCase = true;
+    p.m_bIgnoreCase = true;
     if (Options.isUserTokenManager()) {
       JavaCCErrors.warning(t, "Ignoring \"IGNORE_CASE\" specification since option USER_TOKEN_MANAGER has been set to true.");
     }
@@ -883,7 +883,7 @@ void regular_expr_production() :
   ":"
   "{" regexpr_spec(p) ( "|" regexpr_spec(p) )* t="}"
   {
-    p.m_lastToken = t;
+    p.m_aLastToken = t;
     addregexpr(p);
   }
 }
@@ -914,22 +914,22 @@ void regexpr_kind(TokenProduction p) :
 {
   "TOKEN"
   {
-    p.m_kind = ETokenKind.TOKEN;
+    p.m_eKind = ETokenKind.TOKEN;
   }
 |
   "SPECIAL_TOKEN"
   {
-    p.m_kind = ETokenKind.SPECIAL;
+    p.m_eKind = ETokenKind.SPECIAL;
   }
 |
   "SKIP"
   {
-    p.m_kind = ETokenKind.SKIP;
+    p.m_eKind = ETokenKind.SKIP;
   }
 |
   "MORE"
   {
-    p.m_kind = ETokenKind.MORE;
+    p.m_eKind = ETokenKind.MORE;
   }
 }
 
@@ -971,7 +971,7 @@ void regexpr_spec(TokenProduction p) :
   {
     res.m_aAct = act;
     res.m_aNsTok = t;
-    p.m_respecs.add(res);
+    p.m_aRespecs.add(res);
   }
 }
 
@@ -1687,7 +1687,7 @@ void ClassOrInterfaceDeclaration(int modifiers, List<Token> tokens):
   [ ExtendsList(isInterface) ]
   [ ImplementsList(isInterface) ]
   {
-    if (t.image.equals(m_sParserClassName) && m_nClassNesting == 1 && m_processing_cu) {
+    if (t.image.equals(m_sParserClassName) && m_nClassNesting == 1 && m_bProcessingCU) {
       is_parser_class = true;
       setinsertionpoint(getToken(1), 1);
     }
@@ -2821,7 +2821,7 @@ void RUNSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).m_realKind == RUNSIGNEDSHIFT} )
+                ((Token.GTToken)getToken(1)).m_nRealKind == RUNSIGNEDSHIFT} )
    ">" ">" ">"
   )
 }
@@ -2830,7 +2830,7 @@ void RSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).m_realKind == RSIGNEDSHIFT} )
+                ((Token.GTToken)getToken(1)).m_nRealKind == RSIGNEDSHIFT} )
   ">" ">"
   )
 }

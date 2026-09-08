@@ -112,7 +112,7 @@ public final class JJDoc
     for (final TokenProduction aTokenProduction : aProds)
     {
       final TokenProduction aTp = aTokenProduction;
-      _emitTopLevelSpecialTokens (aTp.m_firstToken, aGen);
+      _emitTopLevelSpecialTokens (aTp.m_aFirstToken, aGen);
 
       aGen.handleTokenProduction (aTp);
 
@@ -129,32 +129,32 @@ public final class JJDoc
   public static String getStandardTokenProductionText (final TokenProduction aTp)
   {
     String sToken = "";
-    if (aTp.m_isExplicit)
+    if (aTp.m_bIsExplicit)
     {
-      if (aTp.m_lexStates == null)
+      if (aTp.m_aLexStates == null)
       {
         sToken += "<*> ";
       }
       else
       {
         sToken += "<";
-        for (int i = 0; i < aTp.m_lexStates.length; ++i)
+        for (int i = 0; i < aTp.m_aLexStates.length; ++i)
         {
-          sToken += aTp.m_lexStates[i];
-          if (i < aTp.m_lexStates.length - 1)
+          sToken += aTp.m_aLexStates[i];
+          if (i < aTp.m_aLexStates.length - 1)
           {
             sToken += ",";
           }
         }
         sToken += "> ";
       }
-      sToken += aTp.m_kind.getImage ();
-      if (aTp.m_ignoreCase)
+      sToken += aTp.m_eKind.getImage ();
+      if (aTp.m_bIgnoreCase)
       {
         sToken += " [IGNORE_CASE]";
       }
       sToken += " : {\n";
-      for (final Iterator <RegExprSpec> aIt2 = aTp.m_respecs.iterator (); aIt2.hasNext ();)
+      for (final Iterator <RegExprSpec> aIt2 = aTp.m_aRespecs.iterator (); aIt2.hasNext ();)
       {
         final RegExprSpec aRes = aIt2.next ();
 
@@ -357,12 +357,12 @@ public final class JJDoc
 
   private static void _emitExpansionTryBlock (final ExpTryBlock t, final IDocGenerator aGen) throws IOException
   {
-    final boolean bNeedParens = t.m_exp instanceof ExpChoice;
+    final boolean bNeedParens = t.m_aExp instanceof ExpChoice;
     if (bNeedParens)
     {
       aGen.text ("( ");
     }
-    _emitExpansionTree (t.m_exp, aGen);
+    _emitExpansionTree (t.m_aExp, aGen);
     if (bNeedParens)
     {
       aGen.text (" )");
@@ -500,7 +500,7 @@ public final class JJDoc
               else
                 if (aRe instanceof final ExpRStringLiteral sl)
                 {
-                  sReturnString += ("\"" + JavaCCGlobals.addEscapes (sl.m_image) + "\"");
+                  sReturnString += ("\"" + JavaCCGlobals.addEscapes (sl.m_sImage) + "\"");
                 }
                 else
                   if (aRe instanceof final ExpRZeroOrMore zm)

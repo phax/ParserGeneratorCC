@@ -76,12 +76,12 @@ public sealed class Expansion permits
    * is a reference to the production node otherwise it is a reference to another Expansion node. In
    * case this is the top level of a lookahead expansion,then the parent is null.
    */
-  private Object m_parent;
+  private Object m_aParent;
 
   /**
    * The ordinal of this node with respect to its parent.
    */
-  private int m_ordinalBase;
+  private int m_nOrdinalBase;
 
   /**
    * To avoid right-recursive loops when calculating follow sets, we use a generation number which
@@ -89,12 +89,12 @@ public sealed class Expansion permits
    * New generations are obtained by incrementing the static counter below, and the current
    * generation is stored in the non-static variable below.
    */
-  private long m_myGeneration = 0;
+  private long m_nMyGeneration = 0;
 
   /**
    * This flag is used for bookkeeping by the minimumSize method in class ParseEngine.
    */
-  private boolean m_inMinimumSize = false;
+  private boolean m_bInMinimumSize = false;
 
   public static long getNextGenerationIndex ()
   {
@@ -192,42 +192,42 @@ public sealed class Expansion permits
 
   public final Object getParent ()
   {
-    return m_parent;
+    return m_aParent;
   }
 
   public final void setParent (final Object o)
   {
-    m_parent = o;
+    m_aParent = o;
   }
 
   public final int getOrdinalBase ()
   {
-    return m_ordinalBase;
+    return m_nOrdinalBase;
   }
 
   public final void setOrdinalBase (final int n)
   {
-    m_ordinalBase = n;
+    m_nOrdinalBase = n;
   }
 
   public final long getMyGeneration ()
   {
-    return m_myGeneration;
+    return m_nMyGeneration;
   }
 
   public final void setMyGeneration (final long n)
   {
-    m_myGeneration = n;
+    m_nMyGeneration = n;
   }
 
   public final boolean isInMinimumSize ()
   {
-    return m_inMinimumSize;
+    return m_bInMinimumSize;
   }
 
   public final void setInMinimumSize (final boolean b)
   {
-    m_inMinimumSize = b;
+    m_bInMinimumSize = b;
   }
 
   /**

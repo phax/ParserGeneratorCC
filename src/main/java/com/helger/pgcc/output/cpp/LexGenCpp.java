@@ -206,18 +206,18 @@ public class LexGenCpp extends LexGenJava
     while (aIt.hasNext ())
     {
       aTp = aIt.next ();
-      final List <RegExprSpec> aRespecs = aTp.m_respecs;
+      final List <RegExprSpec> aRespecs = aTp.m_aRespecs;
       List <TokenProduction> aTps;
 
-      for (i = 0; i < aTp.m_lexStates.length; i++)
+      for (i = 0; i < aTp.m_aLexStates.length; i++)
       {
-        aTps = lexer ().allTpsForState ().get (aTp.m_lexStates[i]);
+        aTps = lexer ().allTpsForState ().get (aTp.m_aLexStates[i]);
         if (aTps == null)
         {
-          aTmpLexStateName[lexer ().getMaxLexStates ()] = aTp.m_lexStates[i];
+          aTmpLexStateName[lexer ().getMaxLexStates ()] = aTp.m_aLexStates[i];
           lexer ().setMaxLexStates (lexer ().getMaxLexStates () + 1);
           aTps = new ArrayList <> ();
-          lexer ().allTpsForState ().put (aTp.m_lexStates[i], aTps);
+          lexer ().allTpsForState ().put (aTp.m_aLexStates[i], aTps);
         }
 
         aTps.add (aTp);
@@ -308,7 +308,7 @@ public class LexGenCpp extends LexGenJava
       bIgnoring = false;
 
       lexer ().getSinglesToSkip ()[lexer ().getLexStateIndex ()] = new NfaState ();
-      lexer ().getSinglesToSkip ()[lexer ().getLexStateIndex ()].m_dummy = true;
+      lexer ().getSinglesToSkip ()[lexer ().getLexStateIndex ()].m_bDummy = true;
 
       if (sKey.equals ("DEFAULT"))
         lexer ().setDefaultLexState (lexer ().getLexStateIndex ());
@@ -316,9 +316,9 @@ public class LexGenCpp extends LexGenJava
       for (int i = 0; i < aAllTps.size (); i++)
       {
         final TokenProduction aTp = aAllTps.get (i);
-        final ETokenKind eKind = aTp.m_kind;
-        final boolean bIgnore = aTp.m_ignoreCase;
-        final List <RegExprSpec> aRexps = aTp.m_respecs;
+        final ETokenKind eKind = aTp.m_eKind;
+        final boolean bIgnore = aTp.m_bIgnoreCase;
+        final List <RegExprSpec> aRexps = aTp.m_aRespecs;
 
         if (i == 0)
           bIgnoring = bIgnore;
@@ -339,7 +339,7 @@ public class LexGenCpp extends LexGenJava
           }
 
           if (lexer ().getCurRE () instanceof ExpRStringLiteral &&
-            StringHelper.isNotEmpty (((ExpRStringLiteral) lexer ().getCurRE ()).m_image))
+            StringHelper.isNotEmpty (((ExpRStringLiteral) lexer ().getCurRE ()).m_sImage))
           {
             ((ExpRStringLiteral) lexer ().getCurRE ()).generateDfa ();
             if (i != 0 && !lexer ().getMixed ()[lexer ().getLexStateIndex ()] && bIgnoring != bIgnore)
@@ -360,8 +360,8 @@ public class LexGenCpp extends LexGenJava
                 aChoices.add ((ExpRChoice) lexer ().getCurRE ());
 
               aTemp = lexer ().getCurRE ().generateNfa (bIgnore);
-              aTemp.end ().m_isFinal = true;
-              aTemp.end ().m_kind = lexer ().getCurRE ().getOrdinal ();
+              aTemp.end ().m_bIsFinal = true;
+              aTemp.end ().m_nKind = lexer ().getCurRE ().getOrdinal ();
               lexer ().getInitialState ().addMove (aTemp.start ());
             }
 
@@ -436,7 +436,7 @@ public class LexGenCpp extends LexGenJava
       // Generate a static block for initializing the nfa transitions
       NfaState.computeClosures ();
 
-      for (final NfaState aItem : lexer ().getInitialState ().m_epsilonMoves)
+      for (final NfaState aItem : lexer ().getInitialState ().m_aEpsilonMoves)
         aItem.generateCode ();
 
       lexer ().getHasNfa ()[lexer ().getLexStateIndex ()] = (NfaState.nfa ().getGeneratedStates () != 0);
@@ -446,24 +446,24 @@ public class LexGenCpp extends LexGenJava
         lexer ().getInitialState ().generateInitMoves ();
       }
 
-      if (lexer ().getInitialState ().m_kind != Integer.MAX_VALUE && lexer ().getInitialState ().m_kind != 0)
+      if (lexer ().getInitialState ().m_nKind != Integer.MAX_VALUE && lexer ().getInitialState ().m_nKind != 0)
       {
-        if ((lexer ().getToSkip ()[lexer ().getInitialState ().m_kind / 64] &
-             (1L << lexer ().getInitialState ().m_kind)) != 0L ||
-          (lexer ().getToSpecial ()[lexer ().getInitialState ().m_kind / 64] &
-           (1L << lexer ().getInitialState ().m_kind)) != 0L)
+        if ((lexer ().getToSkip ()[lexer ().getInitialState ().m_nKind / 64] &
+             (1L << lexer ().getInitialState ().m_nKind)) != 0L ||
+          (lexer ().getToSpecial ()[lexer ().getInitialState ().m_nKind / 64] &
+           (1L << lexer ().getInitialState ().m_nKind)) != 0L)
           lexer ().setHasSkipActions (true);
         else
-          if ((lexer ().getToMore ()[lexer ().getInitialState ().m_kind / 64] &
-               (1L << lexer ().getInitialState ().m_kind)) != 0L)
+          if ((lexer ().getToMore ()[lexer ().getInitialState ().m_nKind / 64] &
+               (1L << lexer ().getInitialState ().m_nKind)) != 0L)
             lexer ().setHasMoreActions (true);
           else
             lexer ().setHasTokenActions (true);
 
         if (lexer ().getInitMatch ()[lexer ().getLexStateIndex ()] == 0 ||
-          lexer ().getInitMatch ()[lexer ().getLexStateIndex ()] > lexer ().getInitialState ().m_kind)
+          lexer ().getInitMatch ()[lexer ().getLexStateIndex ()] > lexer ().getInitialState ().m_nKind)
         {
-          lexer ().getInitMatch ()[lexer ().getLexStateIndex ()] = lexer ().getInitialState ().m_kind;
+          lexer ().getInitMatch ()[lexer ().getLexStateIndex ()] = lexer ().getInitialState ().m_nKind;
           lexer ().setHasEmptyMatch (true);
         }
       }
@@ -859,42 +859,42 @@ public class LexGenCpp extends LexGenJava
       {
         // added the backup(0) to make JIT happy
         genCodeLine (sPrefix + "{ input_stream->backup(0);");
-        if (lexer ().getSinglesToSkip ()[i].m_asciiMoves[0] != 0L &&
-          lexer ().getSinglesToSkip ()[i].m_asciiMoves[1] != 0L)
+        if (lexer ().getSinglesToSkip ()[i].m_aAsciiMoves[0] != 0L &&
+          lexer ().getSinglesToSkip ()[i].m_aAsciiMoves[1] != 0L)
         {
           genCodeLine (sPrefix +
                        "   while ((curChar < 64" +
                        " && (" +
-                       eOutputLanguage.getLongHex (lexer ().getSinglesToSkip ()[i].m_asciiMoves[0]) +
+                       eOutputLanguage.getLongHex (lexer ().getSinglesToSkip ()[i].m_aAsciiMoves[0]) +
                        " & (1L << curChar)) != 0L) || \n" +
                        sPrefix +
                        "          (curChar >> 6) == 1" +
                        " && (" +
-                       eOutputLanguage.getLongHex (lexer ().getSinglesToSkip ()[i].m_asciiMoves[1]) +
+                       eOutputLanguage.getLongHex (lexer ().getSinglesToSkip ()[i].m_aAsciiMoves[1]) +
                        " & (1L << (curChar & 077))) != " +
                        eOutputLanguage.getLongPlain (0) +
                        ")");
         }
         else
-          if (lexer ().getSinglesToSkip ()[i].m_asciiMoves[1] == 0L)
+          if (lexer ().getSinglesToSkip ()[i].m_aAsciiMoves[1] == 0L)
           {
             genCodeLine (sPrefix +
                          "   while (curChar <= " +
-                         (int) maxChar (lexer ().getSinglesToSkip ()[i].m_asciiMoves[0]) +
+                         (int) maxChar (lexer ().getSinglesToSkip ()[i].m_aAsciiMoves[0]) +
                          " && (" +
-                         eOutputLanguage.getLongHex (lexer ().getSinglesToSkip ()[i].m_asciiMoves[0]) +
+                         eOutputLanguage.getLongHex (lexer ().getSinglesToSkip ()[i].m_aAsciiMoves[0]) +
                          " & (1L << curChar)) != " +
                          eOutputLanguage.getLongPlain (0) +
                          ")");
           }
           else
-            if (lexer ().getSinglesToSkip ()[i].m_asciiMoves[0] == 0L)
+            if (lexer ().getSinglesToSkip ()[i].m_aAsciiMoves[0] == 0L)
             {
               genCodeLine (sPrefix +
                            "   while (curChar > 63 && curChar <= " +
-                           (maxChar (lexer ().getSinglesToSkip ()[i].m_asciiMoves[1]) + 64) +
+                           (maxChar (lexer ().getSinglesToSkip ()[i].m_aAsciiMoves[1]) + 64) +
                            " && (" +
-                           eOutputLanguage.getLongHex (lexer ().getSinglesToSkip ()[i].m_asciiMoves[1]) +
+                           eOutputLanguage.getLongHex (lexer ().getSinglesToSkip ()[i].m_aAsciiMoves[1]) +
                            " & (1L << (curChar & 077))) != " +
                            eOutputLanguage.getLongPlain (0) +
                            ")");

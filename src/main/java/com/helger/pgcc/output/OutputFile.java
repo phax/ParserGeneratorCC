@@ -84,7 +84,7 @@ public class OutputFile implements AutoCloseable
   private static final String MD5_LINE_PART_2Q = " \\(do not edit this line\\) \\*/";
 
   private TrapClosePrintWriter m_aPW;
-  private DigestOutputStream m_dos;
+  private DigestOutputStream m_aDos;
   private String m_sToolName = CPG.APP_NAME;
   private final File m_aFile;
   private final String m_sCompatibleVersion;
@@ -289,8 +289,8 @@ public class OutputFile implements AutoCloseable
       {
         throw new IOException ("No MD5 implementation", e);
       }
-      m_dos = new DigestOutputStream (FileHelper.getBufferedOutputStream (m_aFile), aDigest);
-      m_aPW = new TrapClosePrintWriter (m_dos, Options.getOutputEncoding ());
+      m_aDos = new DigestOutputStream (FileHelper.getBufferedOutputStream (m_aFile), aDigest);
+      m_aPW = new TrapClosePrintWriter (m_aDos, Options.getOutputEncoding ());
 
       // Write the headers....
       final String sVersion = m_sCompatibleVersion == null ? PGVersion.VERSION_NUMBER : m_sCompatibleVersion;
@@ -326,7 +326,7 @@ public class OutputFile implements AutoCloseable
   private String _getMD5sum ()
   {
     m_aPW.flush ();
-    final byte [] aDigest = m_dos.getMessageDigest ().digest ();
+    final byte [] aDigest = m_aDos.getMessageDigest ().digest ();
     return StringHex.getHexEncoded (aDigest);
   }
 

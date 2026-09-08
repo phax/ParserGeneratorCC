@@ -185,7 +185,7 @@ public class Token
    */
   public static class GTToken extends Token
   {
-    int m_realKind = JavaCCParserConstants.GT;
+    int m_nRealKind = JavaCCParserConstants.GT;
 
     public GTToken (final int nKind, final String sImage)
     {

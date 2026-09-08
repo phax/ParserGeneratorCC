@@ -47,20 +47,20 @@ public final class ExpZeroOrMore extends Expansion
   /**
    * The expansion which is repeated zero or more times.
    */
-  private final Expansion m_expansion;
+  private final Expansion m_aExpansion;
 
   public ExpZeroOrMore (@NonNull final Token aToken, @NonNull final Expansion e)
   {
     setLine (aToken.beginLine);
     setColumn (aToken.beginColumn);
-    m_expansion = e;
+    m_aExpansion = e;
     e.setParent (this);
   }
 
   @NonNull
   public final Expansion getExpansion ()
   {
-    return m_expansion;
+    return m_aExpansion;
   }
 
   @Override
@@ -69,7 +69,7 @@ public final class ExpZeroOrMore extends Expansion
     final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped);
     if (aAlreadyDumped.add (this))
     {
-      aSb.append (EOL).append (m_expansion.dump (nIndent + 1, aAlreadyDumped));
+      aSb.append (EOL).append (m_aExpansion.dump (nIndent + 1, aAlreadyDumped));
     }
     return aSb;
   }

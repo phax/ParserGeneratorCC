@@ -172,14 +172,14 @@ public class OtherFilesGenCPP
 
       for (final TokenProduction tp : grammar ().rexprList ())
       {
-        final List <RegExprSpec> aRespecs = tp.m_respecs;
+        final List <RegExprSpec> aRespecs = tp.m_aRespecs;
         for (final RegExprSpec res : aRespecs)
         {
           aRe = res.m_aRexp;
           s_ostr.println ("  static const JJChar tokenImage_arr_" + ++nCnt + "[] = ");
           if (aRe instanceof final ExpRStringLiteral aRStringLiteral)
           {
-            printCharArray (s_ostr, "\"" + aRStringLiteral.m_image + "\"");
+            printCharArray (s_ostr, "\"" + aRStringLiteral.m_sImage + "\"");
           }
           else
             if (aRe.hasLabel ())
@@ -188,7 +188,7 @@ public class OtherFilesGenCPP
             }
             else
             {
-              if (aRe.m_aTpContext.m_kind == ETokenKind.TOKEN)
+              if (aRe.m_aTpContext.m_eKind == ETokenKind.TOKEN)
               {
                 JavaCCErrors.warning (aRe, "Consider giving this non-string token a label for better error reporting.");
               }

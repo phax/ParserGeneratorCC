@@ -78,44 +78,44 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
    */
   public static final class KindInfo
   {
-    private final long [] m_validKinds;
-    private final long [] m_finalKinds;
-    private int m_validKindCnt = 0;
-    private int m_finalKindCnt = 0;
-    private final Set <Integer> m_finalKindSet = new HashSet <> ();
-    private final Set <Integer> m_validKindSet = new HashSet <> ();
+    private final long [] m_aValidKinds;
+    private final long [] m_aFinalKinds;
+    private int m_nValidKindCnt = 0;
+    private int m_nFinalKindCnt = 0;
+    private final Set <Integer> m_aFinalKindSet = new HashSet <> ();
+    private final Set <Integer> m_aValidKindSet = new HashSet <> ();
 
     KindInfo (final int nMaxKind)
     {
-      m_validKinds = new long [nMaxKind / 64 + 1];
-      m_finalKinds = new long [nMaxKind / 64 + 1];
+      m_aValidKinds = new long [nMaxKind / 64 + 1];
+      m_aFinalKinds = new long [nMaxKind / 64 + 1];
     }
 
     public void insertValidKind (final int nKind)
     {
-      m_validKinds[nKind / 64] |= (1L << (nKind % 64));
-      m_validKindCnt++;
-      m_validKindSet.add (Integer.valueOf (nKind));
+      m_aValidKinds[nKind / 64] |= (1L << (nKind % 64));
+      m_nValidKindCnt++;
+      m_aValidKindSet.add (Integer.valueOf (nKind));
     }
 
     public void insertFinalKind (final int nKind)
     {
-      m_finalKinds[nKind / 64] |= (1L << (nKind % 64));
-      m_finalKindCnt++;
-      m_finalKindSet.add (Integer.valueOf (nKind));
+      m_aFinalKinds[nKind / 64] |= (1L << (nKind % 64));
+      m_nFinalKindCnt++;
+      m_aFinalKindSet.add (Integer.valueOf (nKind));
     }
   }
 
   /**
    * The string image of the literal.
    */
-  public String m_image;
+  public String m_sImage;
 
   public ExpRStringLiteral (final Token t, final String sImage)
   {
     setLine (t.beginLine);
     setColumn (t.beginColumn);
-    m_image = sImage;
+    m_sImage = sImage;
   }
 
   // with single char keys;
@@ -334,13 +334,13 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     if (strLit ().getMaxStrKind () <= getOrdinal ())
       strLit ().setMaxStrKind (getOrdinal () + 1);
 
-    final int nLen = m_image.length ();
+    final int nLen = m_sImage.length ();
     if (nLen > strLit ().getMaxLen ())
       strLit ().setMaxLen (nLen);
 
     for (int i = 0; i < nLen; i++)
     {
-      final char c = m_image.charAt (i);
+      final char c = m_sImage.charAt (i);
       if (Options.isIgnoreCase ())
         s = Character.toString (Character.toLowerCase (c));
       else
@@ -421,15 +421,15 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
     strLit ().getMaxLenForActive ()[getOrdinal () / 64] = Math.max (strLit ().getMaxLenForActive ()[getOrdinal () / 64],
                                                                     nLen - 1);
-    strLit ().getAllImages ()[getOrdinal ()] = m_image;
+    strLit ().getAllImages ()[getOrdinal ()] = m_sImage;
   }
 
   @Override
   public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    if (m_image.length () == 1)
+    if (m_sImage.length () == 1)
     {
-      final ExpRCharacterList aTemp = new ExpRCharacterList (m_image.charAt (0));
+      final ExpRCharacterList aTemp = new ExpRCharacterList (m_sImage.charAt (0));
       return aTemp.generateNfa (bIgnoreCase);
     }
 
@@ -437,24 +437,24 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     final NfaState aTheStartState = aStartState;
     NfaState aFinalState = null;
 
-    if (m_image.length () == 0)
+    if (m_sImage.length () == 0)
       return new Nfa (aTheStartState, aTheStartState);
 
     int i;
 
-    for (i = 0; i < m_image.length (); i++)
+    for (i = 0; i < m_sImage.length (); i++)
     {
       aFinalState = new NfaState ();
-      aStartState.m_charMoves = new char [1];
-      aStartState.addChar (m_image.charAt (i));
+      aStartState.m_aCharMoves = new char [1];
+      aStartState.addChar (m_sImage.charAt (i));
 
       if (Options.isIgnoreCase () || bIgnoreCase)
       {
-        aStartState.addChar (Character.toLowerCase (m_image.charAt (i)));
-        aStartState.addChar (Character.toUpperCase (m_image.charAt (i)));
+        aStartState.addChar (Character.toLowerCase (m_sImage.charAt (i)));
+        aStartState.addChar (Character.toUpperCase (m_sImage.charAt (i)));
       }
 
-      aStartState.m_next = aFinalState;
+      aStartState.m_aNext = aFinalState;
       aStartState = aFinalState;
     }
 
@@ -513,7 +513,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     final AbstractExpRegularExpression aRe = LexGenJava.lexer ().getRexprs ()[nKind];
 
     if (aRe instanceof ExpRStringLiteral)
-      return " \"" + JavaCCGlobals.addEscapes (((ExpRStringLiteral) aRe).m_image) + "\"";
+      return " \"" + JavaCCGlobals.addEscapes (((ExpRStringLiteral) aRe).m_sImage) + "\"";
     if (aRe.hasLabel ())
       return " <" + aRe.getLabel () + ">";
     return " <token of kind " + nKind + ">";
@@ -1150,17 +1150,17 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
         if (i == 0 &&
           c < 128 &&
-          aInfo.m_finalKindCnt != 0 &&
+          aInfo.m_nFinalKindCnt != 0 &&
           (NfaState.nfa ().getGeneratedStates () == 0 || !NfaState.canStartNfaUsingAscii (c)))
         {
           int nKind;
           int j = 0;
           for (; j < nMaxLongsReqd; j++)
-            if (aInfo.m_finalKinds[j] != 0L)
+            if (aInfo.m_aFinalKinds[j] != 0L)
               break;
 
           for (int k = 0; k < 64; k++)
-            if ((aInfo.m_finalKinds[j] & (1L << k)) != 0L && !strLit ().getSubString ()[nKind = (j * 64 + k)])
+            if ((aInfo.m_aFinalKinds[j] & (1L << k)) != 0L && !strLit ().getSubString ()[nKind = (j * 64 + k)])
             {
               if ((strLit ().getIntermediateKinds () != null &&
                 strLit ().getIntermediateKinds ()[(j * 64 + k)] != null &&
@@ -1206,11 +1206,11 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         long nMatchedKind;
         final String sPrefix = (i == 0) ? "         " : "            ";
 
-        if (aInfo.m_finalKindCnt != 0)
+        if (aInfo.m_nFinalKindCnt != 0)
         {
           for (int j = 0; j < nMaxLongsReqd; j++)
           {
-            if ((nMatchedKind = aInfo.m_finalKinds[j]) == 0L)
+            if ((nMatchedKind = aInfo.m_aFinalKinds[j]) == 0L)
               continue;
 
             for (int k = 0; k < 64; k++)
@@ -1318,7 +1318,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           }
         }
 
-        if (aInfo.m_validKindCnt != 0)
+        if (aInfo.m_nValidKindCnt != 0)
         {
           bAtLeastOne = false;
 
@@ -1336,7 +1336,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
                 else
                   bAtLeastOne = true;
 
-                aCodeGenerator.genCode (eOutputLanguage.getLongHex (aInfo.m_validKinds[j]));
+                aCodeGenerator.genCode (eOutputLanguage.getLongHex (aInfo.m_aValidKinds[j]));
               }
 
             if ((i + 1) <= strLit ().getMaxLenForActive ()[j])
@@ -1344,7 +1344,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
               if (bAtLeastOne)
                 aCodeGenerator.genCode (", ");
 
-              aCodeGenerator.genCode (eOutputLanguage.getLongHex (aInfo.m_validKinds[j]));
+              aCodeGenerator.genCode (eOutputLanguage.getLongHex (aInfo.m_aValidKinds[j]));
             }
             aCodeGenerator.genCodeLine (");");
           }
@@ -1363,8 +1363,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
                 else
                   bAtLeastOne = true;
 
-                if (aInfo.m_validKinds[j] != 0L)
-                  aCodeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongHex (aInfo.m_validKinds[j]));
+                if (aInfo.m_aValidKinds[j] != 0L)
+                  aCodeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongHex (aInfo.m_aValidKinds[j]));
                 else
                   aCodeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongPlain (0));
               }
@@ -1373,8 +1373,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
             {
               if (bAtLeastOne)
                 aCodeGenerator.genCode (", ");
-              if (aInfo.m_validKinds[j] != 0L)
-                aCodeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongHex (aInfo.m_validKinds[j]));
+              if (aInfo.m_aValidKinds[j] != 0L)
+                aCodeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongHex (aInfo.m_aValidKinds[j]));
               else
                 aCodeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongPlain (0));
             }
@@ -1549,7 +1549,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
       try
       {
-        aOldStates = new ArrayList <> (aInitialState.m_epsilonMoves);
+        aOldStates = new ArrayList <> (aInitialState.m_aEpsilonMoves);
         if (aOldStates.size () == 0)
         {
           dumpNfaStartStatesCode (strLit ().getStatesForPos (), aCodeGenerator);
@@ -1619,16 +1619,16 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           aStateSets.put (sStateSetString, sStateSetString);
           for (p = 0; p < aNewStates.size (); p++)
           {
-            if (aSeen[aNewStates.get (p).m_stateName])
-              aNewStates.get (p).m_inNextOf++;
+            if (aSeen[aNewStates.get (p).m_nStateName])
+              aNewStates.get (p).m_nInNextOf++;
             else
-              aSeen[aNewStates.get (p).m_stateName] = true;
+              aSeen[aNewStates.get (p).m_nStateName] = true;
           }
         }
         else
         {
           for (p = 0; p < aNewStates.size (); p++)
-            aSeen[aNewStates.get (p).m_stateName] = true;
+            aSeen[aNewStates.get (p).m_nStateName] = true;
         }
 
         aJjtmpStates = aOldStates;
@@ -1866,14 +1866,14 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   @Override
   public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped).append (' ').append (m_image);
+    final StringBuilder aSb = super.dump (nIndent, aAlreadyDumped).append (' ').append (m_sImage);
     return aSb;
   }
 
   @Override
   public String toString ()
   {
-    return super.toString () + " - " + m_image;
+    return super.toString () + " - " + m_sImage;
   }
 
   /*
@@ -1962,7 +1962,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     for (final int kind : NfaState.tokenizerBuild ().nfaStateMap ().keySet ())
     {
       final NfaState aState = NfaState.tokenizerBuild ().nfaStateMap ().get (Integer.valueOf (kind));
-      aNfaStateIndices.put (Integer.valueOf (kind), Integer.valueOf (aState == null ? -1 : aState.m_stateName));
+      aNfaStateIndices.put (Integer.valueOf (kind), Integer.valueOf (aState == null ? -1 : aState.m_nStateName));
     }
     aTokenizerData.setLiteralSequence (NfaState.tokenizerBuild ().literalsByLength ());
     aTokenizerData.setLiteralKinds (NfaState.tokenizerBuild ().literalKinds ());

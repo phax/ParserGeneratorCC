@@ -47,11 +47,11 @@ public final class ExpRZeroOrOne extends AbstractExpRegularExpression
   /**
    * The regular expression which is repeated zero or one times.
    */
-  private final AbstractExpRegularExpression m_regexpr;
+  private final AbstractExpRegularExpression m_aRegexpr;
 
   public ExpRZeroOrOne (final AbstractExpRegularExpression r)
   {
-    m_regexpr = r;
+    m_aRegexpr = r;
   }
 
   public ExpRZeroOrOne (final Token t, final AbstractExpRegularExpression r)
@@ -64,7 +64,7 @@ public final class ExpRZeroOrOne extends AbstractExpRegularExpression
   @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {
-    return m_regexpr;
+    return m_aRegexpr;
   }
 
   @Override
@@ -74,7 +74,7 @@ public final class ExpRZeroOrOne extends AbstractExpRegularExpression
     final NfaState aStartState = aRetVal.start ();
     final NfaState aFinalState = aRetVal.end ();
 
-    final Nfa aTemp = m_regexpr.generateNfa (bIgnoreCase);
+    final Nfa aTemp = m_aRegexpr.generateNfa (bIgnoreCase);
 
     aStartState.addMove (aTemp.start ());
     aStartState.addMove (aFinalState);

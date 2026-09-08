@@ -53,36 +53,36 @@ public final class ExpRSequence extends AbstractExpRegularExpression
    * The list of units in this regular expression sequence. Each list component will narrow to
    * RegularExpression.
    */
-  private final List <AbstractExpRegularExpression> m_units;
+  private final List <AbstractExpRegularExpression> m_aUnits;
 
   public ExpRSequence ()
   {
-    m_units = new ArrayList <> ();
+    m_aUnits = new ArrayList <> ();
   }
 
   ExpRSequence (final List <AbstractExpRegularExpression> aSeq)
   {
     setOrdinal (Integer.MAX_VALUE);
-    m_units = aSeq;
+    m_aUnits = aSeq;
   }
 
   @NonNull
   public final List <AbstractExpRegularExpression> getUnits ()
   {
-    return m_units;
+    return m_aUnits;
   }
 
   public final void addUnit (final AbstractExpRegularExpression aEx)
   {
     ValueEnforcer.notNull (aEx, "RegEx");
-    m_units.add (aEx);
+    m_aUnits.add (aEx);
   }
 
   @Override
   public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    if (m_units.size () == 1)
-      return m_units.get (0).generateNfa (bIgnoreCase);
+    if (m_aUnits.size () == 1)
+      return m_aUnits.get (0).generateNfa (bIgnoreCase);
 
     final Nfa aRetVal = new Nfa ();
     final NfaState aStartState = aRetVal.start ();
@@ -92,13 +92,13 @@ public final class ExpRSequence extends AbstractExpRegularExpression
 
     AbstractExpRegularExpression aCurRE;
 
-    aCurRE = m_units.get (0);
+    aCurRE = m_aUnits.get (0);
     aTemp1 = aCurRE.generateNfa (bIgnoreCase);
     aStartState.addMove (aTemp1.start ());
 
-    for (int i = 1; i < m_units.size (); i++)
+    for (int i = 1; i < m_aUnits.size (); i++)
     {
-      aCurRE = m_units.get (i);
+      aCurRE = m_aUnits.get (i);
 
       aTemp2 = aCurRE.generateNfa (bIgnoreCase);
       aTemp1.end ().addMove (aTemp2.start ());
