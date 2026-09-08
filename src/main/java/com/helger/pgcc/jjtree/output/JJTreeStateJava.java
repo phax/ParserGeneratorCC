@@ -72,7 +72,7 @@ public final class JJTreeStateJava
     return "JJT" + PGCCContext.current ().jjtree ().getParserName () + "State";
   }
 
-  public static void generateTreeState_java ()
+  public static void generateTreeStateJava ()
   {
     final File aFile = new File (JJTreeOptions.getJJTreeOutputDirectory (), _nameState () + ".java");
 

@@ -87,7 +87,7 @@ public class Semanticize
     {
       if (grammar ().productionTable ().put (p.getLhs (), p) != null)
       {
-        JavaCCErrors.semantic_error (p, p.getLhs () + " occurs on the left hand side of more than one production.");
+        JavaCCErrors.semanticError (p, p.getLhs () + " occurs on the left hand side of more than one production.");
       }
     }
 
@@ -118,22 +118,22 @@ public class Semanticize
         {
           if (grammar ().lexStateS2I ().get (aRes.getNextState ()) == null)
           {
-            JavaCCErrors.semantic_error (aRes.getNsTok (), "Lexical state \"" + aRes.getNextState () + "\" has not been defined.");
+            JavaCCErrors.semanticError (aRes.getNsTok (), "Lexical state \"" + aRes.getNextState () + "\" has not been defined.");
           }
         }
         if (aRes.getRexp () instanceof ExpREndOfFile)
         {
-          // JavaCCErrors.semantic_error(res.getRexp (), "Badly placed <EOF>.");
+          // JavaCCErrors.semanticError(res.getRexp (), "Badly placed <EOF>.");
           if (aTp.getLexStates () != null)
-            JavaCCErrors.semantic_error (aRes.getRexp (),
+            JavaCCErrors.semanticError (aRes.getRexp (),
                                          "EOF action/state change must be specified for all states, " +
                                                    "i.e., <*>TOKEN:.");
           if (aTp.getKind () != ETokenKind.TOKEN)
-            JavaCCErrors.semantic_error (aRes.getRexp (),
+            JavaCCErrors.semanticError (aRes.getRexp (),
                                          "EOF action/state change can be specified only in a " +
                                                    "TOKEN specification.");
           if (grammar ().getNextStateForEof () != null || grammar ().getActionForEof () != null)
-            JavaCCErrors.semantic_error (aRes.getRexp (), "Duplicate action/state change specification for <EOF>.");
+            JavaCCErrors.semanticError (aRes.getRexp (), "Duplicate action/state change specification for <EOF>.");
           grammar ().setActionForEof (aRes.getAct ());
           grammar ().setNextStateForEof (aRes.getNextState ());
           prepareToRemove (aRespecs, aRes);
@@ -158,7 +158,7 @@ public class Semanticize
             else
               if (!aTp.isExplicit () && aRes.getRexp ().m_bPrivateRexp)
               {
-                JavaCCErrors.semantic_error (aRes.getRexp (),
+                JavaCCErrors.semanticError (aRes.getRexp (),
                                              "Private (#) regular expression cannot be defined within " +
                                                        "grammar productions.");
               }
@@ -184,7 +184,7 @@ public class Semanticize
           final AbstractExpRegularExpression aObj = grammar ().namedTokensTable ().put (s, aRes.getRexp ());
           if (aObj != null)
           {
-            JavaCCErrors.semantic_error (aRes.getRexp (), "Multiply defined lexical token name \"" + s + "\".");
+            JavaCCErrors.semanticError (aRes.getRexp (), "Multiply defined lexical token name \"" + s + "\".");
           }
           else
           {
@@ -192,7 +192,7 @@ public class Semanticize
           }
           if (grammar ().lexStateS2I ().get (s) != null)
           {
-            JavaCCErrors.semantic_error (aRes.getRexp (),
+            JavaCCErrors.semanticError (aRes.getRexp (),
                                          "Lexical token name \"" +
                                                    s +
                                                    "\" is the same as " +
@@ -261,7 +261,7 @@ public class Semanticize
                 if (!sl.m_aTpContext.isExplicit ())
                 {
                   // inline BNF string is used earlier with an IGNORE_CASE.
-                  JavaCCErrors.semantic_error (sl,
+                  JavaCCErrors.semanticError (sl,
                                                "String \"" +
                                                    sl.getImage () +
                                                    "\" can never be matched " +
@@ -275,7 +275,7 @@ public class Semanticize
                 else
                 {
                   // give the standard error message.
-                  JavaCCErrors.semantic_error (sl,
+                  JavaCCErrors.semanticError (sl,
                                                "Duplicate definition of string token \"" +
                                                    sl.getImage () +
                                                    "\" " +
@@ -336,12 +336,12 @@ public class Semanticize
                       // implicit.
                       if (tp.getLexStates ()[i].equals ("DEFAULT"))
                       {
-                        JavaCCErrors.semantic_error (sl,
+                        JavaCCErrors.semanticError (sl,
                                                      "Duplicate definition of string token \"" + sl.getImage () + "\".");
                       }
                       else
                       {
-                        JavaCCErrors.semantic_error (sl,
+                        JavaCCErrors.semanticError (sl,
                                                      "Duplicate definition of string token \"" +
                                                          sl.getImage () +
                                                          "\" in lexical state \"" +
@@ -352,7 +352,7 @@ public class Semanticize
                     else
                       if (aRe.m_aTpContext.getKind () != ETokenKind.TOKEN)
                       {
-                        JavaCCErrors.semantic_error (sl,
+                        JavaCCErrors.semanticError (sl,
                                                      "String token \"" +
                                                          sl.getImage () +
                                                          "\" has been defined as a \"" +
@@ -362,7 +362,7 @@ public class Semanticize
                       else
                         if (aRe.m_bPrivateRexp)
                         {
-                          JavaCCErrors.semantic_error (sl,
+                          JavaCCErrors.semanticError (sl,
                                                        "String token \"" +
                                                            sl.getImage () +
                                                            "\" has been defined as a private regular expression.");
@@ -588,7 +588,7 @@ public class Semanticize
                                            aRexp.getLabel () +
                                            "... --> " +
                                            PGCCContext.current ().semanticize ().getLoopString ());
-                JavaCCErrors.semantic_error (aRexp,
+                JavaCCErrors.semanticError (aRexp,
                                              "Loop in regular expression detected: \"" +
                                                    PGCCContext.current ().semanticize ().getLoopString () +
                                                    "\"");
@@ -776,7 +776,7 @@ public class Semanticize
         if (aProd.getWalkStatus () == -2)
         {
           aProd.setWalkStatus (1);
-          JavaCCErrors.semantic_error (aProd,
+          JavaCCErrors.semanticError (aProd,
                                        "Left recursion detected: \"" +
                                              PGCCContext.current ().semanticize ().getLoopString () +
                                              "\"");
@@ -798,7 +798,7 @@ public class Semanticize
             if (aProd.getWalkStatus () == -2)
             {
               aProd.setWalkStatus (1);
-              JavaCCErrors.semantic_error (aProd,
+              JavaCCErrors.semanticError (aProd,
                                            "Left recursion detected: \"" +
                                                  PGCCContext.current ().semanticize ().getLoopString () +
                                                  "\"");
@@ -843,7 +843,7 @@ public class Semanticize
             if (jn.getRegexpr ().getWalkStatus () == -2)
             {
               jn.getRegexpr ().setWalkStatus (1);
-              JavaCCErrors.semantic_error (jn.getRegexpr (),
+              JavaCCErrors.semanticError (jn.getRegexpr (),
                                            "Loop in regular expression detected: \"" +
                                                          PGCCContext.current ().semanticize ().getLoopString () +
                                                          "\"");
@@ -932,12 +932,12 @@ public class Semanticize
         final AbstractExpRegularExpression aRexp = grammar ().namedTokensTable ().get (jn.getLabel ());
         if (aRexp == null)
         {
-          JavaCCErrors.semantic_error (e, "Undefined lexical token name \"" + jn.getLabel () + "\".");
+          JavaCCErrors.semanticError (e, "Undefined lexical token name \"" + jn.getLabel () + "\".");
         }
         else
           if (jn == m_aRoot && !jn.m_aTpContext.isExplicit () && aRexp.m_bPrivateRexp)
           {
-            JavaCCErrors.semantic_error (e,
+            JavaCCErrors.semanticError (e,
                                          "Token name \"" +
                                             jn.getLabel () +
                                             "\" refers to a private " +
@@ -946,7 +946,7 @@ public class Semanticize
           else
             if (jn == m_aRoot && !jn.m_aTpContext.isExplicit () && aRexp.m_aTpContext.getKind () != ETokenKind.TOKEN)
             {
-              JavaCCErrors.semantic_error (e,
+              JavaCCErrors.semanticError (e,
                                            "Token name \"" +
                                               jn.getLabel () +
                                               "\" refers to a non-token " +
@@ -1055,7 +1055,7 @@ public class Semanticize
         final AbstractNormalProduction aNp = grammar ().productionTable ().get (nt.getName ());
         if (aNp == null)
         {
-          JavaCCErrors.semantic_error (e, "Non-terminal " + nt.getName () + " has not been defined.");
+          JavaCCErrors.semanticError (e, "Non-terminal " + nt.getName () + " has not been defined.");
         }
         else
         {
@@ -1082,7 +1082,7 @@ public class Semanticize
       {
         if (Semanticize.emptyExpansionExists (((ExpOneOrMore) e).getExpansion ()))
         {
-          JavaCCErrors.semantic_error (e, "Expansion within \"(...)+\" can be matched by empty string.");
+          JavaCCErrors.semanticError (e, "Expansion within \"(...)+\" can be matched by empty string.");
         }
       }
       else
@@ -1090,7 +1090,7 @@ public class Semanticize
         {
           if (Semanticize.emptyExpansionExists (aExpZeroOrMore.getExpansion ()))
           {
-            JavaCCErrors.semantic_error (e, "Expansion within \"(...)*\" can be matched by empty string.");
+            JavaCCErrors.semanticError (e, "Expansion within \"(...)*\" can be matched by empty string.");
           }
         }
         else
@@ -1098,7 +1098,7 @@ public class Semanticize
           {
             if (Semanticize.emptyExpansionExists (aExpZeroOrOne.getExpansion ()))
             {
-              JavaCCErrors.semantic_error (e, "Expansion within \"(...)?\" can be matched by empty string.");
+              JavaCCErrors.semanticError (e, "Expansion within \"(...)?\" can be matched by empty string.");
             }
           }
     }

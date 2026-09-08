@@ -268,7 +268,7 @@ public abstract class AbstractJavaCCParserInternals
   {
     if (!sId2.equals (sId1))
     {
-      JavaCCErrors.parse_error (t, "Name " + sId2 + " must be the same as that used at PARSER_BEGIN (" + sId1 + ")");
+      JavaCCErrors.parseError (t, "Name " + sId2 + " must be the same as that used at PARSER_BEGIN (" + sId1 + ")");
     }
   }
 
@@ -294,7 +294,7 @@ public abstract class AbstractJavaCCParserInternals
     {
       if (PGCCContext.current ().parserBuild ().isInsertionPoint1Set ())
       {
-        JavaCCErrors.parse_error (t, "Multiple declaration of parser class.");
+        JavaCCErrors.parseError (t, "Multiple declaration of parser class.");
       }
       else
       {
@@ -329,7 +329,7 @@ public abstract class AbstractJavaCCParserInternals
     if (!PGCCContext.current ().parserBuild ().isInsertionPoint1Set () ||
       !PGCCContext.current ().parserBuild ().isInsertionPoint2Set ())
     {
-      JavaCCErrors.parse_error (t, "Parser class has not been defined between PARSER_BEGIN and PARSER_END.");
+      JavaCCErrors.parseError (t, "Parser class has not been defined between PARSER_BEGIN and PARSER_END.");
     }
   }
 
@@ -339,7 +339,7 @@ public abstract class AbstractJavaCCParserInternals
    * @param t
    *        The first token.
    */
-  protected static void set_initial_cu_token (final Token t)
+  protected static void setInitialCuToken (final Token t)
   {
     PGCCContext.current ().parserBuild ().setFirstToken (t);
   }
@@ -397,7 +397,7 @@ public abstract class AbstractJavaCCParserInternals
       {
         if (p.getLexStates ()[i].equals (p.getLexStates ()[j]))
         {
-          JavaCCErrors.parse_error (p, "Multiple occurrence of \"" + p.getLexStates ()[i] + "\" in lexical state list.");
+          JavaCCErrors.parseError (p, "Multiple occurrence of \"" + p.getLexStates ()[i] + "\" in lexical state list.");
         }
       }
       if (grammar ().lexStateS2I ().get (p.getLexStates ()[i]) == null)
@@ -418,11 +418,11 @@ public abstract class AbstractJavaCCParserInternals
    * @param aDecls
    *        The declarations as written.
    */
-  protected static void add_token_manager_decls (final Token t, final List <Token> aDecls)
+  protected static void addTokenManagerDecls (final Token t, final List <Token> aDecls)
   {
     if (grammar ().getTokenMgrDecls () != null)
     {
-      JavaCCErrors.parse_error (t, "Multiple occurrence of \"TOKEN_MGR_DECLS\".");
+      JavaCCErrors.parseError (t, "Multiple occurrence of \"TOKEN_MGR_DECLS\".");
     }
     else
     {
@@ -443,7 +443,7 @@ public abstract class AbstractJavaCCParserInternals
    * @param r
    *        The inline regular expression.
    */
-  protected static void add_inline_regexpr (final AbstractExpRegularExpression r)
+  protected static void addInlineRegexpr (final AbstractExpRegularExpression r)
   {
     if (!(r instanceof ExpREndOfFile))
     {
@@ -473,7 +473,7 @@ public abstract class AbstractJavaCCParserInternals
    *        The literal including its quotes. May not be <code>null</code>.
    * @return The characters the literal denotes. Never <code>null</code>.
    */
-  protected static String remove_escapes_and_quotes (final Token t, @NonNull final String sStr)
+  protected static String removeEscapesAndQuotes (final Token t, @NonNull final String sStr)
   {
     return JavaCCGlobals.removeEscapesAndQuotes (t, sStr);
   }
@@ -487,11 +487,11 @@ public abstract class AbstractJavaCCParserInternals
    *        The character as written, escapes included. May not be <code>null</code>.
    * @return The character it denotes.
    */
-  protected static char character_descriptor_assign (final Token t, @NonNull final String s)
+  protected static char characterDescriptorAssign (final Token t, @NonNull final String s)
   {
     if (s.length () != 1)
     {
-      JavaCCErrors.parse_error (t, "String in character list may contain only one character.");
+      JavaCCErrors.parseError (t, "String in character list may contain only one character.");
       return ' ';
     }
     return s.charAt (0);
@@ -508,16 +508,16 @@ public abstract class AbstractJavaCCParserInternals
    *        The left hand character of the range. May not be <code>null</code>.
    * @return The character it denotes.
    */
-  protected static char character_descriptor_assign (final Token t, @NonNull final String s, @NonNull final String sLeft)
+  protected static char characterDescriptorAssign (final Token t, @NonNull final String s, @NonNull final String sLeft)
   {
     if (s.length () != 1)
     {
-      JavaCCErrors.parse_error (t, "String in character list may contain only one character.");
+      JavaCCErrors.parseError (t, "String in character list may contain only one character.");
       return ' ';
     }
     if (sLeft.charAt (0) > s.charAt (0))
     {
-      JavaCCErrors.parse_error (t,
+      JavaCCErrors.parseError (t,
                                 "Right end of character range \'" +
                                    s +
                                    "\' has a lower ordinal value than the left end of character range \'" +
@@ -556,7 +556,7 @@ public abstract class AbstractJavaCCParserInternals
   {
     if (catchblks.isEmpty () && aFinallyblk == null)
     {
-      JavaCCErrors.parse_error (aTryLoc, "Try block must contain at least one catch or finally block.");
+      JavaCCErrors.parseError (aTryLoc, "Try block must contain at least one catch or finally block.");
       return;
     }
     final ExpTryBlock aTblk = new ExpTryBlock ();

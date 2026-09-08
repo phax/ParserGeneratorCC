@@ -1888,7 +1888,7 @@ public class ParseEngine
       {
         if (!eOutputLanguage.isJava ())
         {
-          JavaCCErrors.semantic_error ("Cannot use JAVACODE productions with non-Java output.");
+          JavaCCErrors.semanticError ("Cannot use JAVACODE productions with non-Java output.");
           continue;
         }
 
@@ -1962,7 +1962,7 @@ public class ParseEngine
         {
           if (!eOutputLanguage.isJava ())
           {
-            JavaCCErrors.semantic_error ("Cannot use JAVACODE productions with non-Java output.");
+            JavaCCErrors.semanticError ("Cannot use JAVACODE productions with non-Java output.");
             continue;
           }
           Token t = jp.getReturnTypeTokens ().get (0);

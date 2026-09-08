@@ -1574,7 +1574,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       }
       catch (final Exception e)
       {
-        JavaCCErrors.semantic_error ("Error cloning state vector");
+        JavaCCErrors.semanticError ("Error cloning state vector");
       }
 
       strLit ().getIntermediateKinds ()[i] = new int [sImage.length ()];

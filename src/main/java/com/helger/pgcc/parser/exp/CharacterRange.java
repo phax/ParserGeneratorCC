@@ -60,7 +60,7 @@ public final class CharacterRange implements ICCCharacter
   public CharacterRange (final char l, final char r)
   {
     if (l > r)
-      JavaCCErrors.semantic_error (this,
+      JavaCCErrors.semanticError (this,
                                    "Invalid range : \"" +
                                          (int) l +
                                          "\" - \"" +

@@ -225,7 +225,7 @@ public class OutputFile implements AutoCloseable
     catch (final FileNotFoundException e1)
     {
       // This should never happen
-      JavaCCErrors.semantic_error ("Could not open file " + aFile.getName () + " for writing.");
+      JavaCCErrors.semanticError ("Could not open file " + aFile.getName () + " for writing.");
       throw new UncheckedIOException (e1);
     }
     catch (final IOException e2)
@@ -264,7 +264,7 @@ public class OutputFile implements AutoCloseable
     catch (final FileNotFoundException e1)
     {
       // This should never happen
-      JavaCCErrors.semantic_error ("Could not open file " + aFile.getName () + " for writing.");
+      JavaCCErrors.semanticError ("Could not open file " + aFile.getName () + " for writing.");
       throw new UncheckedIOException (e1);
     }
     catch (final IOException e2)

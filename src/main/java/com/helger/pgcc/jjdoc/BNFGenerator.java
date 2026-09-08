@@ -55,12 +55,12 @@ public class BNFGenerator implements IDocGenerator
   private Writer m_aPW;
   private boolean m_bPrinting = true;
 
-  protected String get_id (final String sNt)
+  protected String getID (final String sNt)
   {
     return m_aIDMap.computeIfAbsent (sNt, k -> "prod" + m_nID++);
   }
 
-  protected static Writer create_output_stream ()
+  protected static Writer createOutputStream ()
   {
     return TextGenerator.createPrintWriter (".bnf");
   }
@@ -80,7 +80,7 @@ public class BNFGenerator implements IDocGenerator
 
   public void documentStart ()
   {
-    m_aPW = create_output_stream ();
+    m_aPW = createOutputStream ();
   }
 
   public void documentEnd () throws IOException

@@ -448,7 +448,7 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
 
     if (m_aDescriptors.isEmpty () && !m_bNegatedList)
     {
-      JavaCCErrors.semantic_error (this, "Empty character set is not allowed as it will not match any character.");
+      JavaCCErrors.semanticError (this, "Empty character set is not allowed as it will not match any character.");
       return new Nfa ();
     }
 

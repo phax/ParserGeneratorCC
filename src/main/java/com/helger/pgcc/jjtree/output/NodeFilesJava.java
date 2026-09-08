@@ -156,7 +156,7 @@ public final class NodeFilesJava
     return PGCCContext.current ().jjtree ().getParserName () + "TreeConstants";
   }
 
-  public static void generateTreeConstants_java ()
+  public static void generateTreeConstantsJava ()
   {
     final String sName = nodeConstants ();
     final File aFile = new File (JJTreeOptions.getJJTreeOutputDirectory (), sName + ".java");
@@ -199,7 +199,7 @@ public final class NodeFilesJava
     return PGCCContext.current ().jjtree ().getParserName () + "Visitor";
   }
 
-  public static void generateVisitor_java ()
+  public static void generateVisitorJava ()
   {
     if (!JJTreeOptions.isVisitor ())
     {
@@ -278,7 +278,7 @@ public final class NodeFilesJava
     return aSB.toString ();
   }
 
-  public static void generateDefaultVisitor_java ()
+  public static void generateDefaultVisitorJava ()
   {
     if (!JJTreeOptions.isVisitor ())
     {

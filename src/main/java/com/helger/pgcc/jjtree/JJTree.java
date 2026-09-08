@@ -51,7 +51,7 @@ public class JJTree
 {
   private JJTreeIO m_aIO;
 
-  private void help_message ()
+  private void helpMessage ()
   {
     PGPrinter.info ("Usage:");
     PGPrinter.info ("    jjtree option-settings inputfile");
@@ -133,7 +133,7 @@ public class JJTree
       if (aArgs.length == 0)
       {
         PGPrinter.info ("");
-        help_message ();
+        helpMessage ();
         return ESuccess.FAILURE;
       }
       PGPrinter.info ("(type \"jjtree\" with no arguments for help)");
@@ -198,10 +198,10 @@ public class JJTree
         switch (Options.getOutputLanguage ())
         {
           case JAVA:
-            NodeFilesJava.generateTreeConstants_java ();
-            NodeFilesJava.generateVisitor_java ();
-            NodeFilesJava.generateDefaultVisitor_java ();
-            JJTreeStateJava.generateTreeState_java ();
+            NodeFilesJava.generateTreeConstantsJava ();
+            NodeFilesJava.generateVisitorJava ();
+            NodeFilesJava.generateDefaultVisitorJava ();
+            JJTreeStateJava.generateTreeStateJava ();
             break;
           case CPP:
             NodeFilesCpp.generateTreeConstants ();

@@ -71,33 +71,33 @@ public class FilesCpp
     catch (final IOException e)
     {
       PGPrinter.error ("Failed to create file: " + aFile, e);
-      JavaCCErrors.semantic_error ("Could not open file: " + aFile + " for writing.");
+      JavaCCErrors.semanticError ("Could not open file: " + aFile + " for writing.");
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_CharStream ()
+  public static void genCharStream ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     genFile ("cpp/stream", "CharStream.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
     genFile ("cpp/stream", "CharStream.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_ParseException ()
+  public static void genParseException ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     genFile ("cpp", "ParseException.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
     genFile ("cpp", "ParseException.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_TokenMgrError ()
+  public static void genTokenMgrError ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     genFile ("cpp", "TokenMgrError.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
     genFile ("cpp", "TokenMgrError.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_Token ()
+  public static void genToken ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC,
                                                  Options.USEROPTION__CPP_TOKEN_INCLUDES,
@@ -106,19 +106,19 @@ public class FilesCpp
     genFile ("cpp", "Token.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_TokenManager ()
+  public static void genTokenManager ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     genFile ("cpp", "TokenManager.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_JavaCCDefs ()
+  public static void genJavaCCDefs ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     genFile ("cpp", "JavaCC.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_ErrorHandler ()
+  public static void genErrorHandler ()
   {
     final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC,
                                                  Options.USEROPTION__BUILD_PARSER,

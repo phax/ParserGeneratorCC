@@ -435,7 +435,7 @@ void option_binding() #OptionBinding :
 	}
    | v=StringLiteral()
         {	
-	  String vs = TokenUtils.remove_escapes_and_quotes(v, v.image);
+	  String vs = TokenUtils.removeEscapesAndQuotes(v, v.image);
 	  JJTreeOptions.setInputFileOption(o, v, o.image, (Object)vs);
 	  jjtThis.initialize(o.image, vs);
 	}

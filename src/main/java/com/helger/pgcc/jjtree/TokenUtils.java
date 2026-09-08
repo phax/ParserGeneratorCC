@@ -126,7 +126,7 @@ public final class TokenUtils
    *        The literal including its quotes. May not be <code>null</code>.
    * @return The characters the literal denotes. Never <code>null</code>.
    */
-  static String remove_escapes_and_quotes (final Token t, @NonNull final String sStr)
+  static String removeEscapesAndQuotes (final Token t, @NonNull final String sStr)
   {
     return JavaCCGlobals.removeEscapesAndQuotes (t, sStr);
   }

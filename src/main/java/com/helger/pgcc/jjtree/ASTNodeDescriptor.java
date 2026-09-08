@@ -158,7 +158,7 @@ public class ASTNodeDescriptor extends JJTreeNode
     {
       return m_sName;
     }
-    return "#" + m_sName + "(" + (m_bIsGT ? ">" : "") + expression_text () + ")";
+    return "#" + m_sName + "(" + (m_bIsGT ? ">" : "") + expressionText () + ")";
   }
 
   String getNodeType ()
@@ -178,7 +178,7 @@ public class ASTNodeDescriptor extends JJTreeNode
     return "jjtree.openNodeScope(" + sNodeVar + ");";
   }
 
-  String expression_text ()
+  String expressionText ()
   {
     if (m_aExpression.getFirstToken ().image.equals (")") && m_aExpression.getLastToken ().image.equals ("("))
     {
@@ -204,8 +204,8 @@ public class ASTNodeDescriptor extends JJTreeNode
     if (m_aExpression == null)
       return "jjtree.closeNodeScope(" + sNodeVar + ", true);";
     if (m_bIsGT)
-      return "jjtree.closeNodeScope(" + sNodeVar + ", jjtree.nodeArity() > " + expression_text () + ");";
-    return "jjtree.closeNodeScope(" + sNodeVar + ", " + expression_text () + ");";
+      return "jjtree.closeNodeScope(" + sNodeVar + ", jjtree.nodeArity() > " + expressionText () + ");";
+    return "jjtree.closeNodeScope(" + sNodeVar + ", " + expressionText () + ");";
   }
 
   @Override

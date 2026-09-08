@@ -127,7 +127,7 @@ public class FilesJava
     }
   }
 
-  public static void gen_CharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
+  public static void genCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "CharStream.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -150,12 +150,12 @@ public class FilesJava
     }
     catch (final IOException e)
     {
-      JavaCCErrors.semantic_error ("Could not open file CharStream.java for writing.", e);
+      JavaCCErrors.semanticError ("Could not open file CharStream.java for writing.", e);
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_AbstractCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
+  public static void genAbstractCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "AbstractCharStream.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -179,12 +179,12 @@ public class FilesJava
     }
     catch (final IOException e)
     {
-      JavaCCErrors.semantic_error ("Could not open file AbstractCharStream.java for writing.", e);
+      JavaCCErrors.semanticError ("Could not open file AbstractCharStream.java for writing.", e);
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_JavaCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
+  public static void genJavaCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "JavaCharStream.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -208,12 +208,12 @@ public class FilesJava
     }
     catch (final IOException e)
     {
-      JavaCCErrors.semantic_error ("Could not open file JavaCharStream.java for writing.", e);
+      JavaCCErrors.semanticError ("Could not open file JavaCharStream.java for writing.", e);
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_SimpleCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
+  public static void genSimpleCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "SimpleCharStream.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -236,12 +236,12 @@ public class FilesJava
     }
     catch (final IOException e)
     {
-      JavaCCErrors.semantic_error ("Could not open file SimpleCharStream.java for writing.", e);
+      JavaCCErrors.semanticError ("Could not open file SimpleCharStream.java for writing.", e);
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_CharSequenceCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
+  public static void genCharSequenceCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "CharSequenceCharStream.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -264,12 +264,12 @@ public class FilesJava
     }
     catch (final IOException e)
     {
-      JavaCCErrors.semantic_error ("Could not open file CharSequenceCharStream.java for writing.", e);
+      JavaCCErrors.semanticError ("Could not open file CharSequenceCharStream.java for writing.", e);
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_JavaModernFiles ()
+  public static void genJavaModernFiles ()
   {
     // Abstraction for char reader
     _genMiscFile ("Provider.java", "/templates/java/stream/modern/Provider.template");
@@ -299,12 +299,12 @@ public class FilesJava
     }
     catch (final IOException e)
     {
-      JavaCCErrors.semantic_error ("Could not open file " + sFileName + " for writing.", e);
+      JavaCCErrors.semanticError ("Could not open file " + sFileName + " for writing.", e);
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_ParseException (@NonNull final IJavaResourceTemplateLocations aLocations)
+  public static void genParseException (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "ParseException.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -327,12 +327,12 @@ public class FilesJava
     }
     catch (final IOException e)
     {
-      JavaCCErrors.semantic_error ("Could not open file ParseException.java for writing.", e);
+      JavaCCErrors.semanticError ("Could not open file ParseException.java for writing.", e);
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_TokenMgrError (@NonNull final IJavaResourceTemplateLocations aLocations)
+  public static void genTokenMgrError (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final String sFilename = Options.getTokenMgrErrorClass () + ".java";
     final File aFile = new File (Options.getOutputDirectory (), sFilename);
@@ -355,12 +355,12 @@ public class FilesJava
     }
     catch (final IOException e)
     {
-      JavaCCErrors.semantic_error ("Could not open file " + sFilename + " for writing.", e);
+      JavaCCErrors.semanticError ("Could not open file " + sFilename + " for writing.", e);
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_Token (@NonNull final IJavaResourceTemplateLocations aLocations)
+  public static void genToken (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "Token.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -385,12 +385,12 @@ public class FilesJava
     }
     catch (final IOException e)
     {
-      JavaCCErrors.semantic_error ("Could not open file Token.java for writing.", e);
+      JavaCCErrors.semanticError ("Could not open file Token.java for writing.", e);
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_TokenManager (@NonNull final IJavaResourceTemplateLocations aLocations)
+  public static void genTokenManager (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "TokenManager.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -413,7 +413,7 @@ public class FilesJava
     }
     catch (final IOException e)
     {
-      JavaCCErrors.semantic_error ("Could not open file TokenManager.java for writing.", e);
+      JavaCCErrors.semanticError ("Could not open file TokenManager.java for writing.", e);
       throw new UncheckedIOException (e);
     }
   }

@@ -84,39 +84,39 @@ public class OtherFilesGenJava
     {
       if (bIsJavaModern)
       {
-        FilesJava.gen_JavaModernFiles ();
+        FilesJava.genJavaModernFiles ();
       }
 
-      FilesJava.gen_TokenMgrError (aTemplateLoc);
-      FilesJava.gen_ParseException (aTemplateLoc);
-      FilesJava.gen_Token (aTemplateLoc);
+      FilesJava.genTokenMgrError (aTemplateLoc);
+      FilesJava.genParseException (aTemplateLoc);
+      FilesJava.genToken (aTemplateLoc);
     }
 
     if (Options.isUserTokenManager ())
     {
       // CBA -- I think that Token managers are unique so will always be
       // generated
-      FilesJava.gen_TokenManager (aTemplateLoc);
+      FilesJava.genTokenManager (aTemplateLoc);
     }
     else
       if (Options.isGenerateJavaBoilerplateCode ())
       {
-        FilesJava.gen_CharStream (aTemplateLoc);
+        FilesJava.genCharStream (aTemplateLoc);
 
         if (!Options.isJavaUserCharStream ())
         {
           if (Options.isCharSequenceCharStream ())
           {
             // Does not use the buffering of AbstractCharStream
-            FilesJava.gen_CharSequenceCharStream (aTemplateLoc);
+            FilesJava.genCharSequenceCharStream (aTemplateLoc);
           }
           else
           {
-            FilesJava.gen_AbstractCharStream (aTemplateLoc);
+            FilesJava.genAbstractCharStream (aTemplateLoc);
             if (Options.isJavaUnicodeEscape ())
-              FilesJava.gen_JavaCharStream (aTemplateLoc);
+              FilesJava.genJavaCharStream (aTemplateLoc);
             else
-              FilesJava.gen_SimpleCharStream (aTemplateLoc);
+              FilesJava.genSimpleCharStream (aTemplateLoc);
           }
         }
       }
@@ -126,7 +126,7 @@ public class OtherFilesGenJava
                                                    Options.getOutputEncoding ());
     if (w == null)
     {
-      JavaCCErrors.semantic_error ("Could not open file " +
+      JavaCCErrors.semanticError ("Could not open file " +
                                    grammar ().getParserName () +
                                    CONSTANTS_FILENAME_SUFFIX +
                                    " for writing.");

@@ -84,21 +84,21 @@ public class OtherFilesGenCPP
     if (JavaCCErrors.getErrorCount () != 0)
       throw new MetaParseException ("Error count is already present!");
 
-    FilesCpp.gen_JavaCCDefs ();
-    FilesCpp.gen_CharStream ();
+    FilesCpp.genJavaCCDefs ();
+    FilesCpp.genCharStream ();
     // TODO(theov): issued twice??
-    FilesCpp.gen_Token ();
-    FilesCpp.gen_TokenManager ();
-    FilesCpp.gen_TokenMgrError ();
-    FilesCpp.gen_ParseException ();
-    FilesCpp.gen_ErrorHandler ();
+    FilesCpp.genToken ();
+    FilesCpp.genTokenManager ();
+    FilesCpp.genTokenMgrError ();
+    FilesCpp.genParseException ();
+    FilesCpp.genErrorHandler ();
 
     final Writer w = FileHelper.getBufferedWriter (new File (Options.getOutputDirectory (),
                                                              grammar ().getParserName () + "Constants.h"),
                                                    Options.getOutputEncoding ());
     if (w == null)
     {
-      JavaCCErrors.semantic_error ("Could not open file " + grammar ().getParserName () + "Constants.h for writing.");
+      JavaCCErrors.semanticError ("Could not open file " + grammar ().getParserName () + "Constants.h for writing.");
       return;
     }
 

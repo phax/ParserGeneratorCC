@@ -61,7 +61,7 @@ public final class JJDocMain
   private JJDocMain ()
   {}
 
-  static void help_message ()
+  static void helpMessage ()
   {
     PGPrinter.info ();
     PGPrinter.info ("    jjdoc option-settings - (to read from standard input)");
@@ -143,7 +143,7 @@ public final class JJDocMain
     JavaCCParser aParser = null;
     if (aArgs.length == 0)
     {
-      help_message ();
+      helpMessage ();
       return ESuccess.FAILURE;
     }
     PGPrinter.info ("(type \"jjdoc\" with no arguments for help)");

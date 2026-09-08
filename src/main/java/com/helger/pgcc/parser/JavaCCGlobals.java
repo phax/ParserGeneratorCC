@@ -289,20 +289,20 @@ public final class JavaCCGlobals
 
       if (!aOutputDir.mkdirs ())
       {
-        JavaCCErrors.semantic_error ("Cannot create the output directory : " + aOutputDir);
+        JavaCCErrors.semanticError ("Cannot create the output directory : " + aOutputDir);
         return;
       }
     }
 
     if (!aOutputDir.isDirectory ())
     {
-      JavaCCErrors.semantic_error ("\"" + aOutputDir + " is not a valid output directory.");
+      JavaCCErrors.semanticError ("\"" + aOutputDir + " is not a valid output directory.");
       return;
     }
 
     if (!aOutputDir.canWrite ())
     {
-      JavaCCErrors.semantic_error ("Cannot write to the output output directory : \"" + aOutputDir + "\"");
+      JavaCCErrors.semanticError ("Cannot write to the output output directory : \"" + aOutputDir + "\"");
     }
   }
 
@@ -451,7 +451,7 @@ public final class JavaCCGlobals
             }
           }
         }
-        JavaCCErrors.parse_error (aLocation,
+        JavaCCErrors.parseError (aLocation,
                                   "Encountered non-hex character '" +
                                      cCh +
                                      "' at position " +
@@ -460,7 +460,7 @@ public final class JavaCCGlobals
                                      "- Unicode escape must have 4 hex digits after it.");
         return sRetval;
       }
-      JavaCCErrors.parse_error (aLocation, "Illegal escape sequence '\\" + cCh + "' at position " + nIndex + " of string.");
+      JavaCCErrors.parseError (aLocation, "Illegal escape sequence '\\" + cCh + "' at position " + nIndex + " of string.");
       return sRetval;
     }
     return sRetval;

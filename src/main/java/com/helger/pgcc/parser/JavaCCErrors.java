@@ -54,13 +54,13 @@ public final class JavaCCErrors
     return aNode == null ? "" : "Line " + aNode.getLineNumber () + ", Column " + aNode.getColumnNumber () + ": ";
   }
 
-  public static void parse_error (@Nullable final IGrammarLocation aNode, final String sMess)
+  public static void parseError (@Nullable final IGrammarLocation aNode, final String sMess)
   {
     PGPrinter.error ("Error: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onParseError ();
   }
 
-  public static void parse_error (final String sMess)
+  public static void parseError (final String sMess)
   {
     PGPrinter.error ("Error: " + sMess);
     PGCCContext.current ().errors ().onParseError ();
@@ -71,19 +71,19 @@ public final class JavaCCErrors
     return PGCCContext.current ().errors ().getParseErrorCount ();
   }
 
-  public static void semantic_error (@Nullable final IGrammarLocation aNode, final String sMess)
+  public static void semanticError (@Nullable final IGrammarLocation aNode, final String sMess)
   {
     PGPrinter.error ("Error: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onSemanticError ();
   }
 
-  public static void semantic_error (final String sMess)
+  public static void semanticError (final String sMess)
   {
     PGPrinter.error ("Error: " + sMess);
     PGCCContext.current ().errors ().onSemanticError ();
   }
 
-  public static void semantic_error (final String sMess, final Throwable t)
+  public static void semanticError (final String sMess, final Throwable t)
   {
     PGPrinter.error ("Error: " + sMess, t);
     PGCCContext.current ().errors ().onSemanticError ();

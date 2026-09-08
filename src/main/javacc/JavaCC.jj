@@ -905,7 +905,7 @@ void token_manager_decls() :
 
   [ ClassOrInterfaceBody(false, decls) ]
   {
-    add_token_manager_decls(t, decls);
+    addTokenManagerDecls(t, decls);
   }
 }
 
@@ -956,7 +956,7 @@ void regexpr_spec(TokenProduction p) :
       JavaCCErrors.warning(t, "Ignoring action in regular expression specification since option USER_TOKEN_MANAGER has been set to true.");
     }
     if (res.getRexp ().m_bPrivateRexp) {
-      JavaCCErrors.parse_error(t, "Actions are not permitted on private (#) regular expressions.");
+      JavaCCErrors.parseError(t, "Actions are not permitted on private (#) regular expressions.");
     }
   }
   ]
@@ -964,7 +964,7 @@ void regexpr_spec(TokenProduction p) :
   {
     res.setNextState (t.image);
     if (res.getRexp ().m_bPrivateRexp) {
-      JavaCCErrors.parse_error(t, "Lexical state changes are not permitted after private (#) regular expressions.");
+      JavaCCErrors.parseError(t, "Lexical state changes are not permitted after private (#) regular expressions.");
     }
   }
   ]
@@ -1284,7 +1284,7 @@ void expansion_unit(Container c) :
     regular_expression(c)
   {
     ((AbstractExpRegularExpression) c.getMember ()).setLhsTokens (lhsTokens);
-    add_inline_regexpr((AbstractExpRegularExpression) c.getMember ());
+    addInlineRegexpr((AbstractExpRegularExpression) c.getMember ());
   }
   [ "." t=<IDENTIFIER> { ((AbstractExpRegularExpression) c.getMember ()).setRhsToken (t); } ]
   )
@@ -1496,12 +1496,12 @@ void character_descriptor(Container c) :
 {
   imageL=StringLiteral()
   {
-    c1 = character_descriptor_assign(getToken(0), imageL);
+    c1 = characterDescriptorAssign(getToken(0), imageL);
   }
   [ "-" imageR=StringLiteral()
   {
     isrange = true;
-    c2 = character_descriptor_assign(getToken(0), imageR, imageL);
+    c2 = characterDescriptorAssign(getToken(0), imageR, imageL);
   }
   ]
   {
@@ -1580,7 +1580,7 @@ void CompilationUnit() :
  * within grammar code.
  */
   {
-    set_initial_cu_token(getToken(1));
+    setInitialCuToken(getToken(1));
   }
 {
   [ LOOKAHEAD( ( Annotation() )* "package" ) PackageDeclaration() ]
@@ -2408,7 +2408,7 @@ String StringLiteral() :
 {
   t=<STRING_LITERAL>
   {
-    return remove_escapes_and_quotes(t, t.image);
+    return removeEscapesAndQuotes(t, t.image);
   }
 }
 
