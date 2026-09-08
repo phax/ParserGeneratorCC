@@ -89,54 +89,81 @@ public final class PGCCContext
     CURRENT.remove ();
   }
 
+  /**
+   * {@return the errors and warnings collected by this run}
+   */
   @NonNull
   public ErrorCollector errors ()
   {
     return m_aErrors;
   }
 
+  /**
+   * {@return the option values of this run}
+   */
   @NonNull
   public OptionState options ()
   {
     return m_aOptions;
   }
 
+  /**
+   * {@return the scratch space of the lookahead computation}
+   */
   @NonNull
   public LookaheadState lookahead ()
   {
     return m_aLookahead;
   }
 
+  /**
+   * {@return the grammar this run has read}
+   */
   @NonNull
   public GrammarState grammar ()
   {
     return m_aGrammar;
   }
 
+  /**
+   * {@return the scratch space of the parser generation}
+   */
   @NonNull
   public ParserBuildState parserBuild ()
   {
     return m_aParserBuild;
   }
 
+  /**
+   * {@return the scratch space of the semantic checks}
+   */
   @NonNull
   public SemanticizeState semanticize ()
   {
     return m_aSemanticize;
   }
 
+  /**
+   * {@return the state of the JJTree run, empty unless this run is JJTree}
+   */
   @NonNull
   public JJTreeState jjtree ()
   {
     return m_aJJTree;
   }
 
+  /**
+   * {@return the state of the JJDoc run, empty unless this run is JJDoc}
+   */
   @NonNull
   public JJDocState jjdoc ()
   {
     return m_aJJDoc;
   }
 
+  /**
+   * {@return the state of the token manager generation}
+   */
   @NonNull
   public LexerState lexer ()
   {

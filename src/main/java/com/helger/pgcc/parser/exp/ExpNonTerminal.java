@@ -92,12 +92,23 @@ public final class ExpNonTerminal extends Expansion
     return m_aLhsTokens;
   }
 
+  /**
+   * {@return how many tokens the left hand side of the assignment in front of this non-terminal
+   * has}
+   */
   @Nonnegative
   public final int getLhsTokenCount ()
   {
     return m_aLhsTokens.size ();
   }
 
+  /**
+   * One token of the left hand side of the assignment in front of this non-terminal.
+   *
+   * @param nIndex
+   *        The position, from 0.
+   * @return The token. Never <code>null</code>.
+   */
   @NonNull
   public final Token getLhsTokenAt (final int nIndex)
   {
@@ -105,8 +116,10 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
+   * Record the left hand side of the assignment in front of this non-terminal.
+   *
    * @param aLhsTokens
-   *        the lhsTokens to set
+   *        The tokens of the left hand side. May not be <code>null</code>.
    */
   public final void setLhsTokens (@NonNull final List <Token> aLhsTokens)
   {
@@ -114,7 +127,7 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * {@return the name}
+   * {@return the name of the production this non-terminal refers to}
    */
   public final String getName ()
   {
@@ -122,14 +135,19 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
+   * Record which production this non-terminal refers to.
+   *
    * @param sName
-   *        the name to set
+   *        The production name. May not be <code>null</code>.
    */
   public final void setName (final String sName)
   {
     m_sName = sName;
   }
 
+  /**
+   * {@return the tokens of the argument list, as a list the caller may add to}
+   */
   @NonNull
   public final List <Token> getMutableArgumentTokens ()
   {
@@ -137,7 +155,7 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * {@return the argument_tokens}
+   * {@return the tokens of the argument list of this non-terminal}
    */
   @NonNull
   public final Iterable <Token> getArgumentTokens ()
@@ -145,18 +163,31 @@ public final class ExpNonTerminal extends Expansion
     return m_aArgumentTokens;
   }
 
+  /**
+   * {@return how many tokens the argument list of this non-terminal has}
+   */
   @Nonnegative
   public final int getArgumentTokenCount ()
   {
     return m_aArgumentTokens.size ();
   }
 
+  /**
+   * One token of the argument list of this non-terminal.
+   *
+   * @param n
+   *        The position, from 0.
+   * @return The token. Never <code>null</code>.
+   */
   @NonNull
   public final Token getArgumentTokenAt (final int n)
   {
     return m_aArgumentTokens.get (n);
   }
 
+  /**
+   * {@return the tokens of the type arguments, as a list the caller may add to}
+   */
   @NonNull
   public final List <Token> getMutableParametrizedTypeTokens ()
   {
@@ -164,7 +195,7 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * {@return the argument_tokens}
+   * {@return the tokens of the type arguments of this non-terminal}
    */
   @NonNull
   public final Iterable <Token> getParametrizedTypeTokens ()
@@ -173,7 +204,8 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
-   * {@return the prod}
+   * {@return the production this non-terminal refers to, or <code>null</code> if the name does not
+   * resolve}
    */
   public final AbstractNormalProduction getProd ()
   {
@@ -181,8 +213,11 @@ public final class ExpNonTerminal extends Expansion
   }
 
   /**
+   * Attach the production this non-terminal refers to, once the grammar has been read and the name
+   * could be resolved.
+   *
    * @param aProd
-   *        the prod to set
+   *        The production. May be <code>null</code> if the name does not resolve.
    */
   public final void setProd (final AbstractNormalProduction aProd)
   {

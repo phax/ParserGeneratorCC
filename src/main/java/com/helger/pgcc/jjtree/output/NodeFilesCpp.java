@@ -54,6 +54,10 @@ import com.helger.pgcc.output.cpp.OtherFilesGenCpp;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.utils.OutputFileGenerator;
 
+  /**
+   * The C++ half of the JJTree output: Node.h, SimpleNode, one class per node type, the tree
+   * constants and the visitor interfaces.
+   */
 @Immutable
 public final class NodeFilesCpp
 {
@@ -65,6 +69,13 @@ public final class NodeFilesCpp
    */
   private static final String NODE_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
+  /**
+   * Note that a node type is in use, so that a class gets generated for it. Node and SimpleNode
+   * are ignored because they are written out anyway.
+   *
+   * @param sType
+   *        The node class name. May not be <code>null</code>.
+   */
   public static void addType (@NonNull final String sType)
   {
     if (!sType.equals ("Node") && !sType.equals ("SimpleNode"))
@@ -73,48 +84,91 @@ public final class NodeFilesCpp
     }
   }
 
+  /**
+   * {@return the path of the generated Node.h}
+   */
   public static String nodeIncludeFile ()
   {
     return new File (JJTreeOptions.getJJTreeOutputDirectory (), "Node.h").getAbsolutePath ();
   }
 
+  /**
+   * {@return the path of the generated SimpleNode.h}
+   */
   public static String simpleNodeIncludeFile ()
   {
     return new File (JJTreeOptions.getJJTreeOutputDirectory (), "SimpleNode.h").getAbsolutePath ();
   }
 
+  /**
+   * {@return the path of the generated SimpleNode.cc}
+   */
   public static String simpleNodeCodeFile ()
   {
     return new File (JJTreeOptions.getJJTreeOutputDirectory (), "SimpleNode.cc").getAbsolutePath ();
   }
 
+  /**
+   * {@return the path of the generated &lt;Parser&gt;Tree.h}
+   */
   public static String jjtreeIncludeFile ()
   {
     return new File (JJTreeOptions.getJJTreeOutputDirectory (),
                      PGCCContext.current ().jjtree ().getParserName () + "Tree.h").getAbsolutePath ();
   }
 
+  /**
+   * {@return the path of the generated &lt;Parser&gt;Tree.cc}
+   */
   public static String jjtreeImplFile ()
   {
     return new File (JJTreeOptions.getJJTreeOutputDirectory (),
                      PGCCContext.current ().jjtree ().getParserName () + "Tree.cc").getAbsolutePath ();
   }
 
+  /**
+   * The path of a generated header file in the JJTree output directory.
+   *
+   * @param s
+   *        The file name without its extension. May not be <code>null</code>.
+   * @return The absolute path. Never <code>null</code>.
+   */
   public static String jjtreeIncludeFile (final String s)
   {
     return new File (JJTreeOptions.getJJTreeOutputDirectory (), s + ".h").getAbsolutePath ();
   }
 
+  /**
+   * The path of a generated source file in the JJTree output directory.
+   *
+   * @param s
+   *        The file name without its extension. May not be <code>null</code>.
+   * @return The absolute path. Never <code>null</code>.
+   */
   public static String jjtreeImplFile (final String s)
   {
     return new File (JJTreeOptions.getJJTreeOutputDirectory (), s + ".cc").getAbsolutePath ();
   }
 
+  /**
+   * The path of the generated header file of one node class.
+   *
+   * @param ASTNode
+   *        The node class name. May not be <code>null</code>.
+   * @return The absolute path. Never <code>null</code>.
+   */
   public static String jjtreeASTIncludeFile (final String ASTNode)
   {
     return new File (JJTreeOptions.getJJTreeOutputDirectory (), ASTNode + ".h").getAbsolutePath ();
   }
 
+  /**
+   * The path of the generated source file of one node class.
+   *
+   * @param ASTNode
+   *        The node class name. May not be <code>null</code>.
+   * @return The absolute path. Never <code>null</code>.
+   */
   public static String jjtreeASTCodeFile (final String ASTNode)
   {
     return new File (JJTreeOptions.getJJTreeOutputDirectory (), ASTNode + ".cc").getAbsolutePath ();
@@ -126,6 +180,9 @@ public final class NodeFilesCpp
     return new File (JJTreeOptions.getJJTreeOutputDirectory (), sName + ".h").getAbsolutePath ();
   }
 
+  /**
+   * Write one header and one source file per node type in use.
+   */
   public static void generateTreeClasses ()
   {
     _generateNodeHeader ();
@@ -431,6 +488,9 @@ public final class NodeFilesCpp
     return PGCCContext.current ().jjtree ().getParserName () + "TreeConstants";
   }
 
+  /**
+   * Write the header that names every node type and holds the array of their names.
+   */
   public static void generateTreeConstants ()
   {
     final String sName = nodeConstants ();
@@ -524,6 +584,9 @@ public final class NodeFilesCpp
     return sRet == null || sRet.length () == 0 || sRet.equals ("Object") ? "void " : sRet;
   }
 
+  /**
+   * Write the visitor interface and the default visitor, unless the grammar turned them off.
+   */
   public static void generateVisitors ()
   {
     if (!JJTreeOptions.isVisitor ())
@@ -653,6 +716,19 @@ public final class NodeFilesCpp
     aOstr.println ("};");
   }
 
+  /**
+   * Expand one template into an already opened output file.
+   *
+   * @param aOutputFile
+   *        Where to write. May not be <code>null</code>.
+   * @param sTemplateName
+   *        The template resource path. May not be <code>null</code>.
+   * @param aOptions
+   *        The values the template substitutes. May not be <code>null</code>.
+   * @param bCloseFile
+   *        <code>true</code> to close the file afterwards. @throws IOException if the template
+   *         cannot be read or the file cannot be written
+   */
   public static void generateFile (@NonNull final OutputFile aOutputFile,
                                    final String sTemplate,
                                    final Map <String, Object> aOptions,

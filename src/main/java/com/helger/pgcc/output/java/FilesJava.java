@@ -90,6 +90,15 @@ public class FilesJava
   private FilesJava ()
   {}
 
+  /**
+   * Choose where the templates come from. The default reads them from the classpath, which is
+   * what a released jar needs; a test that has to see the templates in the checkout turns it off.
+   * This is process wide state, so a test that changes it has to change it back.
+   *
+   * @param bReadFromClassPath
+   *        <code>true</code> to read from the classpath, <code>false</code> to read from the file
+   *         system.
+   */
   public static void setReadFromClassPath (final boolean bReadFromClassPath)
   {
     ProcessState.getInstance ().setReadTemplatesFromClassPath (bReadFromClassPath);
@@ -127,6 +136,12 @@ public class FilesJava
     }
   }
 
+  /**
+   * Write CharStream.java, the interface the generated token manager reads through.
+   *
+   * @param aLocations
+   *        Where the templates live. May not be <code>null</code>.
+   */
   public static void genCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "CharStream.java");
@@ -155,6 +170,12 @@ public class FilesJava
     }
   }
 
+  /**
+   * Write AbstractCharStream.java, the part every char stream implementation shares.
+   *
+   * @param aLocations
+   *        Where the templates live. May not be <code>null</code>.
+   */
   public static void genAbstractCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "AbstractCharStream.java");
@@ -184,6 +205,13 @@ public class FilesJava
     }
   }
 
+  /**
+   * Write JavaCharStream.java, the char stream that understands Java unicode escapes in the
+   * input.
+   *
+   * @param aLocations
+   *        Where the templates live. May not be <code>null</code>.
+   */
   public static void genJavaCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "JavaCharStream.java");
@@ -213,6 +241,12 @@ public class FilesJava
     }
   }
 
+  /**
+   * Write SimpleCharStream.java, the char stream that reads from a Reader.
+   *
+   * @param aLocations
+   *        Where the templates live. May not be <code>null</code>.
+   */
   public static void genSimpleCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "SimpleCharStream.java");
@@ -241,6 +275,13 @@ public class FilesJava
     }
   }
 
+  /**
+   * Write CharSequenceCharStream.java, the char stream that reads from something already in
+   * memory.
+   *
+   * @param aLocations
+   *        Where the templates live. May not be <code>null</code>.
+   */
   public static void genCharSequenceCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "CharSequenceCharStream.java");
@@ -269,6 +310,10 @@ public class FilesJava
     }
   }
 
+  /**
+   * Write the extra files the modern template type needs, the Provider interfaces and their
+   * implementations.
+   */
   public static void genJavaModernFiles ()
   {
     // Abstraction for char reader
@@ -304,6 +349,12 @@ public class FilesJava
     }
   }
 
+  /**
+   * Write ParseException.java, the exception the generated parser throws.
+   *
+   * @param aLocations
+   *        Where the templates live. May not be <code>null</code>.
+   */
   public static void genParseException (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "ParseException.java");
@@ -332,6 +383,12 @@ public class FilesJava
     }
   }
 
+  /**
+   * Write the exception the generated token manager throws when it cannot match.
+   *
+   * @param aLocations
+   *        Where the templates live. May not be <code>null</code>.
+   */
   public static void genTokenMgrError (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final String sFilename = Options.getTokenMgrErrorClass () + ".java";
@@ -360,6 +417,12 @@ public class FilesJava
     }
   }
 
+  /**
+   * Write Token.java, the token the generated parser works with.
+   *
+   * @param aLocations
+   *        Where the templates live. May not be <code>null</code>.
+   */
   public static void genToken (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "Token.java");
@@ -390,6 +453,12 @@ public class FilesJava
     }
   }
 
+  /**
+   * Write TokenManager.java, the interface the generated parser pulls tokens through.
+   *
+   * @param aLocations
+   *        Where the templates live. May not be <code>null</code>.
+   */
   public static void genTokenManager (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "TokenManager.java");

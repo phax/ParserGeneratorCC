@@ -53,9 +53,20 @@ public final class ExpSequence extends Expansion
    */
   private final List <Expansion> m_aUnits = new ArrayList <> ();
 
+  /**
+   * Create an empty sequence.
+   */
   public ExpSequence ()
   {}
 
+  /**
+   * Create a sequence that starts with a lookahead specification.
+   *
+   * @param aToken
+   *        The token the sequence starts at, for error messages. May not be <code>null</code>.
+   * @param aLookahead
+   *        The lookahead. May be <code>null</code>.
+   */
   public ExpSequence (@NonNull final Token aToken, final ExpLookahead aLookahead)
   {
     setLineNumber (aToken.beginLine);
@@ -63,36 +74,71 @@ public final class ExpSequence extends Expansion
     m_aUnits.add (aLookahead);
   }
 
+  /**
+   * {@return the expansions this sequence is made of, in order}
+   */
   @NonNull
   public final Iterable <Expansion> getUnits ()
   {
     return m_aUnits;
   }
 
+  /**
+   * {@return how many expansions this sequence is made of}
+   */
   @Nonnegative
   public final int getUnitCount ()
   {
     return m_aUnits.size ();
   }
 
+  /**
+   * One expansion of this sequence.
+   *
+   * @param nIndex
+   *        The position, from 0.
+   * @return The expansion. Never <code>null</code>.
+   */
   @NonNull
   public final Expansion getUnitAt (final int nIndex)
   {
     return m_aUnits.get (nIndex);
   }
 
+  /**
+   * Append an expansion to this sequence.
+   *
+   * @param aObj
+   *        The expansion to append. May not be <code>null</code>.
+   */
   public final void addUnit (@NonNull final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
     m_aUnits.add (aObj);
   }
 
+  /**
+   * Insert an expansion into this sequence.
+   *
+   * @param n
+   *        The position to insert at, from 0.
+   * @param aObj
+   *        The expansion to insert. May not be <code>null</code>.
+   */
   public final void addUnit (final int n, @NonNull final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
     m_aUnits.add (n, aObj);
   }
 
+  /**
+   * Replace one expansion of this sequence.
+   *
+   * @param n
+   *        The position to replace, from 0.
+   * @param aObj
+   *        The new expansion. May not be <code>null</code>.
+   */
   public final void setUnit (final int n, @NonNull final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");

@@ -54,79 +54,157 @@ public final class JavaCCErrors
     return aNode == null ? "" : "Line " + aNode.getLineNumber () + ", Column " + aNode.getColumnNumber () + ": ";
   }
 
+  /**
+   * Report something the grammar parser could not make sense of, pointing at where it is.
+   *
+   * @param aNode
+   *        Where in the grammar the problem is. May be <code>null</code>.
+   * @param sMess
+   *        The message. May not be <code>null</code>.
+   */
   public static void parseError (@Nullable final IGrammarLocation aNode, final String sMess)
   {
     PGPrinter.error ("Error: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onParseError ();
   }
 
+  /**
+   * Report something the grammar parser could not make sense of, without a position.
+   *
+   * @param sMess
+   *        The message. May not be <code>null</code>.
+   */
   public static void parseError (final String sMess)
   {
     PGPrinter.error ("Error: " + sMess);
     PGCCContext.current ().errors ().onParseError ();
   }
 
+  /**
+   * {@return how many parse errors this run has reported}
+   */
   public static int getParseErrorCount ()
   {
     return PGCCContext.current ().errors ().getParseErrorCount ();
   }
 
+  /**
+   * Report a grammar that parses but does not make sense - an undefined production, a token that
+   * can never match - pointing at where it is.
+   *
+   * @param aNode
+   *        Where in the grammar the problem is. May be <code>null</code>.
+   * @param sMess
+   *        The message. May not be <code>null</code>.
+   */
   public static void semanticError (@Nullable final IGrammarLocation aNode, final String sMess)
   {
     PGPrinter.error ("Error: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onSemanticError ();
   }
 
+  /**
+   * Report a grammar that parses but does not make sense, without a position.
+   *
+   * @param sMess
+   *        The message. May not be <code>null</code>.
+   */
   public static void semanticError (final String sMess)
   {
     PGPrinter.error ("Error: " + sMess);
     PGCCContext.current ().errors ().onSemanticError ();
   }
 
+  /**
+   * Report a grammar that parses but does not make sense, together with what went wrong.
+   *
+   * @param sMess
+   *        The message. May not be <code>null</code>.
+   * @param t
+   *        The exception behind it. May be <code>null</code>.
+   */
   public static void semanticError (final String sMess, final Throwable t)
   {
     PGPrinter.error ("Error: " + sMess, t);
     PGCCContext.current ().errors ().onSemanticError ();
   }
 
+  /**
+   * {@return how many semantic errors this run has reported}
+   */
   public static int getSemanticErrorCount ()
   {
     return PGCCContext.current ().errors ().getSemanticErrorCount ();
   }
 
+  /**
+   * Report something questionable that does not stop generation, pointing at where it is.
+   *
+   * @param aNode
+   *        Where in the grammar the problem is. May be <code>null</code>.
+   * @param sMess
+   *        The message. May not be <code>null</code>.
+   */
   public static void warning (@Nullable final IGrammarLocation aNode, final String sMess)
   {
     PGPrinter.warn ("Warning: " + _getLocationInfo (aNode) + sMess);
     PGCCContext.current ().errors ().onWarning ();
   }
 
+  /**
+   * Report something questionable that does not stop generation, without a position.
+   *
+   * @param sMess
+   *        The message. May not be <code>null</code>.
+   */
   public static void warning (final String sMess)
   {
     PGPrinter.warn ("Warning: " + sMess);
     PGCCContext.current ().errors ().onWarning ();
   }
 
+  /**
+   * {@return how many warnings this run has reported}
+   */
   public static int getWarningCount ()
   {
     return PGCCContext.current ().errors ().getWarningCount ();
   }
 
+  /**
+   * {@return how many errors this run has reported, parse and semantic together}
+   */
   public static int getErrorCount ()
   {
     return PGCCContext.current ().errors ().getErrorCount ();
   }
 
+  /**
+   * Report something that makes going on pointless, and stop.
+   *
+   * @param sMessage
+   *        The message. May not be <code>null</code>. @throws IllegalStateException always
+   */
   public static void fatal (final String sMessage) throws IllegalStateException
   {
     PGPrinter.error ("Fatal Error: " + sMessage);
     throw new IllegalStateException ("Fatal Error: " + sMessage);
   }
 
+  /**
+   * Report a bug in the generator itself, and stop. @throws IllegalStateException always
+   */
   public static void internalError () throws IllegalStateException
   {
     fatal ("Internal error in JavaCC: Please file an issue at https://github.com/phax/ParserGeneratorCC/issues . Thank you.");
   }
 
+  /**
+   * Tell the user something they may want to know, which is neither a problem nor a warning.
+   *
+   * @param sMess
+   *        The message. May not be <code>null</code>.
+   */
   public static void note (final String sMess)
   {
     PGPrinter.info ("Note: " + sMess);
