@@ -54,7 +54,7 @@ public final class ExpRZeroOrOne extends AbstractExpRegularExpression
     m_aRegexpr = r;
   }
 
-  public ExpRZeroOrOne (final Token t, final AbstractExpRegularExpression r)
+  public ExpRZeroOrOne (@NonNull final Token t, final AbstractExpRegularExpression r)
   {
     this (r);
     setLineNumber (t.beginLine);

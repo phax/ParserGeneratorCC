@@ -127,7 +127,7 @@ public class OutputFileGenerator
     }
   }
 
-  private String _peekLine (final NonBlockingBufferedReader aIn) throws IOException
+  private String _peekLine (@NonNull final NonBlockingBufferedReader aIn) throws IOException
   {
     if (m_sCurrentLine == null)
       m_sCurrentLine = aIn.readLine ();
@@ -135,7 +135,7 @@ public class OutputFileGenerator
     return m_sCurrentLine;
   }
 
-  private String _getLine (final NonBlockingBufferedReader aIn) throws IOException
+  private String _getLine (@NonNull final NonBlockingBufferedReader aIn) throws IOException
   {
     final String sLine = m_sCurrentLine;
     m_sCurrentLine = null;
@@ -158,7 +158,7 @@ public class OutputFileGenerator
     }
   }
 
-  private String _substitute (final String sText) throws IOException
+  private String _substitute (@NonNull final String sText) throws IOException
   {
     final int nStartPos = sText.indexOf ("${");
     if (nStartPos == -1)
@@ -231,7 +231,7 @@ public class OutputFileGenerator
    * @throws IOException
    *         If the expression is malformed
    */
-  private String _substituteWithConditional (final String sVariableName, final String sValues) throws IOException
+  private String _substituteWithConditional (final String sVariableName, @NonNull final String sValues) throws IOException
   {
     // Split values into true and false values.
 
@@ -250,7 +250,7 @@ public class OutputFileGenerator
    * @param sDefaultValue
    * @return
    */
-  private String _substituteWithDefault (final String sVariableName, final String sDefaultValue) throws IOException
+  private String _substituteWithDefault (@NonNull final String sVariableName, final String sDefaultValue) throws IOException
   {
     final Object aObj = m_aOptions.get (sVariableName.trim ());
     if (aObj == null || aObj.toString ().length () == 0)
@@ -259,7 +259,7 @@ public class OutputFileGenerator
     return aObj.toString ();
   }
 
-  private void _write (final Writer aOut, final String sText) throws IOException
+  private void _write (@NonNull final Writer aOut, final String sText) throws IOException
   {
     String sExpanded = sText;
     while (sExpanded.indexOf ("${") != -1)
@@ -280,7 +280,7 @@ public class OutputFileGenerator
     aOut.write (m_eNewLineMode.getText ());
   }
 
-  private void _process (final NonBlockingBufferedReader aIn, final Writer aOut, final boolean bIgnoring)
+  private void _process (final NonBlockingBufferedReader aIn, @NonNull final Writer aOut, final boolean bIgnoring)
                                                                                                        throws IOException
   {
     // out.println("*** process ignore=" + ignoring + " : " + peekLine(in));
@@ -342,7 +342,7 @@ public class OutputFileGenerator
       throw new IOException ("Expected \"#fi\", got: " + sLine);
   }
 
-  public static void main (final String [] aArgs) throws Exception
+  public static void main (@NonNull final String [] aArgs) throws Exception
   {
     final Map <String, Object> aMap = new HashMap <> ();
     aMap.put ("falseArg", Boolean.FALSE);

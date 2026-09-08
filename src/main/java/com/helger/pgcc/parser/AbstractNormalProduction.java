@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -133,7 +135,7 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
     return sName.substring (sName.lastIndexOf (".") + 1);
   }
 
-  public StringBuilder dump (final int nIndent, final Set <? super AbstractNormalProduction> aAlreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super AbstractNormalProduction> aAlreadyDumped)
   {
     final StringBuilder aSB = dumpPrefix (nIndent).append (System.identityHashCode (this))
                                                   .append (' ')

@@ -34,6 +34,8 @@
 
 package com.helger.pgcc.output.cpp;
 
+import org.jspecify.annotations.NonNull;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 import static com.helger.pgcc.parser.JavaCCGlobals.printToken;
@@ -67,7 +69,7 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
 public class OtherFilesGenCPP
 {
   // Used by the CPP code generatror
-  public static void printCharArray (final PrintWriter aOstr, final String s)
+  public static void printCharArray (@NonNull final PrintWriter aOstr, @NonNull final String s)
   {
     aOstr.print ("{ ");
     for (int i = 0; i < s.length (); i++)

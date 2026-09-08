@@ -134,7 +134,7 @@ public final class ExpLookahead extends Expansion
   }
 
   @Override
-  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
     final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped).append (m_bIsExplicit ? " explicit" : " implicit");
     if (aAlreadyDumped.add (this))

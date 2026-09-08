@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
 
 import com.helger.base.enforce.ValueEnforcer;
@@ -254,7 +256,7 @@ public interface IDocGenerator
    * @param o
    *        anything
    */
-  default void doNothing (final Object o)
+  default void doNothing (@NonNull final Object o)
   {
     ValueEnforcer.notNull (o, "any");
   }

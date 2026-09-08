@@ -117,7 +117,7 @@ public class JJTree
    * @return {@link ESuccess}
    */
   @NonNull
-  public ESuccess main (final String [] aArgs)
+  public ESuccess main (@NonNull final String [] aArgs)
   {
     // Drop everything the previous run left behind, so that repeat runs in one JVM are
     // independent. reInitAll replaces the whole context, the JJTree state included

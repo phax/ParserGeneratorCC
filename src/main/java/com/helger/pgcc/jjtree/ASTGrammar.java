@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.pgcc.jjtree.output.NodeFilesCpp;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.parser.Options;
@@ -65,7 +67,7 @@ public class ASTGrammar extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor aVisitor, final Object aData)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
     return aVisitor.visit (this, aData);
   }

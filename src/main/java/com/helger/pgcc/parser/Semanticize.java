@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.NonNull;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.util.HashMap;
@@ -625,7 +627,7 @@ public class Semanticize
    *         <code>null</code> if there is none. Used to be returned through a static field.
    */
   @Nullable
-  public static AbstractExpRegularExpression findIgnoreCase (final Map <String, AbstractExpRegularExpression> aTable,
+  public static AbstractExpRegularExpression findIgnoreCase (@NonNull final Map <String, AbstractExpRegularExpression> aTable,
                                                              final String sStr)
   {
     final AbstractExpRegularExpression aRexp = aTable.get (sStr);
@@ -698,7 +700,7 @@ public class Semanticize
   }
 
   // Updates prod.leftExpansions based on a walk of exp.
-  static private void _addLeftMost (final AbstractNormalProduction aProd, final Expansion aExp)
+  static private void _addLeftMost (@NonNull final AbstractNormalProduction aProd, final Expansion aExp)
   {
     if (aExp instanceof final ExpNonTerminal aExpNonTerminal)
     {
@@ -759,7 +761,7 @@ public class Semanticize
 
   // Returns true to indicate an unraveling of a detected left recursion loop,
   // and returns false otherwise.
-  private static boolean _prodWalk (final AbstractNormalProduction aProd)
+  private static boolean _prodWalk (@NonNull final AbstractNormalProduction aProd)
   {
     aProd.setWalkStatus (-1);
     for (int i = 0; i < aProd.m_nLeIndex; i++)
@@ -968,7 +970,7 @@ public class Semanticize
       return true;
     }
 
-    public void action (final Expansion e)
+    public void action (@NonNull final Expansion e)
     {
       if (e instanceof final ExpSequence seq)
       {

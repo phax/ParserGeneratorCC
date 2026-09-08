@@ -33,6 +33,9 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.io.IOException;
@@ -76,7 +79,7 @@ public final class JJDoc
     return t != aTok ? t : null;
   }
 
-  private static void _emitTopLevelSpecialTokens (final Token aTok, final IDocGenerator aGen) throws IOException
+  private static void _emitTopLevelSpecialTokens (@Nullable final Token aTok, @NonNull final IDocGenerator aGen) throws IOException
   {
     if (aTok == null)
     {
@@ -104,7 +107,7 @@ public final class JJDoc
    * (exp.parent instanceof AbstractNormalProduction) || (exp.parent instanceof TokenProduction) ); }
    */
 
-  private static void _emitTokenProductions (final IDocGenerator aGen, final List <TokenProduction> aProds)
+  private static void _emitTokenProductions (@NonNull final IDocGenerator aGen, final List <TokenProduction> aProds)
                                                                                                           throws IOException
   {
     aGen.tokensStart ();
@@ -126,7 +129,7 @@ public final class JJDoc
     aGen.tokensEnd ();
   }
 
-  public static String getStandardTokenProductionText (final TokenProduction aTp)
+  public static String getStandardTokenProductionText (@NonNull final TokenProduction aTp)
   {
     String sToken = "";
     if (aTp.isExplicit ())
@@ -176,7 +179,7 @@ public final class JJDoc
     return sToken;
   }
 
-  private static void _emitNormalProductions (final IDocGenerator aGen, final List <AbstractNormalProduction> aProds)
+  private static void _emitNormalProductions (@NonNull final IDocGenerator aGen, final List <AbstractNormalProduction> aProds)
                                                                                                             throws IOException
   {
     aGen.nonterminalsStart ();
@@ -279,12 +282,12 @@ public final class JJDoc
     // gen.text("[<-" + exp.getClass().getName() + "]");
   }
 
-  private static void _emitExpansionAction (final ExpAction a, final IDocGenerator aGen)
+  private static void _emitExpansionAction (final ExpAction a, @NonNull final IDocGenerator aGen)
   {
     aGen.doNothing (a);
   }
 
-  private static void _emitExpansionChoice (final ExpChoice c, final IDocGenerator aGen) throws IOException
+  private static void _emitExpansionChoice (@NonNull final ExpChoice c, @NonNull final IDocGenerator aGen) throws IOException
   {
     boolean bFirst = true;
     for (final Expansion e : c.getChoices ())
@@ -297,26 +300,26 @@ public final class JJDoc
     }
   }
 
-  private static void _emitExpansionLookahead (final ExpLookahead l, final IDocGenerator aGen)
+  private static void _emitExpansionLookahead (final ExpLookahead l, @NonNull final IDocGenerator aGen)
   {
     aGen.doNothing (l);
   }
 
-  private static void _emitExpansionNonTerminal (final ExpNonTerminal aNt, final IDocGenerator aGen) throws IOException
+  private static void _emitExpansionNonTerminal (@NonNull final ExpNonTerminal aNt, @NonNull final IDocGenerator aGen) throws IOException
   {
     aGen.nonTerminalStart (aNt);
     aGen.text (aNt.getName ());
     aGen.nonTerminalEnd (aNt);
   }
 
-  private static void _emitExpansionOneOrMore (final ExpOneOrMore o, final IDocGenerator aGen) throws IOException
+  private static void _emitExpansionOneOrMore (@NonNull final ExpOneOrMore o, @NonNull final IDocGenerator aGen) throws IOException
   {
     aGen.text ("( ");
     _emitExpansionTree (o.getExpansion (), aGen);
     aGen.text (" )+");
   }
 
-  private static void _emitExpansionRegularExpression (final AbstractExpRegularExpression r, final IDocGenerator aGen)
+  private static void _emitExpansionRegularExpression (final AbstractExpRegularExpression r, @NonNull final IDocGenerator aGen)
                                                                                                                       throws IOException
   {
     final String sReRendered = emitRE (r);
@@ -328,7 +331,7 @@ public final class JJDoc
     }
   }
 
-  private static void _emitExpansionSequence (final ExpSequence s, final IDocGenerator aGen) throws IOException
+  private static void _emitExpansionSequence (@NonNull final ExpSequence s, @NonNull final IDocGenerator aGen) throws IOException
   {
     boolean bFirstUnit = true;
     for (final Expansion e : s.getUnits ())
@@ -355,7 +358,7 @@ public final class JJDoc
     }
   }
 
-  private static void _emitExpansionTryBlock (final ExpTryBlock t, final IDocGenerator aGen) throws IOException
+  private static void _emitExpansionTryBlock (@NonNull final ExpTryBlock t, @NonNull final IDocGenerator aGen) throws IOException
   {
     final boolean bNeedParens = t.getExp () instanceof ExpChoice;
     if (bNeedParens)
@@ -369,21 +372,21 @@ public final class JJDoc
     }
   }
 
-  private static void _emitExpansionZeroOrMore (final ExpZeroOrMore z, final IDocGenerator aGen) throws IOException
+  private static void _emitExpansionZeroOrMore (@NonNull final ExpZeroOrMore z, @NonNull final IDocGenerator aGen) throws IOException
   {
     aGen.text ("( ");
     _emitExpansionTree (z.getExpansion (), aGen);
     aGen.text (" )*");
   }
 
-  private static void _emitExpansionZeroOrOne (final ExpZeroOrOne z, final IDocGenerator aGen) throws IOException
+  private static void _emitExpansionZeroOrOne (@NonNull final ExpZeroOrOne z, @NonNull final IDocGenerator aGen) throws IOException
   {
     aGen.text ("( ");
     _emitExpansionTree (z.getExpansion (), aGen);
     aGen.text (" )?");
   }
 
-  public static String emitRE (final AbstractExpRegularExpression aRe)
+  public static String emitRE (@NonNull final AbstractExpRegularExpression aRe)
   {
     String sReturnString = "";
     final boolean bHasLabel = StringHelper.isNotEmpty (aRe.getLabel ());

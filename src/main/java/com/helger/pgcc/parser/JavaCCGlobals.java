@@ -175,7 +175,7 @@ public final class JavaCCGlobals
    * @return <code>true</code> if tool name passed is one of the tool names returned by
    *         getToolNames(fileName).
    */
-  public static boolean isGeneratedBy (final String sToolName, final String sFileName)
+  public static boolean isGeneratedBy (@NonNull final String sToolName, final String sFileName)
   {
     final List <String> v = getToolNames (sFileName);
 
@@ -186,7 +186,7 @@ public final class JavaCCGlobals
     return false;
   }
 
-  private static List <String> _makeToolNameList (final String sStr)
+  private static List <String> _makeToolNameList (@NonNull final String sStr)
   {
     final List <String> aRetVal = new ArrayList <> ();
 
@@ -281,7 +281,7 @@ public final class JavaCCGlobals
     return new ArrayList <> ();
   }
 
-  public static void createOutputDir (final File aOutputDir)
+  public static void createOutputDir (@NonNull final File aOutputDir)
   {
     if (!aOutputDir.exists ())
     {

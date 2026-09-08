@@ -56,7 +56,7 @@ public final class ExpSequence extends Expansion
   public ExpSequence ()
   {}
 
-  public ExpSequence (final Token aToken, final ExpLookahead aLookahead)
+  public ExpSequence (@NonNull final Token aToken, final ExpLookahead aLookahead)
   {
     setLineNumber (aToken.beginLine);
     setColumnNumber (aToken.beginColumn);
@@ -81,26 +81,26 @@ public final class ExpSequence extends Expansion
     return m_aUnits.get (nIndex);
   }
 
-  public final void addUnit (final Expansion aObj)
+  public final void addUnit (@NonNull final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
     m_aUnits.add (aObj);
   }
 
-  public final void addUnit (final int n, final Expansion aObj)
+  public final void addUnit (final int n, @NonNull final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
     m_aUnits.add (n, aObj);
   }
 
-  public final void setUnit (final int n, final Expansion aObj)
+  public final void setUnit (final int n, @NonNull final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
     m_aUnits.set (n, aObj);
   }
 
   @Override
-  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
     if (!aAlreadyDumped.add (this))
     {

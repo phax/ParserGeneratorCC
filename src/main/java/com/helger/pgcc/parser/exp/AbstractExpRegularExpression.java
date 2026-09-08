@@ -177,7 +177,7 @@ public abstract sealed class AbstractExpRegularExpression extends Expansion perm
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
     aAlreadyDumped.add (this);
     final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);

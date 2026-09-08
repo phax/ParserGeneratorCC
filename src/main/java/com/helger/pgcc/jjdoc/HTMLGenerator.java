@@ -229,7 +229,7 @@ public class HTMLGenerator extends TextGenerator
   }
 
   @Override
-  public void productionStart (final AbstractNormalProduction aNp) throws IOException
+  public void productionStart (@NonNull final AbstractNormalProduction aNp) throws IOException
   {
     if (!JJDocOptions.isOneTable ())
     {
@@ -273,7 +273,7 @@ public class HTMLGenerator extends TextGenerator
   }
 
   @Override
-  public void nonTerminalStart (final ExpNonTerminal aNt) throws IOException
+  public void nonTerminalStart (@NonNull final ExpNonTerminal aNt) throws IOException
   {
     print ("<a href=\"#" + getID (aNt.getName ()) + "\">");
   }

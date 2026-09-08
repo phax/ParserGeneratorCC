@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.Nullable;
+
 import org.jspecify.annotations.NonNull;
 
 import com.helger.pgcc.parser.JavaCCErrors;
@@ -45,7 +47,7 @@ public final class TokenUtils
   private TokenUtils ()
   {}
 
-  static void print (final Token t, final JJTreeIO aIo, final String sIn, final String sOut)
+  static void print (@NonNull final Token t, @NonNull final JJTreeIO aIo, @Nullable final String sIn, final String sOut)
   {
     Token aTt = t.specialToken;
     if (aTt != null)
@@ -71,7 +73,7 @@ public final class TokenUtils
     print (t, aIo, null, null);
   }
 
-  static String addUnicodeEscapes (final String sStr)
+  static String addUnicodeEscapes (@NonNull final String sStr)
   {
     final StringBuilder aRet = new StringBuilder (sStr.length ());
     for (final char ch : sStr.toCharArray ())
@@ -96,7 +98,7 @@ public final class TokenUtils
     return true;
   }
 
-  static String remove_escapes_and_quotes (final Token t, final String sStr)
+  static String remove_escapes_and_quotes (final Token t, @NonNull final String sStr)
   {
     String sRetval = "";
     int nIndex = 1;

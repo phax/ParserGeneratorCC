@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser.exp;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.pgcc.parser.Token;
 
 /**
@@ -57,7 +59,7 @@ public final class SingleCharacter implements ICCCharacter
     m_cCh = c;
   }
 
-  public SingleCharacter (final Token t, final char c)
+  public SingleCharacter (@NonNull final Token t, final char c)
   {
     this (c);
     m_nLine = t.beginLine;

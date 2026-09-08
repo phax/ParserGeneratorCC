@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
 import java.io.Writer;
 
@@ -56,7 +58,7 @@ public class XTextGenerator implements IDocGenerator
   public XTextGenerator ()
   {}
 
-  public void handleTokenProduction (final TokenProduction aTp)
+  public void handleTokenProduction (@NonNull final TokenProduction aTp)
   {
     final StringBuilder aSB = new StringBuilder ();
 

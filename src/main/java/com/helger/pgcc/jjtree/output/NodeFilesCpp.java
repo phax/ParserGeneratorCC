@@ -456,7 +456,7 @@ public final class NodeFilesCpp
     return PGCCContext.current ().jjtree ().getParserName () + "Visitor";
   }
 
-  private static String _getVisitMethodName (final String sClassName)
+  private static String _getVisitMethodName (@NonNull final String sClassName)
   {
     final StringBuilder aSB = new StringBuilder ("visit");
     if (Options.booleanValue ("VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME"))
@@ -519,7 +519,7 @@ public final class NodeFilesCpp
     }
   }
 
-  private static void _generateVisitorInterface (final PrintWriter aOstr)
+  private static void _generateVisitorInterface (@NonNull final PrintWriter aOstr)
   {
     final String sName = getVisitorClass ();
     final List <String> aNodeNames = ASTNodeDescriptor.getNodeNames ();
@@ -565,7 +565,7 @@ public final class NodeFilesCpp
     return PGCCContext.current ().jjtree ().getParserName () + "DefaultVisitor";
   }
 
-  private static void _generateDefaultVisitor (final PrintWriter aOstr)
+  private static void _generateDefaultVisitor (@NonNull final PrintWriter aOstr)
   {
     final String sClassName = defaultVisitorClass ();
     final List <String> aNodeNames = ASTNodeDescriptor.getNodeNames ();
@@ -612,7 +612,7 @@ public final class NodeFilesCpp
     aOstr.println ("};");
   }
 
-  public static void generateFile (final OutputFile aOutputFile,
+  public static void generateFile (@NonNull final OutputFile aOutputFile,
                                    final String sTemplate,
                                    final Map <String, Object> aOptions,
                                    final boolean bClose) throws IOException

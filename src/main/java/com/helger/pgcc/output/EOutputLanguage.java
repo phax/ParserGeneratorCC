@@ -73,7 +73,7 @@ public enum EOutputLanguage implements IHasID <String>
     }
 
     @Override
-    public String addUnicodeEscapes (final String sStr)
+    public String addUnicodeEscapes (@NonNull final String sStr)
     {
       final StringBuilder aRetVal = new StringBuilder (sStr.length () * 2);
       for (final char ch : sStr.toCharArray ())

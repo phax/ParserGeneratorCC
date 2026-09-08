@@ -34,6 +34,8 @@
 
 package com.helger.pgcc.output.java;
 
+import org.jspecify.annotations.Nullable;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
@@ -235,7 +237,7 @@ public class LexGenJava extends CodeGenerator
   }
 
   @Override
-  public void writeTemplate (final String sName, final Map <String, Object> aAdditionalOptions) throws IOException
+  public void writeTemplate (final String sName, @Nullable final Map <String, Object> aAdditionalOptions) throws IOException
   {
     final Map <String, Object> aOptions = Options.getAllOptions ();
     aOptions.put ("maxOrdinal", Integer.valueOf (lexer ().getMaxOrdinal ()));

@@ -72,7 +72,7 @@ public final class ExpRSequence extends AbstractExpRegularExpression
     return m_aUnits;
   }
 
-  public final void addUnit (final AbstractExpRegularExpression aEx)
+  public final void addUnit (@NonNull final AbstractExpRegularExpression aEx)
   {
     ValueEnforcer.notNull (aEx, "RegEx");
     m_aUnits.add (aEx);

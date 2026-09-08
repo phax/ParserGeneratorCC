@@ -64,7 +64,7 @@ public final class ExpZeroOrMore extends Expansion
   }
 
   @Override
-  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
     final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
     if (aAlreadyDumped.add (this))

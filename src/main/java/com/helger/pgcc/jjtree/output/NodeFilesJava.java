@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjtree.output;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -62,7 +64,7 @@ public final class NodeFilesJava
    */
   private static final String NODE_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
-  public static void ensure (final JJTreeIO aIo, final String sNodeType)
+  public static void ensure (final JJTreeIO aIo, @NonNull final String sNodeType)
   {
     final File aFile = new File (JJTreeOptions.getJJTreeOutputDirectory (), sNodeType + ".java");
 
@@ -127,7 +129,7 @@ public final class NodeFilesJava
     }
   }
 
-  static void generatePrologue (final PrintWriter aOstr)
+  static void generatePrologue (@NonNull final PrintWriter aOstr)
   {
     // Output the node's package name. JJTreeGlobals.nodePackageName
     // will be the value of NODE_PACKAGE in OPTIONS; if that wasn't set it
@@ -265,7 +267,7 @@ public final class NodeFilesJava
     return PGCCContext.current ().jjtree ().getParserName () + "DefaultVisitor";
   }
 
-  private static String _getVisitMethodName (final String sClassName)
+  private static String _getVisitMethodName (@NonNull final String sClassName)
   {
     final StringBuilder aSB = new StringBuilder ("visit");
     if (Options.booleanValue ("VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME"))
@@ -357,7 +359,7 @@ public final class NodeFilesJava
     return sVe;
   }
 
-  private static void _generateNode_java (final OutputFile aOutputFile) throws IOException
+  private static void _generateNode_java (@NonNull final OutputFile aOutputFile) throws IOException
   {
     try (final PrintWriter aOstr = aOutputFile.getPrintWriter ())
     {
@@ -372,7 +374,7 @@ public final class NodeFilesJava
     }
   }
 
-  private static void _generateSimpleNode_java (final OutputFile aOutputFile) throws IOException
+  private static void _generateSimpleNode_java (@NonNull final OutputFile aOutputFile) throws IOException
   {
     try (final PrintWriter aOstr = aOutputFile.getPrintWriter ())
     {
@@ -389,7 +391,7 @@ public final class NodeFilesJava
     }
   }
 
-  private static void _generateMultiNode_java (final OutputFile aOutputFile, final String sNodeType) throws IOException
+  private static void _generateMultiNode_java (@NonNull final OutputFile aOutputFile, final String sNodeType) throws IOException
   {
     try (final PrintWriter aOstr = aOutputFile.getPrintWriter ())
     {

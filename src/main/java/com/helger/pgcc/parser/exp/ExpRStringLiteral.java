@@ -124,7 +124,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   {
     m_sImage = aValue;
   }
-  public ExpRStringLiteral (final Token t, final String sImage)
+  public ExpRStringLiteral (@NonNull final Token t, final String sImage)
   {
     setLineNumber (t.beginLine);
     setColumnNumber (t.beginColumn);
@@ -140,7 +140,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   {
     strLit ().resetForLexicalState ();
   }
-  public static void dumpStrLiteralImages (final CodeGenerator aCodeGenerator)
+  public static void dumpStrLiteralImages (@NonNull final CodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     switch (eOutputLanguage)
@@ -235,7 +235,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
   }
-  public static void dumpStrLiteralImagesForJava (final CodeGenerator aCodeGenerator)
+  public static void dumpStrLiteralImagesForJava (@NonNull final CodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     String sImage;
@@ -476,7 +476,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return new Nfa (aTheStartState, aFinalState);
   }
 
-  static void dumpNullStrLiterals (final CodeGenerator aCodeGenerator)
+  static void dumpNullStrLiterals (@NonNull final CodeGenerator aCodeGenerator)
   {
     aCodeGenerator.genCodeLine ("{");
 
@@ -547,7 +547,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   /**
    * Returns true if s1 starts with s2 (ignoring case for each character).
    */
-  private static boolean _startsWithIgnoreCase (final String s1, final String s2)
+  private static boolean _startsWithIgnoreCase (@NonNull final String s1, @NonNull final String s2)
   {
     if (s1.length () < s2.length ())
       return false;
@@ -609,7 +609,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     }
   }
 
-  static void dumpStartWithStates (final CodeGenerator aCodeGenerator)
+  static void dumpStartWithStates (@NonNull final CodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     switch (eOutputLanguage)
@@ -694,7 +694,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     aCodeGenerator.genCodeLine ("}");
   }
 
-  static void dumpBoilerPlate (final CodeGenerator aCodeGenerator)
+  static void dumpBoilerPlate (@NonNull final CodeGenerator aCodeGenerator)
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     switch (eOutputLanguage)
@@ -736,7 +736,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     aCodeGenerator.genCodeLine ("}");
   }
 
-  private static String [] _reArrange (final Map <String, KindInfo> aTab)
+  private static String [] _reArrange (@NonNull final Map <String, KindInfo> aTab)
   {
     final String [] aRet = new String [aTab.size ()];
     int nCnt = 0;
@@ -761,7 +761,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   }
 
   @NonNull
-  private static String _getCaseChar (final char c, final EOutputLanguage eOutputLanguage)
+  private static String _getCaseChar (final char c, @NonNull final EOutputLanguage eOutputLanguage)
   {
     if (false)
       return Integer.toString (c);
@@ -777,7 +777,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return "'" + c + "'";
   }
 
-  public static void dumpDfaCode (final CodeGenerator aCodeGenerator)
+  public static void dumpDfaCode (@NonNull final CodeGenerator aCodeGenerator)
   {
     Map <String, KindInfo> aTab;
     String sKey;
@@ -1537,7 +1537,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     return Integer.MAX_VALUE;
   }
 
-  public static void generateNfaStartStates (final CodeGenerator aCodeGenerator, final NfaState aInitialState)
+  public static void generateNfaStartStates (final CodeGenerator aCodeGenerator, @NonNull final NfaState aInitialState)
   {
     final boolean [] aSeen = new boolean [NfaState.nfa ().getGeneratedStates ()];
     final Map <String, String> aStateSets = new HashMap <> ();
@@ -1666,7 +1666,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     dumpNfaStartStatesCode (strLit ().getStatesForPos (), aCodeGenerator);
   }
 
-  static void dumpNfaStartStatesCode (final Map <String, long []> [] aStatesForPos, final CodeGenerator aCodeGenerator)
+  static void dumpNfaStartStatesCode (@NonNull final Map <String, long []> [] aStatesForPos, @NonNull final CodeGenerator aCodeGenerator)
   {
     if (strLit ().getMaxStrKind () == 0)
     {
@@ -1974,7 +1974,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     }
   }
 
-  public static void BuildTokenizerData (final TokenizerData aTokenizerData)
+  public static void BuildTokenizerData (@NonNull final TokenizerData aTokenizerData)
   {
     final Map <Integer, Integer> aNfaStateIndices = new HashMap <> ();
     for (final int kind : NfaState.tokenizerBuild ().nfaStateMap ().keySet ())

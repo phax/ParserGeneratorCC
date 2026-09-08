@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.main;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
@@ -51,7 +53,7 @@ import com.helger.pgcc.parser.TokenizerData;
 
 public class JavaCCInterpreter
 {
-  public static void main (final String [] aArgs) throws Exception
+  public static void main (@NonNull final String [] aArgs) throws Exception
   {
     // Initialize all static state
     Main.reInitAll ();
@@ -123,7 +125,7 @@ public class JavaCCInterpreter
     }
   }
 
-  private static void _tokenize (final TokenizerData aTd, final String sInput)
+  private static void _tokenize (@NonNull final TokenizerData aTd, @NonNull final String sInput)
   {
     // First match the string literals.
     final int nInput_size = sInput.length ();

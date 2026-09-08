@@ -142,7 +142,7 @@ public class TextGenerator implements IDocGenerator
     productionEnd (aCp);
   }
 
-  public void productionStart (final AbstractNormalProduction aNp) throws IOException
+  public void productionStart (@NonNull final AbstractNormalProduction aNp) throws IOException
   {
     m_aPW.write ("\t" + aNp.getLhs () + "\t:=\t");
   }

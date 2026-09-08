@@ -58,7 +58,7 @@ public final class JJTreeStateJava
   private JJTreeStateJava ()
   {}
 
-  public static void insertParserMembers (final JJTreeIO aIo)
+  public static void insertParserMembers (@NonNull final JJTreeIO aIo)
   {
     aIo.println ();
     aIo.println ("  protected " + _nameState () + " jjtree = new " + _nameState () + "();");

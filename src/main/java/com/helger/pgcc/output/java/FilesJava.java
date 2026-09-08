@@ -127,7 +127,7 @@ public class FilesJava
     }
   }
 
-  public static void gen_CharStream (final IJavaResourceTemplateLocations aLocations)
+  public static void gen_CharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "CharStream.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -155,7 +155,7 @@ public class FilesJava
     }
   }
 
-  public static void gen_AbstractCharStream (final IJavaResourceTemplateLocations aLocations)
+  public static void gen_AbstractCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "AbstractCharStream.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -184,7 +184,7 @@ public class FilesJava
     }
   }
 
-  public static void gen_JavaCharStream (final IJavaResourceTemplateLocations aLocations)
+  public static void gen_JavaCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "JavaCharStream.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -213,7 +213,7 @@ public class FilesJava
     }
   }
 
-  public static void gen_SimpleCharStream (final IJavaResourceTemplateLocations aLocations)
+  public static void gen_SimpleCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "SimpleCharStream.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -241,7 +241,7 @@ public class FilesJava
     }
   }
 
-  public static void gen_CharSequenceCharStream (final IJavaResourceTemplateLocations aLocations)
+  public static void gen_CharSequenceCharStream (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "CharSequenceCharStream.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -304,7 +304,7 @@ public class FilesJava
     }
   }
 
-  public static void gen_ParseException (final IJavaResourceTemplateLocations aLocations)
+  public static void gen_ParseException (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "ParseException.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -332,7 +332,7 @@ public class FilesJava
     }
   }
 
-  public static void gen_TokenMgrError (final IJavaResourceTemplateLocations aLocations)
+  public static void gen_TokenMgrError (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final String sFilename = Options.getTokenMgrErrorClass () + ".java";
     final File aFile = new File (Options.getOutputDirectory (), sFilename);
@@ -360,7 +360,7 @@ public class FilesJava
     }
   }
 
-  public static void gen_Token (final IJavaResourceTemplateLocations aLocations)
+  public static void gen_Token (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "Token.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,
@@ -390,7 +390,7 @@ public class FilesJava
     }
   }
 
-  public static void gen_TokenManager (final IJavaResourceTemplateLocations aLocations)
+  public static void gen_TokenManager (@NonNull final IJavaResourceTemplateLocations aLocations)
   {
     final File aFile = new File (Options.getOutputDirectory (), "TokenManager.java");
     try (final OutputFile aOutputFile = new OutputFile (aFile,

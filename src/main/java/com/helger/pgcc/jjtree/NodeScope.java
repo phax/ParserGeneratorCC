@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
 import org.jspecify.annotations.Nullable;
 
 public class NodeScope
@@ -101,7 +103,7 @@ public class NodeScope
   }
 
   @Nullable
-  static NodeScope getEnclosingNodeScope (final Node aNode)
+  static NodeScope getEnclosingNodeScope (@NonNull final Node aNode)
   {
     if (aNode instanceof final ASTBNFDeclaration aASTBNFDeclaration)
     {

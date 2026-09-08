@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,12 +155,12 @@ public class TokenizerData
   {
     return m_aAllMatches;
   }
-  public void updateMatchInfo (final Map <Integer, String> aActions,
-                               final int [] aNewLexStateIndices,
-                               final long [] aToSkip,
-                               final long [] aToSpecial,
-                               final long [] aToMore,
-                               final long [] aToToken)
+  public void updateMatchInfo (@NonNull final Map <Integer, String> aActions,
+                               @NonNull final int [] aNewLexStateIndices,
+                               @NonNull final long [] aToSkip,
+                               @NonNull final long [] aToSpecial,
+                               @NonNull final long [] aToMore,
+                               @NonNull final long [] aToToken)
   {
     for (int i = 0; i < aNewLexStateIndices.length; i++)
     {

@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.Nullable;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.addUnicodeEscapes;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
@@ -112,7 +114,7 @@ public class CodeGenerator
     m_nCol = nCol;
   }
 
-  public final void genStringLiteralArrayCPP (final String sVarName, final String [] aArr)
+  public final void genStringLiteralArrayCPP (final String sVarName, @NonNull final String [] aArr)
   {
     // First generate char array vars
     for (int i = 0; i < aArr.length; i++)
@@ -130,7 +132,7 @@ public class CodeGenerator
     genCodeLine ("};");
   }
 
-  public final void genStringLiteralInCPP (final String s)
+  public final void genStringLiteralInCPP (@NonNull final String s)
   {
     // String literals in CPP become char arrays
     m_aOutputBuffer.append ("{");
@@ -188,7 +190,7 @@ public class CodeGenerator
     }
   }
 
-  public final void saveOutput (final String sFileName)
+  public final void saveOutput (@NonNull final String sFileName)
   {
     if (getOutputLanguage ().hasIncludeFile ())
     {
@@ -226,7 +228,7 @@ public class CodeGenerator
     saveOutput (sFileName, m_aMainBuffer);
   }
 
-  public final void saveOutput (final String sFileName, final StringBuilder aSB)
+  public final void saveOutput (final String sFileName, @NonNull final StringBuilder aSB)
   {
     try (final NonBlockingBufferedWriter aFw = FileHelper.getBufferedWriter (new File (sFileName),
                                                                             Options.getOutputEncoding ()))
@@ -270,7 +272,7 @@ public class CodeGenerator
     genCode (getStringForTokenOnly (t));
   }
 
-  protected final String getStringForTokenOnly (final Token t)
+  protected final String getStringForTokenOnly (@NonNull final Token t)
   {
     String sRetval = "";
     for (; m_nLine < t.beginLine; m_nLine++)
@@ -329,7 +331,7 @@ public class CodeGenerator
     genCode (getLeadingComments (t));
   }
 
-  protected final String getLeadingComments (final Token t)
+  protected final String getLeadingComments (@NonNull final Token t)
   {
     String sRetval = "";
     if (t.specialToken == null)
@@ -357,7 +359,7 @@ public class CodeGenerator
     m_aOutputBuffer.append (getTrailingComments (t));
   }
 
-  protected final String getTrailingComments (final Token t)
+  protected final String getTrailingComments (@NonNull final Token t)
   {
     if (t.next == null)
       return "";
@@ -403,7 +405,7 @@ public class CodeGenerator
    * @param sMod
    *        modifier
    */
-  public final void genModifier (final String sMod)
+  public final void genModifier (@NonNull final String sMod)
   {
     final EOutputLanguage eOutputLanguage = getOutputLanguage ();
     switch (eOutputLanguage)
@@ -435,10 +437,10 @@ public class CodeGenerator
    * @param aSuperInterfaces
    *        super interfaces
    */
-  public final void genClassStart (final String sMod,
+  public final void genClassStart (@Nullable final String sMod,
                                    final String sName,
-                                   final String [] aSuperClasses,
-                                   final String [] aSuperInterfaces)
+                                   @NonNull final String [] aSuperClasses,
+                                   @NonNull final String [] aSuperInterfaces)
   {
     final EOutputLanguage eOutputLanguage = getOutputLanguage ();
     switch (eOutputLanguage)
@@ -468,7 +470,7 @@ public class CodeGenerator
     }
   }
 
-  private void _genCommaSeperatedString (final String [] aStrings)
+  private void _genCommaSeperatedString (@NonNull final String [] aStrings)
   {
     for (int i = 0; i < aStrings.length; i++)
     {
@@ -485,10 +487,10 @@ public class CodeGenerator
     generateMethodDefHeader (sModsAndRetType, sClassName, sNameAndParams, null);
   }
 
-  public final void generateMethodDefHeader (final String sQualifiedModsAndRetType,
+  public final void generateMethodDefHeader (@NonNull final String sQualifiedModsAndRetType,
                                              final String sClassName,
                                              final String sNameAndParams,
-                                             final String sExceptions)
+                                             @Nullable final String sExceptions)
   {
     final EOutputLanguage eOutputLanguage = getOutputLanguage ();
     switch (eOutputLanguage)
@@ -535,7 +537,7 @@ public class CodeGenerator
     }
   }
 
-  protected final String getClassQualifier (final String sClassName)
+  protected final String getClassQualifier (@Nullable final String sClassName)
   {
     return sClassName == null ? "" : sClassName + "::";
   }

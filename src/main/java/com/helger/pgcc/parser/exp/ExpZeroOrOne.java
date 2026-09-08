@@ -49,7 +49,7 @@ public final class ExpZeroOrOne extends Expansion
    */
   private final Expansion m_aExpansion;
 
-  public ExpZeroOrOne (final Token t, final Expansion e)
+  public ExpZeroOrOne (@NonNull final Token t, @NonNull final Expansion e)
   {
     setLineNumber (t.beginLine);
     setColumnNumber (t.beginColumn);
@@ -64,7 +64,7 @@ public final class ExpZeroOrOne extends Expansion
   }
 
   @Override
-  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
     final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
     if (aAlreadyDumped.add (this))

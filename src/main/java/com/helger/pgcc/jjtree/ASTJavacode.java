@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
 public class ASTJavacode extends ASTProduction
 {
   Token m_aStmBeginLoc;
@@ -44,7 +46,7 @@ public class ASTJavacode extends ASTProduction
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor aVisitor, final Object aData)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
     return aVisitor.visit (this, aData);
   }

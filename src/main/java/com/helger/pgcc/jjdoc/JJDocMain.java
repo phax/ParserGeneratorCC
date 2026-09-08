@@ -133,7 +133,7 @@ public final class JJDocMain
    */
   @SuppressWarnings ("resource")
   @NonNull
-  public static ESuccess mainProgram (final String [] aArgs) throws Exception
+  public static ESuccess mainProgram (@NonNull final String [] aArgs) throws Exception
   {
     Main.reInitAll ();
     JJDocOptions.init ();

@@ -54,7 +54,7 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
   private int m_nMax = -1;
   private final boolean m_bHasMax;
 
-  public ExpRRepetitionRange (final Token t,
+  public ExpRRepetitionRange (@NonNull final Token t,
                               final int nR1,
                               final int nR2,
                               final boolean bHasMax,

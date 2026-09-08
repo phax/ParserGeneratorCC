@@ -54,7 +54,7 @@ public record OptionInfo (@NonNull String name, @NonNull EOptionType type, @Null
                          implements
                          IComparable <OptionInfo>
 {
-  public int compareTo (final OptionInfo o)
+  public int compareTo (@NonNull final OptionInfo o)
   {
     return name.compareTo (o.name);
   }

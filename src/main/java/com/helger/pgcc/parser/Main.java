@@ -150,7 +150,7 @@ public class Main
     }
   }
 
-  private static void _printOptionInfo (final EOptionType eFilter, final OptionInfo aOptionInfo, final int nPadLength)
+  private static void _printOptionInfo (final EOptionType eFilter, @NonNull final OptionInfo aOptionInfo, final int nPadLength)
   {
     if (aOptionInfo.type () == eFilter)
     {
@@ -164,7 +164,7 @@ public class Main
     }
   }
 
-  private static String _padRight (final String sName, final int nMaxLengthInt)
+  private static String _padRight (@NonNull final String sName, final int nMaxLengthInt)
   {
     final int nNameLength = sName.length ();
     if (nNameLength == nMaxLengthInt)
@@ -206,7 +206,7 @@ public class Main
    *         on IO error
    */
   @NonNull
-  public static ESuccess mainProgram (final String... aArgs) throws IOException
+  public static ESuccess mainProgram (@NonNull final String... aArgs) throws IOException
   {
     // Initialize all static state
     reInitAll ();

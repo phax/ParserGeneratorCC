@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,7 +86,7 @@ public final class LookaheadWalk
    * @return The extended sequences. Never <code>null</code>, and empty when the expansion cannot
    *         match anything here.
    */
-  public static List <MatchInfo> genFirstSetRecursive (final List <MatchInfo> aPartialMatches, final Expansion aExp)
+  public static List <MatchInfo> genFirstSetRecursive (@NonNull final List <MatchInfo> aPartialMatches, final Expansion aExp)
   {
     if (aExp instanceof final AbstractExpRegularExpression aRegularExpression)
     {
@@ -200,10 +202,10 @@ public final class LookaheadWalk
     return aRetval;
   }
 
-  private static void _listSplit (final List <MatchInfo> toSplit,
-                                  final List <MatchInfo> mask,
-                                  final List <MatchInfo> partInMask,
-                                  final List <MatchInfo> aRest)
+  private static void _listSplit (@NonNull final List <MatchInfo> toSplit,
+                                  @NonNull final List <MatchInfo> mask,
+                                  @NonNull final List <MatchInfo> partInMask,
+                                  @NonNull final List <MatchInfo> aRest)
   {
     OuterLoop: for (int i = 0; i < toSplit.size (); i++)
     {
@@ -238,7 +240,7 @@ public final class LookaheadWalk
    * @return The extended sequences. Never <code>null</code>.
    */
   public static List <MatchInfo> genFollowSetRecursive (final List <MatchInfo> aPartialMatches,
-                                                        final Expansion aExp,
+                                                        @NonNull final Expansion aExp,
                                                         final long nGeneration)
   {
     if (aExp.getMyGeneration () == nGeneration)

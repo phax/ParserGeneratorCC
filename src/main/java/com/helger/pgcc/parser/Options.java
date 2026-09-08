@@ -371,7 +371,7 @@ public class Options
    *        The command line argument to examine.
    * @return True when the argument looks like an option flag.
    */
-  public static boolean isOption (final String sOpt)
+  public static boolean isOption (@Nullable final String sOpt)
   {
     return sOpt != null && sOpt.length () > 1 && sOpt.charAt (0) == '-';
   }
@@ -1079,7 +1079,7 @@ public class Options
     return JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE.equalsIgnoreCase (getJavaCharStreamType ()) && !isJavaUnicodeEscape ();
   }
 
-  public static void setStringOption (final String sOptionName, final String sOptionValue)
+  public static void setStringOption (@NonNull final String sOptionName, final String sOptionValue)
   {
     optionValues ().put (sOptionName, sOptionValue);
     if (sOptionName.equalsIgnoreCase (USEROPTION__CPP_NAMESPACE))

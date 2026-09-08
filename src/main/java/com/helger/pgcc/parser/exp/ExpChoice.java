@@ -56,13 +56,13 @@ public final class ExpChoice extends Expansion
   public ExpChoice ()
   {}
 
-  public ExpChoice (final Token aToken)
+  public ExpChoice (@NonNull final Token aToken)
   {
     setLineNumber (aToken.beginLine);
     setColumnNumber (aToken.beginColumn);
   }
 
-  public ExpChoice (final Expansion aExpansion)
+  public ExpChoice (@NonNull final Expansion aExpansion)
   {
     setLineNumber (aExpansion.getLineNumber ());
     setColumnNumber (aExpansion.getColumnNumber ());
@@ -97,7 +97,7 @@ public final class ExpChoice extends Expansion
   }
 
   @Override
-  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
     final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
     if (aAlreadyDumped.add (this))

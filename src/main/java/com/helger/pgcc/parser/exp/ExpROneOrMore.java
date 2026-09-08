@@ -54,7 +54,7 @@ public final class ExpROneOrMore extends AbstractExpRegularExpression
     m_aRegexpr = aRe;
   }
 
-  public ExpROneOrMore (final Token t, final AbstractExpRegularExpression aRe)
+  public ExpROneOrMore (@NonNull final Token t, final AbstractExpRegularExpression aRe)
   {
     this (aRe);
     setLineNumber (t.beginLine);

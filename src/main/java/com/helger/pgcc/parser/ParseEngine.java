@@ -283,7 +283,7 @@ public class ParseEngine
   }
 
   @SuppressWarnings ("unused")
-  private void _dumpLookaheads (final ExpLookahead [] aConds, final String [] aActions)
+  private void _dumpLookaheads (@NonNull final ExpLookahead [] aConds, final String [] aActions)
   {
     for (int i = 0; i < aConds.length; i++)
     {
@@ -302,7 +302,7 @@ public class ParseEngine
    * actions[action.length-1] A particular action entry ("actions[i]") can be null, in which case, a
    * noop is generated for that action.
    */
-  String buildLookaheadChecker (final ExpLookahead [] aConds, final String [] aActions)
+  String buildLookaheadChecker (@NonNull final ExpLookahead [] aConds, @NonNull final String [] aActions)
   {
     // The state variables.
     EState eState = EState.NOOPENSTM;
@@ -561,7 +561,7 @@ public class ParseEngine
     return sRetval;
   }
 
-  void dumpFormattedString (final String sStr)
+  void dumpFormattedString (@NonNull final String sStr)
   {
     char cCh = ' ';
     char cPrevChar;
@@ -615,7 +615,7 @@ public class ParseEngine
   }
 
   // Print CPPCODE method header.
-  private String _generateCPPMethodheader (final CodeProductionCpp p)
+  private String _generateCPPMethodheader (@NonNull final CodeProductionCpp p)
   {
     final StringBuilder aSig = new StringBuilder ();
     String sRet, sParams;
@@ -666,7 +666,7 @@ public class ParseEngine
   }
 
   // Print method header and return the ERROR_RETURN string.
-  private String _generateCPPMethodheader (final BNFProduction p, final Token aT2)
+  private String _generateCPPMethodheader (@NonNull final BNFProduction p, final Token aT2)
   {
     final StringBuilder aSig = new StringBuilder ();
     Token t = aT2;
@@ -811,7 +811,7 @@ public class ParseEngine
     }
   }
 
-  void buildPhase1Routine (final BNFProduction p)
+  void buildPhase1Routine (@NonNull final BNFProduction p)
   {
     final EOutputLanguage eOutputLanguage = m_aCodeGenerator.getOutputLanguage ();
     Token t = p.getReturnTypeTokens ().get (0);
@@ -953,7 +953,7 @@ public class ParseEngine
     m_aCodeGenerator.genCode (StringHelper.getRepeated (' ', m_nIndentCount));
   }
 
-  private String _phase1ExpansionGen (final Expansion e)
+  private String _phase1ExpansionGen (@NonNull final Expansion e)
   {
     String sRetval = "";
     Token t = null;
@@ -1302,7 +1302,7 @@ public class ParseEngine
     return sRetval;
   }
 
-  private void _buildPhase2Routine (final ExpLookahead aLa)
+  private void _buildPhase2Routine (@NonNull final ExpLookahead aLa)
   {
     final EOutputLanguage eOutputLanguage = m_aCodeGenerator.getOutputLanguage ();
     final Expansion e = aLa.getLaExpansion ();
@@ -1375,7 +1375,7 @@ public class ParseEngine
     return "return " + sRetval + ";";
   }
 
-  private void _generate3R (@NonNull final Expansion e, final Phase3Data aInf)
+  private void _generate3R (@NonNull final Expansion e, @NonNull final Phase3Data aInf)
   {
     Expansion aSeq = e;
     if (e.hasNoInternalName ())
@@ -1419,7 +1419,7 @@ public class ParseEngine
     }
   }
 
-  void setupPhase3Builds (final Phase3Data aInf)
+  void setupPhase3Builds (@NonNull final Phase3Data aInf)
   {
     final Expansion e = aInf.exp ();
     if (e instanceof AbstractExpRegularExpression)
@@ -1499,7 +1499,7 @@ public class ParseEngine
     };
   }
 
-  private String _genjj_3Call (final Expansion e)
+  private String _genjj_3Call (@NonNull final Expansion e)
   {
     final String sInternalName = e.getInternalName ();
     if (sInternalName.startsWith ("jj_scan_token"))
@@ -1507,7 +1507,7 @@ public class ParseEngine
     return "jj_3" + sInternalName + "()";
   }
 
-  void buildPhase3Routine (final Phase3Data aInf, final boolean bRecursive_call)
+  void buildPhase3Routine (@NonNull final Phase3Data aInf, final boolean bRecursive_call)
   {
     final Expansion e = aInf.exp ();
     Token t = null;
@@ -1778,7 +1778,7 @@ public class ParseEngine
   /*
    * Returns the minimum number of tokens that can parse to this expansion.
    */
-  int minimumSize (final Expansion e, final int nOldMin)
+  int minimumSize (@NonNull final Expansion e, final int nOldMin)
   {
     if (e.isInMinimumSize ())
     {
@@ -1878,7 +1878,7 @@ public class ParseEngine
     }
   }
 
-  public void build (final CodeGenerator aCodeGenerator)
+  public void build (@NonNull final CodeGenerator aCodeGenerator)
   {
     m_aCodeGenerator = aCodeGenerator;
     final EOutputLanguage eOutputLanguage = m_aCodeGenerator.getOutputLanguage ();
@@ -2080,7 +2080,7 @@ public class ParseEngine
   }
 
   // Table driven.
-  void buildPhase3TableRec (final Phase3Data aInf)
+  void buildPhase3TableRec (@NonNull final Phase3Data aInf)
   {
     final Expansion e = aInf.exp ();
     if (e instanceof final AbstractExpRegularExpression e_nrw)

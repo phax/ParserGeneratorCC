@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpChoice;
 import com.helger.pgcc.parser.exp.ExpLookahead;
@@ -61,7 +63,7 @@ public final class ExpansionTreeWalker
    * Visits the nodes of the tree rooted at "node" in pre-order. i.e., it executes opObj.action
    * first and then visits the children.
    */
-  static void preOrderWalk (final Expansion aNode, final ITreeWalkerOperation aOpObj)
+  static void preOrderWalk (final Expansion aNode, @NonNull final ITreeWalkerOperation aOpObj)
   {
     aOpObj.action (aNode);
     if (aOpObj.goDeeper (aNode))
@@ -143,7 +145,7 @@ public final class ExpansionTreeWalker
    * Visits the nodes of the tree rooted at "node" in post-order. i.e., it visits the children first
    * and then executes opObj.action.
    */
-  static void postOrderWalk (final Expansion aNode, final ITreeWalkerOperation aOpObj)
+  static void postOrderWalk (final Expansion aNode, @NonNull final ITreeWalkerOperation aOpObj)
   {
     if (aOpObj.goDeeper (aNode))
     {

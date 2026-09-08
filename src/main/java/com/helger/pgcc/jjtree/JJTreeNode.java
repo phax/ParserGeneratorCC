@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.OverrideOnDemand;
 
 public class JJTreeNode extends SimpleNode
@@ -102,12 +104,12 @@ public class JJTreeNode extends SimpleNode
   }
 
   @OverrideOnDemand
-  String translateImage (final Token t)
+  String translateImage (@NonNull final Token t)
   {
     return t.image;
   }
 
-  static String whiteOut (final Token t)
+  static String whiteOut (@NonNull final Token t)
   {
     final StringBuilder aSB = new StringBuilder (t.image.length ());
 
@@ -128,7 +130,7 @@ public class JJTreeNode extends SimpleNode
    */
   private boolean m_bWhitingOut = false;
 
-  protected void print (final Token t, final JJTreeIO aIo)
+  protected void print (@NonNull final Token t, @NonNull final JJTreeIO aIo)
   {
     Token aTt = t.specialToken;
     if (aTt != null)

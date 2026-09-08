@@ -33,9 +33,11 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
 public class DefaultJJTreeVisitor implements JJTreeParserVisitor
 {
-  public Object defaultVisit (final SimpleNode aNode, final Object aData)
+  public Object defaultVisit (@NonNull final SimpleNode aNode, final Object aData)
   {
     return aNode.childrenAccept (this, aData);
   }

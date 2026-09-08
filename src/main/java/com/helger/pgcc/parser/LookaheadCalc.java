@@ -134,7 +134,7 @@ public final class LookaheadCalc
     return sRet.substring (1);
   }
 
-  public static void choiceCalc (final ExpChoice aCh)
+  public static void choiceCalc (@NonNull final ExpChoice aCh)
   {
     final int nFirst = _firstChoice (aCh);
     // dbl[i] and dbr[i] are lists of size limited matches for choice i
@@ -271,7 +271,7 @@ public final class LookaheadCalc
     return false;
   }
 
-  private static int _firstChoice (final ExpChoice aCh)
+  private static int _firstChoice (@NonNull final ExpChoice aCh)
   {
     if (Options.isForceLaCheck ())
       return 0;
@@ -300,7 +300,7 @@ public final class LookaheadCalc
     return "[...]";
   }
 
-  public static void ebnfCalc (final Expansion aExp, final Expansion aNested)
+  public static void ebnfCalc (@NonNull final Expansion aExp, final Expansion aNested)
   {
     // exp is one of OneOrMore, ZeroOrMore, ZeroOrOne
     MatchInfo m, m1 = null;

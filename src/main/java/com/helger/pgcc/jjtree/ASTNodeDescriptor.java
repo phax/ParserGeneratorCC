@@ -166,7 +166,7 @@ public class ASTNodeDescriptor extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor aVisitor, final Object aData)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
     return aVisitor.visit (this, aData);
   }

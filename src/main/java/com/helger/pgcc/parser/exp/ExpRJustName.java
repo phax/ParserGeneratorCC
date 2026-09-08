@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser.exp;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.Token;
 
@@ -70,7 +72,7 @@ public final class ExpRJustName extends AbstractExpRegularExpression
     return m_aRegexpr.generateNfa (bIgnoreCase);
   }
 
-  public ExpRJustName (final Token aToken, final String sImage)
+  public ExpRJustName (@NonNull final Token aToken, final String sImage)
   {
     setLineNumber (aToken.beginLine);
     setColumnNumber (aToken.beginColumn);

@@ -33,6 +33,9 @@
  */
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.util.HashMap;
@@ -153,7 +156,7 @@ public abstract class AbstractJavaCCParserInternals
     grammar ().setParserName (sId);
   }
 
-  protected static void compare (final Token t, final String sId1, final String sId2)
+  protected static void compare (final Token t, final String sId1, @NonNull final String sId2)
   {
     if (!sId2.equals (sId1))
     {
@@ -218,13 +221,13 @@ public abstract class AbstractJavaCCParserInternals
     grammar ().bnfProductions ().add (p);
   }
 
-  protected static void productionAddExpansion (final BNFProduction p, final Expansion e)
+  protected static void productionAddExpansion (@NonNull final BNFProduction p, @NonNull final Expansion e)
   {
     e.setParent (p);
     p.setExpansion (e);
   }
 
-  protected static void addregexpr (final TokenProduction p)
+  protected static void addregexpr (@NonNull final TokenProduction p)
   {
     grammar ().rexprList ().add (p);
     if (Options.isUserTokenManager ())
@@ -316,7 +319,7 @@ public abstract class AbstractJavaCCParserInternals
     return (cCh) - ('a') + 10;
   }
 
-  protected static String remove_escapes_and_quotes (final Token t, final String sStr)
+  protected static String remove_escapes_and_quotes (final Token t, @NonNull final String sStr)
   {
     String sRetval = "";
     int nIndex = 1;
@@ -442,7 +445,7 @@ public abstract class AbstractJavaCCParserInternals
     return sRetval;
   }
 
-  protected static char character_descriptor_assign (final Token t, final String s)
+  protected static char character_descriptor_assign (final Token t, @NonNull final String s)
   {
     if (s.length () != 1)
     {
@@ -452,7 +455,7 @@ public abstract class AbstractJavaCCParserInternals
     return s.charAt (0);
   }
 
-  protected static char character_descriptor_assign (final Token t, final String s, final String sLeft)
+  protected static char character_descriptor_assign (final Token t, @NonNull final String s, @NonNull final String sLeft)
   {
     if (s.length () != 1)
     {
@@ -472,13 +475,13 @@ public abstract class AbstractJavaCCParserInternals
     return s.charAt (0);
   }
 
-  protected static void makeTryBlock (final Token aTryLoc,
-                                      final Container aResult,
-                                      final Container aNestedExp,
+  protected static void makeTryBlock (@NonNull final Token aTryLoc,
+                                      @NonNull final Container aResult,
+                                      @NonNull final Container aNestedExp,
                                       final List <List <Token>> types,
                                       final List <Token> ids,
-                                      final List <List <Token>> catchblks,
-                                      final List <Token> aFinallyblk)
+                                      @NonNull final List <List <Token>> catchblks,
+                                      @Nullable final List <Token> aFinallyblk)
   {
     if (catchblks.size () == 0 && aFinallyblk == null)
     {

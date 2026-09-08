@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
@@ -63,7 +65,7 @@ public class BNFGenerator implements IDocGenerator
     return TextGenerator.createPrintWriter (".bnf");
   }
 
-  public void text (final String s) throws IOException
+  public void text (@NonNull final String s) throws IOException
   {
     if (m_bPrinting && !(s.length () == 1 && (s.charAt (0) == '\n' || s.charAt (0) == '\r')))
     {
@@ -118,7 +120,7 @@ public class BNFGenerator implements IDocGenerator
   public void nonTerminalEnd (final ExpNonTerminal aNt)
   {}
 
-  public void productionStart (final AbstractNormalProduction aNp) throws IOException
+  public void productionStart (@NonNull final AbstractNormalProduction aNp) throws IOException
   {
     print ("\n");
     print (aNp.getLhs () + " ::= ");

@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.output;
 
+import org.jspecify.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -104,7 +106,7 @@ public class OutputFile implements AutoCloseable
    * @throws IOException
    *         on error
    */
-  public OutputFile (final File aFile, final String sCompatibleVersion, final String [] aOptions) throws IOException
+  public OutputFile (@NonNull final File aFile, @Nullable final String sCompatibleVersion, @Nullable final String [] aOptions) throws IOException
   {
     m_aFile = aFile;
     m_sCompatibleVersion = sCompatibleVersion;
@@ -196,7 +198,7 @@ public class OutputFile implements AutoCloseable
    * @param sVersionId
    *        The version this generator would write. May not be <code>null</code>.
    */
-  private void _checkVersion (final File aFile, final String sVersionId)
+  private void _checkVersion (@NonNull final File aFile, final String sVersionId)
   {
     final String sFirstLine = "/* " + JavaCCGlobals.getIdString (m_sToolName, aFile.getName ()) + " Version ";
 
@@ -239,7 +241,7 @@ public class OutputFile implements AutoCloseable
    * @param aOptions
    *        The option names whose values the file has to match. May be <code>null</code>.
    */
-  private void _checkOptions (final File aFile, final String [] aOptions)
+  private void _checkOptions (@NonNull final File aFile, final String [] aOptions)
   {
     try (final NonBlockingBufferedReader aReader = FileHelper.getBufferedReader (aFile, Options.getOutputEncoding ()))
     {

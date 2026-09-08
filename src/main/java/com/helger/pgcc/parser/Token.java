@@ -38,6 +38,8 @@
 
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Describes the input token stream.
  */
@@ -114,7 +116,7 @@ public class Token implements IGrammarLocation
    * equals
    */
   @Override
-  public boolean equals (final Object aObject)
+  public boolean equals (@Nullable final Object aObject)
   {
     if (aObject == null)
       return false;

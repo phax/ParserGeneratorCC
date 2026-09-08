@@ -33,6 +33,9 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,7 +55,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
   }
 
   @Override
-  public Object visit (final ASTGrammar aNode, final Object aData)
+  public Object visit (@NonNull final ASTGrammar aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
     aIo.println ("/*@bgen(jjtree) " +
@@ -64,7 +67,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
   }
 
   @Override
-  public Object visit (final ASTBNFAction aNode, final Object aData)
+  public Object visit (@NonNull final ASTBNFAction aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
     /*
@@ -119,7 +122,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
   }
 
   @Override
-  public Object visit (final ASTBNFDeclaration aNode, final Object aData)
+  public Object visit (@NonNull final ASTBNFDeclaration aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
     if (!aNode.m_aNodeScope.isVoid ())
@@ -147,7 +150,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
   }
 
   @Override
-  public Object visit (final ASTBNFNodeScope aNode, final Object aData)
+  public Object visit (@NonNull final ASTBNFNodeScope aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
     if (aNode.m_aNodeScope.isVoid ())
@@ -164,7 +167,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
   }
 
   @Override
-  public Object visit (final ASTCompilationUnit aNode, final Object aData)
+  public Object visit (@NonNull final ASTCompilationUnit aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
     Token t = aNode.getFirstToken ();
@@ -187,7 +190,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
   }
 
   @Override
-  public Object visit (final ASTExpansionNodeScope aNode, final Object aData)
+  public Object visit (@NonNull final ASTExpansionNodeScope aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
     final String sIndent = getIndentation (aNode.m_aExpansionUnit);
@@ -203,7 +206,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
   }
 
   @Override
-  public Object visit (final ASTJavacodeBody aNode, final Object aData)
+  public Object visit (@NonNull final ASTJavacodeBody aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
     if (aNode.m_aNodeScope.isVoid ())
@@ -226,7 +229,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
     return null;
   }
 
-  public Object visit (final ASTLHS aNode, final Object aData)
+  public Object visit (@NonNull final ASTLHS aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
     final NodeScope aNs = NodeScope.getEnclosingNodeScope (aNode);
@@ -251,7 +254,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
    * stuff not in the input.
    */
 
-  public Object visit (final JJTreeNode aNode, final Object aData)
+  public Object visit (@NonNull final JJTreeNode aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
     /*
@@ -289,7 +292,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
     return null;
   }
 
-  static void openJJTreeComment (final JJTreeIO aIo, final String sArg)
+  static void openJJTreeComment (@NonNull final JJTreeIO aIo, @Nullable final String sArg)
   {
     if (sArg != null)
     {
@@ -303,7 +306,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
     }
   }
 
-  static void closeJJTreeComment (final JJTreeIO aIo)
+  static void closeJJTreeComment (@NonNull final JJTreeIO aIo)
   {
     aIo.print ((Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) ? "" : "/*") + "@egen*/");
   }
@@ -313,7 +316,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
     return getIndentation (n, 0);
   }
 
-  String getIndentation (final JJTreeNode n, final int nOffset)
+  String getIndentation (@NonNull final JJTreeNode n, final int nOffset)
   {
     String s = "";
     for (int i = nOffset + 1; i < n.getFirstToken ().beginColumn; ++i)
@@ -328,7 +331,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
     insertOpenNodeCode (aNs, aIo, sIndent);
   }
 
-  void insertOpenNodeCode (final NodeScope aNs, final JJTreeIO aIo, final String sIndent)
+  void insertOpenNodeCode (@NonNull final NodeScope aNs, @NonNull final JJTreeIO aIo, final String sIndent)
   {
     final String sType = aNs.m_aNodeDescriptor.getNodeType ();
     final String sNodeClass;
@@ -389,7 +392,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
     }
   }
 
-  void insertCloseNodeCode (final NodeScope aNs, final JJTreeIO aIo, final String sIndent, final boolean bIsFinal)
+  void insertCloseNodeCode (@NonNull final NodeScope aNs, @NonNull final JJTreeIO aIo, final String sIndent, final boolean bIsFinal)
   {
     final String sCloseNode = aNs.m_aNodeDescriptor.closeNode (aNs.m_sNodeVar);
     aIo.println (sIndent + sCloseNode);
@@ -410,21 +413,21 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
     }
   }
 
-  void insertOpenNodeAction (final NodeScope aNs, final JJTreeIO aIo, final String sIndent)
+  void insertOpenNodeAction (final NodeScope aNs, @NonNull final JJTreeIO aIo, final String sIndent)
   {
     aIo.println (sIndent + "{");
     insertOpenNodeCode (aNs, aIo, sIndent + "  ");
     aIo.println (sIndent + "}");
   }
 
-  void insertCloseNodeAction (final NodeScope aNs, final JJTreeIO aIo, final String sIndent)
+  void insertCloseNodeAction (final NodeScope aNs, @NonNull final JJTreeIO aIo, final String sIndent)
   {
     aIo.println (sIndent + "{");
     insertCloseNodeCode (aNs, aIo, sIndent + "  ", false);
     aIo.println (sIndent + "}");
   }
 
-  private void insertCatchBlocks (final NodeScope aNs, final JJTreeIO aIo, final String sIndent)
+  private void insertCatchBlocks (@NonNull final NodeScope aNs, @NonNull final JJTreeIO aIo, final String sIndent)
   {
     // if (thrown_names.hasMoreElements()) {
     // " + ns.exceptionVar + ") {");
@@ -442,11 +445,11 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
     // }
   }
 
-  void tryTokenSequence (final NodeScope aNs,
-                         final JJTreeIO aIo,
+  void tryTokenSequence (@NonNull final NodeScope aNs,
+                         @NonNull final JJTreeIO aIo,
                          final String sIndent,
                          final Token aFirst,
-                         final Token aLast)
+                         @NonNull final Token aLast)
   {
     aIo.println (sIndent + "try {");
     closeJJTreeComment (aIo);
@@ -477,8 +480,8 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
   }
 
   private static void findThrown (final NodeScope aNs,
-                                  final Map <String, String> aThrown_set,
-                                  final JJTreeNode aExpansion_unit)
+                                  @NonNull final Map <String, String> aThrown_set,
+                                  @NonNull final JJTreeNode aExpansion_unit)
   {
     if (aExpansion_unit instanceof ASTBNFNonTerminal)
     {
@@ -500,7 +503,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
     }
   }
 
-  void tryExpansionUnit (final NodeScope aNs, final JJTreeIO aIo, final String sIndent, final JJTreeNode aExpansion_unit)
+  void tryExpansionUnit (@NonNull final NodeScope aNs, @NonNull final JJTreeIO aIo, final String sIndent, @NonNull final JJTreeNode aExpansion_unit)
   {
     aIo.println (sIndent + "try {");
     closeJJTreeComment (aIo);

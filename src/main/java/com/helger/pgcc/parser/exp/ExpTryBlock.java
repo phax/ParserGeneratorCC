@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser.exp;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.List;
 import java.util.Set;
 
@@ -84,7 +86,7 @@ public final class ExpTryBlock extends Expansion
     m_aExp = aValue;
   }
   @Override
-  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
     final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
     if (aAlreadyDumped.add (this))

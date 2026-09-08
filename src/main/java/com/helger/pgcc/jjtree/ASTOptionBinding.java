@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
 public class ASTOptionBinding extends JJTreeNode
 {
   private boolean m_bSuppressed = false;
@@ -75,7 +77,7 @@ public class ASTOptionBinding extends JJTreeNode
   }
 
   @Override
-  String translateImage (final Token t)
+  String translateImage (@NonNull final Token t)
   {
     if (m_bSuppressed)
     {
@@ -86,7 +88,7 @@ public class ASTOptionBinding extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor aVisitor, final Object aData)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
     return aVisitor.visit (this, aData);
   }
