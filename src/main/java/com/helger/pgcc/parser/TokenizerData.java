@@ -45,11 +45,25 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
 public class TokenizerData
 {
   // Name of the parser as specified in the PARSER_BEGIN/PARSER_END block.
-  public String m_sParserName;
+  private String m_sParserName;
 
+  /**
+   * @return The value of m_sParserName.
+   */
+  public String getParserName ()
+  {
+    return m_sParserName;
+  }
   // Decls coming from TOKEN_MGR_DECLS
-  public String m_sDecls;
+  private String m_sDecls;
 
+  /**
+   * @return The value of m_sDecls.
+   */
+  public String getDecls ()
+  {
+    return m_sDecls;
+  }
   // A map of <LexState, first char> to a sequence of literals indexed by:
   // ((int0LexicalState << 16 | (int)c)
   // The literals in the list are all guaranteed to start with the char and re
@@ -57,16 +71,37 @@ public class TokenizerData
   // just going through the sequence in the order.
   // Since they are all literals, there is no duplication (JavaCC checks that)
   // and hence if a longer match is matched, no need to check the shorter match.
-  public Map <Integer, List <String>> m_aLiteralSequence;
+  private Map <Integer, List <String>> m_aLiteralSequence;
 
+  /**
+   * @return The value of m_aLiteralSequence.
+   */
+  public Map <Integer, List <String>> getLiteralSequence ()
+  {
+    return m_aLiteralSequence;
+  }
   // A map of list of kind values indexed by ((int0LexicalState << 16 | (int)c)
   // same key as before.
-  public Map <Integer, List <Integer>> m_aLiteralKinds;
+  private Map <Integer, List <Integer>> m_aLiteralKinds;
 
+  /**
+   * @return The value of m_aLiteralKinds.
+   */
+  public Map <Integer, List <Integer>> getLiteralKinds ()
+  {
+    return m_aLiteralKinds;
+  }
   // The NFA start state for a given string literal match. We use this to start
   // the NFA if needed after a literal match is completed.
-  public Map <Integer, Integer> m_aKindToNfaStartState;
+  private Map <Integer, Integer> m_aKindToNfaStartState;
 
+  /**
+   * @return The value of m_aKindToNfaStartState.
+   */
+  public Map <Integer, Integer> getKindToNfaStartState ()
+  {
+    return m_aKindToNfaStartState;
+  }
   // Class representing NFA state.
   /**
    * One state of the NFA the interpreter walks.
@@ -92,8 +127,15 @@ public class TokenizerData
   {}
 
   /** The main NFA, by state index. */
-  public final Map <Integer, NfaState> m_aNfa = new HashMap <> ();
+  private final Map <Integer, NfaState> m_aNfa = new HashMap <> ();
 
+  /**
+   * @return The value of m_aNfa.
+   */
+  public Map <Integer, NfaState> getNfa ()
+  {
+    return m_aNfa;
+  }
   /** What a matched kind does with the input. */
   public static enum EMatchType
   {
@@ -122,20 +164,55 @@ public class TokenizerData
   {}
 
   // On match info indexed by the match kind.
-  public final Map <Integer, MatchInfo> m_aAllMatches = new HashMap <> ();
+  private final Map <Integer, MatchInfo> m_aAllMatches = new HashMap <> ();
 
+  /**
+   * @return The value of m_aAllMatches.
+   */
+  public Map <Integer, MatchInfo> getAllMatches ()
+  {
+    return m_aAllMatches;
+  }
   // Initial nfa states indexed by lexical state.
-  public Map <Integer, Integer> m_aInitialStates;
+  private Map <Integer, Integer> m_aInitialStates;
 
+  /**
+   * @return The value of m_aInitialStates.
+   */
+  public Map <Integer, Integer> getInitialStates ()
+  {
+    return m_aInitialStates;
+  }
   // Kind of the wildcard match (~[]) indexed by lexical state.
-  public Map <Integer, Integer> m_aWildcardKind;
+  private Map <Integer, Integer> m_aWildcardKind;
 
+  /**
+   * @return The value of m_aWildcardKind.
+   */
+  public Map <Integer, Integer> getWildcardKind ()
+  {
+    return m_aWildcardKind;
+  }
   // Name of lexical state - for debugging.
-  public String [] m_aLexStateNames;
+  private String [] m_aLexStateNames;
 
+  /**
+   * @return The value of m_aLexStateNames.
+   */
+  public String [] getLexStateNames ()
+  {
+    return m_aLexStateNames;
+  }
   // DEFAULT lexical state index.
-  public int m_nDefaultLexState;
+  private int m_nDefaultLexState;
 
+  /**
+   * @return The value of m_nDefaultLexState.
+   */
+  public int getDefaultLexState ()
+  {
+    return m_nDefaultLexState;
+  }
   public void setParserName (final String sParserName)
   {
     this.m_sParserName = sParserName;

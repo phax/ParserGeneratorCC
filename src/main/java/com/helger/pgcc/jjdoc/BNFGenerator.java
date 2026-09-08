@@ -50,7 +50,7 @@ public class BNFGenerator implements IDocGenerator
 {
   private final Map <String, String> m_aIDMap = new HashMap <> ();
   private int m_nID = 1;
-  protected Writer m_aPW;
+  private Writer m_aPW;
   private boolean m_bPrinting = true;
 
   protected String get_id (final String sNt)

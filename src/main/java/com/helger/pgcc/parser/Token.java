@@ -32,14 +32,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * This file contains the code for JavaCCParser generated
- * by JavaCCParser itself.
- */
-
-package com.helger.pgcc.parser;
-
-/**
  * Describes the input token stream.
+ * <p>
+ * The fields below are public on purpose and stay that way. Grammar action code reads t.image and
+ * t.kind directly, generated parsers do the same, and going through accessors would put a call in
+ * the hottest path of every parse. This is the one class in the project that is exempt from the
+ * rule that members are private.
  */
 public class Token implements IGrammarLocation
 {

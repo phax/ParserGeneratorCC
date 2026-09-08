@@ -475,7 +475,7 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
       }
     }
 
-    aStartState.m_aNext = aFinalState;
+    aStartState.setNext (aFinalState);
 
     return aRetVal;
   }

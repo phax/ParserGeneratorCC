@@ -84,27 +84,171 @@ public class NfaState
    * lexer emitters in com.helger.pgcc.output.*, which is why they are public rather than package
    * private.
    */
-  public long [] m_aAsciiMoves = new long [2];
-  public char [] m_aCharMoves = null;
+  private long [] m_aAsciiMoves = new long [2];
+
+  /**
+   * @return The value of m_aAsciiMoves.
+   */
+  public long [] getAsciiMoves ()
+  {
+    return m_aAsciiMoves;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aAsciiMoves.
+   */
+  public void setAsciiMoves (final long [] aValue)
+  {
+    m_aAsciiMoves = aValue;
+  }
+  private char [] m_aCharMoves = null;
+
+  /**
+   * @return The value of m_aCharMoves.
+   */
+  public char [] getCharMoves ()
+  {
+    return m_aCharMoves;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aCharMoves.
+   */
+  public void setCharMoves (final char [] aValue)
+  {
+    m_aCharMoves = aValue;
+  }
   private char [] m_aRangeMoves = null;
-  public NfaState m_aNext = null;
+  private NfaState m_aNext = null;
+
+  /**
+   * @return The value of m_aNext.
+   */
+  public NfaState getNext ()
+  {
+    return m_aNext;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aNext.
+   */
+  public void setNext (final NfaState aValue)
+  {
+    m_aNext = aValue;
+  }
   private NfaState m_aStateForCase;
-  public final List <NfaState> m_aEpsilonMoves = new ArrayList <> ();
+  private final List <NfaState> m_aEpsilonMoves = new ArrayList <> ();
+
+  /**
+   * @return The value of m_aEpsilonMoves.
+   */
+  public List <NfaState> getEpsilonMoves ()
+  {
+    return m_aEpsilonMoves;
+  }
   private String m_sEpsilonMovesString;
 
   private final int m_nId;
-  public int m_nStateName = -1;
-  public int m_nKind = Integer.MAX_VALUE;
+  private int m_nStateName = -1;
+
+  /**
+   * @return The value of m_nStateName.
+   */
+  public int getStateName ()
+  {
+    return m_nStateName;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_nStateName.
+   */
+  public void setStateName (final int aValue)
+  {
+    m_nStateName = aValue;
+  }
+  private int m_nKind = Integer.MAX_VALUE;
+
+  /**
+   * @return The value of m_nKind.
+   */
+  public int getKind ()
+  {
+    return m_nKind;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_nKind.
+   */
+  public void setKind (final int aValue)
+  {
+    m_nKind = aValue;
+  }
   private int m_nLookingFor;
   private int m_nUsefulEpsilonMoves = 0;
-  public int m_nInNextOf;
+  private int m_nInNextOf;
+
+  /**
+   * @return The value of m_nInNextOf.
+   */
+  public int getInNextOf ()
+  {
+    return m_nInNextOf;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_nInNextOf.
+   */
+  public void setInNextOf (final int aValue)
+  {
+    m_nInNextOf = aValue;
+  }
   private int m_nLexState;
   private int m_nNonAsciiMethod = -1;
   private int m_nKindToPrint = Integer.MAX_VALUE;
-  public boolean m_bDummy = false;
+  private boolean m_bDummy = false;
+
+  /**
+   * @return The value of m_bDummy.
+   */
+  public boolean isDummy ()
+  {
+    return m_bDummy;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_bDummy.
+   */
+  public void setDummy (final boolean aValue)
+  {
+    m_bDummy = aValue;
+  }
   private boolean m_bIsComposite = false;
   private int [] m_aCompositeStates = null;
-  public boolean m_bIsFinal = false;
+  private boolean m_bIsFinal = false;
+
+  /**
+   * @return The value of m_bIsFinal.
+   */
+  public boolean isFinal ()
+  {
+    return m_bIsFinal;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_bIsFinal.
+   */
+  public void setFinal (final boolean aValue)
+  {
+    m_bIsFinal = aValue;
+  }
   private List <Integer> m_aLoByteVec;
   private int [] m_aNonAsciiMoveIndices;
   private int m_nRound = 0;

@@ -58,8 +58,24 @@ import com.helger.pgcc.parser.exp.Expansion;
  */
 public class TextGenerator implements IDocGenerator
 {
-  protected Writer m_aPW;
+  private Writer m_aPW;
 
+  /**
+   * @return The value of m_aPW.
+   */
+  public Writer getPW ()
+  {
+    return m_aPW;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aPW.
+   */
+  public void setPW (final Writer aValue)
+  {
+    m_aPW = aValue;
+  }
   public TextGenerator ()
   {}
 

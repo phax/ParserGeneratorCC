@@ -180,7 +180,7 @@ public class OtherFilesGenCPP
           s_ostr.println ("  static const JJChar tokenImage_arr_" + ++nCnt + "[] = ");
           if (aRe instanceof final ExpRStringLiteral aRStringLiteral)
           {
-            printCharArray (s_ostr, "\"" + aRStringLiteral.m_sImage + "\"");
+            printCharArray (s_ostr, "\"" + aRStringLiteral.getImage () + "\"");
           }
           else
             if (aRe.hasLabel ())

@@ -120,7 +120,7 @@ public final class LookaheadCalc
         final AbstractExpRegularExpression aRe = grammar ().rexpsOfTokens ().get (Integer.valueOf (m.m_aMatch[i]));
         if (aRe instanceof final ExpRStringLiteral aRStringLiteral)
         {
-          sRet += " \"" + addEscapes (aRStringLiteral.m_sImage) + "\"";
+          sRet += " \"" + addEscapes (aRStringLiteral.getImage ()) + "\"";
         }
         else
           if (aRe.hasLabel ())

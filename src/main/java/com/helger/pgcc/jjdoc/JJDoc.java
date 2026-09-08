@@ -500,7 +500,7 @@ public final class JJDoc
               else
                 if (aRe instanceof final ExpRStringLiteral sl)
                 {
-                  sReturnString += ("\"" + JavaCCGlobals.addEscapes (sl.m_sImage) + "\"");
+                  sReturnString += ("\"" + JavaCCGlobals.addEscapes (sl.getImage ()) + "\"");
                 }
                 else
                   if (aRe instanceof final ExpRZeroOrMore zm)

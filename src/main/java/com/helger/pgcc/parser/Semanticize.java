@@ -236,7 +236,7 @@ public class Semanticize
           for (int i = 0; i < table.length; i++)
           {
             // Get table of all case variants of "sl.image" into table2.
-            Map <String, AbstractExpRegularExpression> aTable2 = table[i].get (sl.m_sImage.toUpperCase (Locale.US));
+            Map <String, AbstractExpRegularExpression> aTable2 = table[i].get (sl.getImage ().toUpperCase (Locale.US));
             if (aTable2 == null)
             {
               // There are no case variants of "sl.image" earlier than the
@@ -247,21 +247,21 @@ public class Semanticize
                 sl.setOrdinal (grammar ().getAndIncTokenCount ());
               }
               aTable2 = new HashMap <> ();
-              aTable2.put (sl.m_sImage, sl);
-              table[i].put (sl.m_sImage.toUpperCase (Locale.US), aTable2);
+              aTable2.put (sl.getImage (), sl);
+              table[i].put (sl.getImage ().toUpperCase (Locale.US), aTable2);
             }
             else
-              if (findIgnoreCase (aTable2, sl.m_sImage) != null)
+              if (findIgnoreCase (aTable2, sl.getImage ()) != null)
               {
                 // Since IGNORE_CASE version exists, current one is useless and
                 // bad.
-                final AbstractExpRegularExpression aOther = findIgnoreCase (aTable2, sl.m_sImage);
+                final AbstractExpRegularExpression aOther = findIgnoreCase (aTable2, sl.getImage ());
                 if (!sl.m_aTpContext.isExplicit ())
                 {
                   // inline BNF string is used earlier with an IGNORE_CASE.
                   JavaCCErrors.semantic_error (sl,
                                                "String \"" +
-                                                   sl.m_sImage +
+                                                   sl.getImage () +
                                                    "\" can never be matched " +
                                                    "due to presence of more general (IGNORE_CASE) regular expression " +
                                                    "at line " +
@@ -275,7 +275,7 @@ public class Semanticize
                   // give the standard error message.
                   JavaCCErrors.semantic_error (sl,
                                                "Duplicate definition of string token \"" +
-                                                   sl.m_sImage +
+                                                   sl.getImage () +
                                                    "\" " +
                                                    "can never be matched.");
                 }
@@ -310,7 +310,7 @@ public class Semanticize
                   {
                     sl.setOrdinal (grammar ().getAndIncTokenCount ());
                   }
-                  aTable2.put (sl.m_sImage, sl);
+                  aTable2.put (sl.getImage (), sl);
                   // The above "put" may override an existing entry (that is not
                   // IGNORE_CASE) and that's
                   // the desired behavior.
@@ -318,14 +318,14 @@ public class Semanticize
                 else
                 {
                   // The rest of the cases do not involve IGNORE_CASE.
-                  final AbstractExpRegularExpression aRe = aTable2.get (sl.m_sImage);
+                  final AbstractExpRegularExpression aRe = aTable2.get (sl.getImage ());
                   if (aRe == null)
                   {
                     if (sl.getOrdinal () == 0)
                     {
                       sl.setOrdinal (grammar ().getAndIncTokenCount ());
                     }
-                    aTable2.put (sl.m_sImage, sl);
+                    aTable2.put (sl.getImage (), sl);
                   }
                   else
                     if (tp.isExplicit ())
@@ -335,13 +335,13 @@ public class Semanticize
                       if (tp.getLexStates ()[i].equals ("DEFAULT"))
                       {
                         JavaCCErrors.semantic_error (sl,
-                                                     "Duplicate definition of string token \"" + sl.m_sImage + "\".");
+                                                     "Duplicate definition of string token \"" + sl.getImage () + "\".");
                       }
                       else
                       {
                         JavaCCErrors.semantic_error (sl,
                                                      "Duplicate definition of string token \"" +
-                                                         sl.m_sImage +
+                                                         sl.getImage () +
                                                          "\" in lexical state \"" +
                                                          tp.getLexStates ()[i] +
                                                          "\".");
@@ -352,7 +352,7 @@ public class Semanticize
                       {
                         JavaCCErrors.semantic_error (sl,
                                                      "String token \"" +
-                                                         sl.m_sImage +
+                                                         sl.getImage () +
                                                          "\" has been defined as a \"" +
                                                          aRe.m_aTpContext.getKind ().getImage () +
                                                          "\" token.");
@@ -362,7 +362,7 @@ public class Semanticize
                         {
                           JavaCCErrors.semantic_error (sl,
                                                        "String token \"" +
-                                                           sl.m_sImage +
+                                                           sl.getImage () +
                                                            "\" has been defined as a private regular expression.");
                         }
                         else

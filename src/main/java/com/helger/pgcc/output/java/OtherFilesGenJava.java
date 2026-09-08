@@ -205,7 +205,7 @@ public class OtherFilesGenJava
           aOstr.print ("    ");
           if (aRe instanceof final ExpRStringLiteral aRStringLiteral)
           {
-            aOstr.println ("\"\\\"" + addEscapes (addEscapes (aRStringLiteral.m_sImage)) + "\\\"\",");
+            aOstr.println ("\"\\\"" + addEscapes (addEscapes (aRStringLiteral.getImage ())) + "\\\"\",");
           }
           else
             if (aRe.hasLabel ())

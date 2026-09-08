@@ -109,8 +109,24 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   /**
    * The string image of the literal.
    */
-  public String m_sImage;
+  private String m_sImage;
 
+  /**
+   * @return The value of m_sImage.
+   */
+  public String getImage ()
+  {
+    return m_sImage;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_sImage.
+   */
+  public void setImage (final String aValue)
+  {
+    m_sImage = aValue;
+  }
   public ExpRStringLiteral (final Token t, final String sImage)
   {
     setLineNumber (t.beginLine);
@@ -449,7 +465,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     for (i = 0; i < m_sImage.length (); i++)
     {
       aFinalState = new NfaState ();
-      aStartState.m_aCharMoves = new char [1];
+      aStartState.setCharMoves (new char [1]);
       aStartState.addChar (m_sImage.charAt (i));
 
       if (Options.isIgnoreCase () || bIgnoreCase)
@@ -458,7 +474,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         aStartState.addChar (Character.toUpperCase (m_sImage.charAt (i)));
       }
 
-      aStartState.m_aNext = aFinalState;
+      aStartState.setNext (aFinalState);
       aStartState = aFinalState;
     }
 
@@ -1554,7 +1570,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
       try
       {
-        aOldStates = new ArrayList <> (aInitialState.m_aEpsilonMoves);
+        aOldStates = new ArrayList <> (aInitialState.getEpsilonMoves ());
         if (aOldStates.size () == 0)
         {
           dumpNfaStartStatesCode (strLit ().getStatesForPos (), aCodeGenerator);
@@ -1624,16 +1640,17 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           aStateSets.put (sStateSetString, sStateSetString);
           for (p = 0; p < aNewStates.size (); p++)
           {
-            if (aSeen[aNewStates.get (p).m_nStateName])
-              aNewStates.get (p).m_nInNextOf++;
+            final NfaState aNewState = aNewStates.get (p);
+            if (aSeen[aNewState.getStateName ()])
+              aNewState.setInNextOf (aNewState.getInNextOf () + 1);
             else
-              aSeen[aNewStates.get (p).m_nStateName] = true;
+              aSeen[aNewState.getStateName ()] = true;
           }
         }
         else
         {
           for (p = 0; p < aNewStates.size (); p++)
-            aSeen[aNewStates.get (p).m_nStateName] = true;
+            aSeen[aNewStates.get (p).getStateName ()] = true;
         }
 
         aJjtmpStates = aOldStates;
@@ -1968,7 +1985,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     for (final int kind : NfaState.tokenizerBuild ().nfaStateMap ().keySet ())
     {
       final NfaState aState = NfaState.tokenizerBuild ().nfaStateMap ().get (Integer.valueOf (kind));
-      aNfaStateIndices.put (Integer.valueOf (kind), Integer.valueOf (aState == null ? -1 : aState.m_nStateName));
+      aNfaStateIndices.put (Integer.valueOf (kind), Integer.valueOf (aState == null ? -1 : aState.getStateName ()));
     }
     aTokenizerData.setLiteralSequence (NfaState.tokenizerBuild ().literalsByLength ());
     aTokenizerData.setLiteralKinds (NfaState.tokenizerBuild ().literalKinds ());

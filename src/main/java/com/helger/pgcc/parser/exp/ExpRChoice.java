@@ -124,9 +124,9 @@ public final class ExpRChoice extends AbstractExpRegularExpression
       while (aCurRE instanceof ExpRJustName)
         aCurRE = ((ExpRJustName) aCurRE).getRegexpr ();
 
-      if (aCurRE instanceof ExpRStringLiteral && ((ExpRStringLiteral) aCurRE).m_sImage.length () == 1)
+      if (aCurRE instanceof ExpRStringLiteral && ((ExpRStringLiteral) aCurRE).getImage ().length () == 1)
       {
-        aCurRE = new ExpRCharacterList (((ExpRStringLiteral) aCurRE).m_sImage.charAt (0));
+        aCurRE = new ExpRCharacterList (((ExpRStringLiteral) aCurRE).getImage ().charAt (0));
         getChoices ().set (i, aCurRE);
       }
 

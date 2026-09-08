@@ -100,19 +100,19 @@ public class HTMLGenerator extends TextGenerator
                                  EXMLCharMode.TEXT,
                                  EXMLIncorrectCharacterHandling.DO_NOT_WRITE_LOG_WARNING,
                                  s,
-                                 m_aPW);
+                                 getPW ());
   }
 
   @Override
   public void print (final String s) throws IOException
   {
-    m_aPW.write (s);
+    getPW ().write (s);
   }
 
   @Override
   public void documentStart () throws IOException
   {
-    m_aPW = createPrintWriter ();
+    setPW (createPrintWriter ());
     _println ("<!DOCTYPE html>");
     _println ("<html lang=\"en\">");
     _println ("<head>");
@@ -143,7 +143,7 @@ public class HTMLGenerator extends TextGenerator
   {
     _println ("</body>");
     _println ("</html>");
-    m_aPW.close ();
+    getPW ().close ();
   }
 
   /*
