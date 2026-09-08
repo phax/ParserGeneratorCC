@@ -161,7 +161,7 @@ public final class LookaheadCalc
         m.m_nFirstFreeLoc = 0;
         v = new ArrayList <> ();
         v.add (m);
-        LookaheadWalk.genFirstSet (v, aCh.getChoiceAt (i));
+        LookaheadWalk.genFirstSetRecursive (v, aCh.getChoiceAt (i));
         aDbl[i] = LookaheadState.current ().getSizeLimitedMatches ();
       }
       LookaheadState.current ().setConsiderSemanticLA (false);
@@ -172,7 +172,7 @@ public final class LookaheadCalc
         m.m_nFirstFreeLoc = 0;
         v = new ArrayList <> ();
         v.add (m);
-        LookaheadWalk.genFirstSet (v, aCh.getChoiceAt (i));
+        LookaheadWalk.genFirstSetRecursive (v, aCh.getChoiceAt (i));
         aDbr[i] = LookaheadState.current ().getSizeLimitedMatches ();
       }
       if (nLa == 1)
@@ -316,11 +316,11 @@ public final class LookaheadCalc
       v = new ArrayList <> ();
       v.add (m);
       LookaheadState.current ().setConsiderSemanticLA (!Options.isForceLaCheck ());
-      LookaheadWalk.genFirstSet (v, aNested);
+      LookaheadWalk.genFirstSetRecursive (v, aNested);
       aFirst = LookaheadState.current ().getSizeLimitedMatches ();
       LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
       LookaheadState.current ().setConsiderSemanticLA (false);
-      LookaheadWalk.genFollowSet (v, aExp, Expansion.getNextGenerationIndex ());
+      LookaheadWalk.genFollowSetRecursive (v, aExp, Expansion.getNextGenerationIndex ());
       aFollow = LookaheadState.current ().getSizeLimitedMatches ();
       if (nLa == 1)
       {

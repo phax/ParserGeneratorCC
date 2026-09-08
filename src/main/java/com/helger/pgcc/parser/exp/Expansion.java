@@ -87,7 +87,7 @@ public sealed class Expansion implements IGrammarLocation permits
 
   /**
    * To avoid right-recursive loops when calculating follow sets, we use a generation number which
-   * indicates if this expansion was visited by LookaheadWalk.genFollowSet in the same generation.
+   * indicates if this expansion was visited by LookaheadWalk.genFollowSetRecursive in the same generation.
    * New generations are obtained by incrementing the static counter below, and the current
    * generation is stored in the non-static variable below.
    */
