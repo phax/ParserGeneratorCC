@@ -63,6 +63,8 @@ public final class PGCCContext
   private final GrammarState m_aGrammar = new GrammarState ();
   private final ParserBuildState m_aParserBuild = new ParserBuildState (m_aGrammar);
   private final SemanticizeState m_aSemanticize = new SemanticizeState ();
+  private final JJTreeState m_aJJTree = new JJTreeState ();
+  private final JJDocState m_aJJDoc = new JJDocState ();
 
   private PGCCContext ()
   {}
@@ -120,5 +122,17 @@ public final class PGCCContext
   public SemanticizeState semanticize ()
   {
     return m_aSemanticize;
+  }
+
+  @NonNull
+  public JJTreeState jjtree ()
+  {
+    return m_aJJTree;
+  }
+
+  @NonNull
+  public JJDocState jjdoc ()
+  {
+    return m_aJJDoc;
   }
 }

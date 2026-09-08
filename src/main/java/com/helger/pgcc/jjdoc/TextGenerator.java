@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -188,36 +190,36 @@ public class TextGenerator implements IDocGenerator
   {
     if (StringHelper.isEmpty (JJDocOptions.getOutputFile ()))
     {
-      if (JJDocGlobals.s_input_file.equals (JJDocGlobals.STANDARD_INPUT))
+      if (PGCCContext.current ().jjdoc ().getInputFile ().equals (JJDocGlobals.STANDARD_INPUT))
         return PGPrinter.getOutWriter ();
 
-      final int i = JJDocGlobals.s_input_file.lastIndexOf ('.');
+      final int i = PGCCContext.current ().jjdoc ().getInputFile ().lastIndexOf ('.');
       if (i == -1)
       {
-        JJDocGlobals.s_output_file = JJDocGlobals.s_input_file + ext;
+        PGCCContext.current ().jjdoc ().setOutputFile (PGCCContext.current ().jjdoc ().getInputFile () + ext);
       }
       else
       {
-        final String suffix = JJDocGlobals.s_input_file.substring (i);
+        final String suffix = PGCCContext.current ().jjdoc ().getInputFile ().substring (i);
         if (suffix.equals (ext))
         {
-          JJDocGlobals.s_output_file = JJDocGlobals.s_input_file + ext;
+          PGCCContext.current ().jjdoc ().setOutputFile (PGCCContext.current ().jjdoc ().getInputFile () + ext);
         }
         else
         {
-          JJDocGlobals.s_output_file = JJDocGlobals.s_input_file.substring (0, i) + ext;
+          PGCCContext.current ().jjdoc ().setOutputFile (PGCCContext.current ().jjdoc ().getInputFile ().substring (0, i) + ext);
         }
       }
     }
     else
     {
-      JJDocGlobals.s_output_file = JJDocOptions.getOutputFile ();
+      PGCCContext.current ().jjdoc ().setOutputFile (JJDocOptions.getOutputFile ());
     }
 
-    final Writer aWriter = FileHelper.getBufferedWriter (new File (JJDocGlobals.s_output_file), Options.getOutputEncoding ());
+    final Writer aWriter = FileHelper.getBufferedWriter (new File (PGCCContext.current ().jjdoc ().getOutputFile ()), Options.getOutputEncoding ());
     if (aWriter != null)
       return new PrintWriter (aWriter);
-    PGPrinter.error ("JJDoc: can't open output stream on file " + JJDocGlobals.s_output_file + ".  Using standard output.");
+    PGPrinter.error ("JJDoc: can't open output stream on file " + PGCCContext.current ().jjdoc ().getOutputFile () + ".  Using standard output.");
     return PGPrinter.getOutWriter ();
   }
 }

@@ -47,6 +47,8 @@ PARSER_BEGIN(JJTreeParser)
 
 package com.helger.pgcc.jjtree;
 
+import com.helger.pgcc.context.PGCCContext;
+
 public class JJTreeParser {
   void jjtreeOpenNodeScope(final Node n)
   {
@@ -380,7 +382,7 @@ void javacc_input() #Grammar :
   (
     "PARSER_BEGIN" "(" t=identifier() ")"
 	{
-	  JJTreeGlobals.s_parserName = t.image;
+	  PGCCContext.current ().jjtree ().setParserName (t.image);
 
           if (!isJavaLanguage) {
             while(getToken(1).kind != _PARSER_END) {
@@ -392,9 +394,9 @@ void javacc_input() #Grammar :
     "PARSER_END" "(" identifier() ")"
 	{
 	  if (JJTreeOptions.getNodePackage().equals("")) {
-	    JJTreeGlobals.s_nodePackageName = JJTreeGlobals.s_packageName;
+	    PGCCContext.current ().jjtree ().setNodePackageName (PGCCContext.current ().jjtree ().getPackageName ());
 	  } else {
-	    JJTreeGlobals.s_nodePackageName = JJTreeOptions.getNodePackage();
+	    PGCCContext.current ().jjtree ().setNodePackageName (JJTreeOptions.getNodePackage());
 	  }
 	}
   ) #CompilationUnit(true)
@@ -523,7 +525,7 @@ void javacode_production() #Javacode :
     ) #JavacodeBody
     "}"
         {
-	  JJTreeGlobals.s_productions.put(prod.m_name, prod);
+	  PGCCContext.current ().jjtree ().productions ().put(prod.m_name, prod);
 	}
 }
 
@@ -590,7 +592,7 @@ void bnf_production() #BNF :
   ) #BNFNodeScope
  "}"
         {
-	  JJTreeGlobals.s_productions.put(prod.m_name, prod);
+	  PGCCContext.current ().jjtree ().productions ().put(prod.m_name, prod);
 	}
 }
 
@@ -997,7 +999,7 @@ void CompilationUnit() :
 {}
 {
   [ LOOKAHEAD( ( Annotation() )* "package" ) PackageDeclaration() ]
-  { JJTreeGlobals.s_parserImports = getToken(1); }
+  { PGCCContext.current ().jjtree ().setParserImports (getToken(1)); }
   ( ImportDeclaration() )*
   ( TypeDeclaration() )*
 }
@@ -1009,7 +1011,7 @@ void PackageDeclaration() :
 {
   Modifiers() "package" s=Name() ";"
                 {
-		  JJTreeGlobals.s_packageName = s;
+		  PGCCContext.current ().jjtree ().setPackageName (s);
 		}
 }
 
@@ -1091,13 +1093,13 @@ void ClassOrInterfaceDeclaration():
   [ ExtendsList() ]
   [ { t = getToken(1); } ImplementsList() ]
                 {
-		  if (s.equals(JJTreeGlobals.s_parserName)) {
+		  if (s.equals(PGCCContext.current ().jjtree ().getParserName ())) {
 		    if (t != null) {
-		      JJTreeGlobals.s_parserImplements = t;
+		      PGCCContext.current ().jjtree ().setParserImplements (t);
 		    } else {
-		      JJTreeGlobals.s_parserImplements = getToken(1);
+		      PGCCContext.current ().jjtree ().setParserImplements (getToken(1));
 		    }
-		    JJTreeGlobals.s_parserClassBodyStart = getToken(1);
+		    PGCCContext.current ().jjtree ().setParserClassBodyStart (getToken(1));
 		  }
 		}
   ClassOrInterfaceBody()

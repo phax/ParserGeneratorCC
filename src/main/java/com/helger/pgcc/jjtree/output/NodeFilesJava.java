@@ -64,6 +64,8 @@
 
 package com.helger.pgcc.jjtree.output;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -176,13 +178,13 @@ public final class NodeFilesJava
     // will default to the parser's package name.
     // If the package names are different we will need to import classes
     // from the parser's package.
-    if (StringHelper.isNotEmpty (JJTreeGlobals.s_nodePackageName))
+    if (StringHelper.isNotEmpty (PGCCContext.current ().jjtree ().getNodePackageName ()))
     {
-      ostr.println ("package " + JJTreeGlobals.s_nodePackageName + ";");
+      ostr.println ("package " + PGCCContext.current ().jjtree ().getNodePackageName () + ";");
       ostr.println ();
-      if (!JJTreeGlobals.s_nodePackageName.equals (JJTreeGlobals.s_packageName))
+      if (!PGCCContext.current ().jjtree ().getNodePackageName ().equals (PGCCContext.current ().jjtree ().getPackageName ()))
       {
-        ostr.println ("import " + JJTreeGlobals.s_packageName + ".*;");
+        ostr.println ("import " + PGCCContext.current ().jjtree ().getPackageName () + ".*;");
         ostr.println ();
       }
     }
@@ -190,7 +192,7 @@ public final class NodeFilesJava
 
   public static String nodeConstants ()
   {
-    return JJTreeGlobals.s_parserName + "TreeConstants";
+    return PGCCContext.current ().jjtree ().getParserName () + "TreeConstants";
   }
 
   public static void generateTreeConstants_java ()
@@ -234,7 +236,7 @@ public final class NodeFilesJava
 
   static String visitorClass ()
   {
-    return JJTreeGlobals.s_parserName + "Visitor";
+    return PGCCContext.current ().jjtree ().getParserName () + "Visitor";
   }
 
   public static void generateVisitor_java ()
@@ -297,7 +299,7 @@ public final class NodeFilesJava
 
   static String defaultVisitorClass ()
   {
-    return JJTreeGlobals.s_parserName + "DefaultVisitor";
+    return PGCCContext.current ().jjtree ().getParserName () + "DefaultVisitor";
   }
 
   private static String _getVisitMethodName (final String className)
@@ -394,7 +396,7 @@ public final class NodeFilesJava
       generatePrologue (ostr);
 
       final Map <String, Object> options = Options.getAllOptions ();
-      options.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+      options.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
 
       final OutputFileGenerator generator = new OutputFileGenerator ("/templates/jjtree/java/Node.template", options);
 
@@ -409,7 +411,7 @@ public final class NodeFilesJava
       generatePrologue (ostr);
 
       final Map <String, Object> options = Options.getAllOptions ();
-      options.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+      options.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
       options.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (JJTreeOptions.getVisitorReturnType ().equals ("void")));
 
       final OutputFileGenerator generator = new OutputFileGenerator ("/templates/jjtree/java/SimpleNode.template", options);
@@ -425,7 +427,7 @@ public final class NodeFilesJava
       generatePrologue (ostr);
 
       final Map <String, Object> options = Options.getAllOptions ();
-      options.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+      options.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
       options.put ("NODE_TYPE", nodeType);
       options.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (JJTreeOptions.getVisitorReturnType ().equals ("void")));
 

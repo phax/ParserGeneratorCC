@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.io.IOException;
@@ -58,11 +60,11 @@ public final class JJDoc
 {
   static void start () throws IOException
   {
-    JJDocGlobals.s_generator = JJDocGlobals.getGenerator ();
-    JJDocGlobals.s_generator.documentStart ();
-    _emitTokenProductions (JJDocGlobals.s_generator, grammar ().rexprList ());
-    _emitNormalProductions (JJDocGlobals.s_generator, grammar ().bnfProductions ());
-    JJDocGlobals.s_generator.documentEnd ();
+    PGCCContext.current ().jjdoc ().setGenerator (JJDocGlobals.getGenerator ());
+    PGCCContext.current ().jjdoc ().getGenerator ().documentStart ();
+    _emitTokenProductions (PGCCContext.current ().jjdoc ().getGenerator (), grammar ().rexprList ());
+    _emitNormalProductions (PGCCContext.current ().jjdoc ().getGenerator (), grammar ().bnfProductions ());
+    PGCCContext.current ().jjdoc ().getGenerator ().documentEnd ();
   }
 
   private static Token _getPrecedingSpecialToken (final Token tok)

@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjtree;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,56 +55,17 @@ public class JJTreeGlobals
 
   static final List <String> toolList = new ArrayList <> ();
 
-  /**
-   * Use this like className.
-   **/
-  public static String s_parserName;
 
-  /**
-   * The package that the parser lives in. If the grammar doesn't specify a
-   * package it is the empty string.
-   **/
-  public static String s_packageName = "";
 
-  /**
-   * The package the node files live in. If the NODE_PACKAGE option is not set,
-   * then this defaults to packageName.
-   **/
-  public static String s_nodePackageName = "";
 
-  /**
-   * The <code>implements</code> token of the parser class. If the parser
-   * doesn't have one then it is the first "{" of the parser class body.
-   **/
-  public static Token s_parserImplements;
 
-  /**
-   * The first token of the parser class body (the <code>{</code>). The JJTree
-   * state is inserted after this token.
-   **/
-  public static Token s_parserClassBodyStart;
 
-  /**
-   * The first token of the <code>import</code> list, or the position where such
-   * a list should be inserted. The import for the Node Package is inserted
-   * after this token.
-   **/
-  public static Token s_parserImports;
 
-  /**
-   * This is mapping from production names to ASTProduction objects.
-   **/
-  static final Map <String, ASTProduction> s_productions = new HashMap <> ();
 
   static void initialize ()
   {
     toolList.clear ();
-    s_parserName = null;
-    s_packageName = "";
-    s_parserImplements = null;
-    s_parserClassBodyStart = null;
-    s_parserImports = null;
-    s_productions.clear ();
+    PGCCContext.current ().jjtree ().reset ();
 
     s_jjtreeOptions.clear ();
     s_jjtreeOptions.add ("JJTREE_OUTPUT_DIRECTORY");

@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.io.IOException;
 import java.io.Writer;
 
@@ -91,7 +93,7 @@ public class XTextGenerator implements IDocGenerator
   public void documentStart () throws IOException
   {
     m_aPW = TextGenerator.createPrintWriter ();
-    println ("grammar " + JJDocGlobals.s_input_file + " with org.eclipse.xtext.common.Terminals");
+    println ("grammar " + PGCCContext.current ().jjdoc ().getInputFile () + " with org.eclipse.xtext.common.Terminals");
     println ("import \"http://www.eclipse.org/emf/2002/Ecore\" as ecore");
     println ("");
   }

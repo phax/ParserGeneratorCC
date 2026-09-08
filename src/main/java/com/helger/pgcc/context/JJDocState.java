@@ -31,50 +31,56 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
+package com.helger.pgcc.context;
 
-package com.helger.pgcc.jjtree.output;
+import org.jspecify.annotations.Nullable;
 
-import com.helger.pgcc.context.PGCCContext;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
-import com.helger.annotation.concurrent.Immutable;
-import com.helger.base.CGlobal;
-import com.helger.pgcc.PGVersion;
-import com.helger.pgcc.jjtree.JJTreeGlobals;
-import com.helger.pgcc.jjtree.JJTreeOptions;
-import com.helger.pgcc.output.OutputFile;
-import com.helger.pgcc.parser.Options;
+import com.helger.pgcc.jjdoc.IDocGenerator;
 
 /**
- * Generate the State of a tree.
+ * The state of a single JJDoc run: what it reads, what it writes, and which generator produces the
+ * output format.
+ * <p>
+ * This is the instance state behind the static {@link com.helger.pgcc.jjdoc.JJDocGlobals} facade.
+ *
+ * @author Philip Helger
  */
-@Immutable
-public final class JJTreeStateCpp
+public final class JJDocState
 {
-  private static final String JJTStateVersion = PGVersion.MAJOR_DOT_MINOR;
+  private String m_sInputFile;
+  private String m_sOutputFile;
+  private IDocGenerator m_aGenerator;
 
-  private JJTreeStateCpp ()
-  {}
-
-  public static void generateTreeState () throws IOException
+  @Nullable
+  public String getInputFile ()
   {
-    final Map <String, Object> aOptions = Options.getAllOptions ();
-    aOptions.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
+    return m_sInputFile;
+  }
 
-    final String sFilePrefix = new File (JJTreeOptions.getJJTreeOutputDirectory (),
-                                         "JJT" + PGCCContext.current ().jjtree ().getParserName () + "State").getAbsolutePath ();
+  public void setInputFile (@Nullable final String sInputFile)
+  {
+    m_sInputFile = sInputFile;
+  }
 
-    OutputFile aOutputFile = new OutputFile (new File (sFilePrefix + ".h"),
-                                             JJTStateVersion,
-                                             CGlobal.EMPTY_STRING_ARRAY);
-    NodeFilesCpp.generateFile (aOutputFile, "/templates/jjtree/cpp/JJTTreeState.h.template", aOptions, true);
+  @Nullable
+  public String getOutputFile ()
+  {
+    return m_sOutputFile;
+  }
 
-    aOutputFile = new OutputFile (new File (sFilePrefix + ".cc"), JJTStateVersion, CGlobal.EMPTY_STRING_ARRAY);
-    NodeFilesCpp.generateFile (aOutputFile, "/templates/jjtree/cpp/JJTTreeState.cc.template", aOptions, true);
+  public void setOutputFile (@Nullable final String sOutputFile)
+  {
+    m_sOutputFile = sOutputFile;
+  }
+
+  @Nullable
+  public IDocGenerator getGenerator ()
+  {
+    return m_aGenerator;
+  }
+
+  public void setGenerator (@Nullable final IDocGenerator aGenerator)
+  {
+    m_aGenerator = aGenerator;
   }
 }

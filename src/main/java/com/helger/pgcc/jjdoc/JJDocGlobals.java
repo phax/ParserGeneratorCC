@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import com.helger.pgcc.context.PGCCContext;
+
 /**
  * Global variables for JJDoc.
  */
@@ -41,19 +43,7 @@ public final class JJDocGlobals
   public static final String STANDARD_INPUT = "standard input";
   public static final String STANDARD_OUTPUT = "standard output";
 
-  /**
-   * The name of the input file.
-   */
-  public static String s_input_file;
-  /**
-   * The name of the output file.
-   */
-  public static String s_output_file;
 
-  /**
-   * The Generator to create output with.
-   */
-  static IDocGenerator s_generator;
 
   /**
    * @param generator
@@ -61,7 +51,7 @@ public final class JJDocGlobals
    */
   public static void setGenerator (final IDocGenerator generator)
   {
-    JJDocGlobals.s_generator = generator;
+    PGCCContext.current ().jjdoc ().setGenerator (generator);
   }
 
   /**
@@ -72,54 +62,54 @@ public final class JJDocGlobals
    */
   public static IDocGenerator getGenerator ()
   {
-    if (s_generator == null)
+    if (PGCCContext.current ().jjdoc ().getGenerator () == null)
     {
       if (JJDocOptions.isText ())
       {
-        s_generator = new TextGenerator ();
+        PGCCContext.current ().jjdoc ().setGenerator (new TextGenerator ());
       }
       else
         if (JJDocOptions.isBNF ())
         {
-          s_generator = new BNFGenerator ();
+          PGCCContext.current ().jjdoc ().setGenerator (new BNFGenerator ());
         }
         else
           if (JJDocOptions.isXText ())
           {
-            s_generator = new XTextGenerator ();
+            PGCCContext.current ().jjdoc ().setGenerator (new XTextGenerator ());
           }
           else
           {
-            s_generator = new HTMLGenerator ();
+            PGCCContext.current ().jjdoc ().setGenerator (new HTMLGenerator ());
           }
     }
     else
     {
       if (JJDocOptions.isText ())
       {
-        if (s_generator instanceof HTMLGenerator)
+        if (PGCCContext.current ().jjdoc ().getGenerator () instanceof HTMLGenerator)
         {
-          s_generator = new TextGenerator ();
+          PGCCContext.current ().jjdoc ().setGenerator (new TextGenerator ());
         }
       }
       else
         if (JJDocOptions.isBNF ())
         {
-          s_generator = new BNFGenerator ();
+          PGCCContext.current ().jjdoc ().setGenerator (new BNFGenerator ());
         }
         else
           if (JJDocOptions.isXText ())
           {
-            s_generator = new XTextGenerator ();
+            PGCCContext.current ().jjdoc ().setGenerator (new XTextGenerator ());
           }
           else
           {
-            if (s_generator instanceof TextGenerator)
+            if (PGCCContext.current ().jjdoc ().getGenerator () instanceof TextGenerator)
             {
-              s_generator = new HTMLGenerator ();
+              PGCCContext.current ().jjdoc ().setGenerator (new HTMLGenerator ());
             }
           }
     }
-    return s_generator;
+    return PGCCContext.current ().jjdoc ().getGenerator ();
   }
 }

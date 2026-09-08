@@ -36,6 +36,8 @@
 
 package com.helger.pgcc.jjtree;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -176,19 +178,19 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
 
     while (true)
     {
-      if (t == JJTreeGlobals.s_parserImports)
+      if (t == PGCCContext.current ().jjtree ().getParserImports ())
       {
         // If the parser and nodes are in separate packages (NODE_PACKAGE
         // specified in
         // OPTIONS), then generate an import for the node package.
-        if (StringHelper.isNotEmpty (JJTreeGlobals.s_nodePackageName) && !JJTreeGlobals.s_nodePackageName.equals (JJTreeGlobals.s_packageName))
+        if (StringHelper.isNotEmpty (PGCCContext.current ().jjtree ().getNodePackageName ()) && !PGCCContext.current ().jjtree ().getNodePackageName ().equals (PGCCContext.current ().jjtree ().getPackageName ()))
         {
           io.getOut ().println ();
-          io.getOut ().println ("import " + JJTreeGlobals.s_nodePackageName + ".*;");
+          io.getOut ().println ("import " + PGCCContext.current ().jjtree ().getNodePackageName () + ".*;");
         }
       }
 
-      if (t == JJTreeGlobals.s_parserImplements)
+      if (t == PGCCContext.current ().jjtree ().getParserImplements ())
       {
         if (t.image.equals ("implements"))
         {
@@ -211,7 +213,7 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
         node.print (t, io);
       }
 
-      if (t == JJTreeGlobals.s_parserClassBodyStart)
+      if (t == PGCCContext.current ().jjtree ().getParserClassBodyStart ())
       {
         openJJTreeComment (io, null);
         JJTreeStateJava.insertParserMembers (io);
@@ -530,7 +532,7 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
        * Should really make the nonterminal explicitly maintain its name.
        */
       final String nt = expansion_unit.getFirstToken ().image;
-      final ASTProduction prod = JJTreeGlobals.s_productions.get (nt);
+      final ASTProduction prod = PGCCContext.current ().jjtree ().productions ().get (nt);
       if (prod != null)
       {
         for (final String t : prod.m_throws_list)

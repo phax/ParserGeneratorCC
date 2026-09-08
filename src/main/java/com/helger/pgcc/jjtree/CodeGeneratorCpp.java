@@ -36,6 +36,8 @@
 
 package com.helger.pgcc.jjtree;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -469,7 +471,7 @@ public class CodeGeneratorCpp extends DefaultJJTreeVisitor
        * Should really make the nonterminal explicitly maintain its name.
        */
       final String nt = expansion_unit.getFirstToken ().image;
-      final ASTProduction prod = JJTreeGlobals.s_productions.get (nt);
+      final ASTProduction prod = PGCCContext.current ().jjtree ().productions ().get (nt);
       if (prod != null)
       {
         for (final String t : prod.m_throws_list)

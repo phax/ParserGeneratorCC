@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.Reader;
@@ -166,8 +168,8 @@ public final class JJDocMain
     {
       PGPrinter.info ("Reading from standard input . . .");
       parser = new JavaCCParser (new StreamProvider (new DataInputStream (System.in), Charset.defaultCharset ()));
-      JJDocGlobals.s_input_file = JJDocGlobals.STANDARD_INPUT;
-      JJDocGlobals.s_output_file = JJDocGlobals.STANDARD_OUTPUT;
+      PGCCContext.current ().jjdoc ().setInputFile (JJDocGlobals.STANDARD_INPUT);
+      PGCCContext.current ().jjdoc ().setOutputFile (JJDocGlobals.STANDARD_OUTPUT);
     }
     else
     {
@@ -185,7 +187,7 @@ public final class JJDocMain
           PGPrinter.error (args[args.length - 1] + " is a directory. Please use a valid file name.");
           return ESuccess.FAILURE;
         }
-        JJDocGlobals.s_input_file = fp.getName ();
+        PGCCContext.current ().jjdoc ().setInputFile (fp.getName ());
         final Reader aReader = FileHelper.getBufferedReader (new File (args[args.length - 1]), Options.getGrammarEncoding ());
         if (aReader == null)
         {
@@ -209,7 +211,7 @@ public final class JJDocMain
       {
         if (JavaCCErrors.getWarningCount () == 0)
         {
-          PGPrinter.info ("Grammar documentation generated successfully in " + JJDocGlobals.s_output_file);
+          PGPrinter.info ("Grammar documentation generated successfully in " + PGCCContext.current ().jjdoc ().getOutputFile ());
         }
         else
         {

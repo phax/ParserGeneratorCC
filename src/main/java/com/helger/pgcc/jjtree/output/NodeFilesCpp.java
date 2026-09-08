@@ -64,6 +64,8 @@
 
 package com.helger.pgcc.jjtree.output;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -128,12 +130,12 @@ public final class NodeFilesCpp
 
   public static String jjtreeIncludeFile ()
   {
-    return new File (JJTreeOptions.getJJTreeOutputDirectory (), JJTreeGlobals.s_parserName + "Tree.h").getAbsolutePath ();
+    return new File (JJTreeOptions.getJJTreeOutputDirectory (), PGCCContext.current ().jjtree ().getParserName () + "Tree.h").getAbsolutePath ();
   }
 
   public static String jjtreeImplFile ()
   {
-    return new File (JJTreeOptions.getJJTreeOutputDirectory (), JJTreeGlobals.s_parserName + "Tree.cc").getAbsolutePath ();
+    return new File (JJTreeOptions.getJJTreeOutputDirectory (), PGCCContext.current ().jjtree ().getParserName () + "Tree.cc").getAbsolutePath ();
   }
 
   public static String jjtreeIncludeFile (final String s)
@@ -195,7 +197,7 @@ public final class NodeFilesCpp
         return;
 
       final Map <String, Object> aOptionMap = Options.getAllOptions ();
-      aOptionMap.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+      aOptionMap.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
       aOptionMap.put ("VISITOR_RETURN_TYPE", _getVisitorReturnType ());
       aOptionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
       aOptionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
@@ -229,7 +231,7 @@ public final class NodeFilesCpp
         return;
 
       final Map <String, Object> aOptionMap = Options.getAllOptions ();
-      aOptionMap.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+      aOptionMap.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
       aOptionMap.put ("VISITOR_RETURN_TYPE", _getVisitorReturnType ());
       aOptionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
       aOptionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
@@ -263,7 +265,7 @@ public final class NodeFilesCpp
         return;
 
       final Map <String, Object> aOptionMap = Options.getAllOptions ();
-      aOptionMap.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+      aOptionMap.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
       aOptionMap.put ("VISITOR_RETURN_TYPE", _getVisitorReturnType ());
       aOptionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
       aOptionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
@@ -299,7 +301,7 @@ public final class NodeFilesCpp
             return;
 
           final Map <String, Object> optionMap = Options.getAllOptions ();
-          optionMap.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+          optionMap.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
           optionMap.put ("VISITOR_RETURN_TYPE", _getVisitorReturnType ());
           optionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
           optionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
@@ -340,7 +342,7 @@ public final class NodeFilesCpp
             return;
 
           final Map <String, Object> optionMap = Options.getAllOptions ();
-          optionMap.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+          optionMap.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
           optionMap.put ("VISITOR_RETURN_TYPE", _getVisitorReturnType ());
           optionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
           optionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
@@ -378,7 +380,7 @@ public final class NodeFilesCpp
           return;
 
         final Map <String, Object> optionMap = Options.getAllOptions ();
-        optionMap.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+        optionMap.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
         optionMap.put ("VISITOR_RETURN_TYPE", _getVisitorReturnType ());
         optionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
         optionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
@@ -425,7 +427,7 @@ public final class NodeFilesCpp
         return;
 
       final Map <String, Object> optionMap = Options.getAllOptions ();
-      optionMap.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+      optionMap.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
       optionMap.put ("VISITOR_RETURN_TYPE", _getVisitorReturnType ());
       optionMap.put ("VISITOR_DATA_TYPE", _getVisitorArgumentType ());
       optionMap.put ("VISITOR_RETURN_TYPE_VOID", Boolean.valueOf (_getVisitorReturnType ().equals ("void")));
@@ -464,7 +466,7 @@ public final class NodeFilesCpp
 
   static String nodeConstants ()
   {
-    return JJTreeGlobals.s_parserName + "TreeConstants";
+    return PGCCContext.current ().jjtree ().getParserName () + "TreeConstants";
   }
 
   public static void generateTreeConstants ()
@@ -530,7 +532,7 @@ public final class NodeFilesCpp
 
   static String getVisitorClass ()
   {
-    return JJTreeGlobals.s_parserName + "Visitor";
+    return PGCCContext.current ().jjtree ().getParserName () + "Visitor";
   }
 
   private static String _getVisitMethodName (final String className)
@@ -572,7 +574,7 @@ public final class NodeFilesCpp
       ostr.println ("#ifndef " + file.getName ().replace ('.', '_').toUpperCase (Locale.US));
       ostr.println ("#define " + file.getName ().replace ('.', '_').toUpperCase (Locale.US));
       ostr.println ("\n#include \"JavaCC.h\"");
-      ostr.println ("#include \"" + JJTreeGlobals.s_parserName + "Tree.h" + "\"");
+      ostr.println ("#include \"" + PGCCContext.current ().jjtree ().getParserName () + "Tree.h" + "\"");
 
       final boolean hasNamespace = Options.stringValue (Options.USEROPTION__CPP_NAMESPACE).length () > 0;
       if (hasNamespace)
@@ -640,7 +642,7 @@ public final class NodeFilesCpp
 
   static String defaultVisitorClass ()
   {
-    return JJTreeGlobals.s_parserName + "DefaultVisitor";
+    return PGCCContext.current ().jjtree ().getParserName () + "DefaultVisitor";
   }
 
   private static void _generateDefaultVisitor (final PrintWriter ostr)

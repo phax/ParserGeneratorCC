@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,9 +103,9 @@ public class HTMLGenerator extends TextGenerator
     {
       _println ("<LINK REL=\"stylesheet\" type=\"text/css\" href=\"" + JJDocOptions.getCSS () + "\"/>");
     }
-    if (StringHelper.isNotEmpty (JJDocGlobals.s_input_file))
+    if (StringHelper.isNotEmpty (PGCCContext.current ().jjdoc ().getInputFile ()))
     {
-      _println ("<TITLE>BNF for " + JJDocGlobals.s_input_file + "</TITLE>");
+      _println ("<TITLE>BNF for " + PGCCContext.current ().jjdoc ().getInputFile () + "</TITLE>");
     }
     else
     {
@@ -111,7 +113,7 @@ public class HTMLGenerator extends TextGenerator
     }
     _println ("</HEAD>");
     _println ("<BODY>");
-    _println ("<H1 ALIGN=CENTER>BNF for " + JJDocGlobals.s_input_file + "</H1>");
+    _println ("<H1 ALIGN=CENTER>BNF for " + PGCCContext.current ().jjdoc ().getInputFile () + "</H1>");
   }
 
   @Override

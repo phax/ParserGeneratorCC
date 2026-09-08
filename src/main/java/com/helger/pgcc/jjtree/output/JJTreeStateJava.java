@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjtree.output;
 
+import com.helger.pgcc.context.PGCCContext;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -69,7 +71,7 @@ public final class JJTreeStateJava
   @Nonempty
   private static String _nameState ()
   {
-    return "JJT" + JJTreeGlobals.s_parserName + "State";
+    return "JJT" + PGCCContext.current ().jjtree ().getParserName () + "State";
   }
 
   public static void generateTreeState_java ()
