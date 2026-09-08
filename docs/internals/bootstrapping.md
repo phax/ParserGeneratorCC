@@ -12,7 +12,7 @@ produced. The change only reaches this build after:
 
 1. `parser-generator-cc` is released, and
 2. `ph-javacc-maven-plugin` is released with a dependency on that version, and
-3. this project's `ph-javacc-maven-plugin.version` property is bumped.
+3. this project's `ph-javacc-maven-plugin.version` property in `pom.xml` is bumped.
 
 Historically the project sat two releases behind, which is a large part of why the char stream bugs
 in issues #33 and #46 survived as long as they did: the generator never ran its own fixed code

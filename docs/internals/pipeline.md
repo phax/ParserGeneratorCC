@@ -19,7 +19,9 @@ method and the classes it calls.
 
 ## 1. Options
 
-`Main` reads every argument except the last as an option, so `-STATIC=false Foo.jj` is the shape.
+`Main` reads every argument except the last as an option, so `-KEEP_LINE_COLUMN=false Foo.jj` is the
+shape. An unknown name is warned about and ignored - note that this fork has no `STATIC` option at
+all, unlike upstream JavaCC.
 Options set on the command line win over the grammar's `options { … }` block; both funnel through
 `Options.setCmdLineOption` / `setInputFileOption`, which store into the map and then call
 `_applyIndirectOptionFlags` for the handful of options whose value is not fully described by that
@@ -67,7 +69,7 @@ error count decides the exit status.
 
 ## 4. Generating the parser
 
-`ParseGenJava.start` emits the parser class: the copied compilation unit, the `jj_input_stream`
+`ParseGenJava.start` (in `com.helger.pgcc.output.java`) emits the parser class: the copied compilation unit, the `jj_input_stream`
 field of whichever char stream the options select, the constructors and `ReInit` methods, then one
 method per production produced by `ParseEngine`, then the lookahead machinery (`jj_2_*`,
 `jj_3_*`, the `jj_la1` bit masks) and the error handling.
@@ -79,16 +81,19 @@ collects the matches that hit that bound so the ambiguity report can show them.
 
 ## 5. Generating the token manager
 
-`LexGenJava.start` walks the token productions per lexical state and builds, for each state:
+`LexGenJava.start` (also in `com.helger.pgcc.output.java`) walks the token productions per lexical
+state and builds, for each state:
 
 - the string literal matcher, in `ExpRStringLiteral` — a trie over the literals compiled into the
   `jjMoveStringLiteralDfa*` methods
 - the NFA for everything that is not a plain literal, in `NfaState`, which is then converted to a
   DFA and emitted as the `jjMoveNfa_*` methods and the `jjnextStates` table
 
-`NfaState.reInitStatic` and `ExpRStringLiteral.reInitStatic` are called *per lexical state*, not per
-run — that is why those two classes still keep static state while the rest of the generator does
-not.
+Both are rebuilt for **each lexical state**, not once per run: `LexGenJava.start` calls
+`lexer ().resetForLexicalState ()` at the top of its loop. That is the one place in the generator
+where state has a lifetime shorter than a run, and `NfaBuildState` / `StringLiteralBuildState` model
+it explicitly. What deliberately survives the reset is set before the loop: the token images, the
+character counter and the boiler plate flag.
 
 The emitted methods are wrapped by `templates/java/TokenManagerBoilerPlateMethods.template`, which
 contains `getNextToken`, `jjFillToken` and the skip/more/special handling.
