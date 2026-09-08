@@ -151,18 +151,16 @@ public class ParseEngine
       return _javaCodeCheck (prod.getExpansion ());
     }
 
-    if (exp instanceof ExpChoice)
+    if (exp instanceof final ExpChoice ch)
     {
-      final ExpChoice ch = (ExpChoice) exp;
       for (final Expansion choice : ch.getChoices ())
         if (_javaCodeCheck (choice))
           return true;
       return false;
     }
 
-    if (exp instanceof ExpSequence)
+    if (exp instanceof final ExpSequence seq)
     {
-      final ExpSequence seq = (ExpSequence) exp;
       for (int i = 0; i < seq.getUnitCount (); i++)
       {
         final Expansion unit = seq.getUnitAt (i);
@@ -182,27 +180,23 @@ public class ParseEngine
       return false;
     }
 
-    if (exp instanceof ExpOneOrMore)
+    if (exp instanceof final ExpOneOrMore om)
     {
-      final ExpOneOrMore om = (ExpOneOrMore) exp;
       return _javaCodeCheck (om.getExpansion ());
     }
 
-    if (exp instanceof ExpZeroOrMore)
+    if (exp instanceof final ExpZeroOrMore zm)
     {
-      final ExpZeroOrMore zm = (ExpZeroOrMore) exp;
       return _javaCodeCheck (zm.getExpansion ());
     }
 
-    if (exp instanceof ExpZeroOrOne)
+    if (exp instanceof final ExpZeroOrOne zo)
     {
-      final ExpZeroOrOne zo = (ExpZeroOrOne) exp;
       return _javaCodeCheck (zo.getExpansion ());
     }
 
-    if (exp instanceof ExpTryBlock)
+    if (exp instanceof final ExpTryBlock tb)
     {
-      final ExpTryBlock tb = (ExpTryBlock) exp;
       return _javaCodeCheck (tb.m_exp);
     }
 
@@ -234,18 +228,16 @@ public class ParseEngine
         }
       }
       else
-        if (exp instanceof ExpChoice)
+        if (exp instanceof final ExpChoice ch)
         {
-          final ExpChoice ch = (ExpChoice) exp;
           for (final Expansion element : ch.getChoices ())
           {
             _genFirstSet ((element));
           }
         }
         else
-          if (exp instanceof ExpSequence)
+          if (exp instanceof final ExpSequence seq)
           {
-            final ExpSequence seq = (ExpSequence) exp;
             final Object obj = seq.getUnitAt (0);
             if (obj instanceof ExpLookahead && ((ExpLookahead) obj).getActionTokens ().isNotEmpty ())
             {
@@ -279,27 +271,23 @@ public class ParseEngine
             }
           }
           else
-            if (exp instanceof ExpOneOrMore)
+            if (exp instanceof final ExpOneOrMore om)
             {
-              final ExpOneOrMore om = (ExpOneOrMore) exp;
               _genFirstSet (om.getExpansion ());
             }
             else
-              if (exp instanceof ExpZeroOrMore)
+              if (exp instanceof final ExpZeroOrMore zm)
               {
-                final ExpZeroOrMore zm = (ExpZeroOrMore) exp;
                 _genFirstSet (zm.getExpansion ());
               }
               else
-                if (exp instanceof ExpZeroOrOne)
+                if (exp instanceof final ExpZeroOrOne zo)
                 {
-                  final ExpZeroOrOne zo = (ExpZeroOrOne) exp;
                   _genFirstSet (zo.getExpansion ());
                 }
                 else
-                  if (exp instanceof ExpTryBlock)
+                  if (exp instanceof final ExpTryBlock tb)
                   {
-                    final ExpTryBlock tb = (ExpTryBlock) exp;
                     _genFirstSet (tb.m_exp);
                   }
   }
@@ -1040,9 +1028,8 @@ public class ParseEngine
     ExpLookahead [] conds;
     String [] actions;
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
-    if (e instanceof AbstractExpRegularExpression)
+    if (e instanceof final AbstractExpRegularExpression e_nrw)
     {
-      final AbstractExpRegularExpression e_nrw = (AbstractExpRegularExpression) e;
       retval += "\n";
       if (!e_nrw.getLhsTokens ().isEmpty ())
       {
@@ -1104,9 +1091,8 @@ public class ParseEngine
       }
     }
     else
-      if (e instanceof ExpNonTerminal)
+      if (e instanceof final ExpNonTerminal e_nrw)
       {
-        final ExpNonTerminal e_nrw = (ExpNonTerminal) e;
         retval += "\n";
         if (e_nrw.getLhsTokenCount () != 0)
         {
@@ -1147,9 +1133,8 @@ public class ParseEngine
         }
       }
       else
-        if (e instanceof ExpAction)
+        if (e instanceof final ExpAction e_nrw)
         {
-          final ExpAction e_nrw = (ExpAction) e;
           retval += INDENT_OFF + "\n";
           if (!Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) && e_nrw.getActionTokens ().size () != 0)
           {
@@ -1165,9 +1150,8 @@ public class ParseEngine
           retval += INDENT_ON;
         }
         else
-          if (e instanceof ExpChoice)
+          if (e instanceof final ExpChoice e_nrw)
           {
-            final ExpChoice e_nrw = (ExpChoice) e;
             conds = new ExpLookahead [e_nrw.getChoiceCount ()];
             actions = new String [e_nrw.getChoiceCount () + 1];
 
@@ -1201,9 +1185,8 @@ public class ParseEngine
             retval = buildLookaheadChecker (conds, actions);
           }
           else
-            if (e instanceof ExpSequence)
+            if (e instanceof final ExpSequence e_nrw)
             {
-              final ExpSequence e_nrw = (ExpSequence) e;
               // We skip the first element in the following iteration since it
               // is the
               // Lookahead object.
@@ -1244,9 +1227,8 @@ public class ParseEngine
               }
             }
             else
-              if (e instanceof ExpOneOrMore)
+              if (e instanceof final ExpOneOrMore e_nrw)
               {
-                final ExpOneOrMore e_nrw = (ExpOneOrMore) e;
                 final Expansion nested_e = e_nrw.getExpansion ();
                 ExpLookahead la;
                 if (nested_e instanceof ExpSequence)
@@ -1309,9 +1291,8 @@ public class ParseEngine
                 }
               }
               else
-                if (e instanceof ExpZeroOrMore)
+                if (e instanceof final ExpZeroOrMore e_nrw)
                 {
-                  final ExpZeroOrMore e_nrw = (ExpZeroOrMore) e;
                   final Expansion nested_e = e_nrw.getExpansion ();
                   ExpLookahead la;
                   if (nested_e instanceof ExpSequence)
@@ -1375,9 +1356,8 @@ public class ParseEngine
                   }
                 }
                 else
-                  if (e instanceof ExpZeroOrOne)
+                  if (e instanceof final ExpZeroOrOne e_nrw)
                   {
-                    final ExpZeroOrOne e_nrw = (ExpZeroOrOne) e;
                     final Expansion nested_e = e_nrw.getExpansion ();
                     ExpLookahead la;
                     if (nested_e instanceof ExpSequence)
@@ -1399,9 +1379,8 @@ public class ParseEngine
                     retval += buildLookaheadChecker (conds, actions);
                   }
                   else
-                    if (e instanceof ExpTryBlock)
+                    if (e instanceof final ExpTryBlock e_nrw)
                     {
-                      final ExpTryBlock e_nrw = (ExpTryBlock) e;
                       final Expansion nested_e = e_nrw.m_exp;
                       List <Token> list;
                       retval += "\n";
@@ -1568,9 +1547,8 @@ public class ParseEngine
           seq = ((ExpSequence) seq).getUnitAt (1);
         }
         else
-          if (seq instanceof ExpNonTerminal)
+          if (seq instanceof final ExpNonTerminal e_nrw)
           {
-            final ExpNonTerminal e_nrw = (ExpNonTerminal) seq;
             final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
             if (ntprod instanceof AbstractCodeProduction)
             {
@@ -1626,18 +1604,16 @@ public class ParseEngine
         }
       }
       else
-        if (e instanceof ExpChoice)
+        if (e instanceof final ExpChoice e_nrw)
         {
-          final ExpChoice e_nrw = (ExpChoice) e;
           for (final Expansion element : e_nrw.getChoices ())
           {
             _generate3R ((element), inf);
           }
         }
         else
-          if (e instanceof ExpSequence)
+          if (e instanceof final ExpSequence e_nrw)
           {
-            final ExpSequence e_nrw = (ExpSequence) e;
             // We skip the first element in the following iteration since it is
             // the
             // Lookahead object.
@@ -1652,27 +1628,23 @@ public class ParseEngine
             }
           }
           else
-            if (e instanceof ExpTryBlock)
+            if (e instanceof final ExpTryBlock e_nrw)
             {
-              final ExpTryBlock e_nrw = (ExpTryBlock) e;
               setupPhase3Builds (new Phase3Data (e_nrw.m_exp, inf.m_count));
             }
             else
-              if (e instanceof ExpOneOrMore)
+              if (e instanceof final ExpOneOrMore e_nrw)
               {
-                final ExpOneOrMore e_nrw = (ExpOneOrMore) e;
                 _generate3R (e_nrw.getExpansion (), inf);
               }
               else
-                if (e instanceof ExpZeroOrMore)
+                if (e instanceof final ExpZeroOrMore e_nrw)
                 {
-                  final ExpZeroOrMore e_nrw = (ExpZeroOrMore) e;
                   _generate3R (e_nrw.getExpansion (), inf);
                 }
                 else
-                  if (e instanceof ExpZeroOrOne)
+                  if (e instanceof final ExpZeroOrOne e_nrw)
                   {
-                    final ExpZeroOrOne e_nrw = (ExpZeroOrOne) e;
                     _generate3R (e_nrw.getExpansion (), inf);
                   }
   }
@@ -1680,15 +1652,11 @@ public class ParseEngine
   private String _getTypeForToken ()
   {
     final EOutputLanguage eOutputLanguage = m_codeGenerator.getOutputLanguage ();
-    switch (eOutputLanguage)
+    return switch (eOutputLanguage)
     {
-      case JAVA:
-        return "Token";
-      case CPP:
-        return "Token *";
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+      case JAVA -> "Token";
+      case CPP -> "Token *";
+    };
   }
 
   private String _genjj_3Call (final Expansion e)
@@ -1757,9 +1725,8 @@ public class ParseEngine
         m_jj3_expansion = null;
       }
     }
-    if (e instanceof AbstractExpRegularExpression)
+    if (e instanceof final AbstractExpRegularExpression e_nrw)
     {
-      final AbstractExpRegularExpression e_nrw = (AbstractExpRegularExpression) e;
       if (e_nrw.hasLabel ())
       {
         m_codeGenerator.genCodeLine ("    if (jj_scan_token(" + e_nrw.getLabel () + ")) " + _genReturn (true));
@@ -1867,9 +1834,8 @@ public class ParseEngine
           }
         }
         else
-          if (e instanceof ExpSequence)
+          if (e instanceof final ExpSequence e_nrw)
           {
-            final ExpSequence e_nrw = (ExpSequence) e;
             // We skip the first element in the following iteration since it is
             // the Lookahead object.
             int cnt = inf.m_count;
@@ -1893,9 +1859,8 @@ public class ParseEngine
             }
           }
           else
-            if (e instanceof ExpTryBlock)
+            if (e instanceof final ExpTryBlock e_nrw)
             {
-              final ExpTryBlock e_nrw = (ExpTryBlock) e;
               buildPhase3Routine (new Phase3Data (e_nrw.m_exp, inf.m_count), true);
             }
             else
@@ -2005,9 +1970,8 @@ public class ParseEngine
       if (e instanceof AbstractExpRegularExpression)
         return 1;
 
-      if (e instanceof ExpNonTerminal)
+      if (e instanceof final ExpNonTerminal e_nrw)
       {
-        final ExpNonTerminal e_nrw = (ExpNonTerminal) e;
         final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (ntprod instanceof AbstractCodeProduction)
         {
@@ -2063,15 +2027,13 @@ public class ParseEngine
         return min;
       }
 
-      if (e instanceof ExpTryBlock)
+      if (e instanceof final ExpTryBlock e_nrw)
       {
-        final ExpTryBlock e_nrw = (ExpTryBlock) e;
         return minimumSize (e_nrw.m_exp);
       }
 
-      if (e instanceof ExpOneOrMore)
+      if (e instanceof final ExpOneOrMore e_nrw)
       {
-        final ExpOneOrMore e_nrw = (ExpOneOrMore) e;
         return minimumSize (e_nrw.getExpansion ());
       }
 
@@ -2328,15 +2290,13 @@ public class ParseEngine
   void buildPhase3TableRec (final Phase3Data inf)
   {
     final Expansion e = inf.m_exp;
-    if (e instanceof AbstractExpRegularExpression)
+    if (e instanceof final AbstractExpRegularExpression e_nrw)
     {
-      final AbstractExpRegularExpression e_nrw = (AbstractExpRegularExpression) e;
       PGPrinter.info ("TOKEN, " + e_nrw.getOrdinal ());
     }
     else
-      if (e instanceof ExpNonTerminal)
+      if (e instanceof final ExpNonTerminal e_nrw)
       {
-        final ExpNonTerminal e_nrw = (ExpNonTerminal) e;
         final NormalProduction ntprod = (grammar ().productionTable ().get (e_nrw.getName ()));
         if (ntprod instanceof AbstractCodeProduction)
         {
@@ -2353,9 +2313,8 @@ public class ParseEngine
         }
       }
       else
-        if (e instanceof ExpChoice)
+        if (e instanceof final ExpChoice e_nrw)
         {
-          final ExpChoice e_nrw = (ExpChoice) e;
           PGPrinter.info ("CHOICE, ");
           for (int i = 0; i < e_nrw.getChoiceCount (); i++)
           {
@@ -2377,9 +2336,8 @@ public class ParseEngine
           PGPrinter.info ();
         }
         else
-          if (e instanceof ExpSequence)
+          if (e instanceof final ExpSequence e_nrw)
           {
-            final ExpSequence e_nrw = (ExpSequence) e;
             int cnt = inf.m_count;
             if (e_nrw.getUnitCount () > 2)
             {
@@ -2408,28 +2366,24 @@ public class ParseEngine
             PGPrinter.info ();
           }
           else
-            if (e instanceof ExpTryBlock)
+            if (e instanceof final ExpTryBlock e_nrw)
             {
-              final ExpTryBlock e_nrw = (ExpTryBlock) e;
               buildPhase3TableRec (new Phase3Data (e_nrw.m_exp, inf.m_count));
             }
             else
-              if (e instanceof ExpOneOrMore)
+              if (e instanceof final ExpOneOrMore e_nrw)
               {
-                final ExpOneOrMore e_nrw = (ExpOneOrMore) e;
                 PGPrinter.info ("SEQ PROD " + e_nrw.getExpansion ().getInternalIndex ());
                 PGPrinter.info ("ZEROORMORE " + e_nrw.getExpansion ().getInternalIndex ());
               }
               else
-                if (e instanceof ExpZeroOrMore)
+                if (e instanceof final ExpZeroOrMore e_nrw)
                 {
-                  final ExpZeroOrMore e_nrw = (ExpZeroOrMore) e;
                   PGPrinter.info ("ZEROORMORE, " + e_nrw.getExpansion ().getInternalIndex ());
                 }
                 else
-                  if (e instanceof ExpZeroOrOne)
+                  if (e instanceof final ExpZeroOrOne e_nrw)
                   {
-                    final ExpZeroOrOne e_nrw = (ExpZeroOrOne) e;
                     PGPrinter.info ("ZERORONE, " + e_nrw.getExpansion ().getInternalIndex ());
                   }
                   else

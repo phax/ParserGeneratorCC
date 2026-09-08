@@ -54,34 +54,28 @@ public final class JavaCCErrors
   @NonNull
   private static String _getLocationInfo (@Nullable final Object node)
   {
-    if (node instanceof NormalProduction)
+    if (node instanceof final NormalProduction n)
     {
-      final NormalProduction n = (NormalProduction) node;
       return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
     }
-    if (node instanceof TokenProduction)
+    if (node instanceof final TokenProduction n)
     {
-      final TokenProduction n = (TokenProduction) node;
       return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
     }
-    if (node instanceof Expansion)
+    if (node instanceof final Expansion n)
     {
-      final Expansion n = (Expansion) node;
       return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
     }
-    if (node instanceof CharacterRange)
+    if (node instanceof final CharacterRange n)
     {
-      final CharacterRange n = (CharacterRange) node;
       return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
     }
-    if (node instanceof SingleCharacter)
+    if (node instanceof final SingleCharacter n)
     {
-      final SingleCharacter n = (SingleCharacter) node;
       return "Line " + n.getLine () + ", Column " + n.getColumn () + ": ";
     }
-    if (node instanceof Token)
+    if (node instanceof final Token t)
     {
-      final Token t = (Token) node;
       return "Line " + t.beginLine + ", Column " + t.beginColumn + ": ";
     }
     return "";

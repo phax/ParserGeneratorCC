@@ -288,7 +288,7 @@ public class Options
     inputFileSetting ().clear ();
 
     for (final OptionInfo t : s_userOptions)
-      optionValues ().put (t.getName (), t.getDefault ());
+      optionValues ().put (t.name (), t.defaultValue ());
 
     PGCCContext.current ().options ().setLanguage (EOutputLanguage.JAVA);
   }
@@ -393,15 +393,11 @@ public class Options
   @Nonempty
   public static String getTokenMgrErrorClass ()
   {
-    switch (PGCCContext.current ().options ().getLanguage ())
+    return switch (PGCCContext.current ().options ().getLanguage ())
     {
-      case JAVA:
-        return "TokenMgrException";
-      case CPP:
-        return "TokenMgrError";
-      default:
-        throw new UnsupportedOutputLanguageException (PGCCContext.current ().options ().getLanguage ());
-    }
+      case JAVA -> "TokenMgrException";
+      case CPP -> "TokenMgrError";
+    };
   }
 
   /**

@@ -262,13 +262,11 @@ public final class LookaheadCalc
 
   private static boolean _explicitLA (final Expansion exp)
   {
-    if (exp instanceof ExpSequence)
+    if (exp instanceof final ExpSequence seq)
     {
-      final ExpSequence seq = (ExpSequence) exp;
       final Object obj = seq.getUnitAt (0);
-      if (obj instanceof ExpLookahead)
+      if (obj instanceof final ExpLookahead la)
       {
-        final ExpLookahead la = (ExpLookahead) obj;
         return la.isExplicit ();
       }
     }

@@ -127,22 +127,14 @@ public class Main
 
     for (final OptionInfo i : options)
     {
-      final int length = i.getName ().length ();
-      switch (i.getType ())
+      final int length = i.name ().length ();
+      switch (i.type ())
       {
-        case INTEGER:
-          maxLengthInt = length > maxLengthInt ? length : maxLengthInt;
-          break;
-        case BOOLEAN:
-          maxLengthBool = length > maxLengthBool ? length : maxLengthBool;
-          break;
-        case STRING:
-          maxLengthString = length > maxLengthString ? length : maxLengthString;
-          break;
-        case OTHER:
-        default:
-          // Not interested
-          break;
+        case INTEGER -> maxLengthInt = Math.max (length, maxLengthInt);
+        case BOOLEAN -> maxLengthBool = Math.max (length, maxLengthBool);
+        case STRING -> maxLengthString = Math.max (length, maxLengthString);
+        // OTHER is not printed
+        default -> {}
       }
     }
 
@@ -182,12 +174,15 @@ public class Main
 
   private static void _printOptionInfo (final EOptionType filter, final OptionInfo optionInfo, final int padLength)
   {
-    if (optionInfo.getType () == filter)
+    if (optionInfo.type () == filter)
     {
-      final Object default1 = optionInfo.getDefault ();
+      final Object aDefault = optionInfo.defaultValue ();
       PGPrinter.info ("    " +
-                      _padRight (optionInfo.getName (), padLength + 1) +
-                      (default1 == null ? "" : ("(default : " + (default1.toString ().length () == 0 ? "<<empty>>" : default1) + ")")));
+                      _padRight (optionInfo.name (), padLength + 1) +
+                      (aDefault == null ? ""
+                                        : ("(default : " +
+                                           (aDefault.toString ().length () == 0 ? "<<empty>>" : aDefault) +
+                                           ")")));
     }
   }
 

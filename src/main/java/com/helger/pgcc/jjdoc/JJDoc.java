@@ -407,9 +407,8 @@ public final class JJDoc
         }
       }
     }
-    if (re instanceof ExpRCharacterList)
+    if (re instanceof final ExpRCharacterList cl)
     {
-      final ExpRCharacterList cl = (ExpRCharacterList) re;
       if (cl.isNegatedList ())
       {
         returnString += "~";
@@ -449,9 +448,8 @@ public final class JJDoc
       returnString += "]";
     }
     else
-      if (re instanceof ExpRChoice)
+      if (re instanceof final ExpRChoice c)
       {
-        final ExpRChoice c = (ExpRChoice) re;
         for (final Iterator <AbstractExpRegularExpression> it = c.getChoices ().iterator (); it.hasNext ();)
         {
           final AbstractExpRegularExpression sub = (it.next ());
@@ -468,23 +466,20 @@ public final class JJDoc
           returnString += "EOF";
         }
         else
-          if (re instanceof ExpRJustName)
+          if (re instanceof final ExpRJustName jn)
           {
-            final ExpRJustName jn = (ExpRJustName) re;
             returnString += jn.getLabel ();
           }
           else
-            if (re instanceof ExpROneOrMore)
+            if (re instanceof final ExpROneOrMore om)
             {
-              final ExpROneOrMore om = (ExpROneOrMore) re;
               returnString += "(";
               returnString += emitRE (om.getRegExpr ());
               returnString += ")+";
             }
             else
-              if (re instanceof ExpRSequence)
+              if (re instanceof final ExpRSequence s)
               {
-                final ExpRSequence s = (ExpRSequence) re;
                 boolean bFirst = true;
                 for (final AbstractExpRegularExpression sub : s.getUnits ())
                 {
@@ -502,31 +497,27 @@ public final class JJDoc
                 }
               }
               else
-                if (re instanceof ExpRStringLiteral)
+                if (re instanceof final ExpRStringLiteral sl)
                 {
-                  final ExpRStringLiteral sl = (ExpRStringLiteral) re;
                   returnString += ("\"" + JavaCCGlobals.addEscapes (sl.m_image) + "\"");
                 }
                 else
-                  if (re instanceof ExpRZeroOrMore)
+                  if (re instanceof final ExpRZeroOrMore zm)
                   {
-                    final ExpRZeroOrMore zm = (ExpRZeroOrMore) re;
                     returnString += "(";
                     returnString += emitRE (zm.getRegExpr ());
                     returnString += ")*";
                   }
                   else
-                    if (re instanceof ExpRZeroOrOne)
+                    if (re instanceof final ExpRZeroOrOne zo)
                     {
-                      final ExpRZeroOrOne zo = (ExpRZeroOrOne) re;
                       returnString += "(";
                       returnString += emitRE (zo.getRegExpr ());
                       returnString += ")?";
                     }
                     else
-                      if (re instanceof ExpRRepetitionRange)
+                      if (re instanceof final ExpRRepetitionRange zo)
                       {
-                        final ExpRRepetitionRange zo = (ExpRRepetitionRange) re;
                         returnString += "(";
                         returnString += emitRE (zo.getRegExpr ());
                         returnString += ")";

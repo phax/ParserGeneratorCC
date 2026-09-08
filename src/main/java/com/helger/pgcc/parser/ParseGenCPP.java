@@ -71,9 +71,8 @@ public class ParseGenCPP extends ParseGenJava
 
     final Object object = Options.objectValue (Options.USEROPTION__CPP_PARSER_INCLUDES);
 
-    if (object instanceof String)
+    if (object instanceof final String include)
     {
-      final String include = (String) object;
       if (include.length () > 0)
       {
         if (include.charAt (0) == '<')

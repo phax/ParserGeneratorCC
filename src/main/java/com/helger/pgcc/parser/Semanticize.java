@@ -227,9 +227,8 @@ public class Semanticize
       for (final RegExprSpec aRegExprSpec : respecs)
       {
         final RegExprSpec res = (aRegExprSpec);
-        if (res.rexp instanceof ExpRStringLiteral)
+        if (res.rexp instanceof final ExpRStringLiteral sl)
         {
-          final ExpRStringLiteral sl = (ExpRStringLiteral) res.rexp;
           // This loop performs the checks and actions with respect to each
           // lexical state.
           for (int i = 0; i < table.length; i++)
@@ -448,9 +447,8 @@ public class Semanticize
         for (final RegExprSpec aRegExprSpec : respecs)
         {
           final RegExprSpec res = (aRegExprSpec);
-          if (res.rexp instanceof ExpRJustName)
+          if (res.rexp instanceof final ExpRJustName jn)
           {
-            final ExpRJustName jn = (ExpRJustName) res.rexp;
             final AbstractExpRegularExpression rexp = grammar ().namedTokensTable ().get (jn.getLabel ());
             if (rexp == null)
             {
@@ -789,9 +787,8 @@ public class Semanticize
   // and returns false otherwise.
   static private boolean _rexpWalk (final AbstractExpRegularExpression rexp)
   {
-    if (rexp instanceof ExpRJustName)
+    if (rexp instanceof final ExpRJustName jn)
     {
-      final ExpRJustName jn = (ExpRJustName) rexp;
       if (jn.m_regexpr.getWalkStatus () == -1)
       {
         jn.m_regexpr.setWalkStatus (-2);
@@ -876,9 +873,8 @@ public class Semanticize
 
     public void action (final Expansion e)
     {
-      if (e instanceof ExpRJustName)
+      if (e instanceof final ExpRJustName jn)
       {
-        final ExpRJustName jn = (ExpRJustName) e;
         final AbstractExpRegularExpression rexp = grammar ().namedTokensTable ().get (jn.getLabel ());
         if (rexp == null)
         {
@@ -998,9 +994,8 @@ public class Semanticize
 
     public void action (final Expansion e)
     {
-      if (e instanceof ExpNonTerminal)
+      if (e instanceof final ExpNonTerminal nt)
       {
-        final ExpNonTerminal nt = (ExpNonTerminal) e;
         final NormalProduction np = grammar ().productionTable ().get (nt.getName ());
         if (np == null)
         {
@@ -1076,27 +1071,24 @@ public class Semanticize
         }
       }
       else
-        if (e instanceof ExpOneOrMore)
+        if (e instanceof final ExpOneOrMore exp)
         {
-          final ExpOneOrMore exp = (ExpOneOrMore) e;
           if (Options.isForceLaCheck () || (implicitLA (exp.getExpansion ()) && Options.getLookahead () == 1))
           {
             LookaheadCalc.ebnfCalc (exp, exp.getExpansion ());
           }
         }
         else
-          if (e instanceof ExpZeroOrMore)
+          if (e instanceof final ExpZeroOrMore exp)
           {
-            final ExpZeroOrMore exp = (ExpZeroOrMore) e;
             if (Options.isForceLaCheck () || (implicitLA (exp.getExpansion ()) && Options.getLookahead () == 1))
             {
               LookaheadCalc.ebnfCalc (exp, exp.getExpansion ());
             }
           }
           else
-            if (e instanceof ExpZeroOrOne)
+            if (e instanceof final ExpZeroOrOne exp)
             {
-              final ExpZeroOrOne exp = (ExpZeroOrOne) e;
               if (Options.isForceLaCheck () || (implicitLA (exp.getExpansion ()) && Options.getLookahead () == 1))
               {
                 LookaheadCalc.ebnfCalc (exp, exp.getExpansion ());

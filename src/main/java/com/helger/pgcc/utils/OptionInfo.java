@@ -37,63 +37,25 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.base.compare.IComparable;
-import com.helger.base.equals.EqualsHelper;
-import com.helger.base.hashcode.HashCodeGenerator;
 
 /**
- * @author Chris Ainsley
+ * The description of a single user option: its name, its type and the value it has when the grammar
+ * does not set it.
+ *
+ * @param name
+ *        The option name as it is written in a grammar file. Never <code>null</code>.
+ * @param type
+ *        The type of the option value. Never <code>null</code>.
+ * @param defaultValue
+ *        The value to use when nothing sets the option. May be <code>null</code>.
+ * @author Philip Helger
  */
-public class OptionInfo implements IComparable <OptionInfo>
+public record OptionInfo (@NonNull String name,
+                          @NonNull EOptionType type,
+                          @Nullable Comparable <?> defaultValue) implements IComparable <OptionInfo>
 {
-  private final String m_name;
-  private final EOptionType m_type;
-  private final Comparable <?> m_default;
-
-  public OptionInfo (@NonNull final String name, @NonNull final EOptionType type, @Nullable final Comparable <?> default1)
-  {
-    m_name = name;
-    m_type = type;
-    m_default = default1;
-  }
-
-  @NonNull
-  public String getName ()
-  {
-    return m_name;
-  }
-
-  @NonNull
-  public EOptionType getType ()
-  {
-    return m_type;
-  }
-
-  @Nullable
-  public Comparable <?> getDefault ()
-  {
-    return m_default;
-  }
-
-  @Override
   public int compareTo (final OptionInfo o)
   {
-    return m_name.compareTo (o.m_name);
-  }
-
-  @Override
-  public boolean equals (final Object o)
-  {
-    if (o == this)
-      return true;
-    if (o == null || !getClass ().equals (o.getClass ()))
-      return false;
-    final OptionInfo rhs = (OptionInfo) o;
-    return m_name.equals (rhs.m_name) && m_type.equals (rhs.m_type) && EqualsHelper.equals (m_default, rhs.m_default);
-  }
-
-  @Override
-  public int hashCode ()
-  {
-    return new HashCodeGenerator (this).append (m_name).append (m_type).append (m_default).getHashCode ();
+    return name.compareTo (o.name);
   }
 }

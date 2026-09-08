@@ -572,15 +572,11 @@ public final class JavaCCGlobals
   @Nonempty
   static String getFileExtension ()
   {
-    switch (Options.getOutputLanguage ())
+    return switch (Options.getOutputLanguage ())
     {
-      case JAVA:
-        return ".java";
-      case CPP:
-        return ".cc";
-      default:
-        throw new UnsupportedOutputLanguageException (Options.getOutputLanguage ());
-    }
+      case JAVA -> ".java";
+      case CPP -> ".cc";
+    };
   }
 
   /**
