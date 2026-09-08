@@ -32,6 +32,16 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
+ * This file contains the code for JavaCCParser generated
+ * by JavaCCParser itself.
+ */
+
+package com.helger.pgcc.parser;
+
+/**
+ * Describes the input token stream.
+ */
+/**
  * Describes the input token stream.
  * <p>
  * The fields below are public on purpose and stay that way. Grammar action code reads t.image and
