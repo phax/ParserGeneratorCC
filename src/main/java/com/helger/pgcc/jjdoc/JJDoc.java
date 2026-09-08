@@ -389,14 +389,14 @@ public final class JJDoc
     final boolean justName = re instanceof ExpRJustName;
     final boolean eof = re instanceof ExpREndOfFile;
     final boolean isString = re instanceof ExpRStringLiteral;
-    final boolean toplevelRE = re.m_tpContext != null;
+    final boolean toplevelRE = re.m_aTpContext != null;
     final boolean needBrackets = justName || eof || hasLabel || (!isString && toplevelRE);
     if (needBrackets)
     {
       returnString += "<";
       if (!justName)
       {
-        if (re.m_private_rexp)
+        if (re.m_bPrivateRexp)
         {
           returnString += "#";
         }

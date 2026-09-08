@@ -242,7 +242,7 @@ public class OtherFilesGenJava
             }
             else
             {
-              if (re.m_tpContext.m_kind == ETokenKind.TOKEN)
+              if (re.m_aTpContext.m_kind == ETokenKind.TOKEN)
               {
                 JavaCCErrors.warning (re, "Consider giving this non-string token a label for better error reporting.");
               }

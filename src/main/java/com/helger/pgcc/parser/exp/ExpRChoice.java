@@ -177,7 +177,7 @@ public class ExpRChoice extends AbstractExpRegularExpression
 
     for (final AbstractExpRegularExpression curRE : getChoices ())
     {
-      if (!curRE.m_private_rexp &&
+      if (!curRE.m_bPrivateRexp &&
           // curRE instanceof RJustName &&
           curRE.getOrdinal () > 0 &&
           curRE.getOrdinal () < getOrdinal () &&
@@ -193,7 +193,7 @@ public class ExpRChoice extends AbstractExpRegularExpression
                                       getOrdinal ());
       }
 
-      if (!curRE.m_private_rexp && curRE instanceof ExpRStringLiteral)
+      if (!curRE.m_bPrivateRexp && curRE instanceof ExpRStringLiteral)
         numStrings++;
     }
     return numStrings;

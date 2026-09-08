@@ -279,7 +279,7 @@ public abstract class JavaCCParserInternals
       p.m_kind = ETokenKind.TOKEN;
       final RegExprSpec res = new RegExprSpec ();
       res.rexp = r;
-      res.rexp.m_tpContext = p;
+      res.rexp.m_aTpContext = p;
       res.act = new ExpAction ();
       res.nextState = null;
       res.nsTok = null;

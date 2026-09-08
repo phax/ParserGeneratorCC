@@ -155,7 +155,7 @@ public class Semanticize
               prepareToRemove (respecs, res);
             }
             else
-              if (!tp.m_isExplicit && res.rexp.m_private_rexp)
+              if (!tp.m_isExplicit && res.rexp.m_bPrivateRexp)
               {
                 JavaCCErrors.semantic_error (res.rexp, "Private (#) regular expression cannot be defined within " + "grammar productions.");
               }
@@ -254,7 +254,7 @@ public class Semanticize
                 // Since IGNORE_CASE version exists, current one is useless and
                 // bad.
                 final AbstractExpRegularExpression aOther = findIgnoreCase (table2, sl.m_image);
-                if (!sl.m_tpContext.m_isExplicit)
+                if (!sl.m_aTpContext.m_isExplicit)
                 {
                   // inline BNF string is used earlier with an IGNORE_CASE.
                   JavaCCErrors.semantic_error (sl,
@@ -276,7 +276,7 @@ public class Semanticize
                 }
               }
               else
-                if (sl.m_tpContext.m_ignoreCase)
+                if (sl.m_aTpContext.m_ignoreCase)
                 {
                   // This has to be explicit. A warning needs to be given with
                   // respect
@@ -340,17 +340,17 @@ public class Semanticize
                       }
                     }
                     else
-                      if (re.m_tpContext.m_kind != ETokenKind.TOKEN)
+                      if (re.m_aTpContext.m_kind != ETokenKind.TOKEN)
                       {
                         JavaCCErrors.semantic_error (sl,
                                                      "String token \"" +
                                                          sl.m_image +
                                                          "\" has been defined as a \"" +
-                                                         re.m_tpContext.m_kind.getImage () +
+                                                         re.m_aTpContext.m_kind.getImage () +
                                                          "\" token.");
                       }
                       else
-                        if (re.m_private_rexp)
+                        if (re.m_bPrivateRexp)
                         {
                           JavaCCErrors.semantic_error (sl,
                                                        "String token \"" +
@@ -614,11 +614,11 @@ public class Semanticize
                                                              final String str)
   {
     final AbstractExpRegularExpression rexp = table.get (str);
-    if (rexp != null && !rexp.m_tpContext.m_ignoreCase)
+    if (rexp != null && !rexp.m_aTpContext.m_ignoreCase)
       return null;
 
     for (final AbstractExpRegularExpression aRegEx : table.values ())
-      if (aRegEx.m_tpContext.m_ignoreCase)
+      if (aRegEx.m_aTpContext.m_ignoreCase)
         return aRegEx;
     return null;
   }
@@ -881,13 +881,13 @@ public class Semanticize
           JavaCCErrors.semantic_error (e, "Undefined lexical token name \"" + jn.getLabel () + "\".");
         }
         else
-          if (jn == m_root && !jn.m_tpContext.m_isExplicit && rexp.m_private_rexp)
+          if (jn == m_root && !jn.m_aTpContext.m_isExplicit && rexp.m_bPrivateRexp)
           {
             JavaCCErrors.semantic_error (e,
                                          "Token name \"" + jn.getLabel () + "\" refers to a private " + "(with a #) regular expression.");
           }
           else
-            if (jn == m_root && !jn.m_tpContext.m_isExplicit && rexp.m_tpContext.m_kind != ETokenKind.TOKEN)
+            if (jn == m_root && !jn.m_aTpContext.m_isExplicit && rexp.m_aTpContext.m_kind != ETokenKind.TOKEN)
             {
               JavaCCErrors.semantic_error (e,
                                            "Token name \"" +

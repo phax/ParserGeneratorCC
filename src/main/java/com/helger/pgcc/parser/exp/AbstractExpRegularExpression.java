@@ -55,38 +55,38 @@ public abstract class AbstractExpRegularExpression extends Expansion
    * The label of the regular expression (if any). If no label is present, this
    * is set to "".
    */
-  private String m_label = "";
+  private String m_sLabel = "";
 
   /**
    * The ordinal value assigned to the regular expression. It is used for
    * internal processing and passing information between the parser and the
    * lexical analyzer.
    */
-  private int m_ordinal;
+  private int m_nOrdinal;
 
   /**
    * The LHS to which the token value of the regular expression is assigned. In
    * case there is no LHS, then the list remains empty.
    */
-  private final List <Token> m_lhsTokens = new ArrayList <> ();
+  private final List <Token> m_aLhsTokens = new ArrayList <> ();
 
   /**
    * We now allow qualified access to token members. Store it here.
    */
-  private Token m_rhsToken;
+  private Token m_aRhsToken;
 
   /**
    * This flag is set if the regular expression has a label prefixed with the #
    * symbol - this indicates that the purpose of the regular expression is
    * solely for defining other regular expressions.
    */
-  public boolean m_private_rexp = false;
+  public boolean m_bPrivateRexp = false;
 
   /**
    * If this is a top-level regular expression (nested directly within a
    * TokenProduction), then this field point to that TokenProduction object.
    */
-  public TokenProduction m_tpContext;
+  public TokenProduction m_aTpContext;
   /**
    * The following variable is used to maintain state information for the loop
    * determination algorithm: It is initialized to 0, and set to -1 if this node
@@ -94,40 +94,40 @@ public abstract class AbstractExpRegularExpression extends Expansion
    * pre-order walk of the whole graph from this node has been traversed. i.e.,
    * -1 indicates partially processed, and 1 indicates fully processed.
    */
-  private int m_walkStatus = 0;
+  private int m_nWalkStatus = 0;
 
   protected AbstractExpRegularExpression ()
   {}
 
   public final String getLabel ()
   {
-    return m_label;
+    return m_sLabel;
   }
 
   public final boolean hasLabel ()
   {
-    return StringHelper.isNotEmpty (m_label);
+    return StringHelper.isNotEmpty (m_sLabel);
   }
 
   public final void setLabel (final String s)
   {
-    m_label = s;
+    m_sLabel = s;
   }
 
   public final int getOrdinal ()
   {
-    return m_ordinal;
+    return m_nOrdinal;
   }
 
   public final void setOrdinal (final int n)
   {
-    m_ordinal = n;
+    m_nOrdinal = n;
   }
 
   @NonNull
   public final List <Token> getLhsTokens ()
   {
-    return m_lhsTokens;
+    return m_aLhsTokens;
   }
 
   /**
@@ -136,29 +136,29 @@ public abstract class AbstractExpRegularExpression extends Expansion
    */
   public final void setLhsTokens (@NonNull final List <Token> lhsTokens)
   {
-    m_lhsTokens.clear ();
-    m_lhsTokens.addAll (lhsTokens);
+    m_aLhsTokens.clear ();
+    m_aLhsTokens.addAll (lhsTokens);
   }
 
   @Nullable
   public final Token getRhsToken ()
   {
-    return m_rhsToken;
+    return m_aRhsToken;
   }
 
   public final void setRhsToken (@Nullable final Token rhsToken)
   {
-    m_rhsToken = rhsToken;
+    m_aRhsToken = rhsToken;
   }
 
   public final int getWalkStatus ()
   {
-    return m_walkStatus;
+    return m_nWalkStatus;
   }
 
   public final void setWalkStatus (final int n)
   {
-    m_walkStatus = n;
+    m_nWalkStatus = n;
   }
 
   public abstract Nfa generateNfa (boolean ignoreCase);
@@ -174,7 +174,7 @@ public abstract class AbstractExpRegularExpression extends Expansion
   {
     aAlreadyDumped.add (this);
     final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
-    aSB.append (' ').append (m_label);
+    aSB.append (' ').append (m_sLabel);
     return aSB;
   }
 }

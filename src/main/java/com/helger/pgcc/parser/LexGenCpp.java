@@ -353,7 +353,7 @@ public class LexGenCpp extends LexGenJava
           s_lexStates[s_curRE.getOrdinal ()] = s_lexStateIndex;
           s_ignoreCase[s_curRE.getOrdinal ()] = ignore;
 
-          if (s_curRE.m_private_rexp)
+          if (s_curRE.m_bPrivateRexp)
           {
             s_kinds[s_curRE.getOrdinal ()] = null;
             continue;
