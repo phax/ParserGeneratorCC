@@ -39,8 +39,12 @@ affect this project's own build until it has been released and a new plugin pick
 assume a codegen change is self-applying, and do not "fix" a build failure by assuming the local
 generator was used.
 
-To verify a codegen change *before* releasing it, use the `selfhost` profile, which builds this
-project with its own generator:
+`SelfGenerateFuncTest` is the cheap check: it regenerates this project's own parsers with the code
+in the checkout and fails if they differ from the ones the build is using. It needs nothing but
+`mvn test`. `SelfGenerate.main` writes the same output to `target/selfgen` if you want to look at
+it.
+
+To go further and actually *build* with the regenerated parser, use the `selfhost` profile:
 
 ```
 mvn clean install -DskipTests                                  # 1. this project, built by the released plugin
