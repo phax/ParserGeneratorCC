@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.output.IParserSyntax;
+
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.util.HashSet;
@@ -62,6 +64,16 @@ import com.helger.pgcc.parser.exp.Expansion;
 
 public class ParseEngine
 {
+  /**
+   * @return The syntax of the target language, so that the engine says what it wants emitted rather
+   *         than switching on the language at every spot.
+   */
+  @NonNull
+  private IParserSyntax _syntax ()
+  {
+    return IParserSyntax.of (m_codeGenerator.getOutputLanguage ());
+  }
+
   private int m_nGenSymbolIndex = 0;
   private int m_nIndentCount = 0;
   private boolean m_bJJ2LA = false;
@@ -407,17 +419,7 @@ public class ParseEngine
                 retval += "\n" + "switch (";
                 if (Options.isCacheTokens ())
                 {
-                  switch (eOutputLanguage)
-                  {
-                    case JAVA:
-                      retval += "jj_nt.kind";
-                      break;
-                    case CPP:
-                      retval += "jj_nt->kind";
-                      break;
-                    default:
-                      throw new UnsupportedOutputLanguageException (eOutputLanguage);
-                  }
+                  retval += "jj_nt" + _syntax ().getMemberAccess () + "kind";
                 }
                 else
                   retval += "jj_ntk == -1 ? jj_ntk_f() : jj_ntk";
@@ -929,18 +931,7 @@ public class ParseEngine
 
     if (p.isJumpPatched () && !voidReturn)
     {
-      switch (eOutputLanguage)
-      {
-        case JAVA:
-          // This line is required for Java!
-          m_codeGenerator.genCodeLine ("    throw new IllegalStateException (\"Missing return statement in function\");");
-          break;
-        case CPP:
-          m_codeGenerator.genCodeLine ("    throw \"Missing return statement in function\";");
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      m_codeGenerator.genCodeLine (_syntax ().getMissingReturnStatement ());
     }
     if (Options.isDebugParser ())
     {
@@ -1015,17 +1006,7 @@ public class ParseEngine
       if (e_nrw.getRhsToken () == null)
         tail = ");";
       else
-        switch (eOutputLanguage)
-        {
-          case JAVA:
-            tail = ")." + e_nrw.getRhsToken ().image + ";";
-            break;
-          case CPP:
-            tail = ")->" + e_nrw.getRhsToken ().image + ";";
-            break;
-          default:
-            throw new UnsupportedOutputLanguageException (eOutputLanguage);
-        }
+        tail = ")" + _syntax ().getMemberAccess () + e_nrw.getRhsToken ().image + ";";
 
       if (e_nrw.hasLabel ())
       {
@@ -1212,19 +1193,7 @@ public class ParseEngine
                 }
                 retval += "\n";
                 final int labelIndex = ++m_nGenSymbolIndex;
-                switch (eOutputLanguage)
-                {
-                  case JAVA:
-                    retval += "label_" + labelIndex + ":\n";
-                    retval += "while (true) {" + INDENT_INC;
-                    break;
-                  case CPP:
-                    // nothing
-                    retval += "while (!hasError) {" + INDENT_INC;
-                    break;
-                  default:
-                    throw new UnsupportedOutputLanguageException (eOutputLanguage);
-                }
+                retval += _syntax ().getLoopStart (labelIndex) + INDENT_INC;
                 retval += _phase1ExpansionGen (nested_e);
                 conds = new ExpLookahead [1];
                 conds[0] = la;
@@ -1232,32 +1201,12 @@ public class ParseEngine
                 // [ph] empty statement needed???
                 actions[0] = true ? "" : "\n;";
 
-                switch (eOutputLanguage)
-                {
-                  case JAVA:
-                    actions[1] = "\nbreak label_" + labelIndex + ";";
-                    break;
-                  case CPP:
-                    actions[1] = "\ngoto end_label_" + labelIndex + ";";
-                    break;
-                  default:
-                    throw new UnsupportedOutputLanguageException (eOutputLanguage);
-                }
+                actions[1] = _syntax ().getLoopBreak (labelIndex);
 
                 retval += buildLookaheadChecker (conds, actions);
                 retval += INDENT_DEC + "\n" + "}";
 
-                switch (eOutputLanguage)
-                {
-                  case JAVA:
-                    // nothing
-                    break;
-                  case CPP:
-                    retval += "\nend_label_" + labelIndex + ": ;";
-                    break;
-                  default:
-                    throw new UnsupportedOutputLanguageException (eOutputLanguage);
-                }
+                retval += _syntax ().getLoopEnd (labelIndex);
               }
               else
                 if (e instanceof final ExpZeroOrMore e_nrw)
@@ -1276,19 +1225,7 @@ public class ParseEngine
                   }
                   retval += "\n";
                   final int labelIndex = ++m_nGenSymbolIndex;
-                  switch (eOutputLanguage)
-                  {
-                    case JAVA:
-                      retval += "label_" + labelIndex + ":\n";
-                      retval += "while (true) {" + INDENT_INC;
-                      break;
-                    case CPP:
-                      // nothing
-                      retval += "while (!hasError) {" + INDENT_INC;
-                      break;
-                    default:
-                      throw new UnsupportedOutputLanguageException (eOutputLanguage);
-                  }
+                  retval += _syntax ().getLoopStart (labelIndex) + INDENT_INC;
 
                   conds = new ExpLookahead [1];
                   conds[0] = la;
@@ -1296,33 +1233,13 @@ public class ParseEngine
                   // [ph] empty statement needed???
                   actions[0] = true ? "" : "\n;";
 
-                  switch (eOutputLanguage)
-                  {
-                    case JAVA:
-                      actions[1] = "\nbreak label_" + labelIndex + ";";
-                      break;
-                    case CPP:
-                      actions[1] = "\ngoto end_label_" + labelIndex + ";";
-                      break;
-                    default:
-                      throw new UnsupportedOutputLanguageException (eOutputLanguage);
-                  }
+                  actions[1] = _syntax ().getLoopBreak (labelIndex);
 
                   retval += buildLookaheadChecker (conds, actions);
                   retval += _phase1ExpansionGen (nested_e);
                   retval += INDENT_DEC + "\n" + "}";
 
-                  switch (eOutputLanguage)
-                  {
-                    case JAVA:
-                      // nothing
-                      break;
-                    case CPP:
-                      retval += "\nend_label_" + labelIndex + ": ;";
-                      break;
-                    default:
-                      throw new UnsupportedOutputLanguageException (eOutputLanguage);
-                  }
+                  retval += _syntax ().getLoopEnd (labelIndex);
                 }
                 else
                   if (e instanceof final ExpZeroOrOne e_nrw)
@@ -1392,17 +1309,9 @@ public class ParseEngine
                       }
                       if (e_nrw.m_finallyblk != null)
                       {
-                        switch (eOutputLanguage)
-                        {
-                          case JAVA:
-                            retval += " finally {" + INDENT_OFF + "\n";
-                            break;
-                          case CPP:
-                            retval += " finally {" + INDENT_OFF + "\n";
-                            break;
-                          default:
-                            throw new UnsupportedOutputLanguageException (eOutputLanguage);
-                        }
+                        // Both languages emit the same thing here - C++ gets a "finally" block
+                        // that its own runtime header defines
+                        retval += " finally {" + INDENT_OFF + "\n";
 
                         if (e_nrw.m_finallyblk.size () != 0)
                         {
@@ -2157,17 +2066,7 @@ public class ParseEngine
             codeGenerator.printTrailingComments (t);
           }
           codeGenerator.genCode (")");
-          switch (eOutputLanguage)
-          {
-            case JAVA:
-              codeGenerator.genCode (" throws ParseException");
-              break;
-            case CPP:
-              // nothing
-              break;
-            default:
-              throw new UnsupportedOutputLanguageException (eOutputLanguage);
-          }
+          codeGenerator.genCode (IParserSyntax.of (eOutputLanguage).getThrowsClause ());
           for (final List <Token> aElement2 : jp.getThrowsList ())
           {
             codeGenerator.genCode (", ");

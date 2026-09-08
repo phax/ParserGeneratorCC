@@ -129,7 +129,14 @@ com.helger.pgcc.jjdoc         JJDoc and its four output formats
 com.helger.pgcc.utils         the template engine
 ```
 
-`parser` no longer contains anything that writes a file. What is left there that still branches on
-the output language - `ParseEngine` (11 sites), `NfaState` (8) and `ExpRStringLiteral` (7) - is the
-remaining Phase 2 work: those decisions belong in the backends, reached through an interface rather
-than an `if`.
+`parser` no longer contains anything that writes a file.
+
+What still branches on the output language is being pulled into
+`com.helger.pgcc.output.IParserSyntax`, implemented once per language. `ParseEngine` asks it for the
+loop constructs, the member access operator, the missing-return statement and the throws clause
+instead of switching on the language at each spot, so adding a target language means implementing
+the interface rather than finding every branch.
+
+The branches that remain there are not syntax but whole emission strategies - the C++ side of
+`STOP_ON_FIRST_ERROR`, the depth limit guards, the error handler calls and the tracing wrappers -
+and they want methods designed for what they do rather than a mechanical extraction.
