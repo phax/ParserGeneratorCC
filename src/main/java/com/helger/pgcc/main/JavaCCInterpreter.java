@@ -84,9 +84,9 @@ public class JavaCCInterpreter
       parser.javacc_input ();
       Semanticize.start ();
       final LexGenJava lg = new LexGenJava ();
-      LexGenJava.s_generateDataOnly = true;
+      LexGenJava.lexer ().setGenerateDataOnly (true);
       lg.start ();
-      final TokenizerData td = LexGenJava.s_tokenizerData;
+      final TokenizerData td = LexGenJava.lexer ().getTokenizerData ();
       if (JavaCCErrors.getErrorCount () == 0)
       {
         _tokenize (td, input);

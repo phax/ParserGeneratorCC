@@ -20,6 +20,7 @@ with a list of `reInit` methods that nothing enforced.
 | `semanticize ()` | deferred removals, the recursion path found so far | 3 statics in `Semanticize` |
 | `jjtree ()` | the parser being decorated, the package names, the class declaration pieces | 6 statics in `JJTreeGlobals` |
 | `jjdoc ()` | input file, output file, output generator | 3 statics in `JJDocGlobals` |
+| `lexer ()` | everything the token manager generation works with | 43 statics in `LexGenJava` |
 
 The old classes are still the API — `JavaCCGlobals.grammar ()`, `Options.getOutputLanguage ()`,
 `JavaCCErrors.warning (…)` — they just delegate. Grammar action code in `JavaCC.jj` and
@@ -29,16 +30,16 @@ The old classes are still the API — `JavaCCGlobals.grammar ()`, `Options.getOu
 
 | Class | Count | Why |
 |---|---|---|
-| `LexGenJava` | 43 | the working set of a single `LexGenJava.start ()` call |
 | `NfaState` | 17 | reset per *lexical state*, not per run |
 | `ExpRStringLiteral` | 12 | same |
 | `PGPrinter` | 2 | the console, legitimately process wide |
 | `FilesJava` | 1 | a test hook that makes templates load from the checkout |
 
-The lexer trio is deliberately last. Those fields are not the state of a run, they are the state of
-one `LexGenJava.start ()` call — `NfaState.reInitStatic ()` and `ExpRStringLiteral.reInitStatic ()`
-are called once *per lexical state* inside the loop. Moving them into the context would encode the
-wrong lifetime. They belong as instance fields of the lexer backend, which is a separate step.
+`NfaState` and `ExpRStringLiteral` are last for a reason: their state is reset once *per lexical
+state*, not per run — `NfaState.reInitStatic ()` and `ExpRStringLiteral.reInitStatic ()` are called
+inside the loop in `LexGenJava.start ()`. `LexerState` holds the run-scoped part already; what is
+left is the per-lexical-state DFA construction, which wants to be an object created inside that
+loop rather than a slot in the run's context.
 
 ## Two statics that disappeared rather than moved
 

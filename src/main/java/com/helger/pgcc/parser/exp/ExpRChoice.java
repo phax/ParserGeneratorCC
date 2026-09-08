@@ -181,7 +181,7 @@ public class ExpRChoice extends AbstractExpRegularExpression
           // curRE instanceof RJustName &&
           curRE.getOrdinal () > 0 &&
           curRE.getOrdinal () < getOrdinal () &&
-          LexGenJava.s_lexStates[curRE.getOrdinal ()] == LexGenJava.s_lexStates[getOrdinal ()])
+          LexGenJava.lexer ().getLexStates ()[curRE.getOrdinal ()] == LexGenJava.lexer ().getLexStates ()[getOrdinal ()])
       {
         if (hasLabel ())
           JavaCCErrors.warning (this, "Regular Expression choice : " + curRE.getLabel () + " can never be matched as : " + getLabel ());

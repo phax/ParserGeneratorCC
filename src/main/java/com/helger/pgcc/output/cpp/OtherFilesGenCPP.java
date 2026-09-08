@@ -185,10 +185,10 @@ public class OtherFilesGenCPP
 
       if (!Options.isUserTokenManager () && Options.isBuildTokenManager ())
       {
-        for (int i = 0; i < LexGenJava.s_lexStateName.length; i++)
+        for (int i = 0; i < LexGenJava.lexer ().getLexStateName ().length; i++)
         {
           s_ostr.println ("  /** Lexical state. */");
-          s_ostr.println (constPrefix + "  int " + LexGenJava.s_lexStateName[i] + " = " + i + ";");
+          s_ostr.println (constPrefix + "  int " + LexGenJava.lexer ().getLexStateName ()[i] + " = " + i + ";");
         }
         s_ostr.println ("");
       }

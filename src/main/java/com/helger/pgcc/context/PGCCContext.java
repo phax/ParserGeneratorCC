@@ -65,6 +65,7 @@ public final class PGCCContext
   private final SemanticizeState m_aSemanticize = new SemanticizeState ();
   private final JJTreeState m_aJJTree = new JJTreeState ();
   private final JJDocState m_aJJDoc = new JJDocState ();
+  private final LexerState m_aLexer = new LexerState ();
 
   private PGCCContext ()
   {}
@@ -134,5 +135,11 @@ public final class PGCCContext
   public JJDocState jjdoc ()
   {
     return m_aJJDoc;
+  }
+
+  @NonNull
+  public LexerState lexer ()
+  {
+    return m_aLexer;
   }
 }

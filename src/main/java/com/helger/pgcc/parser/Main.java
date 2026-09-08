@@ -396,6 +396,5 @@ public class Main
     com.helger.pgcc.output.java.FilesJava.reInit ();
     com.helger.pgcc.parser.NfaState.reInit ();
     com.helger.pgcc.output.java.OtherFilesGenJava.reInit ();
-    com.helger.pgcc.parser.LexGenJava.reInit ();
   }
 }
