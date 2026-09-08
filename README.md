@@ -31,6 +31,11 @@ Add the following to your pom.xml to use this artifact (replacing `x.y.z` with t
 </dependency>
 ```
 
+## Documentation
+
+* [`docs/internals/`](docs/internals/) - how the generator works: the pipeline, the generator state, the template language and the bootstrap loop
+* [`www/doc/`](www/doc/) - the JavaCC language reference
+
 ## Option `JAVA_CHAR_STREAM_TYPE`
 
 Controls which `CharStream` implementation is generated for Java:

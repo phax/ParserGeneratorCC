@@ -133,6 +133,12 @@ Tests that must read the checkout's templates rather than an older `parser-gener
 classpath call `FilesJava.setReadFromClassPath (false)` and restore it afterwards — it is a static
 global, so restore it in a `finally` / `@AfterClass`.
 
+## Internals documentation
+
+`docs/internals/` explains the pipeline, where the generator state lives, the template language and
+the bootstrap loop - derived from the code, not from the upstream JavaCC docs. Read it before
+changing anything in `NfaState`, `ParseEngine` or `Semanticize`, and keep it in sync when you do.
+
 ## Code style
 
 Follow the global rules in `~/.claude/rules/naming.md` (Hungarian notation, `_privateMethod`, space
