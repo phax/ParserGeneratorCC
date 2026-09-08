@@ -34,6 +34,9 @@
 package com.helger.pgcc.utils;
 
 /**
+ * The type of a grammar option's value, which decides how the value read from the command line or
+ * from the options block is parsed and validated.
+ *
  * @author Chris Ainsley
  */
 public enum EOptionType

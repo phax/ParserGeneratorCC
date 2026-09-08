@@ -103,34 +103,69 @@ public abstract sealed class AbstractExpRegularExpression extends Expansion perm
    */
   private int m_nWalkStatus = 0;
 
+  /** Default constructor. */
   protected AbstractExpRegularExpression ()
   {}
 
+  /**
+   * The name in angle brackets, if the grammar gave this one.
+   *
+   * @return The name this regular expression was given in the grammar, empty if it is
+   *         anonymous. Never <code>null</code>.
+   */
   public final String getLabel ()
   {
     return m_sLabel;
   }
 
+  /**
+   * Whether this regular expression has a name at all.
+   *
+   * @return <code>true</code> if this regular expression was named in the grammar.
+   */
   public final boolean hasLabel ()
   {
     return StringHelper.isNotEmpty (m_sLabel);
   }
 
+  /**
+   * Name this regular expression.
+   *
+   * @param s
+   *        The name to give this regular expression.
+   */
   public final void setLabel (final String s)
   {
     m_sLabel = s;
   }
 
+  /**
+   * The token kind, which is the number the token manager reports on a match.
+   *
+   * @return The token kind this regular expression matches, as assigned by Semanticize.
+   */
   public final int getOrdinal ()
   {
     return m_nOrdinal;
   }
 
+  /**
+   * Assign the token kind. Semanticize does this once every regular expression is known.
+   *
+   * @param n
+   *        The token kind to assign.
+   */
   public final void setOrdinal (final int n)
   {
     m_nOrdinal = n;
   }
 
+  /**
+   * The left hand side of an assignment in a token production.
+   *
+   * @return The variables this regular expression assigns to when it matches. Never
+   *         <code>null</code>.
+   */
   @NonNull
   public final List <Token> getLhsTokens ()
   {
@@ -138,6 +173,8 @@ public abstract sealed class AbstractExpRegularExpression extends Expansion perm
   }
 
   /**
+   * The variables this regular expression assigns to when it matches.
+   *
    * @param aLhsTokens
    *        the lhsTokens to set
    */
@@ -147,29 +184,65 @@ public abstract sealed class AbstractExpRegularExpression extends Expansion perm
     m_aLhsTokens.addAll (aLhsTokens);
   }
 
+  /**
+   * The right hand side of an assignment in a token production.
+   *
+   * @return The token that names what is assigned, or <code>null</code> if there is none.
+   */
   @Nullable
   public final Token getRhsToken ()
   {
     return m_aRhsToken;
   }
 
+  /**
+   * The right hand side of an assignment in a token production.
+   *
+   * @param aRhsToken
+   *        The token that names what is assigned. May be <code>null</code>.
+   */
   public final void setRhsToken (@Nullable final Token aRhsToken)
   {
     m_aRhsToken = aRhsToken;
   }
 
+  /**
+   * Where the loop detection walk has got to with this node.
+   *
+   * @return How far the loop detection walk has got with this node: 0 untouched, -1 partially
+   *         processed, 1 fully processed.
+   */
   public final int getWalkStatus ()
   {
     return m_nWalkStatus;
   }
 
+  /**
+   * Record where the loop detection walk has got to.
+   *
+   * @param n
+   *        The walk state to record. See {@link #getWalkStatus()}.
+   */
   public final void setWalkStatus (final int n)
   {
     m_nWalkStatus = n;
   }
 
+  /**
+   * Build the NFA fragment that matches this regular expression.
+   *
+   * @param ignoreCase
+   *        <code>true</code> if the enclosing token production is IGNORE_CASE.
+   * @return the start and end state of the fragment. Never <code>null</code>.
+   */
   public abstract Nfa generateNfa (boolean ignoreCase);
 
+  /**
+   * Whether this is the "match anything" expression.
+   *
+   * @return <code>true</code> if this matches every single character, which the token manager
+   *         can special case.
+   */
   public boolean canMatchAnyChar ()
   {
     return false;

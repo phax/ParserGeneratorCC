@@ -192,12 +192,23 @@ public final class SelfGenerateFuncTest
       LOGGER.info ("  differs: " + s);
 
     // Pinned so that a codegen change shows up here as a failing assertion with the file list,
-    // instead of quietly waiting two releases to become visible
+    // instead of quietly waiting two releases to become visible.
+    //
+    // These six are the char stream templates gaining their missing javadoc. The change is in this
+    // checkout's templates, so this project's own sources will only pick it up once a release has
+    // been made and the plugin has been rebuilt against it - at which point this list goes back to
+    // being empty.
+    final List <String> aExpectedToDiffer = List.of ("com/helger/pgcc/jjtree/AbstractCharStream.java",
+                                                     "com/helger/pgcc/jjtree/CharStream.java",
+                                                     "com/helger/pgcc/parser/AbstractCharStream.java",
+                                                     "com/helger/pgcc/parser/CharStream.java",
+                                                     "com/helger/pgcc/utils/AbstractCharStream.java",
+                                                     "com/helger/pgcc/utils/CharStream.java");
     assertEquals ("The parsers this project would generate for itself differ from the ones it is " +
                   "built with. That is expected right after a codegen change - update this " +
                   "expectation together with the golden files. Differing: " +
                   aDifferent,
-                  List.of (),
+                  aExpectedToDiffer,
                   aDifferent);
   }
 }

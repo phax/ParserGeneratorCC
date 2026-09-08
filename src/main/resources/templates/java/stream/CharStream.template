@@ -27,26 +27,30 @@ interface CharStream {
   char readChar() throws java.io.IOException;
 
   /**
+   * Where the token being matched starts.
    * @return the column number of the first character for current token (being
    * matched after the last call to beginToken).
    */
   int getBeginColumn();
 
   /**
+   * Where the token being matched starts.
    * @return the line number of the first character for current token (being
-   * matched after the last call to BeginToken).
+   * matched after the last call to beginToken).
    */
   int getBeginLine();
 
   /**
+   * Where the token being matched ends.
    * @return the column number of the last character for current token (being
-   * matched after the last call to BeginToken).
+   * matched after the last call to beginToken).
    */
   int getEndColumn();
 
   /**
+   * Where the token being matched ends.
    * @return the line number of the last character for current token (being
-   * matched after the last call to BeginToken).
+   * matched after the last call to beginToken).
    */
   int getEndLine();
 
@@ -60,13 +64,16 @@ interface CharStream {
   void backup(int amount);
 
   /**
+   * Start matching a new token here.
    * @return the next character that marks the beginning of the next token.
    * All characters must remain in the buffer between two successive calls
    * to this method to implement backup correctly.
+   * @throws java.io.IOException on IO error
    */
   char beginToken() throws java.io.IOException;
 
   /**
+   * The text of the token being matched.
    * @return a string made up of characters from the marked token beginning
    * to the current buffer position. Implementations have the choice of returning
    * anything that they want to. For example, for efficiency, one might decide
@@ -75,6 +82,8 @@ interface CharStream {
   String getImage();
 
   /**
+   * The tail of the token being matched, for MORE productions.
+   * @param len the number of characters wanted
    * @return an array of characters that make up the suffix of length 'len' for
    * the currently matched token. This is used to build up the matched string
    * for use in actions in the case of MORE. A simple and inefficient
@@ -99,6 +108,7 @@ interface CharStream {
   // Getters and setters
   
   /**
+   * How wide a tab is taken to be when counting columns.
    * @return Current tab size.
    */
   int getTabSize();
@@ -111,6 +121,7 @@ interface CharStream {
 #if KEEP_LINE_COLUMN
 
   /**
+   * Whether positions are being maintained at all.
    * @return <code>true</code> if line number and column numbers should be tracked.
    */
   boolean isTrackLineColumn();

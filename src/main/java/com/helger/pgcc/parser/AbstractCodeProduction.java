@@ -45,12 +45,19 @@ import com.helger.collection.commons.ICommonsList;
 
 public abstract class AbstractCodeProduction extends AbstractNormalProduction
 {
+  /** Default constructor. */
+  protected AbstractCodeProduction ()
+  {}
+
   /**
    * The tokens that implement this JAVACODE/CPPCODE production.
    */
   private final ICommonsList <Token> m_aCodeTokens = new CommonsArrayList <> ();
 
   /**
+   * The body of a JAVACODE or CPPCODE production, which is copied into the generated method as it
+   * is.
+   *
    * @return the code_tokens
    */
   @NonNull

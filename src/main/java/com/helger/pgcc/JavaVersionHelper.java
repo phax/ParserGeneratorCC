@@ -127,6 +127,6 @@ public final class JavaVersionHelper
    */
   public static boolean isOlderThan (@NonNull final EJavaVersion eVersion, @NonNull final EJavaVersion eOther)
   {
-    return !eVersion.isNewerOrEqualsThan (eOther);
+    return eVersion.ordinal () < eOther.ordinal ();
   }
 }

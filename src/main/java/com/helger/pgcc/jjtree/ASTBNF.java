@@ -35,6 +35,9 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
+/**
+ * A BNF production in a JJTree grammar. It always declares ParseException and RuntimeException.
+ */
 public class ASTBNF extends ASTProduction
 {
   ASTBNF (final int nID)

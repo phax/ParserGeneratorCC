@@ -35,13 +35,29 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
+/**
+ * A Java action block inside a BNF production of a JJTree grammar.
+ */
 public class ASTBNFAction extends JJTreeNode
 {
+  /**
+   * @param nID
+   *        The node id assigned by JJTree.
+   */
   ASTBNFAction (final int nID)
   {
     super (nID);
   }
 
+  /**
+   * Walk up the tree for the node scope this action sits inside, if it is a different one than
+   * the scope given.
+   *
+   * @param aNs
+   *        The scope to stop at. May be <code>null</code>.
+   * @return The enclosing scoping node, or <code>null</code> if there is none above the given
+   *         scope.
+   */
   protected Node getScopingParent (final NodeScope aNs)
   {
     for (Node n = this.jjtGetParent (); n != null; n = n.jjtGetParent ())

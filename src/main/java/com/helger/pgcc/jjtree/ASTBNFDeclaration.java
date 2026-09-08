@@ -35,6 +35,10 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
+/**
+ * The declaration part of a BNF production in a JJTree grammar: the return type, the name, the
+ * parameter list and the throws clause.
+ */
 public class ASTBNFDeclaration extends JJTreeNode
 {
   NodeScope m_aNodeScope;

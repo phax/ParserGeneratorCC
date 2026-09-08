@@ -101,7 +101,12 @@ implements CharStream
 #fi
 
 
-  /** Constructor. */
+  /**
+   * Constructor.
+   * @param nStartLine the line number the first character is on. 1-based.
+   * @param nStartColumn the column number the first character is at. 1-based.
+   * @param nBufferSize the size of the internal buffer, in characters.
+   */
   public AbstractCharStream(final int nStartLine,
                             final int nStartColumn,
                             final int nBufferSize)
@@ -109,7 +114,13 @@ implements CharStream
     reInit (nStartLine, nStartColumn, nBufferSize);
   }
 
-  /** Reinitialise. */
+  /**
+   * Reinitialise, so that the same instance can read another input.
+   * @param nStartLine the line number the first character is on. 1-based.
+   * @param nStartColumn the column number the first character is at. 1-based.
+   * @param nBufferSize the size of the internal buffer, in characters. The buffer is only
+   *        reallocated if the size differs from the current one.
+   */
   public final void reInit(final int nStartLine,
                            final int nStartColumn,
                            final int nBufferSize)
@@ -142,6 +153,7 @@ implements CharStream
    * @param nOfs The offset into the buffer. 0-based
    * @param nLen Number of chars to read.
    * @return Number of effective chars read, or -1 on error.
+   * @throws java.io.IOException If reading fails.
    */
   protected abstract int streamRead (char[] aBuf, int nOfs, int nLen) throws java.io.IOException;
 
@@ -151,13 +163,23 @@ implements CharStream
    */
   protected abstract void streamClose () throws java.io.IOException;
 
-  // Override this method if you need more aggressive buffer size expansion
+  /**
+   * How much to grow the buffer by when it is full. Override this if you need more aggressive
+   * expansion than doubling.
+   * @return the new buffer size, in characters. Must be larger than the current one.
+   */
   protected int getBufSizeAfterExpansion ()
   {
     // Double the size by default
     return bufsize * 2;
   }
 
+  /**
+   * Grow the buffer to {@link #getBufSizeAfterExpansion()} characters, moving the data of the
+   * token currently being matched to the front.
+   * @param bWrapAround <code>true</code> if the current token wraps around the end of the circular
+   *        buffer, so that it has to be copied in two pieces.
+   */
   protected void expandBuff (final boolean bWrapAround)
   {
     // Get the new buffer size
@@ -225,6 +247,10 @@ implements CharStream
     tokenBegin = 0;
   }
 
+  /**
+   * Make room for more input: either wrap the read position around to the front of the circular
+   * buffer, or grow the buffer if the token being matched occupies all of it.
+   */
   protected final void internalAdjustBuffSize()
   {
     final int nHalfBufferSize = bufsize / 2;
@@ -273,6 +299,10 @@ implements CharStream
     }
   }
 
+  /**
+   * Read more input into the buffer, growing or wrapping it first if there is no room left.
+   * @throws java.io.IOException if reading fails, or at end of input
+   */
   protected void fillBuff() throws java.io.IOException
   {
     if (maxNextCharInd == available)
@@ -307,12 +337,22 @@ implements CharStream
   }
 #if KEEP_LINE_COLUMN
 
+  /**
+   * Record the position of the character at the current read position.
+   * @param nLine the line number. 1-based.
+   * @param nColumn the column number. 1-based.
+   */
   protected final void internalSetBufLineColumn (final int nLine, final int nColumn)
   {
     m_aBufLine[bufpos] = nLine;
     m_aBufColumn[bufpos] = nColumn;
   }
 
+  /**
+   * Advance the line and column counters over one character, treating CR, LF, CRLF and tab the way
+   * a text editor would.
+   * @param c the character that was just read
+   */
   protected final void internalUpdateLineColumn(final char c)
   {
     m_nColumnNo++;
@@ -500,10 +540,13 @@ implements CharStream
 #if KEEP_LINE_COLUMN
 
   /**
-   * Method to adjust line and column numbers for the start of a token.
-   * This is used internally to
+   * Move the recorded position of the token currently being matched, and of everything buffered
+   * after it, so that the token starts at the given line and column. A lexer that skips input
+   * without wanting it to count towards the position uses this to correct the numbers afterwards.
+   * @param nNewLine the line the token should be reported on. 1-based.
+   * @param nNewCol the column the token should be reported at. 1-based.
    */
-  public final void adjustBeginLineColumn(final int nNewLine, final int newCol)
+  public final void adjustBeginLineColumn(final int nNewLine, final int nNewCol)
   {
     int start = tokenBegin;
     int newLine = nNewLine;
@@ -529,7 +572,7 @@ implements CharStream
     {
       m_aBufLine[j] = newLine;
       nextColDiff = columnDiff + m_aBufColumn[k] - m_aBufColumn[j];
-      m_aBufColumn[j] = newCol + columnDiff;
+      m_aBufColumn[j] = nNewCol + columnDiff;
       columnDiff = nextColDiff;
       i++;
     }
@@ -537,7 +580,7 @@ implements CharStream
     if (i < len)
     {
       m_aBufLine[j] = newLine++;
-      m_aBufColumn[j] = newCol + columnDiff;
+      m_aBufColumn[j] = nNewCol + columnDiff;
 
       while (i++ < len)
       {
@@ -554,6 +597,7 @@ implements CharStream
   }
 
   /**
+   * Where reading has got to.
    * @return the current line number. 0-based.
    */
   protected final int getLine ()
@@ -562,6 +606,7 @@ implements CharStream
   }
 
   /**
+   * Where reading has got to.
    * @return the current column number. 0-based.
    */
   protected final int getColumn ()

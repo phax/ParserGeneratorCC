@@ -47,6 +47,11 @@ import com.helger.pgcc.parser.exp.Expansion;
  */
 public abstract class AbstractNormalProduction implements IGrammarLocation
 {
+  /** Default constructor. */
+  protected AbstractNormalProduction ()
+  {}
+
+  /** The platform line separator, used when dumping a production. */
   protected static final String EOL = System.getProperty ("line.separator", "\n");
 
   /**
@@ -120,6 +125,13 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
 
   private Token m_aFirstToken;
 
+  /**
+   * Indentation for the debug output.
+   *
+   * @param nIndent
+   *        How deep to indent.
+   * @return A builder holding that much indentation. Never <code>null</code>.
+   */
   protected StringBuilder dumpPrefix (final int nIndent)
   {
     final StringBuilder aSB = new StringBuilder (128);
@@ -128,6 +140,11 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
     return aSB;
   }
 
+  /**
+   * The name of this production class, for debug output.
+   *
+   * @return The class name without its package, for debug output. Never <code>null</code>.
+   */
   protected String getSimpleName ()
   {
     final String sName = getClass ().getName ();
@@ -135,6 +152,16 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
     return sName.substring (sName.lastIndexOf (".") + 1);
   }
 
+  /**
+   * Render this production and everything below it, for debugging.
+   *
+   * @param nIndent
+   *        How deep to indent.
+   * @param aAlreadyDumped
+   *        What has already been rendered, so that a cycle terminates. May not be
+   *        <code>null</code>.
+   * @return The rendered production. Never <code>null</code>.
+   */
   public StringBuilder dump (final int nIndent, @NonNull final Set <? super AbstractNormalProduction> aAlreadyDumped)
   {
     final StringBuilder aSB = dumpPrefix (nIndent).append (System.identityHashCode (this))
@@ -156,6 +183,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * Where in the grammar this production is written.
+   *
    * @param nLine
    *        the line to set
    */
@@ -165,6 +194,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * Where in the grammar this production is written.
+   *
    * @return the line
    */
   public int getLineNumber ()
@@ -173,6 +204,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * Where in the grammar this production is written.
+   *
    * @param nColumn
    *        the column to set
    */
@@ -182,6 +215,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * Where in the grammar this production is written.
+   *
    * @return the column
    */
   public int getColumnNumber ()
@@ -190,6 +225,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The access modifier the generated method gets.
+   *
    * @param aParents
    *        the parents to set
    */
@@ -207,6 +244,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The access modifier the generated method gets.
+   *
    * @param sAccessMod
    *        the accessMod to set
    */
@@ -216,6 +255,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The access modifier the generated method gets.
+   *
    * @return the accessMod
    */
   public String getAccessMod ()
@@ -224,6 +265,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The name of the production, which becomes the generated method name.
+   *
    * @param sLhs
    *        the lhs to set
    */
@@ -233,6 +276,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The name of the production, which becomes the generated method name.
+   *
    * @return the lhs
    */
   public String getLhs ()
@@ -241,6 +286,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The return type of the generated method, as written in the grammar.
+   *
    * @return the return_type_tokens
    */
   public List <Token> getReturnTypeTokens ()
@@ -249,6 +296,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The parameter list of the generated method, as written in the grammar.
+   *
    * @return the parameter_list_tokens
    */
   public List <Token> getParameterListTokens ()
@@ -257,6 +306,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * What the generated method declares it throws.
+   *
    * @param aThrowsList
    *        the throws_list to set
    */
@@ -266,6 +317,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * What the generated method declares it throws.
+   *
    * @return the throws_list
    */
   public List <List <Token>> getThrowsList ()
@@ -274,6 +327,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The right hand side of the production.
+   *
    * @param aExpansion
    *        the expansion to set
    */
@@ -283,6 +338,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The right hand side of the production.
+   *
    * @return the expansion
    */
   public Expansion getExpansion ()
@@ -291,6 +348,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The first token of this production in the grammar file.
+   *
    * @param bEmptyPossible
    *        the emptyPossible to set
    */
@@ -343,6 +402,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The first token of this production in the grammar file.
+   *
    * @param aFirstToken
    *        the firstToken to set
    * @return parameter token
@@ -354,6 +415,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The first token of this production in the grammar file.
+   *
    * @return the firstToken
    */
   public Token getFirstToken ()
@@ -362,6 +425,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The last token of this production in the grammar file.
+   *
    * @param aLastToken
    *        the lastToken to set
    */
@@ -371,6 +436,8 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
   }
 
   /**
+   * The last token of this production in the grammar file.
+   *
    * @return the lastToken
    */
   public Token getLastToken ()

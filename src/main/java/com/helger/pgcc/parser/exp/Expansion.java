@@ -145,6 +145,8 @@ public sealed class Expansion implements IGrammarLocation permits
   }
 
   /**
+   * Render this expansion and everything below it, for debugging.
+   *
    * @param nIndent
    *        indentation level
    * @param aAlreadyDumped
@@ -158,6 +160,8 @@ public sealed class Expansion implements IGrammarLocation permits
   }
 
   /**
+   * Where in the grammar this expansion is written.
+   *
    * @return the column
    */
   public final int getColumnNumber ()
@@ -166,6 +170,8 @@ public sealed class Expansion implements IGrammarLocation permits
   }
 
   /**
+   * Where in the grammar this expansion is written.
+   *
    * @param nColumn
    *        the column to set
    */
@@ -175,6 +181,8 @@ public sealed class Expansion implements IGrammarLocation permits
   }
 
   /**
+   * Where in the grammar this expansion is written.
+   *
    * @return the line
    */
   public final int getLineNumber ()
@@ -183,6 +191,8 @@ public sealed class Expansion implements IGrammarLocation permits
   }
 
   /**
+   * Where in the grammar this expansion is written.
+   *
    * @param nLine
    *        the line to set
    */

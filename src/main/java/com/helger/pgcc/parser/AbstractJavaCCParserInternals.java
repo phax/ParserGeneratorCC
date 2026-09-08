@@ -54,22 +54,36 @@ import com.helger.pgcc.parser.exp.Expansion;
  */
 public abstract class AbstractJavaCCParserInternals
 {
+  /** Default constructor for the generated parser to extend. */
+  protected AbstractJavaCCParserInternals ()
+  {}
+
   /**
    * Class to hold modifiers.
    */
   public static final class ModifierSet
   {
-    /* Definitions of the bits in the modifiers field. */
+    /** The bit standing for the <code>public</code> modifier. */
     public static final int PUBLIC = 0x0001;
+    /** The bit standing for the <code>protected</code> modifier. */
     public static final int PROTECTED = 0x0002;
+    /** The bit standing for the <code>private</code> modifier. */
     public static final int PRIVATE = 0x0004;
+    /** The bit standing for the <code>abstract</code> modifier. */
     public static final int ABSTRACT = 0x0008;
+    /** The bit standing for the <code>static</code> modifier. */
     public static final int STATIC = 0x0010;
+    /** The bit standing for the <code>final</code> modifier. */
     public static final int FINAL = 0x0020;
+    /** The bit standing for the <code>synchronized</code> modifier. */
     public static final int SYNCHRONIZED = 0x0040;
+    /** The bit standing for the <code>native</code> modifier. */
     public static final int NATIVE = 0x0080;
+    /** The bit standing for the <code>transient</code> modifier. */
     public static final int TRANSIENT = 0x0100;
+    /** The bit standing for the <code>volatile</code> modifier. */
     public static final int VOLATILE = 0x0200;
+    /** The bit standing for the <code>strictfp</code> modifier. */
     public static final int STRICTFP = 0x1000;
 
     private ModifierSet ()
@@ -79,56 +93,133 @@ public abstract class AbstractJavaCCParserInternals
      * A set of accessors that indicate whether the specified modifier is in the set.
      */
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>public</code> is among them.
+     */
     public static boolean isPublic (final int nModifiers)
     {
       return (nModifiers & PUBLIC) != 0;
     }
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>protected</code> is among them.
+     */
     public static boolean isProtected (final int nModifiers)
     {
       return (nModifiers & PROTECTED) != 0;
     }
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>private</code> is among them.
+     */
     public static boolean isPrivate (final int nModifiers)
     {
       return (nModifiers & PRIVATE) != 0;
     }
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>static</code> is among them.
+     */
     public static boolean isStatic (final int nModifiers)
     {
       return (nModifiers & STATIC) != 0;
     }
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>abstract</code> is among them.
+     */
     public static boolean isAbstract (final int nModifiers)
     {
       return (nModifiers & ABSTRACT) != 0;
     }
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>final</code> is among them.
+     */
     public static boolean isFinal (final int nModifiers)
     {
       return (nModifiers & FINAL) != 0;
     }
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>native</code> is among them.
+     */
     public static boolean isNative (final int nModifiers)
     {
       return (nModifiers & NATIVE) != 0;
     }
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>strictfp</code> is among them.
+     */
     public static boolean isStrictfp (final int nModifiers)
     {
       return (nModifiers & STRICTFP) != 0;
     }
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>synchronized</code> is among them.
+     */
     public static boolean isSynchronized (final int nModifiers)
     {
       return (nModifiers & SYNCHRONIZED) != 0;
     }
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>transient</code> is among them.
+     */
     public static boolean isTransient (final int nModifiers)
     {
       return (nModifiers & TRANSIENT) != 0;
     }
 
+    /**
+     * Test one modifier bit.
+     *
+     * @param nModifiers
+     *        The modifier bits to test.
+     * @return <code>true</code> if <code>volatile</code> is among them.
+     */
     public static boolean isVolatile (final int nModifiers)
     {
       return (nModifiers & VOLATILE) != 0;
@@ -143,6 +234,7 @@ public abstract class AbstractJavaCCParserInternals
     }
   }
 
+  /** Start a fresh grammar: which compilation unit list is being filled, and the counters. */
   protected static void initialize ()
   {
     final Integer i = Integer.valueOf (0);
@@ -151,11 +243,27 @@ public abstract class AbstractJavaCCParserInternals
     grammar ().simpleTokensTable ().put ("DEFAULT", new HashMap <> ());
   }
 
+  /**
+   * Record the parser class name that PARSER_BEGIN named.
+   *
+   * @param sId
+   *        The identifier that followed PARSER_BEGIN.
+   */
   protected static void addcuname (final String sId)
   {
     grammar ().setParserName (sId);
   }
 
+  /**
+   * Complain unless PARSER_BEGIN and PARSER_END name the same class.
+   *
+   * @param t
+   *        Where to report the error.
+   * @param sId1
+   *        The name from PARSER_BEGIN.
+   * @param sId2
+   *        The name from PARSER_END.
+   */
   protected static void compare (final Token t, final String sId1, @NonNull final String sId2)
   {
     if (!sId2.equals (sId1))
@@ -164,6 +272,14 @@ public abstract class AbstractJavaCCParserInternals
     }
   }
 
+  /**
+   * Mark where in the compilation unit the generated parser class body starts or ends.
+   *
+   * @param t
+   *        The token the insertion point is at.
+   * @param nNo
+   *        1 for the first insertion point, 2 for the second.
+   */
   protected static void setinsertionpoint (final Token t, final int nNo)
   {
     do
@@ -194,6 +310,12 @@ public abstract class AbstractJavaCCParserInternals
     PGCCContext.current ().parserBuild ().setFirstToken (t);
   }
 
+  /**
+   * Complain about a parser class declaration the generator cannot find its way into.
+   *
+   * @param t
+   *        Where to report the error.
+   */
   protected static void insertionpointerrors (final Token t)
   {
     while (PGCCContext.current ().parserBuild ().getFirstToken () != t)
@@ -211,22 +333,48 @@ public abstract class AbstractJavaCCParserInternals
     }
   }
 
+  /**
+   * Remember the first token of the compilation unit, so that it can be copied out verbatim.
+   *
+   * @param t
+   *        The first token.
+   */
   protected static void set_initial_cu_token (final Token t)
   {
     PGCCContext.current ().parserBuild ().setFirstToken (t);
   }
 
+  /**
+   * Add a production to the grammar, in declaration order.
+   *
+   * @param p
+   *        The production just parsed.
+   */
   protected static void addProduction (final AbstractNormalProduction p)
   {
     grammar ().bnfProductions ().add (p);
   }
 
+  /**
+   * Give a BNF production its right hand side, and tell the expansion who its parent is.
+   *
+   * @param p
+   *        The production. May not be <code>null</code>.
+   * @param e
+   *        Its expansion. May not be <code>null</code>.
+   */
   protected static void productionAddExpansion (@NonNull final BNFProduction p, @NonNull final Expansion e)
   {
     e.setParent (p);
     p.setExpansion (e);
   }
 
+  /**
+   * Add a token production, and record the lexical states it belongs to.
+   *
+   * @param p
+   *        The token production just parsed. May not be <code>null</code>.
+   */
   protected static void addregexpr (@NonNull final TokenProduction p)
   {
     grammar ().rexprList ().add (p);
@@ -262,6 +410,14 @@ public abstract class AbstractJavaCCParserInternals
     }
   }
 
+  /**
+   * Record the TOKEN_MGR_DECLS block, which is copied into the generated token manager.
+   *
+   * @param t
+   *        Where to report a second block.
+   * @param aDecls
+   *        The declarations as written.
+   */
   protected static void add_token_manager_decls (final Token t, final List <Token> aDecls)
   {
     if (grammar ().getTokenMgrDecls () != null)
@@ -280,6 +436,13 @@ public abstract class AbstractJavaCCParserInternals
     }
   }
 
+  /**
+   * Turn a regular expression written inline in a BNF production into an anonymous token
+   * production, so that the token manager knows about it.
+   *
+   * @param r
+   *        The inline regular expression.
+   */
   protected static void add_inline_regexpr (final AbstractExpRegularExpression r)
   {
     if (!(r instanceof ExpREndOfFile))
@@ -319,6 +482,15 @@ public abstract class AbstractJavaCCParserInternals
     return (cCh) - ('a') + 10;
   }
 
+  /**
+   * Turn a string literal as written in the grammar into the characters it stands for.
+   *
+   * @param t
+   *        Where to report a bad escape.
+   * @param sStr
+   *        The literal including its quotes. May not be <code>null</code>.
+   * @return The characters the literal denotes. Never <code>null</code>.
+   */
   protected static String remove_escapes_and_quotes (final Token t, @NonNull final String sStr)
   {
     String sRetval = "";
@@ -445,6 +617,15 @@ public abstract class AbstractJavaCCParserInternals
     return sRetval;
   }
 
+  /**
+   * Read a single character of a character list.
+   *
+   * @param t
+   *        Where to report an error.
+   * @param s
+   *        The character as written, escapes included. May not be <code>null</code>.
+   * @return The character it denotes.
+   */
   protected static char character_descriptor_assign (final Token t, @NonNull final String s)
   {
     if (s.length () != 1)
@@ -455,6 +636,17 @@ public abstract class AbstractJavaCCParserInternals
     return s.charAt (0);
   }
 
+  /**
+   * Read the right hand character of a character range, and check it is not below the left one.
+   *
+   * @param t
+   *        Where to report an error.
+   * @param s
+   *        The character as written. May not be <code>null</code>.
+   * @param sLeft
+   *        The left hand character of the range. May not be <code>null</code>.
+   * @return The character it denotes.
+   */
   protected static char character_descriptor_assign (final Token t, @NonNull final String s, @NonNull final String sLeft)
   {
     if (s.length () != 1)
@@ -475,6 +667,24 @@ public abstract class AbstractJavaCCParserInternals
     return s.charAt (0);
   }
 
+  /**
+   * Build the expansion for a TRY block written in a production.
+   *
+   * @param aTryLoc
+   *        Where the block starts, for error reporting. May not be <code>null</code>.
+   * @param aResult
+   *        Receives the resulting expansion. May not be <code>null</code>.
+   * @param aNestedExp
+   *        Holds the expansion the block guards. May not be <code>null</code>.
+   * @param types
+   *        The exception type of each catch clause.
+   * @param ids
+   *        The variable name of each catch clause.
+   * @param catchblks
+   *        The body of each catch clause. May not be <code>null</code>.
+   * @param aFinallyblk
+   *        The body of the finally clause, or <code>null</code> if there is none.
+   */
   protected static void makeTryBlock (@NonNull final Token aTryLoc,
                                       @NonNull final Container aResult,
                                       @NonNull final Container aNestedExp,
