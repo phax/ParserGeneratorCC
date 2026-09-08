@@ -55,6 +55,13 @@ is never modified. The `selfhost` profile pins `ph-javacc-maven-plugin.version` 
 current SNAPSHOT. The default profile must always stay on a released plugin - a release build has to
 work with what is on Maven Central.
 
+## The C++ backend
+
+C++ output is **frozen but supported**: it must keep working, but it gets no new features.
+`CppRoundTripFuncTest` generates `src/test/resources/cpp/calc.jj`, compiles the result with the
+`g++` or `clang++` on the `PATH` and checks what it prints; it skips itself when no compiler is
+available. Note that `OUTPUT_LANGUAGE` is the only way to reach this path.
+
 ## Golden files - the specification for the generated output
 
 `GeneratedOutputGoldenTest` generates from 38 cases (the template/option matrix plus every grammar
