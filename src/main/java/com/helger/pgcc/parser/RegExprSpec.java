@@ -46,24 +46,88 @@ public class RegExprSpec
   /**
    * The regular expression of this specification.
    */
-  public AbstractExpRegularExpression m_aRexp;
+  private AbstractExpRegularExpression m_aRexp;
 
+  /**
+   * @return The value of m_aRexp.
+   */
+  public AbstractExpRegularExpression getRexp ()
+  {
+    return m_aRexp;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aRexp.
+   */
+  public void setRexp (final AbstractExpRegularExpression aValue)
+  {
+    m_aRexp = aValue;
+  }
   /**
    * The action corresponding to this specification.
    */
-  public ExpAction m_aAct;
+  private ExpAction m_aAct;
 
+  /**
+   * @return The value of m_aAct.
+   */
+  public ExpAction getAct ()
+  {
+    return m_aAct;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aAct.
+   */
+  public void setAct (final ExpAction aValue)
+  {
+    m_aAct = aValue;
+  }
   /**
    * The next state corresponding to this specification. If no next state has been specified, this
    * field is set to "null".
    */
-  public String m_sNextState;
+  private String m_sNextState;
 
+  /**
+   * @return The value of m_sNextState.
+   */
+  public String getNextState ()
+  {
+    return m_sNextState;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_sNextState.
+   */
+  public void setNextState (final String aValue)
+  {
+    m_sNextState = aValue;
+  }
   /**
    * If the next state specification was explicit in the previous case, then this token is that of
    * the identifier denoting the next state. This is used for location information, etc. in error
    * reporting.
    */
-  public Token m_aNsTok;
+  private Token m_aNsTok;
 
+  /**
+   * @return The value of m_aNsTok.
+   */
+  public Token getNsTok ()
+  {
+    return m_aNsTok;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aNsTok.
+   */
+  public void setNsTok (final Token aValue)
+  {
+    m_aNsTok = aValue;
+  }
 }

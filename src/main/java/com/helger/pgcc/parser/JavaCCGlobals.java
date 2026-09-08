@@ -405,13 +405,12 @@ public final class JavaCCGlobals
 
   protected static void printTokenOnly (@NonNull final Token t, @NonNull final PrintWriter aOstr)
   {
-    for (; grammar ().getCurrentLine () < t.beginLine; grammar ().setCurrentLine (grammar ().getCurrentLine () + 1))
+    for (; grammar ().getCurrentLine () < t.beginLine; grammar ().incCurrentLine ())
     {
       aOstr.println ();
       grammar ().setCurrentColumn (1);
     }
-    for (; grammar ().getCurrentColumn () < t.beginColumn; grammar ().setCurrentColumn (grammar ().getCurrentColumn () +
-                                                                                        1))
+    for (; grammar ().getCurrentColumn () < t.beginColumn; grammar ().incCurrentColumn ())
     {
       aOstr.print (" ");
     }
@@ -424,7 +423,7 @@ public final class JavaCCGlobals
     final char cLast = t.image.charAt (t.image.length () - 1);
     if (cLast == '\n' || cLast == '\r')
     {
-      grammar ().setCurrentLine (grammar ().getCurrentLine () + 1);
+      grammar ().incCurrentLine ();
       grammar ().setCurrentColumn (1);
     }
   }
@@ -473,7 +472,7 @@ public final class JavaCCGlobals
     if (grammar ().getCurrentColumn () != 1 && grammar ().getCurrentLine () != t.beginLine)
     {
       aOstr.println ();
-      grammar ().setCurrentLine (grammar ().getCurrentLine () + 1);
+      grammar ().incCurrentLine ();
       grammar ().setCurrentColumn (1);
     }
   }
@@ -500,7 +499,7 @@ public final class JavaCCGlobals
     final char cLast = t.image.charAt (t.image.length () - 1);
     if (cLast == '\n' || cLast == '\r')
     {
-      grammar ().setCurrentLine (grammar ().getCurrentLine () + 1);
+      grammar ().incCurrentLine ();
       grammar ().setCurrentColumn (1);
     }
     return aSB.toString ();
@@ -543,7 +542,7 @@ public final class JavaCCGlobals
     if (grammar ().getCurrentColumn () != 1 && grammar ().getCurrentLine () != t.beginLine)
     {
       aSB.append ('\n');
-      grammar ().setCurrentLine (grammar ().getCurrentLine () + 1);
+      grammar ().incCurrentLine ();
       grammar ().setCurrentColumn (1);
     }
     return aSB.toString ();

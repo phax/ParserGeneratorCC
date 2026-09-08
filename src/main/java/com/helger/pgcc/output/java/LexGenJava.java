@@ -281,18 +281,18 @@ public class LexGenJava extends CodeGenerator
     while (aIt.hasNext ())
     {
       aTp = aIt.next ();
-      final List <RegExprSpec> aRespecs = aTp.m_aRespecs;
+      final List <RegExprSpec> aRespecs = aTp.getRespecs ();
       List <TokenProduction> aTps;
 
-      for (i = 0; i < aTp.m_aLexStates.length; i++)
+      for (i = 0; i < aTp.getLexStates ().length; i++)
       {
-        aTps = lexer ().allTpsForState ().get (aTp.m_aLexStates[i]);
+        aTps = lexer ().allTpsForState ().get (aTp.getLexStates ()[i]);
         if (aTps == null)
         {
-          aTmpLexStateName[lexer ().getMaxLexStates ()] = aTp.m_aLexStates[i];
+          aTmpLexStateName[lexer ().getMaxLexStates ()] = aTp.getLexStates ()[i];
           lexer ().setMaxLexStates (lexer ().getMaxLexStates () + 1);
           aTps = new ArrayList <> ();
-          lexer ().allTpsForState ().put (aTp.m_aLexStates[i], aTps);
+          lexer ().allTpsForState ().put (aTp.getLexStates ()[i], aTps);
         }
 
         aTps.add (aTp);
@@ -303,7 +303,7 @@ public class LexGenJava extends CodeGenerator
 
       AbstractExpRegularExpression aRe;
       for (i = 0; i < aRespecs.size (); i++)
-        if (lexer ().getMaxOrdinal () <= (aRe = aRespecs.get (i).m_aRexp).getOrdinal ())
+        if (lexer ().getMaxOrdinal () <= (aRe = aRespecs.get (i).getRexp ()).getOrdinal ())
           lexer ().setMaxOrdinal (aRe.getOrdinal () + 1);
     }
 
@@ -397,16 +397,16 @@ public class LexGenJava extends CodeGenerator
       for (int i = 0; i < aAllTps.size (); i++)
       {
         final TokenProduction aTp = aAllTps.get (i);
-        final ETokenKind eKind = aTp.m_eKind;
-        final boolean bIgnore = aTp.m_bIgnoreCase;
-        final List <RegExprSpec> aRexps = aTp.m_aRespecs;
+        final ETokenKind eKind = aTp.getKind ();
+        final boolean bIgnore = aTp.isIgnoreCase ();
+        final List <RegExprSpec> aRexps = aTp.getRespecs ();
 
         if (i == 0)
           bIgnoring = bIgnore;
 
         for (final RegExprSpec respec : aRexps)
         {
-          lexer ().setCurRE (respec.m_aRexp);
+          lexer ().setCurRE (respec.getRexp ());
 
           lexer ().setCurKind (lexer ().getCurRE ().getOrdinal ());
           lexer ().getRexprs ()[lexer ().getCurKind ()] = lexer ().getCurRE ();
@@ -460,12 +460,12 @@ public class LexGenJava extends CodeGenerator
 
           lexer ().getKinds ()[lexer ().getCurRE ().getOrdinal ()] = eKind;
 
-          if (respec.m_sNextState != null &&
-            !respec.m_sNextState.equals (lexer ().getLexStateName ()[lexer ().getLexStateIndex ()]))
-            lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] = respec.m_sNextState;
+          if (respec.getNextState () != null &&
+            !respec.getNextState ().equals (lexer ().getLexStateName ()[lexer ().getLexStateIndex ()]))
+            lexer ().getNewLexState ()[lexer ().getCurRE ().getOrdinal ()] = respec.getNextState ();
 
-          if (respec.m_aAct != null && respec.m_aAct.getActionTokens ().isNotEmpty ())
-            lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] = respec.m_aAct;
+          if (respec.getAct () != null && respec.getAct ().getActionTokens ().isNotEmpty ())
+            lexer ().getActions ()[lexer ().getCurRE ().getOrdinal ()] = respec.getAct ();
 
           switch (eKind)
           {

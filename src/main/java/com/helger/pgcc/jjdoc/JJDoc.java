@@ -112,7 +112,7 @@ public final class JJDoc
     for (final TokenProduction aTokenProduction : aProds)
     {
       final TokenProduction aTp = aTokenProduction;
-      _emitTopLevelSpecialTokens (aTp.m_aFirstToken, aGen);
+      _emitTopLevelSpecialTokens (aTp.getFirstToken (), aGen);
 
       aGen.handleTokenProduction (aTp);
 
@@ -129,40 +129,40 @@ public final class JJDoc
   public static String getStandardTokenProductionText (final TokenProduction aTp)
   {
     String sToken = "";
-    if (aTp.m_bIsExplicit)
+    if (aTp.isExplicit ())
     {
-      if (aTp.m_aLexStates == null)
+      if (aTp.getLexStates () == null)
       {
         sToken += "<*> ";
       }
       else
       {
         sToken += "<";
-        for (int i = 0; i < aTp.m_aLexStates.length; ++i)
+        for (int i = 0; i < aTp.getLexStates ().length; ++i)
         {
-          sToken += aTp.m_aLexStates[i];
-          if (i < aTp.m_aLexStates.length - 1)
+          sToken += aTp.getLexStates ()[i];
+          if (i < aTp.getLexStates ().length - 1)
           {
             sToken += ",";
           }
         }
         sToken += "> ";
       }
-      sToken += aTp.m_eKind.getImage ();
-      if (aTp.m_bIgnoreCase)
+      sToken += aTp.getKind ().getImage ();
+      if (aTp.isIgnoreCase ())
       {
         sToken += " [IGNORE_CASE]";
       }
       sToken += " : {\n";
-      for (final Iterator <RegExprSpec> aIt2 = aTp.m_aRespecs.iterator (); aIt2.hasNext ();)
+      for (final Iterator <RegExprSpec> aIt2 = aTp.getRespecs ().iterator (); aIt2.hasNext ();)
       {
         final RegExprSpec aRes = aIt2.next ();
 
-        sToken += emitRE (aRes.m_aRexp);
+        sToken += emitRE (aRes.getRexp ());
 
-        if (aRes.m_aNsTok != null)
+        if (aRes.getNsTok () != null)
         {
-          sToken += " : " + aRes.m_aNsTok.image;
+          sToken += " : " + aRes.getNsTok ().image;
         }
 
         sToken += "\n";
@@ -357,12 +357,12 @@ public final class JJDoc
 
   private static void _emitExpansionTryBlock (final ExpTryBlock t, final IDocGenerator aGen) throws IOException
   {
-    final boolean bNeedParens = t.m_aExp instanceof ExpChoice;
+    final boolean bNeedParens = t.getExp () instanceof ExpChoice;
     if (bNeedParens)
     {
       aGen.text ("( ");
     }
-    _emitExpansionTree (t.m_aExp, aGen);
+    _emitExpansionTree (t.getExp (), aGen);
     if (bNeedParens)
     {
       aGen.text (" )");

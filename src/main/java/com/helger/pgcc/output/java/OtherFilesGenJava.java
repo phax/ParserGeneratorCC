@@ -197,11 +197,11 @@ public class OtherFilesGenJava
       for (final TokenProduction aTokenProduction : grammar ().rexprList ())
       {
         final TokenProduction aTp = (aTokenProduction);
-        final List <RegExprSpec> aRespecs = aTp.m_aRespecs;
+        final List <RegExprSpec> aRespecs = aTp.getRespecs ();
         for (final RegExprSpec aRegExprSpec : aRespecs)
         {
           final RegExprSpec aRes = (aRegExprSpec);
-          final AbstractExpRegularExpression aRe = aRes.m_aRexp;
+          final AbstractExpRegularExpression aRe = aRes.getRexp ();
           aOstr.print ("    ");
           if (aRe instanceof final ExpRStringLiteral aRStringLiteral)
           {
@@ -214,7 +214,7 @@ public class OtherFilesGenJava
             }
             else
             {
-              if (aRe.m_aTpContext.m_eKind == ETokenKind.TOKEN)
+              if (aRe.m_aTpContext.getKind () == ETokenKind.TOKEN)
               {
                 JavaCCErrors.warning (aRe, "Consider giving this non-string token a label for better error reporting.");
               }

@@ -46,8 +46,24 @@ public final class ExpRJustName extends AbstractExpRegularExpression
   /**
    * "regexpr" points to the regular expression denoted by the name.
    */
-  public AbstractExpRegularExpression m_aRegexpr;
+  private AbstractExpRegularExpression m_aRegexpr;
 
+  /**
+   * @return The value of m_aRegexpr.
+   */
+  public AbstractExpRegularExpression getRegexpr ()
+  {
+    return m_aRegexpr;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aRegexpr.
+   */
+  public void setRegexpr (final AbstractExpRegularExpression aValue)
+  {
+    m_aRegexpr = aValue;
+  }
   @Override
   public Nfa generateNfa (final boolean bIgnoreCase)
   {

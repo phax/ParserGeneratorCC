@@ -108,55 +108,55 @@ public class Semanticize
     for (final TokenProduction aTokenProduction : grammar ().rexprList ())
     {
       final TokenProduction aTp = (aTokenProduction);
-      final List <RegExprSpec> aRespecs = aTp.m_aRespecs;
+      final List <RegExprSpec> aRespecs = aTp.getRespecs ();
       for (final RegExprSpec aRegExprSpec : aRespecs)
       {
         final RegExprSpec aRes = (aRegExprSpec);
-        if (aRes.m_sNextState != null)
+        if (aRes.getNextState () != null)
         {
-          if (grammar ().lexStateS2I ().get (aRes.m_sNextState) == null)
+          if (grammar ().lexStateS2I ().get (aRes.getNextState ()) == null)
           {
-            JavaCCErrors.semantic_error (aRes.m_aNsTok, "Lexical state \"" + aRes.m_sNextState + "\" has not been defined.");
+            JavaCCErrors.semantic_error (aRes.getNsTok (), "Lexical state \"" + aRes.getNextState () + "\" has not been defined.");
           }
         }
-        if (aRes.m_aRexp instanceof ExpREndOfFile)
+        if (aRes.getRexp () instanceof ExpREndOfFile)
         {
-          // JavaCCErrors.semantic_error(res.m_aRexp, "Badly placed <EOF>.");
-          if (aTp.m_aLexStates != null)
-            JavaCCErrors.semantic_error (aRes.m_aRexp,
+          // JavaCCErrors.semantic_error(res.getRexp (), "Badly placed <EOF>.");
+          if (aTp.getLexStates () != null)
+            JavaCCErrors.semantic_error (aRes.getRexp (),
                                          "EOF action/state change must be specified for all states, " +
                                                    "i.e., <*>TOKEN:.");
-          if (aTp.m_eKind != ETokenKind.TOKEN)
-            JavaCCErrors.semantic_error (aRes.m_aRexp,
+          if (aTp.getKind () != ETokenKind.TOKEN)
+            JavaCCErrors.semantic_error (aRes.getRexp (),
                                          "EOF action/state change can be specified only in a " +
                                                    "TOKEN specification.");
           if (grammar ().getNextStateForEof () != null || grammar ().getActionForEof () != null)
-            JavaCCErrors.semantic_error (aRes.m_aRexp, "Duplicate action/state change specification for <EOF>.");
-          grammar ().setActionForEof (aRes.m_aAct);
-          grammar ().setNextStateForEof (aRes.m_sNextState);
+            JavaCCErrors.semantic_error (aRes.getRexp (), "Duplicate action/state change specification for <EOF>.");
+          grammar ().setActionForEof (aRes.getAct ());
+          grammar ().setNextStateForEof (aRes.getNextState ());
           prepareToRemove (aRespecs, aRes);
         }
         else
-          if (aTp.m_bIsExplicit && Options.isUserTokenManager ())
+          if (aTp.isExplicit () && Options.isUserTokenManager ())
           {
-            JavaCCErrors.warning (aRes.m_aRexp,
+            JavaCCErrors.warning (aRes.getRexp (),
                                   "Ignoring regular expression specification since " +
                                             "option USER_TOKEN_MANAGER has been set to true.");
           }
           else
-            if (aTp.m_bIsExplicit && !Options.isUserTokenManager () && aRes.m_aRexp instanceof ExpRJustName)
+            if (aTp.isExplicit () && !Options.isUserTokenManager () && aRes.getRexp () instanceof ExpRJustName)
             {
-              JavaCCErrors.warning (aRes.m_aRexp,
+              JavaCCErrors.warning (aRes.getRexp (),
                                     "Ignoring free-standing regular expression reference.  " +
                                               "If you really want this, you must give it a different label as <NEWLABEL:<" +
-                                              aRes.m_aRexp.getLabel () +
+                                              aRes.getRexp ().getLabel () +
                                               ">>.");
               prepareToRemove (aRespecs, aRes);
             }
             else
-              if (!aTp.m_bIsExplicit && aRes.m_aRexp.m_bPrivateRexp)
+              if (!aTp.isExplicit () && aRes.getRexp ().m_bPrivateRexp)
               {
-                JavaCCErrors.semantic_error (aRes.m_aRexp,
+                JavaCCErrors.semantic_error (aRes.getRexp (),
                                              "Private (#) regular expression cannot be defined within " +
                                                        "grammar productions.");
               }
@@ -172,25 +172,25 @@ public class Semanticize
     for (final TokenProduction aTokenProduction : grammar ().rexprList ())
     {
       final TokenProduction aTp = (aTokenProduction);
-      final List <RegExprSpec> aRespecs = aTp.m_aRespecs;
+      final List <RegExprSpec> aRespecs = aTp.getRespecs ();
       for (final RegExprSpec aRegExprSpec : aRespecs)
       {
         final RegExprSpec aRes = (aRegExprSpec);
-        if (!(aRes.m_aRexp instanceof ExpRJustName) && aRes.m_aRexp.hasLabel ())
+        if (!(aRes.getRexp () instanceof ExpRJustName) && aRes.getRexp ().hasLabel ())
         {
-          final String s = aRes.m_aRexp.getLabel ();
-          final AbstractExpRegularExpression aObj = grammar ().namedTokensTable ().put (s, aRes.m_aRexp);
+          final String s = aRes.getRexp ().getLabel ();
+          final AbstractExpRegularExpression aObj = grammar ().namedTokensTable ().put (s, aRes.getRexp ());
           if (aObj != null)
           {
-            JavaCCErrors.semantic_error (aRes.m_aRexp, "Multiply defined lexical token name \"" + s + "\".");
+            JavaCCErrors.semantic_error (aRes.getRexp (), "Multiply defined lexical token name \"" + s + "\".");
           }
           else
           {
-            grammar ().orderedNameTokens ().add (aRes.m_aRexp);
+            grammar ().orderedNameTokens ().add (aRes.getRexp ());
           }
           if (grammar ().lexStateS2I ().get (s) != null)
           {
-            JavaCCErrors.semantic_error (aRes.m_aRexp,
+            JavaCCErrors.semantic_error (aRes.getRexp (),
                                          "Lexical token name \"" +
                                                    s +
                                                    "\" is the same as " +
@@ -212,24 +212,24 @@ public class Semanticize
     grammar ().setTokenCount (1);
     for (final TokenProduction tp : grammar ().rexprList ())
     {
-      final List <RegExprSpec> aRespecs = tp.m_aRespecs;
-      if (tp.m_aLexStates == null)
+      final List <RegExprSpec> aRespecs = tp.getRespecs ();
+      if (tp.getLexStates () == null)
       {
-        tp.m_aLexStates = new String [grammar ().lexStateI2S ().size ()];
-        grammar ().lexStateI2S ().values ().toArray (tp.m_aLexStates);
+        tp.setLexStates (new String [grammar ().lexStateI2S ().size ()]);
+        grammar ().lexStateI2S ().values ().toArray (tp.getLexStates ());
       }
 
       @SuppressWarnings ("unchecked")
-      final Map <String, Map <String, AbstractExpRegularExpression>> table[] = new Map [tp.m_aLexStates.length];
-      for (int i = 0; i < tp.m_aLexStates.length; i++)
+      final Map <String, Map <String, AbstractExpRegularExpression>> table[] = new Map [tp.getLexStates ().length];
+      for (int i = 0; i < tp.getLexStates ().length; i++)
       {
-        table[i] = grammar ().simpleTokensTable ().get (tp.m_aLexStates[i]);
+        table[i] = grammar ().simpleTokensTable ().get (tp.getLexStates ()[i]);
       }
 
       for (final RegExprSpec aRegExprSpec : aRespecs)
       {
         final RegExprSpec aRes = (aRegExprSpec);
-        if (aRes.m_aRexp instanceof final ExpRStringLiteral sl)
+        if (aRes.getRexp () instanceof final ExpRStringLiteral sl)
         {
           // This loop performs the checks and actions with respect to each
           // lexical state.
@@ -256,7 +256,7 @@ public class Semanticize
                 // Since IGNORE_CASE version exists, current one is useless and
                 // bad.
                 final AbstractExpRegularExpression aOther = findIgnoreCase (aTable2, sl.m_sImage);
-                if (!sl.m_aTpContext.m_bIsExplicit)
+                if (!sl.m_aTpContext.isExplicit ())
                 {
                   // inline BNF string is used earlier with an IGNORE_CASE.
                   JavaCCErrors.semantic_error (sl,
@@ -281,7 +281,7 @@ public class Semanticize
                 }
               }
               else
-                if (sl.m_aTpContext.m_bIgnoreCase)
+                if (sl.m_aTpContext.isIgnoreCase ())
                 {
                   // This has to be explicit. A warning needs to be given with
                   // respect
@@ -328,11 +328,11 @@ public class Semanticize
                     aTable2.put (sl.m_sImage, sl);
                   }
                   else
-                    if (tp.m_bIsExplicit)
+                    if (tp.isExplicit ())
                     {
                       // This is an error even if the first occurrence was
                       // implicit.
-                      if (tp.m_aLexStates[i].equals ("DEFAULT"))
+                      if (tp.getLexStates ()[i].equals ("DEFAULT"))
                       {
                         JavaCCErrors.semantic_error (sl,
                                                      "Duplicate definition of string token \"" + sl.m_sImage + "\".");
@@ -343,18 +343,18 @@ public class Semanticize
                                                      "Duplicate definition of string token \"" +
                                                          sl.m_sImage +
                                                          "\" in lexical state \"" +
-                                                         tp.m_aLexStates[i] +
+                                                         tp.getLexStates ()[i] +
                                                          "\".");
                       }
                     }
                     else
-                      if (aRe.m_aTpContext.m_eKind != ETokenKind.TOKEN)
+                      if (aRe.m_aTpContext.getKind () != ETokenKind.TOKEN)
                       {
                         JavaCCErrors.semantic_error (sl,
                                                      "String token \"" +
                                                          sl.m_sImage +
                                                          "\" has been defined as a \"" +
-                                                         aRe.m_aTpContext.m_eKind.getImage () +
+                                                         aRe.m_aTpContext.getKind ().getImage () +
                                                          "\" token.");
                       }
                       else
@@ -386,17 +386,17 @@ public class Semanticize
           }
         }
         else
-          if (!(aRes.m_aRexp instanceof ExpRJustName))
+          if (!(aRes.getRexp () instanceof ExpRJustName))
           {
-            aRes.m_aRexp.setOrdinal (grammar ().getAndIncTokenCount ());
+            aRes.getRexp ().setOrdinal (grammar ().getAndIncTokenCount ());
           }
-        if (!(aRes.m_aRexp instanceof ExpRJustName) && aRes.m_aRexp.hasLabel ())
+        if (!(aRes.getRexp () instanceof ExpRJustName) && aRes.getRexp ().hasLabel ())
         {
-          grammar ().namesOfTokens ().put (Integer.valueOf (aRes.m_aRexp.getOrdinal ()), aRes.m_aRexp.getLabel ());
+          grammar ().namesOfTokens ().put (Integer.valueOf (aRes.getRexp ().getOrdinal ()), aRes.getRexp ().getLabel ());
         }
-        if (!(aRes.m_aRexp instanceof ExpRJustName))
+        if (!(aRes.getRexp () instanceof ExpRJustName))
         {
-          grammar ().rexpsOfTokens ().put (Integer.valueOf (aRes.m_aRexp.getOrdinal ()), aRes.m_aRexp);
+          grammar ().rexpsOfTokens ().put (Integer.valueOf (aRes.getRexp ().getOrdinal ()), aRes.getRexp ());
         }
       }
     }
@@ -418,13 +418,13 @@ public class Semanticize
       for (final TokenProduction aTokenProduction : grammar ().rexprList ())
       {
         final TokenProduction aTp = (aTokenProduction);
-        final List <RegExprSpec> aRespecs = aTp.m_aRespecs;
+        final List <RegExprSpec> aRespecs = aTp.getRespecs ();
         for (final RegExprSpec aRegExprSpec : aRespecs)
         {
           final RegExprSpec aRes = (aRegExprSpec);
-          aFrjn.m_aRoot = aRes.m_aRexp;
-          ExpansionTreeWalker.preOrderWalk (aRes.m_aRexp, aFrjn);
-          if (aRes.m_aRexp instanceof ExpRJustName)
+          aFrjn.m_aRoot = aRes.getRexp ();
+          ExpansionTreeWalker.preOrderWalk (aRes.getRexp (), aFrjn);
+          if (aRes.getRexp () instanceof ExpRJustName)
           {
             prepareToRemove (aRespecs, aRes);
           }
@@ -448,11 +448,11 @@ public class Semanticize
       for (final TokenProduction aTokenProduction : grammar ().rexprList ())
       {
         final TokenProduction aTp = (aTokenProduction);
-        final List <RegExprSpec> aRespecs = aTp.m_aRespecs;
+        final List <RegExprSpec> aRespecs = aTp.getRespecs ();
         for (final RegExprSpec aRegExprSpec : aRespecs)
         {
           final RegExprSpec aRes = (aRegExprSpec);
-          if (aRes.m_aRexp instanceof final ExpRJustName jn)
+          if (aRes.getRexp () instanceof final ExpRJustName jn)
           {
             final AbstractExpRegularExpression aRexp = grammar ().namedTokensTable ().get (jn.getLabel ());
             if (aRexp == null)
@@ -485,14 +485,14 @@ public class Semanticize
       for (final TokenProduction aTokenProduction : grammar ().rexprList ())
       {
         final TokenProduction aTp = (aTokenProduction);
-        final List <RegExprSpec> aRespecs = aTp.m_aRespecs;
+        final List <RegExprSpec> aRespecs = aTp.getRespecs ();
         for (final RegExprSpec aRegExprSpec : aRespecs)
         {
           final RegExprSpec aRes = (aRegExprSpec);
-          final Integer aIi = Integer.valueOf (aRes.m_aRexp.getOrdinal ());
+          final Integer aIi = Integer.valueOf (aRes.getRexp ().getOrdinal ());
           if (grammar ().namesOfTokens ().get (aIi) == null)
           {
-            JavaCCErrors.warning (aRes.m_aRexp,
+            JavaCCErrors.warning (aRes.getRexp (),
                                   "Unlabeled regular expression cannot be referred to by " +
                                             "user generated token manager.");
           }
@@ -570,11 +570,11 @@ public class Semanticize
         for (final TokenProduction aTokenProduction : grammar ().rexprList ())
         {
           final TokenProduction aTp = (aTokenProduction);
-          final List <RegExprSpec> aRespecs = aTp.m_aRespecs;
+          final List <RegExprSpec> aRespecs = aTp.getRespecs ();
           for (final RegExprSpec aRegExprSpec : aRespecs)
           {
             final RegExprSpec aRes = (aRegExprSpec);
-            final AbstractExpRegularExpression aRexp = aRes.m_aRexp;
+            final AbstractExpRegularExpression aRexp = aRes.getRexp ();
             if (aRexp.getWalkStatus () == 0)
             {
               aRexp.setWalkStatus (-1);
@@ -629,11 +629,11 @@ public class Semanticize
                                                              final String sStr)
   {
     final AbstractExpRegularExpression aRexp = aTable.get (sStr);
-    if (aRexp != null && !aRexp.m_aTpContext.m_bIgnoreCase)
+    if (aRexp != null && !aRexp.m_aTpContext.isIgnoreCase ())
       return null;
 
     for (final AbstractExpRegularExpression aRegEx : aTable.values ())
-      if (aRegEx.m_aTpContext.m_bIgnoreCase)
+      if (aRegEx.m_aTpContext.isIgnoreCase ())
         return aRegEx;
     return null;
   }
@@ -690,7 +690,7 @@ public class Semanticize
 
     if (aExp instanceof final ExpTryBlock aTryBlock)
     {
-      return emptyExpansionExists (aTryBlock.m_aExp);
+      return emptyExpansionExists (aTryBlock.getExp ());
     }
 
     // This should be dead code.
@@ -751,7 +751,7 @@ public class Semanticize
               else
                 if (aExp instanceof final ExpTryBlock aExpTryBlock)
                 {
-                  _addLeftMost (aProd, aExpTryBlock.m_aExp);
+                  _addLeftMost (aProd, aExpTryBlock.getExp ());
                 }
   }
 
@@ -816,40 +816,40 @@ public class Semanticize
   {
     if (aRexp instanceof final ExpRJustName jn)
     {
-      if (jn.m_aRegexpr.getWalkStatus () == -1)
+      if (jn.getRegexpr ().getWalkStatus () == -1)
       {
-        jn.m_aRegexpr.setWalkStatus (-2);
-        PGCCContext.current ().semanticize ().setLoopString ("..." + jn.m_aRegexpr.getLabel () + "...");
+        jn.getRegexpr ().setWalkStatus (-2);
+        PGCCContext.current ().semanticize ().setLoopString ("..." + jn.getRegexpr ().getLabel () + "...");
         // Note: Only the regexpr's of RJustName nodes and the top leve
         // regexpr's can have labels. Hence it is only in these cases that
         // the labels are checked for to be added to the loopString.
         return true;
       }
       else
-        if (jn.m_aRegexpr.getWalkStatus () == 0)
+        if (jn.getRegexpr ().getWalkStatus () == 0)
         {
-          jn.m_aRegexpr.setWalkStatus (-1);
-          if (_rexpWalk (jn.m_aRegexpr))
+          jn.getRegexpr ().setWalkStatus (-1);
+          if (_rexpWalk (jn.getRegexpr ()))
           {
             PGCCContext.current ()
                        .semanticize ()
                        .setLoopString ("..." +
-                                       jn.m_aRegexpr.getLabel () +
+                                       jn.getRegexpr ().getLabel () +
                                        "... --> " +
                                        PGCCContext.current ().semanticize ().getLoopString ());
-            if (jn.m_aRegexpr.getWalkStatus () == -2)
+            if (jn.getRegexpr ().getWalkStatus () == -2)
             {
-              jn.m_aRegexpr.setWalkStatus (1);
-              JavaCCErrors.semantic_error (jn.m_aRegexpr,
+              jn.getRegexpr ().setWalkStatus (1);
+              JavaCCErrors.semantic_error (jn.getRegexpr (),
                                            "Loop in regular expression detected: \"" +
                                                          PGCCContext.current ().semanticize ().getLoopString () +
                                                          "\"");
               return false;
             }
-            jn.m_aRegexpr.setWalkStatus (1);
+            jn.getRegexpr ().setWalkStatus (1);
             return true;
           }
-          jn.m_aRegexpr.setWalkStatus (1);
+          jn.getRegexpr ().setWalkStatus (1);
           return false;
         }
     }
@@ -899,8 +899,24 @@ public class Semanticize
    */
   static final class FixRJustNames implements ITreeWalkerOperation
   {
-    public AbstractExpRegularExpression m_aRoot;
+    private AbstractExpRegularExpression m_aRoot;
 
+    /**
+     * @return The value of m_aRoot.
+     */
+    public AbstractExpRegularExpression getRoot ()
+    {
+      return m_aRoot;
+    }
+
+    /**
+     * @param aValue
+     *        The new value of m_aRoot.
+     */
+    public void setRoot (final AbstractExpRegularExpression aValue)
+    {
+      m_aRoot = aValue;
+    }
     public boolean goDeeper (final Expansion e)
     {
       return true;
@@ -916,7 +932,7 @@ public class Semanticize
           JavaCCErrors.semantic_error (e, "Undefined lexical token name \"" + jn.getLabel () + "\".");
         }
         else
-          if (jn == m_aRoot && !jn.m_aTpContext.m_bIsExplicit && aRexp.m_bPrivateRexp)
+          if (jn == m_aRoot && !jn.m_aTpContext.isExplicit () && aRexp.m_bPrivateRexp)
           {
             JavaCCErrors.semantic_error (e,
                                          "Token name \"" +
@@ -925,7 +941,7 @@ public class Semanticize
                                             "(with a #) regular expression.");
           }
           else
-            if (jn == m_aRoot && !jn.m_aTpContext.m_bIsExplicit && aRexp.m_aTpContext.m_eKind != ETokenKind.TOKEN)
+            if (jn == m_aRoot && !jn.m_aTpContext.isExplicit () && aRexp.m_aTpContext.getKind () != ETokenKind.TOKEN)
             {
               JavaCCErrors.semantic_error (e,
                                            "Token name \"" +
@@ -936,7 +952,7 @@ public class Semanticize
             else
             {
               jn.setOrdinal (aRexp.getOrdinal ());
-              jn.m_aRegexpr = aRexp;
+              jn.setRegexpr (aRexp);
             }
       }
     }

@@ -122,7 +122,7 @@ public final class ExpRChoice extends AbstractExpRegularExpression
       aCurRE = getChoiceAt (i);
 
       while (aCurRE instanceof ExpRJustName)
-        aCurRE = ((ExpRJustName) aCurRE).m_aRegexpr;
+        aCurRE = ((ExpRJustName) aCurRE).getRegexpr ();
 
       if (aCurRE instanceof ExpRStringLiteral && ((ExpRStringLiteral) aCurRE).m_sImage.length () == 1)
       {
@@ -160,7 +160,7 @@ public final class ExpRChoice extends AbstractExpRegularExpression
       AbstractExpRegularExpression aCurRE = getChoiceAt (i);
 
       while (aCurRE instanceof ExpRJustName)
-        aCurRE = ((ExpRJustName) aCurRE).m_aRegexpr;
+        aCurRE = ((ExpRJustName) aCurRE).getRegexpr ();
 
       if (aCurRE instanceof final ExpRChoice aRChoice)
       {

@@ -60,14 +60,14 @@ public class XTextGenerator implements IDocGenerator
   {
     final StringBuilder aSb = new StringBuilder ();
 
-    for (final RegExprSpec res : aTp.m_aRespecs)
+    for (final RegExprSpec res : aTp.getRespecs ())
     {
-      final String sRegularExpressionText = JJDoc.emitRE (res.m_aRexp);
+      final String sRegularExpressionText = JJDoc.emitRE (res.getRexp ());
       aSb.append (sRegularExpressionText);
 
-      if (res.m_aNsTok != null)
+      if (res.getNsTok () != null)
       {
-        aSb.append (" : " + res.m_aNsTok.image);
+        aSb.append (" : " + res.getNsTok ().image);
       }
 
       aSb.append ("\n");

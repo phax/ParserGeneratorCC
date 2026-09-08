@@ -184,7 +184,7 @@ public final class LookaheadWalk
 
     if (aExp instanceof final ExpTryBlock aTryBlock)
     {
-      return genFirstSetRecursive (aPartialMatches, aTryBlock.m_aExp);
+      return genFirstSetRecursive (aPartialMatches, aTryBlock.getExp ());
     }
 
     // A semantic lookahead can reject anything, so when it is being taken into account nothing

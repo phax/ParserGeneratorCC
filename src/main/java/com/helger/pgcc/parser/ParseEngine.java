@@ -177,7 +177,7 @@ public class ParseEngine
 
     if (aExp instanceof final ExpTryBlock tb)
     {
-      return _javaCodeCheck (tb.m_aExp);
+      return _javaCodeCheck (tb.getExp ());
     }
 
     return false;
@@ -268,7 +268,7 @@ public class ParseEngine
                 else
                   if (aExp instanceof final ExpTryBlock tb)
                   {
-                    _genFirstSet (tb.m_aExp);
+                    _genFirstSet (tb.getExp ());
                   }
   }
 
@@ -1239,16 +1239,16 @@ public class ParseEngine
                   else
                     if (e instanceof final ExpTryBlock e_nrw)
                     {
-                      final Expansion aNested_e = e_nrw.m_aExp;
+                      final Expansion aNested_e = e_nrw.getExp ();
                       List <Token> aList;
                       sRetval += "\n";
                       sRetval += "try {" + INDENT_INC;
                       sRetval += _phase1ExpansionGen (aNested_e);
                       sRetval += INDENT_DEC + "\n" + "}";
-                      for (int i = 0; i < e_nrw.m_aCatchblks.size (); i++)
+                      for (int i = 0; i < e_nrw.getCatchblks ().size (); i++)
                       {
                         sRetval += " catch (";
-                        aList = e_nrw.m_aTypes.get (i);
+                        aList = e_nrw.getTypes ().get (i);
                         if (aList.size () != 0)
                         {
                           m_aCodeGenerator.printTokenSetup (aList.get (0));
@@ -1260,12 +1260,12 @@ public class ParseEngine
                           sRetval += m_aCodeGenerator.getTrailingComments (t);
                         }
                         sRetval += " ";
-                        t = e_nrw.m_aIds.get (i);
+                        t = e_nrw.getIds ().get (i);
                         m_aCodeGenerator.printTokenSetup (t);
                         sRetval += m_aCodeGenerator.getStringToPrint (t);
                         sRetval += m_aCodeGenerator.getTrailingComments (t);
                         sRetval += ") {" + INDENT_OFF + "\n";
-                        aList = e_nrw.m_aCatchblks.get (i);
+                        aList = e_nrw.getCatchblks ().get (i);
                         if (aList.size () != 0)
                         {
                           m_aCodeGenerator.printTokenSetup (aList.get (0));
@@ -1279,17 +1279,17 @@ public class ParseEngine
                         }
                         sRetval += INDENT_ON + "\n" + "}";
                       }
-                      if (e_nrw.m_aFinallyblk != null)
+                      if (e_nrw.getFinallyblk () != null)
                       {
                         // Both languages emit the same thing here - C++ gets a "finally" block
                         // that its own runtime header defines
                         sRetval += " finally {" + INDENT_OFF + "\n";
 
-                        if (e_nrw.m_aFinallyblk.size () != 0)
+                        if (e_nrw.getFinallyblk ().size () != 0)
                         {
-                          m_aCodeGenerator.printTokenSetup (e_nrw.m_aFinallyblk.get (0));
+                          m_aCodeGenerator.printTokenSetup (e_nrw.getFinallyblk ().get (0));
                           grammar ().setCurrentColumn (1);
-                          for (final Token aElement : e_nrw.m_aFinallyblk)
+                          for (final Token aElement : e_nrw.getFinallyblk ())
                           {
                             t = aElement;
                             sRetval += m_aCodeGenerator.getStringToPrint (t);
@@ -1411,9 +1411,9 @@ public class ParseEngine
       e.setInternalName ("R_", m_nGenSymbolIndex);
     }
     Phase3Data aP3d = (m_aPhase3table.get (e));
-    if (aP3d == null || aP3d.m_nCount < aInf.m_nCount)
+    if (aP3d == null || aP3d.count () < aInf.count ())
     {
-      aP3d = new Phase3Data (e, aInf.m_nCount);
+      aP3d = new Phase3Data (e, aInf.count ());
       m_aPhase3list.add (aP3d);
       m_aPhase3table.put (e, aP3d);
     }
@@ -1421,7 +1421,7 @@ public class ParseEngine
 
   void setupPhase3Builds (final Phase3Data aInf)
   {
-    final Expansion e = aInf.m_aExp;
+    final Expansion e = aInf.exp ();
     if (e instanceof AbstractExpRegularExpression)
     {
       // nothing to here
@@ -1457,7 +1457,7 @@ public class ParseEngine
             // We skip the first element in the following iteration since it is
             // the
             // Lookahead object.
-            int nCnt = aInf.m_nCount;
+            int nCnt = aInf.count ();
             for (int i = 1; i < e_nrw.getUnitCount (); i++)
             {
               final Expansion aEseq = (e_nrw.getUnitAt (i));
@@ -1470,7 +1470,7 @@ public class ParseEngine
           else
             if (e instanceof final ExpTryBlock e_nrw)
             {
-              setupPhase3Builds (new Phase3Data (e_nrw.m_aExp, aInf.m_nCount));
+              setupPhase3Builds (new Phase3Data (e_nrw.getExp (), aInf.count ()));
             }
             else
               if (e instanceof final ExpOneOrMore e_nrw)
@@ -1509,7 +1509,7 @@ public class ParseEngine
 
   void buildPhase3Routine (final Phase3Data aInf, final boolean bRecursive_call)
   {
-    final Expansion e = aInf.m_aExp;
+    final Expansion e = aInf.exp ();
     Token t = null;
     if (e.getInternalName ().startsWith ("jj_scan_token"))
       return;
@@ -1662,7 +1662,7 @@ public class ParseEngine
           {
             // We skip the first element in the following iteration since it is
             // the Lookahead object.
-            int nCnt = aInf.m_nCount;
+            int nCnt = aInf.count ();
             for (int i = 1; i < e_nrw.getUnitCount (); i++)
             {
               final Expansion aEseq = e_nrw.getUnitAt (i);
@@ -1685,7 +1685,7 @@ public class ParseEngine
           else
             if (e instanceof final ExpTryBlock e_nrw)
             {
-              buildPhase3Routine (new Phase3Data (e_nrw.m_aExp, aInf.m_nCount), true);
+              buildPhase3Routine (new Phase3Data (e_nrw.getExp (), aInf.count ()), true);
             }
             else
               if (e instanceof final ExpOneOrMore e_nrw)
@@ -1849,7 +1849,7 @@ public class ParseEngine
 
       if (e instanceof final ExpTryBlock e_nrw)
       {
-        return minimumSize (e_nrw.m_aExp);
+        return minimumSize (e_nrw.getExp ());
       }
 
       if (e instanceof final ExpOneOrMore e_nrw)
@@ -2057,7 +2057,7 @@ public class ParseEngine
     {
       for (final Phase3Data inf : m_aPhase3table.values ())
       {
-        PGPrinter.info ("**** Table for: " + inf.m_aExp.getInternalName ());
+        PGPrinter.info ("**** Table for: " + inf.exp ().getInternalName ());
         buildPhase3TableRec (inf);
         PGPrinter.info ("**** END TABLE *********");
       }
@@ -2082,7 +2082,7 @@ public class ParseEngine
   // Table driven.
   void buildPhase3TableRec (final Phase3Data aInf)
   {
-    final Expansion e = aInf.m_aExp;
+    final Expansion e = aInf.exp ();
     if (e instanceof final AbstractExpRegularExpression e_nrw)
     {
       PGPrinter.info ("TOKEN, " + e_nrw.getOrdinal ());
@@ -2102,7 +2102,7 @@ public class ParseEngine
           // nt exp's table.
           PGPrinter.info ("PRODUCTION, " + aNtexp.getInternalIndex ());
           if (false)
-            buildPhase3TableRec (new Phase3Data (aNtexp, aInf.m_nCount));
+            buildPhase3TableRec (new Phase3Data (aNtexp, aInf.count ()));
         }
       }
       else
@@ -2122,7 +2122,7 @@ public class ParseEngine
             else
             {
               PGPrinter.info ("<start recurse>");
-              buildPhase3TableRec (new Phase3Data (aNested_seq, aInf.m_nCount));
+              buildPhase3TableRec (new Phase3Data (aNested_seq, aInf.count ()));
               PGPrinter.info ("<end recurse>");
             }
           }
@@ -2131,7 +2131,7 @@ public class ParseEngine
         else
           if (e instanceof final ExpSequence e_nrw)
           {
-            int nCnt = aInf.m_nCount;
+            int nCnt = aInf.count ();
             if (e_nrw.getUnitCount () > 2)
             {
               PGPrinter.info ("SEQ, " + nCnt);
@@ -2161,7 +2161,7 @@ public class ParseEngine
           else
             if (e instanceof final ExpTryBlock e_nrw)
             {
-              buildPhase3TableRec (new Phase3Data (e_nrw.m_aExp, aInf.m_nCount));
+              buildPhase3TableRec (new Phase3Data (e_nrw.getExp (), aInf.count ()));
             }
             else
               if (e instanceof final ExpOneOrMore e_nrw)
@@ -2190,22 +2190,15 @@ public class ParseEngine
 /**
  * This class stores information to pass from phase 2 to phase 3.
  */
-final class Phase3Data
-{
-  /*
-   * This is the expansion to generate the jj3 method for.
-   */
-  final Expansion m_aExp;
+/**
+ * One entry of the phase 3 work list: an expansion and how far ahead it may still look.
+ *
+ * @param exp
+ *        The expansion to generate the jj3 method for. May not be <code>null</code>.
+ * @param count
+ *        The number of tokens that may still be consumed, which is what limits how many jj3
+ *        methods are generated.
+ */
+record Phase3Data (Expansion exp, int count)
+{}
 
-  /*
-   * This is the number of tokens that can still be consumed. This number is used to limit the
-   * number of jj3 methods generated.
-   */
-  final int m_nCount;
-
-  Phase3Data (final Expansion e, final int c)
-  {
-    m_aExp = e;
-    m_nCount = c;
-  }
-}

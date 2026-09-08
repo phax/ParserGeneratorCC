@@ -54,37 +54,150 @@ public class TokenProduction implements IGrammarLocation
    * null value is replaced by a String array that includes all lexical state names during the
    * semanticization phase.
    */
-  public String [] m_aLexStates;
+  private String [] m_aLexStates;
 
+  /**
+   * @return The value of m_aLexStates.
+   */
+  public String [] getLexStates ()
+  {
+    return m_aLexStates;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aLexStates.
+   */
+  public void setLexStates (final String [] aValue)
+  {
+    m_aLexStates = aValue;
+  }
   /**
    * The kind of this token production - TOKEN, SKIP, MORE, or SPECIAL.
    */
-  public ETokenKind m_eKind;
+  private ETokenKind m_eKind;
 
+  /**
+   * @return The value of m_eKind.
+   */
+  public ETokenKind getKind ()
+  {
+    return m_eKind;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_eKind.
+   */
+  public void setKind (final ETokenKind aValue)
+  {
+    m_eKind = aValue;
+  }
   /**
    * The list of regular expression specifications that comprise this production. Each entry is a
    * "RegExprSpec".
    */
-  public List <RegExprSpec> m_aRespecs = new ArrayList <> ();
+  private List <RegExprSpec> m_aRespecs = new ArrayList <> ();
 
+  /**
+   * @return The value of m_aRespecs.
+   */
+  public List <RegExprSpec> getRespecs ()
+  {
+    return m_aRespecs;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aRespecs.
+   */
+  public void setRespecs (final List <RegExprSpec> aValue)
+  {
+    m_aRespecs = aValue;
+  }
   /**
    * This is true if this corresponds to a production that actually appears in the input grammar.
    * Otherwise (if this is created to describe a regular expression that is part of the BNF) this is
    * set to false.
    */
-  public boolean m_bIsExplicit = true;
+  private boolean m_bIsExplicit = true;
 
+  /**
+   * @return The value of m_bIsExplicit.
+   */
+  public boolean isExplicit ()
+  {
+    return m_bIsExplicit;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_bIsExplicit.
+   */
+  public void setExplicit (final boolean aValue)
+  {
+    m_bIsExplicit = aValue;
+  }
   /**
    * This is true if case is to be ignored within the regular expressions of this token production.
    */
-  public boolean m_bIgnoreCase = false;
+  private boolean m_bIgnoreCase = false;
 
+  /**
+   * @return The value of m_bIgnoreCase.
+   */
+  public boolean isIgnoreCase ()
+  {
+    return m_bIgnoreCase;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_bIgnoreCase.
+   */
+  public void setIgnoreCase (final boolean aValue)
+  {
+    m_bIgnoreCase = aValue;
+  }
   /**
    * The first and last tokens from the input stream that represent this production.
    */
-  public Token m_aFirstToken;
-  public Token m_aLastToken;
+  private Token m_aFirstToken;
 
+  /**
+   * @return The value of m_aFirstToken.
+   */
+  public Token getFirstToken ()
+  {
+    return m_aFirstToken;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aFirstToken.
+   */
+  public void setFirstToken (final Token aValue)
+  {
+    m_aFirstToken = aValue;
+  }
+  private Token m_aLastToken;
+
+  /**
+   * @return The value of m_aLastToken.
+   */
+  public Token getLastToken ()
+  {
+    return m_aLastToken;
+  }
+
+  /**
+   * @param aValue
+   *        The new value of m_aLastToken.
+   */
+  public void setLastToken (final Token aValue)
+  {
+    m_aLastToken = aValue;
+  }
   /**
    * @return the column
    */
