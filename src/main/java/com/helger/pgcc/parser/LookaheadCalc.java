@@ -54,6 +54,10 @@ import com.helger.pgcc.parser.exp.ExpZeroOrMore;
 import com.helger.pgcc.parser.exp.ExpZeroOrOne;
 import com.helger.pgcc.parser.exp.Expansion;
 
+  /**
+   * Works out how much lookahead each choice needs, and warns about the ones that cannot be
+   * decided.
+   */
 public final class LookaheadCalc
 {
   private LookaheadCalc ()
@@ -134,6 +138,13 @@ public final class LookaheadCalc
     return sRet.substring (1);
   }
 
+  /**
+   * Check one choice for alternatives that a earlier alternative already matches, and report the
+   * ones that do.
+   *
+   * @param aCh
+   *        The choice. May not be <code>null</code>.
+   */
   public static void choiceCalc (@NonNull final ExpChoice aCh)
   {
     final int nFirst = _firstChoice (aCh);
@@ -300,6 +311,15 @@ public final class LookaheadCalc
     return "[...]";
   }
 
+  /**
+   * Check a loop or an optional expansion against what can follow it, and report the case where
+   * the two cannot be told apart.
+   *
+   * @param aExp
+   *        The expansion. May not be <code>null</code>.
+   * @param aNested
+   *        What is inside it. May be <code>null</code>.
+   */
   public static void ebnfCalc (@NonNull final Expansion aExp, final Expansion aNested)
   {
     // exp is one of OneOrMore, ZeroOrMore, ZeroOrOne

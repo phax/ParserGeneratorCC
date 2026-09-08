@@ -121,6 +121,8 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
+   * Set the first character of the range.
+   *
    * @param cLeft
    *        the left to set
    */
@@ -138,6 +140,8 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
+   * Set the last character of the range.
+   *
    * @param cRight
    *        the right to set
    */

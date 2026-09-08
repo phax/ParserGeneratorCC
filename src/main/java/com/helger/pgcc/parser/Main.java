@@ -178,6 +178,7 @@ public class Main
    *
    * @param aArgs
    *        arguments to main
+   *
    * @throws IOException
    *         on IO error
    * @see #mainProgram(String...) for a version that does NOT call <code>System.exit</code>

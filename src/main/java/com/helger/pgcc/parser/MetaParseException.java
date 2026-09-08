@@ -38,6 +38,12 @@ package com.helger.pgcc.parser;
  */
 public class MetaParseException extends ParseException
 {
+  /**
+   * Create the exception.
+   *
+   * @param sMsg
+   *        The message. May be <code>null</code>.
+   */
   public MetaParseException (final String sMsg)
   {
     super (sMsg);

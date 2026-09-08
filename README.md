@@ -61,6 +61,9 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 # News and noteworthy
 
 v3.0.0 - work in progress
+* Every public and protected member of the generator carries javadoc now, and `mvn javadoc:javadoc` reports no warnings. Writing it up turned up 16 members with no caller left and two option constants that were never registered, all removed. `TOKEN_MANAGER_SUPERCLASS` is documented as accepted and ignored - the option that works is `TOKEN_MANAGER_SUPER_CLASS`
+* Fixed the generated C++ token manager not compiling for a grammar with `'` or `\` in a string literal. The switch over the current character got `case ''':` and `case '\':`, because only the Java backend escaped those two characters in a case label
+* Fixed two token manager debug messages in the generated C++ running into the following line, and one being indented outside the `if` that guards it. `DEBUG_TOKEN_MANAGER` only
 * **Breaking API change** Replaced the internal `EJDKVersion` enum with `EJavaVersion` from ph-commons, so that `JDK_VERSION` values above 14 are supported. `Options.getJdkVersion ()` returns `com.helger.base.system.EJavaVersion` now
 * **Potentially breaking** The default value of `JDK_VERSION` moved from `1.5` to `1.8`, so that generated code uses the `Charset` based constructors and the diamond operator unless configured otherwise
 * **Breaking API change** `LexGenJava`, `ParseGenJava`, `LexGenCpp` and `ParseGenCPP` moved from `com.helger.pgcc.parser` to `com.helger.pgcc.output.java` and `com.helger.pgcc.output.cpp`, so that the package says which target language a class writes. `com.helger.pgcc.parser` no longer contains anything that writes a file

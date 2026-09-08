@@ -59,14 +59,14 @@ public final class ExpRRepetitionRange extends AbstractExpRegularExpression
    *
    * @param t
    *        The token it was written at, for error messages. May not be <code>null</code>.
-   * @param aRe
-   *        The expression being repeated. May not be <code>null</code>.
-   * @param nMin
+   * @param nR1
    *        The smallest number of repetitions.
-   * @param nMax
+   * @param nR2
    *        The largest number, ignored unless bHasMax is set.
    * @param bHasMax
    *        <code>false</code> if the range has no upper bound.
+   * @param r
+   *        The expression being repeated. May not be <code>null</code>.
    */
   public ExpRRepetitionRange (@NonNull final Token t,
                               final int nR1,

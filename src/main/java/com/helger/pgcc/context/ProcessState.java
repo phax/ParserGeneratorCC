@@ -116,6 +116,8 @@ public final class ProcessState
   }
 
   /**
+   * Choose where the templates come from.
+   *
    * @param bReadFromClassPath
    *        <code>true</code> to read the templates from the class path.
    */

@@ -58,6 +58,12 @@ public class ParseGenCpp extends AbstractCodeGenerator
   public ParseGenCpp ()
   {}
 
+  /**
+   * Write the parser.
+   *
+   * @throws MetaParseException
+   *         if the grammar cannot be generated from
+   */
   @SuppressWarnings ("unchecked")
   public void start () throws MetaParseException
   {

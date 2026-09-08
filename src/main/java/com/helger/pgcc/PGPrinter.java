@@ -252,8 +252,10 @@ public final class PGPrinter
   }
 
   /**
-   * Close both printers, which is a no-op for the ones that do not own their stream. @throws
-   * Exception if a printer refuses to close
+   * Close both printers, which is a no-op for the ones that do not own their stream.
+   *
+   * @throws Exception
+   *         if a printer refuses to close
    */
   public static void close () throws Exception
   {

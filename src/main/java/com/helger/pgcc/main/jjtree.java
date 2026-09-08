@@ -47,6 +47,12 @@ public final class jjtree
   private jjtree ()
   {}
 
+  /**
+   * The command line entry point of JJTree.
+   *
+   * @param aArgs
+   *        The command line arguments. May not be <code>null</code>.
+   */
   public static void main (final String [] aArgs)
   {
     JJTreeLauncher.main (aArgs);

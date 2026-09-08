@@ -44,8 +44,17 @@ import com.helger.io.resource.ClassPathResource;
  */
 public final class PGVersion
 {
+  /**
+   * The major version of this generator.
+   */
   public static final String MAJOR_VERSION;
+  /**
+   * The minor version of this generator.
+   */
   public static final String MINOR_VERSION;
+  /**
+   * The patch version of this generator.
+   */
   public static final String PATCH_VERSION;
 
   /** e.g. 1.0 */

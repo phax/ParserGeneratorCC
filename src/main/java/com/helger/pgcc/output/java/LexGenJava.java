@@ -306,12 +306,26 @@ public class LexGenJava extends AbstractLexGenJavaLike
   }
 
 
+  /**
+   * Record a character that is skipped on its own, without an automaton.
+   *
+   * @param c
+   *        The character to skip.
+   * @param nKind
+   *        The token ordinal it belongs to.
+   */
   public static void addCharToSkip (final char c, final int nKind)
   {
     lexer ().getSinglesToSkip ()[lexer ().getLexStateIndex ()].addChar (c);
     lexer ().getSinglesToSkip ()[lexer ().getLexStateIndex ()].setKind (nKind);
   }
 
+  /**
+   * Write the token manager.
+   *
+   * @throws IOException
+   *         if the output cannot be written
+   */
   public void start () throws IOException
   {
     if (!Options.isBuildTokenManager () || Options.isUserTokenManager () || JavaCCErrors.getErrorCount () > 0)

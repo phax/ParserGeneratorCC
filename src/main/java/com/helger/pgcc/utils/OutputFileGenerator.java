@@ -129,6 +129,7 @@ public class OutputFileGenerator
    *
    * @param aOut
    *        writer
+   *
    * @throws IOException
    *         on IO error
    */
@@ -371,7 +372,9 @@ public class OutputFileGenerator
    * what a template produces without running the generator.
    *
    * @param aArgs
-   *        The template file and the output file. May not be <code>null</code>. @throws Exception
+   *        The template file and the output file. May not be <code>null</code>.
+   *
+   * @throws Exception
    *         if the template cannot be read or the output cannot be written
    */
   public static void main (@NonNull final String [] aArgs) throws Exception
@@ -397,8 +400,10 @@ public class OutputFileGenerator
    * @param sOutputFileName
    *        The file to write. May not be <code>null</code>.
    * @param aOutputCharset
-   *        The encoding to write it in. May not be <code>null</code>. @throws IOException if the
-   *         template cannot be read or the file cannot be written
+   *        The encoding to write it in. May not be <code>null</code>.
+   *
+   * @throws IOException
+   *         if the template cannot be read or the file cannot be written
    */
   public static void generateFromTemplate (final String sTemplateFile,
                                            final Map <String, Object> aOptions,

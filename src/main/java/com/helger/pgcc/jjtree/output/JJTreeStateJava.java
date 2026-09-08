@@ -58,6 +58,12 @@ public final class JJTreeStateJava
   private JJTreeStateJava ()
   {}
 
+  /**
+   * Write the fields and methods JJTree adds to the generated parser class.
+   *
+   * @param aIo
+   *        Where to write. May not be <code>null</code>.
+   */
   public static void insertParserMembers (@NonNull final JJTreeIO aIo)
   {
     aIo.println ();
@@ -72,6 +78,9 @@ public final class JJTreeStateJava
     return "JJT" + PGCCContext.current ().jjtree ().getParserName () + "State";
   }
 
+  /**
+   * Write the Java class that the generated parser keeps its half built tree in.
+   */
   public static void generateTreeStateJava ()
   {
     final File aFile = new File (JJTreeOptions.getJJTreeOutputDirectory (), _nameState () + ".java");

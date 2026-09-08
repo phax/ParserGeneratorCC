@@ -61,6 +61,10 @@ import com.helger.pgcc.parser.exp.ExpZeroOrMore;
 import com.helger.pgcc.parser.exp.ExpZeroOrOne;
 import com.helger.pgcc.parser.exp.Expansion;
 
+  /**
+   * Turns the productions of the grammar into the methods of the generated parser, deciding at
+   * every choice point how to tell the alternatives apart.
+   */
 public class ParseEngine
 {
   /**
@@ -96,6 +100,9 @@ public class ParseEngine
   private final ICommonsList <Phase3Data> m_aPhase3list = new CommonsArrayList <> ();
   private final ICommonsMap <Expansion, Phase3Data> m_aPhase3table = new CommonsHashMap <> ();
 
+  /**
+   * Create the engine.
+   */
   public ParseEngine ()
   {}
 
@@ -1890,6 +1897,12 @@ public class ParseEngine
     }
   }
 
+  /**
+   * Write the parser methods of every production.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
   public void build (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
     m_aCodeGenerator = aCodeGenerator;
@@ -2078,6 +2091,9 @@ public class ParseEngine
     aCodeGenerator.switchToMainFile ();
   }
 
+  /**
+   * Forget everything, ready for the next grammar.
+   */
   public void reInit ()
   {
     m_nGenSymbolIndex = 0;

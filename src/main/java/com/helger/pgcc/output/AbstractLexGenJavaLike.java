@@ -64,11 +64,21 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
   protected AbstractLexGenJavaLike ()
   {}
 
+  /**
+   * {@return the token manager generation of the current run}
+   */
   public static LexerState lexer ()
   {
     return PGCCContext.current ().lexer ();
   }
 
+  /**
+   * Look a lexical state up by name.
+   *
+   * @param sName
+   *        The state name. May not be <code>null</code>.
+   * @return The index into the per lexical state arrays.
+   */
   protected static int _getIndex (final String sName)
   {
     for (int i = 0; i < lexer ().getLexStateName ().length; i++)
@@ -78,6 +88,10 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
     throw new IllegalStateException ("Should never come here");
   }
 
+  /**
+   * Warn about lexical states whose empty string match leads back to itself, directly or through
+   * others, because a generated token manager would sit there forever.
+   */
   protected static void checkEmptyStringMatch ()
   {
     final boolean [] aSeen = new boolean [lexer ().getMaxLexStates ()];
@@ -164,6 +178,13 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
     }
   }
 
+  /**
+   * The highest character in a 64 character block that a bit set contains.
+   *
+   * @param l
+   *        The bit set, one bit per character.
+   * @return The character.
+   */
   protected static char maxChar (final long l)
   {
     for (int i = 64; i-- > 0;)

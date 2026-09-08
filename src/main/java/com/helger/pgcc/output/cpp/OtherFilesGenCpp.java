@@ -73,6 +73,14 @@ public class OtherFilesGenCpp
   {}
 
   // Used by the CPP code generatror
+  /**
+   * Write a string as the C++ array of character codes the generated code wants.
+   *
+   * @param aOstr
+   *        Where to write. May not be <code>null</code>.
+   * @param s
+   *        The string. May not be <code>null</code>.
+   */
   public static void printCharArray (@NonNull final PrintWriter aOstr, @NonNull final String s)
   {
     aOstr.print ("{ ");
@@ -83,6 +91,13 @@ public class OtherFilesGenCpp
     aOstr.print ("0 }");
   }
 
+  /**
+   * Write the C++ files that are neither the parser nor the token manager - the constants header
+   * above all.
+   *
+   * @throws MetaParseException
+   *         if the grammar cannot be generated from
+   */
   static public void start () throws MetaParseException
   {
     if (JavaCCErrors.getErrorCount () != 0)

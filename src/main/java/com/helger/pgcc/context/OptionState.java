@@ -89,17 +89,29 @@ public final class OptionState
     return m_aInputFileSet;
   }
 
+  /**
+   * {@return the language being generated}
+   */
   @NonNull
   public EOutputLanguage getLanguage ()
   {
     return m_eLanguage;
   }
 
+  /**
+   * Choose the language to generate.
+   *
+   * @param eLanguage
+   *        The language. May not be <code>null</code>.
+   */
   public void setLanguage (@NonNull final EOutputLanguage eLanguage)
   {
     m_eLanguage = eLanguage;
   }
 
+  /**
+   * Forget everything, ready for the next lookahead computation.
+   */
   public void reset ()
   {
     m_aValues.clear ();

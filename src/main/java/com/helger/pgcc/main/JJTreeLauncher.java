@@ -43,6 +43,12 @@ public final class JJTreeLauncher
   private JJTreeLauncher ()
   {}
 
+  /**
+   * The command line entry point of JJTree.
+   *
+   * @param aArgs
+   *        The command line arguments. May not be <code>null</code>.
+   */
   public static void main (final String [] aArgs)
   {
     com.helger.pgcc.jjtree.Main.main (aArgs);

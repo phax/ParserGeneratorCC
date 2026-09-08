@@ -74,6 +74,16 @@ public class OtherFilesGenJava
   private static final IJavaResourceTemplateLocations RESOURCES_JAVA_CLASSIC = new JavaResourceTemplateLocationImpl ();
   private static final IJavaResourceTemplateLocations RESOURCES_JAVA_MODERN = new JavaModernResourceTemplateLocationImpl ();
 
+  /**
+   * Write the Java files that are neither the parser nor the token manager - the constants
+   * interface above all.
+   *
+   * @param bIsJavaModern
+   *        <code>true</code> to generate the Provider based variant.
+   *
+   * @throws MetaParseException
+   *         if the grammar cannot be generated from
+   */
   public static void start (final boolean bIsJavaModern) throws MetaParseException
   {
     if (JavaCCErrors.getErrorCount () != 0)

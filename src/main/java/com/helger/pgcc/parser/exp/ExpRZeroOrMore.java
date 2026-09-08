@@ -60,6 +60,14 @@ public final class ExpRZeroOrMore extends AbstractExpRegularExpression
     m_aRegexpr = r;
   }
 
+  /**
+   * Create a zero-or-more repetition at the position of a token.
+   *
+   * @param t
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param r
+   *        The expression it wraps. May not be <code>null</code>.
+   */
   public ExpRZeroOrMore (@NonNull final Token t, final AbstractExpRegularExpression r)
   {
     this (r);

@@ -55,6 +55,9 @@ public class XTextGenerator implements IDocGenerator
 {
   private Writer m_aPW;
 
+  /**
+   * Create the generator.
+   */
   public XTextGenerator ()
   {}
 

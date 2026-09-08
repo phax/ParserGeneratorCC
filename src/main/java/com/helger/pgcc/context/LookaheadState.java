@@ -69,16 +69,32 @@ public final class LookaheadState
     return m_nLimit;
   }
 
+  /**
+   * Set how many tokens deep the lookahead computation goes.
+   *
+   * @param nLimit
+   *        The depth, 0 when no computation is running.
+   */
   public void setLimit (final int nLimit)
   {
     m_nLimit = nLimit;
   }
 
+  /**
+   * {@return <code>true</code> if a semantic lookahead makes the whole computation give up rather
+   * than carrying on past something it cannot decide}
+   */
   public boolean isConsiderSemanticLA ()
   {
     return m_bConsiderSemanticLA;
   }
 
+  /**
+   * Choose whether a semantic lookahead stops the computation.
+   *
+   * @param bConsiderSemanticLA
+   *        <code>true</code> to stop at one.
+   */
   public void setConsiderSemanticLA (final boolean bConsiderSemanticLA)
   {
     m_bConsiderSemanticLA = bConsiderSemanticLA;
@@ -94,11 +110,20 @@ public final class LookaheadState
     return m_aSizeLimitedMatches;
   }
 
+  /**
+   * Set where the matches that reach the lookahead limit are collected.
+   *
+   * @param aMatches
+   *        The list to collect into, or <code>null</code> not to collect them.
+   */
   public void setSizeLimitedMatches (@Nullable final List <MatchInfo> aMatches)
   {
     m_aSizeLimitedMatches = aMatches;
   }
 
+  /**
+   * Forget everything, ready for the next lookahead computation.
+   */
   public void reset ()
   {
     m_nLimit = 0;
@@ -106,6 +131,9 @@ public final class LookaheadState
     m_aSizeLimitedMatches = null;
   }
 
+  /**
+   * {@return the lookahead scratch space of this run}
+   */
   @NonNull
   public static LookaheadState current ()
   {

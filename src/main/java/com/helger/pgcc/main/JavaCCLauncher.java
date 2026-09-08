@@ -43,6 +43,15 @@ public final class JavaCCLauncher
   private JavaCCLauncher ()
   {}
 
+  /**
+   * The command line entry point of the parser generator.
+   *
+   * @param aArgs
+   *        The command line arguments. May not be <code>null</code>.
+   *
+   * @throws Exception
+   *         on any failure
+   */
   public static void main (final String [] aArgs) throws Exception
   {
     com.helger.pgcc.parser.Main.main (aArgs);

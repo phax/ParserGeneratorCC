@@ -118,6 +118,8 @@ public final class JavaVersionHelper
   }
 
   /**
+   * Whether a Java version is new enough to use generics and the enhanced for loop.
+   *
    * @param eVersion
    *        The version to check. May not be <code>null</code>.
    * @param eOther

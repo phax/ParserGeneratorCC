@@ -60,6 +60,14 @@ public final class ExpRZeroOrOne extends AbstractExpRegularExpression
     m_aRegexpr = r;
   }
 
+  /**
+   * Create an optional expression at the position of a token.
+   *
+   * @param t
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param r
+   *        The expression it wraps. May not be <code>null</code>.
+   */
   public ExpRZeroOrOne (@NonNull final Token t, final AbstractExpRegularExpression r)
   {
     this (r);

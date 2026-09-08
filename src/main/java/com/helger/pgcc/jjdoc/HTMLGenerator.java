@@ -79,9 +79,20 @@ public class HTMLGenerator extends TextGenerator
   private final Map <String, String> m_aIDMap = new HashMap <> ();
   private int m_nID = 1;
 
+  /**
+   * Create the generator.
+   */
   public HTMLGenerator ()
   {}
 
+  /**
+   * The identifier a non-terminal carries in the output, invented on first use and remembered
+   * afterwards so that the same production always gets the same one.
+   *
+   * @param sNt
+   *        The production name. May not be <code>null</code>.
+   * @return The identifier. Never <code>null</code>.
+   */
   protected String getID (final String sNt)
   {
     return m_aIDMap.computeIfAbsent (sNt, k -> "prod" + m_nID++);

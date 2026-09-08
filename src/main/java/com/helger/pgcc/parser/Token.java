@@ -195,6 +195,13 @@ public class Token implements IGrammarLocation
     }
   }
 
+  /**
+   * Create a token of the given kind.
+   *
+   * @param nOfKind
+   *        The token kind.
+   * @return The token. Never <code>null</code>.
+   */
   public static Token newToken (final int nOfKind)
   {
     return newToken (nOfKind, null);
@@ -211,6 +218,14 @@ public class Token implements IGrammarLocation
      */
     int m_nRealKind = JavaCCParserConstants.GT;
 
+  /**
+   * Create the token.
+   *
+   * @param nKind
+   *        The token kind.
+   * @param sImage
+   *        The text it matched. May be <code>null</code>.
+   */
     public GTToken (final int nKind, final String sImage)
     {
       super (nKind, sImage);

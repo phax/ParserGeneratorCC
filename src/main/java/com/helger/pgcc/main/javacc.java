@@ -47,6 +47,15 @@ public final class javacc
   private javacc ()
   {}
 
+  /**
+   * The command line entry point of the parser generator.
+   *
+   * @param aArgs
+   *        The command line arguments. May not be <code>null</code>.
+   *
+   * @throws Exception
+   *         on any failure
+   */
   public static void main (final String [] aArgs) throws Exception
   {
     JavaCCLauncher.main (aArgs);

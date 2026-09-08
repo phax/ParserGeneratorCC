@@ -47,6 +47,15 @@ public final class jjdoc
   private jjdoc ()
   {}
 
+  /**
+   * The command line entry point of JJDoc.
+   *
+   * @param aArgs
+   *        The command line arguments. May not be <code>null</code>.
+   *
+   * @throws Exception
+   *         on any failure
+   */
   public static void main (final String [] aArgs) throws Exception
   {
     JJDocLauncher.main (aArgs);

@@ -89,6 +89,12 @@ public final class SemanticizeState
     return m_sLoopString;
   }
 
+  /**
+   * Record the chain of productions that turned out to be left recursive, for the error message.
+   *
+   * @param sLoopString
+   *        The chain, arrows between the names. May be <code>null</code>.
+   */
   public void setLoopString (@Nullable final String sLoopString)
   {
     m_sLoopString = sLoopString;

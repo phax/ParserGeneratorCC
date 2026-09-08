@@ -56,6 +56,12 @@ public final class JJTreeStateCpp
   private JJTreeStateCpp ()
   {}
 
+  /**
+   * Write the C++ class that the generated parser keeps its half built tree in.
+   *
+   * @throws IOException
+   *         if the file cannot be written
+   */
   public static void generateTreeState () throws IOException
   {
     final Map <String, Object> aOptions = Options.getAllOptions ();

@@ -346,6 +346,9 @@ public final class GrammarState
   }
 
 
+  /**
+   * Claim one more entry of the generated jj_la1 error reporting array.
+   */
   public void incMaskIndex ()
   {
     m_nMaskIndex++;
@@ -504,11 +507,18 @@ public final class GrammarState
     m_nCurrentLine = nCurrentLine;
   }
 
+  /**
+   * Step the token printer's position back one line, for the caller that has looked one line too
+   * far.
+   */
   public void decCurrentLine ()
   {
     m_nCurrentLine--;
   }
 
+  /**
+   * Step the token printer's position on one line.
+   */
   public void incCurrentLine ()
   {
     m_nCurrentLine++;
@@ -540,6 +550,9 @@ public final class GrammarState
     m_nCurrentColumn = nCurrentColumn;
   }
 
+  /**
+   * Step the token printer's position on one column.
+   */
   public void incCurrentColumn ()
   {
     m_nCurrentColumn++;

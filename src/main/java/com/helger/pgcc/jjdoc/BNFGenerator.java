@@ -48,6 +48,10 @@ import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpNonTerminal;
 import com.helger.pgcc.parser.exp.Expansion;
 
+  /**
+   * Writes the grammar back out as plain BNF, without any of the documentation JJDoc otherwise
+   * produces.
+   */
 public class BNFGenerator implements IDocGenerator
 {
   /** Default constructor. */
@@ -59,11 +63,24 @@ public class BNFGenerator implements IDocGenerator
   private Writer m_aPW;
   private boolean m_bPrinting = true;
 
+  /**
+   * The identifier a non-terminal carries in the output, invented on first use and remembered
+   * afterwards so that the same production always gets the same one.
+   *
+   * @param sNt
+   *        The production name. May not be <code>null</code>.
+   * @return The identifier. Never <code>null</code>.
+   */
   protected String getID (final String sNt)
   {
     return m_aIDMap.computeIfAbsent (sNt, k -> "prod" + m_nID++);
   }
 
+  /**
+   * Open the file JJDoc is writing, or standard output if that is where it goes.
+   *
+   * @return The writer. Never <code>null</code>.
+   */
   protected static Writer createOutputStream ()
   {
     return TextGenerator.createPrintWriter (".bnf");

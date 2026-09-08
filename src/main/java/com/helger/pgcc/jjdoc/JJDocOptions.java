@@ -94,6 +94,10 @@ public class JJDocOptions extends Options
     return booleanValue ("TEXT");
   }
 
+  /**
+   * {@return <code>true</code> if JJDoc should produce an XText grammar rather than
+   * documentation}
+   */
   public static boolean isXText ()
   {
     return booleanValue ("XTEXT");

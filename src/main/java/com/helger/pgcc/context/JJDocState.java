@@ -55,34 +55,64 @@ public final class JJDocState
   private String m_sOutputFile;
   private IDocGenerator m_aGenerator;
 
+  /**
+   * {@return the grammar JJDoc is documenting}
+   */
   @Nullable
   public String getInputFile ()
   {
     return m_sInputFile;
   }
 
+  /**
+   * Record which grammar JJDoc is documenting.
+   *
+   * @param sInputFile
+   *        The file name, or {@link com.helger.pgcc.jjdoc.JJDocGlobals#STANDARD_INPUT}. May be
+   *         <code>null</code>.
+   */
   public void setInputFile (@Nullable final String sInputFile)
   {
     m_sInputFile = sInputFile;
   }
 
+  /**
+   * {@return the file JJDoc is writing}
+   */
   @Nullable
   public String getOutputFile ()
   {
     return m_sOutputFile;
   }
 
+  /**
+   * Record which file JJDoc is writing.
+   *
+   * @param sOutputFile
+   *        The file name, or {@link com.helger.pgcc.jjdoc.JJDocGlobals#STANDARD_OUTPUT}. May be
+   *         <code>null</code>.
+   */
   public void setOutputFile (@Nullable final String sOutputFile)
   {
     m_sOutputFile = sOutputFile;
   }
 
+  /**
+   * {@return the generator producing the output, which is what decides between HTML, plain text,
+   * BNF and XText}
+   */
   @Nullable
   public IDocGenerator getGenerator ()
   {
     return m_aGenerator;
   }
 
+  /**
+   * Choose what JJDoc produces.
+   *
+   * @param aGenerator
+   *        The generator. May be <code>null</code>.
+   */
   public void setGenerator (@Nullable final IDocGenerator aGenerator)
   {
     m_aGenerator = aGenerator;

@@ -91,6 +91,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * Set the column this production was declared at.
+   *
    * @param nColumn
    *        the column to set
    */
@@ -108,6 +110,8 @@ public class TokenProduction implements IGrammarLocation
   }
 
   /**
+   * Set the line this production was declared at.
+   *
    * @param nLine
    *        the line to set
    */

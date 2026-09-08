@@ -72,6 +72,8 @@ public interface IParserSyntax
   String getLoopStart (int nLabelIndex);
 
   /**
+   * How the generated code leaves a loop from the inside.
+   *
    * @param nLabelIndex
    *        The number used by the matching {@link #getLoopStart(int)}.
    * @return The statement that leaves that loop. Never <code>null</code>.
@@ -81,6 +83,8 @@ public interface IParserSyntax
   String getLoopBreak (int nLabelIndex);
 
   /**
+   * What a loop needs after its closing brace, which in C++ is where a break lands.
+   *
    * @param nLabelIndex
    *        The number used by the matching {@link #getLoopStart(int)}.
    * @return What has to follow the closing brace of the loop - a landing label in C++, nothing in
@@ -99,9 +103,10 @@ public interface IParserSyntax
   String getMissingReturnStatement ();
 
   /**
-   * {@return what follows a production's parameter list to declare that it can fail - " throws.
-   *         ParseException" in Java, nothing in C++, which reports through its error handler. Never
-   *         <code>null</code>, but maybe empty.}
+   * What follows a production's parameter list to declare that it can fail.
+   *
+   * @return " throws ParseException" in Java, nothing in C++, which reports through its error
+   *         handler. Never <code>null</code>, but maybe empty.
    */
   @NonNull
   String getThrowsClause ();
@@ -129,6 +134,8 @@ public interface IParserSyntax
   List <String> getTraceExitLines (@NonNull String sProductionName);
 
   /**
+   * The header of the routine that the parser calls to try a syntactic lookahead.
+   *
    * @param sInternalName
    *        The generated suffix of the lookahead routine. May not be <code>null</code>.
    * @return The declaration of the {@code jj_2} entry point, which takes the lookahead limit. Never
@@ -139,6 +146,8 @@ public interface IParserSyntax
   String getLookaheadEntryDeclaration (@NonNull String sInternalName);
 
   /**
+   * The header of the routine that walks one expansion during a syntactic lookahead.
+   *
    * @param sInternalName
    *        The generated suffix of the lookahead routine. May not be <code>null</code>.
    * @return The declaration of the {@code jj_3} routine that does the actual scan. Never
@@ -149,6 +158,8 @@ public interface IParserSyntax
   String getLookaheadScanDeclaration (@NonNull String sInternalName);
 
   /**
+   * Look up the syntax of one language.
+   *
    * @param eLanguage
    *        The output language. May not be <code>null</code>.
    * @return The syntax for that language. Never <code>null</code>.

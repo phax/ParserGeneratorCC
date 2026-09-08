@@ -679,7 +679,9 @@ public abstract class AbstractCodeGenerator
    * @param sName
    *        The template resource path. May not be <code>null</code>.
    * @param aOptions
-   *        The values the template substitutes. May not be <code>null</code>. @throws IOException
+   *        The values the template substitutes. May not be <code>null</code>.
+   *
+   * @throws IOException
    *         if the template cannot be read
    */
   public void writeTemplate (final String sName, final Map <String, Object> aOptions) throws IOException

@@ -41,8 +41,12 @@ package com.helger.pgcc.utils;
  */
 public enum EOptionType
 {
+  /** true or false. */
   BOOLEAN,
+  /** A whole number. */
   INTEGER,
+  /** Free text. */
   STRING,
+  /** Something with its own parsing, JDK_VERSION above all. */
   OTHER;
 }

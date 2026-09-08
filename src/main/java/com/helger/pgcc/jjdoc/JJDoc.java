@@ -135,6 +135,14 @@ public final class JJDoc
     aGen.tokensEnd ();
   }
 
+  /**
+   * The text that introduces a token production - TOKEN, SKIP, MORE or SPECIAL_TOKEN, with its
+   * lexical states in front if it has any.
+   *
+   * @param aTp
+   *        The production. May not be <code>null</code>.
+   * @return The text. Never <code>null</code>.
+   */
   public static String getStandardTokenProductionText (@NonNull final TokenProduction aTp)
   {
     String sToken = "";
@@ -399,6 +407,13 @@ public final class JJDoc
     aGen.text (" )?");
   }
 
+  /**
+   * Render one regular expression the way the grammar wrote it.
+   *
+   * @param aRe
+   *        The expression. May not be <code>null</code>.
+   * @return The grammar text. Never <code>null</code>.
+   */
   public static String emitRE (@NonNull final AbstractExpRegularExpression aRe)
   {
     String sReturnString = "";

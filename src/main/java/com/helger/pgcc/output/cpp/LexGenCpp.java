@@ -314,6 +314,12 @@ public class LexGenCpp extends AbstractLexGenJavaLike
   }
 
 
+  /**
+   * Write the token manager.
+   *
+   * @throws IOException
+   *         if the output cannot be written
+   */
   public void start () throws IOException
   {
     if (!Options.isBuildTokenManager () || Options.isUserTokenManager () || JavaCCErrors.getErrorCount () > 0)

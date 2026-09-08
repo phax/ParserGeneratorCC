@@ -37,6 +37,9 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonempty;
 
+  /**
+   * Where the classic Java templates live.
+   */
 public class JavaResourceTemplateLocationImpl implements IJavaResourceTemplateLocations
 {
   /** Default constructor. */

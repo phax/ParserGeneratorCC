@@ -47,6 +47,10 @@ import org.jspecify.annotations.Nullable;
 import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.exp.*;
 
+  /**
+   * The checks that a grammar which parses also makes sense: every production is defined, no
+   * token is unreachable, no loop can match the empty string.
+   */
 public class Semanticize
 {
   /** Default constructor. */
@@ -63,6 +67,12 @@ public class Semanticize
     PGCCContext.current ().semanticize ().removePreparedItems ();
   }
 
+  /**
+   * Run every check over the grammar that has been read.
+   *
+   * @throws MetaParseException
+   *         if a check cannot be completed
+   */
   public static void start () throws MetaParseException
   {
     if (JavaCCErrors.getErrorCount () != 0)
@@ -647,6 +657,14 @@ public class Semanticize
 
   // returns true if "exp" can expand to the empty string, returns false
   // otherwise.
+  /**
+   * Whether an expansion can match nothing at all, which is what makes a loop around it never
+   * terminate.
+   *
+   * @param aExp
+   *        The expansion. May not be <code>null</code>.
+   * @return <code>true</code> if it can match the empty string.
+   */
   public static boolean emptyExpansionExists (final Expansion aExp)
   {
     if (aExp instanceof final ExpNonTerminal aNonTerminal)

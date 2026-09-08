@@ -71,6 +71,8 @@ public class BNFProduction extends AbstractNormalProduction
   }
 
   /**
+   * Record that the generated code for this production has had its jump targets filled in.
+   *
    * @param bJumpPatched
    *        the jumpPatched to set
    */

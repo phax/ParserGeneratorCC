@@ -95,6 +95,8 @@ public final class ExpLookahead extends Expansion
   }
 
   /**
+   * Set how many tokens this lookahead may look at.
+   *
    * @param nAmount
    *        the amount to set
    */
@@ -112,6 +114,8 @@ public final class ExpLookahead extends Expansion
   }
 
   /**
+   * Set the expansion this lookahead tries to match.
+   *
    * @param aLa_expansion
    *        the la_expansion to set
    */
@@ -129,6 +133,8 @@ public final class ExpLookahead extends Expansion
   }
 
   /**
+   * Record whether the grammar wrote this lookahead or the generator added it.
+   *
    * @param bIsExplicit
    *        the isExplicit to set
    */

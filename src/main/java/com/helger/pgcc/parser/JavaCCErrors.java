@@ -183,7 +183,10 @@ public final class JavaCCErrors
    * Report something that makes going on pointless, and stop.
    *
    * @param sMessage
-   *        The message. May not be <code>null</code>. @throws IllegalStateException always
+   *        The message. May not be <code>null</code>.
+   *
+   * @throws IllegalStateException
+   *         always
    */
   public static void fatal (final String sMessage) throws IllegalStateException
   {
@@ -192,7 +195,10 @@ public final class JavaCCErrors
   }
 
   /**
-   * Report a bug in the generator itself, and stop. @throws IllegalStateException always
+   * Report a bug in the generator itself, and stop.
+   *
+   * @throws IllegalStateException
+   *         always
    */
   public static void internalError () throws IllegalStateException
   {

@@ -61,6 +61,8 @@ public final class TokenManagerDebug
   {}
 
   /**
+   * Write one fixed line to the token manager debug stream.
+   *
    * @param aCodeGenerator
    *        The code generator to write to. May not be <code>null</code>.
    * @param sIndent

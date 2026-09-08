@@ -35,11 +35,17 @@ package com.helger.pgcc;
 
 import com.helger.annotation.concurrent.Immutable;
 
+  /**
+   * The names this generator goes by.
+   */
 @Immutable
 public final class CPG
 {
   /** Application/tool name */
   public static final String APP_NAME = "ParserGeneratorCC";
+  /**
+   * The name the command line tools report themselves as.
+   */
   public static final String CMDLINE_NAME = "pgcc";
 
   private CPG ()

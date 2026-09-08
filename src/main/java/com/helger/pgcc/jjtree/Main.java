@@ -43,6 +43,12 @@ public final class Main
   private Main ()
   {}
 
+  /**
+   * The command line entry point of JJTree.
+   *
+   * @param args
+   *        The command line arguments. May not be <code>null</code>.
+   */
   public static void main (final String args[])
   {
     final JJTree aJjtree = new JJTree ();

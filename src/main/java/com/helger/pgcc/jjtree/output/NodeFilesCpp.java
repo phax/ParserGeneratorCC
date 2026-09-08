@@ -721,13 +721,15 @@ public final class NodeFilesCpp
    *
    * @param aOutputFile
    *        Where to write. May not be <code>null</code>.
-   * @param sTemplateName
+   * @param sTemplate
    *        The template resource path. May not be <code>null</code>.
    * @param aOptions
    *        The values the template substitutes. May not be <code>null</code>.
-   * @param bCloseFile
-   *        <code>true</code> to close the file afterwards. @throws IOException if the template
-   *         cannot be read or the file cannot be written
+   * @param bClose
+   *        <code>true</code> to close the file afterwards.
+   *
+   * @throws IOException
+   *         if the template cannot be read or the file cannot be written
    */
   public static void generateFile (@NonNull final OutputFile aOutputFile,
                                    final String sTemplate,

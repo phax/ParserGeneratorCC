@@ -44,10 +44,20 @@ public final class JJDocGlobals
   public JJDocGlobals ()
   {}
 
+  /**
+   * The name {@link com.helger.pgcc.context.JJDocState#getInputFile()} carries when the grammar
+   * is read from stdin rather than from a file.
+   */
   public static final String STANDARD_INPUT = "standard input";
+  /**
+   * The name {@link com.helger.pgcc.context.JJDocState#getOutputFile()} carries when the output
+   * goes to stdout rather than to a file.
+   */
   public static final String STANDARD_OUTPUT = "standard output";
 
   /**
+   * Choose what JJDoc produces.
+   *
    * @param aGenerator
    *        The generator to set.
    */
