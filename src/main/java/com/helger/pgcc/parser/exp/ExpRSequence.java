@@ -46,7 +46,7 @@ import com.helger.pgcc.parser.NfaState;
  * Describes regular expressions which are sequences of other regular expressions.
  */
 
-public class ExpRSequence extends AbstractExpRegularExpression
+public final class ExpRSequence extends AbstractExpRegularExpression
 {
 
   /**

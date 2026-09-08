@@ -49,7 +49,7 @@ import com.helger.pgcc.parser.NfaState;
  * Describes regular expressions which are choices from from among included regular expressions.
  */
 
-public class ExpRChoice extends AbstractExpRegularExpression
+public final class ExpRChoice extends AbstractExpRegularExpression
 {
   /**
    * The list of choices of this regular expression. Each list component will narrow to

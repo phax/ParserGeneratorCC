@@ -41,7 +41,7 @@ import com.helger.pgcc.parser.Token;
  * expression with this name has been declared earlier.
  */
 
-public class ExpRJustName extends AbstractExpRegularExpression
+public final class ExpRJustName extends AbstractExpRegularExpression
 {
   /**
    * "regexpr" points to the regular expression denoted by the name.

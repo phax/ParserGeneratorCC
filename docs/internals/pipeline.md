@@ -119,7 +119,10 @@ Which char stream that is:
 ```
 com.helger.pgcc.parser        the language neutral core: the grammar model, Semanticize,
                               ParseEngine, the lookahead computation, NfaState
-com.helger.pgcc.parser.exp    the expansion tree and the regular expression classes
+com.helger.pgcc.parser.exp    the expansion tree and the regular expression classes, a sealed
+                              hierarchy: Expansion permits ten subclasses, one of which is the
+                              sealed AbstractExpRegularExpression permitting ten more, and every
+                              leaf is final
 com.helger.pgcc.context       the state of one run, see state.md
 com.helger.pgcc.output.java   everything that writes Java: LexGenJava, ParseGenJava, FilesJava,
                               OtherFilesGenJava and the template locations

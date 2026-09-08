@@ -46,7 +46,7 @@ import com.helger.pgcc.parser.Token;
  * case this describes the lookahead rule for a single expansion unit, then a sequence is created
  * with this node as the first element, and the expansion unit as the second and last element.
  */
-public class ExpLookahead extends Expansion
+public final class ExpLookahead extends Expansion
 {
   /**
    * Contains the list of tokens that make up the semantic lookahead if any. If this node represents

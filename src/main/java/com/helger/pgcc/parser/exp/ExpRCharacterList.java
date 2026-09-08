@@ -49,7 +49,7 @@ import com.helger.pgcc.parser.Options;
  * Describes character lists.
  */
 
-public class ExpRCharacterList extends AbstractExpRegularExpression
+public final class ExpRCharacterList extends AbstractExpRegularExpression
 {
   private static final char [] DIFF_LOWER_CASE_RANGES = { 65, 90, 192, 214, 216, 222, 256, 256, 258, 258, 260, 260, 262,
                                                           262, 264, 264, 266, 266, 268, 268, 270, 270, 272, 272, 274,

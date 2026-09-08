@@ -42,7 +42,7 @@ import com.helger.pgcc.parser.Token;
  * Describes expansions of the form "try {...} ...".
  */
 
-public class ExpTryBlock extends Expansion
+public final class ExpTryBlock extends Expansion
 {
 
   /**

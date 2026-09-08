@@ -42,7 +42,7 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes zero-or-one expansions (e.g., [foo], foo?).
  */
-public class ExpZeroOrOne extends Expansion
+public final class ExpZeroOrOne extends Expansion
 {
   /**
    * The expansion which is repeated zero or one times.

@@ -46,7 +46,7 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes expansions where one of many choices is taken (c1|c2|...).
  */
-public class ExpChoice extends Expansion
+public final class ExpChoice extends Expansion
 {
   /**
    * The list of choices of this expansion unit. Each List component will narrow to ExpansionUnit.

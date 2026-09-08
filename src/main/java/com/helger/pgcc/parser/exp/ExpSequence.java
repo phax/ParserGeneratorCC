@@ -46,7 +46,7 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes expansions that are sequences of expansion units. (c1 c2 ...)
  */
-public class ExpSequence extends Expansion
+public final class ExpSequence extends Expansion
 {
   /**
    * The list of units in this expansion sequence. Each List component will narrow to Expansion.

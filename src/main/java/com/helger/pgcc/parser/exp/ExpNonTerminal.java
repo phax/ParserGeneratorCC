@@ -48,7 +48,7 @@ import com.helger.pgcc.parser.Token;
  * Describes non terminals.
  */
 
-public class ExpNonTerminal extends Expansion
+public final class ExpNonTerminal extends Expansion
 {
   /**
    * The LHS to which the return value of the non-terminal is assigned. In case there is no LHS,

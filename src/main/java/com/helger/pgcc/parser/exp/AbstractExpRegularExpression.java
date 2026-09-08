@@ -49,7 +49,17 @@ import com.helger.pgcc.parser.TokenProduction;
 /**
  * Describes regular expressions.
  */
-public abstract class AbstractExpRegularExpression extends Expansion
+public abstract sealed class AbstractExpRegularExpression extends Expansion
+                                                          permits ExpRCharacterList,
+                                                                  ExpRChoice,
+                                                                  ExpREndOfFile,
+                                                                  ExpRJustName,
+                                                                  ExpROneOrMore,
+                                                                  ExpRRepetitionRange,
+                                                                  ExpRSequence,
+                                                                  ExpRStringLiteral,
+                                                                  ExpRZeroOrMore,
+                                                                  ExpRZeroOrOne
 {
   /**
    * The label of the regular expression (if any). If no label is present, this is set to "".

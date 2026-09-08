@@ -45,7 +45,7 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes actions that may occur on the right hand side of productions.
  */
-public class ExpAction extends Expansion
+public final class ExpAction extends Expansion
 {
   /**
    * Contains the list of tokens that make up the action. This list does not include the surrounding

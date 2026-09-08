@@ -61,7 +61,7 @@ import com.helger.pgcc.parser.TokenizerData;
 /**
  * Describes string literals.
  */
-public class ExpRStringLiteral extends AbstractExpRegularExpression
+public final class ExpRStringLiteral extends AbstractExpRegularExpression
 {
   /**
    * @return The build state of the lexical state that is currently being generated. Never

@@ -42,7 +42,7 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes one-or-more expansions (e.g., foo+).
  */
-public class ExpOneOrMore extends Expansion
+public final class ExpOneOrMore extends Expansion
 {
   /**
    * The expansion which is repeated one or more times.

@@ -44,7 +44,7 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes one-or-more regular expressions (&lt;foo+&gt;).
  */
-public class ExpRRepetitionRange extends AbstractExpRegularExpression
+public final class ExpRRepetitionRange extends AbstractExpRegularExpression
 {
   /**
    * The regular expression which is repeated one or more times.

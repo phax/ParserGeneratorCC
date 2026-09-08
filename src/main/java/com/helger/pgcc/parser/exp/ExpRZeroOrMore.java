@@ -42,7 +42,7 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes zero-or-more regular expressions (&lt;foo*&gt;).
  */
-public class ExpRZeroOrMore extends AbstractExpRegularExpression
+public final class ExpRZeroOrMore extends AbstractExpRegularExpression
 {
   /**
    * The regular expression which is repeated zero or more times.
