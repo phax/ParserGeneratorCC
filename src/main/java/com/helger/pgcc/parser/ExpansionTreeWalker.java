@@ -96,7 +96,7 @@ public final class ExpansionTreeWalker
                 if (node instanceof final ExpLookahead aLookahead)
                 {
                   final Expansion nested_e = aLookahead.getLaExpansion ();
-                  if (!(nested_e instanceof ExpSequence && (((ExpSequence) nested_e).getUnitAt (0)) == node))
+                  if (!(nested_e instanceof final ExpSequence aSeq && aSeq.getUnitAt (0) == node))
                     preOrderWalk (nested_e, opObj);
                 }
                 else
@@ -177,7 +177,7 @@ public final class ExpansionTreeWalker
                 if (node instanceof final ExpLookahead aExpLookahead)
                 {
                   final Expansion nested_e = aExpLookahead.getLaExpansion ();
-                  if (!(nested_e instanceof ExpSequence && (((ExpSequence) nested_e).getUnitAt (0)) == node))
+                  if (!(nested_e instanceof final ExpSequence aSeq && aSeq.getUnitAt (0) == node))
                     postOrderWalk (nested_e, opObj);
                 }
                 else
