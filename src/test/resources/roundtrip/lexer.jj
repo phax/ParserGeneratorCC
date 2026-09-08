@@ -1,0 +1,79 @@
+/*
+ * A grammar whose only job is to exercise the lexer generator. It deliberately contains the
+ * shapes that the string literal trie and the NFA have to get right together:
+ *   - literals that are prefixes of each other ("+" / "++", "-" / "->")
+ *   - IGNORE_CASE literals competing with a general identifier token of the same length
+ *   - a character class with a range, and a negated character class
+ *   - SKIP, SPECIAL_TOKEN, MORE and a lexical state switch
+ */
+PARSER_BEGIN(RoundTripParser)
+
+public class RoundTripParser
+{
+}
+
+PARSER_END(RoundTripParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+SPECIAL_TOKEN :
+{
+  < COMMENT : "//" (~["\n","\r"])* >
+}
+
+/* Declared before IDENT so that they win the tie on equal match length */
+TOKEN [IGNORE_CASE] :
+{
+  < SELECT : "select" >
+| < SELECTOR : "selector" >
+}
+
+TOKEN :
+{
+  < NUMBER : (["0"-"9"])+ >
+| < PLUS : "+" >
+| < PLUSPLUS : "++" >
+| < MINUS : "-" >
+| < ARROW : "->" >
+| < #LETTER : ["a"-"z","A"-"Z","_"] >
+| < IDENT : <LETTER> (<LETTER> | ["0"-"9"])* >
+}
+
+MORE :
+{
+  "\"" : IN_STRING
+}
+
+<IN_STRING> MORE :
+{
+  < ~["\"","\\"] >
+| < "\\" ~[] >
+}
+
+<IN_STRING> TOKEN :
+{
+  < STRING : "\"" > : DEFAULT
+}
+
+/* One production, so that the parser side is generated and exercised too */
+void root() :
+{}
+{
+  ( <NUMBER>
+  | <IDENT>
+  | <PLUS>
+  | <PLUSPLUS>
+  | <MINUS>
+  | <ARROW>
+  | <SELECT>
+  | <SELECTOR>
+  | <STRING>
+  )*
+  <EOF>
+}
