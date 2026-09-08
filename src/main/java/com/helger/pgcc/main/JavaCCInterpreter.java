@@ -131,9 +131,15 @@ public class JavaCCInterpreter
     int curLexState = td.m_defaultLexState;
     Set <Integer> curStates = new HashSet <> ();
     Set <Integer> newStates = new HashSet <> ();
+    // Where the token being assembled starts. A MORE production consumes characters and hands over
+    // to the next match instead of producing a token, so the image of the token that finally comes
+    // out starts before the match that produced it
+    int tokenBeg = -1;
     while (curPos < input_size)
     {
       final int beg = curPos;
+      if (tokenBeg == -1)
+        tokenBeg = beg;
       int matchedPos = beg;
       int matchedKind = Integer.MAX_VALUE;
       int nfaStartState = td.m_initialStates.get (Integer.valueOf (curLexState)).intValue ();
@@ -219,7 +225,13 @@ public class JavaCCInterpreter
         }
         if (matchInfo.m_matchType == TokenizerData.EMatchType.TOKEN)
         {
-          PGPrinter.error ("Token: " + matchedKind + "; image: \"" + input.substring (beg, matchedPos + 1) + "\"");
+          PGPrinter.error ("Token: " + matchedKind + "; image: \"" + input.substring (tokenBeg, matchedPos + 1) + "\"");
+        }
+        if (matchInfo.m_matchType != TokenizerData.EMatchType.MORE)
+        {
+          // Anything that is not MORE finishes the token, whether it produced one or threw the
+          // accumulated text away
+          tokenBeg = -1;
         }
         if (matchInfo.m_newLexState != -1)
         {

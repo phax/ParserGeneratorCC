@@ -200,10 +200,9 @@ public final class JavaCCInterpreterTest
    * Reusing it points the first lexical state at the second one's states. The synthesized state
    * therefore gets a fresh name past every real one.
    * <p>
-   * The image of the STRING token is <code>"</code> rather than the whole string, and that is a
-   * separate unfixed gap: the interpreter never accumulates the characters a MORE production
-   * consumed, because it takes the image from the start of the last match rather than the start of
-   * the token. Pinned here as current behaviour.
+   * The STRING token also checks that a MORE production's characters end up in the image. The
+   * interpreter used to take the image from the start of the last match rather than the start of
+   * the token, so everything MORE had consumed was lost and a string came out as its closing quote.
    */
   @Test
   public void testTwoLexicalStates ()
@@ -219,9 +218,46 @@ public final class JavaCCInterpreterTest
     new JavaCCInterpreter ().runTokenizer (sTwoStates, "12 + ab \"hello\" xy");
 
     assertEquals (m_aPrinter.m_aLines.toString (),
-                  List.of ("\"12\"", "\"+\"", "\"ab\"", "\"\"\"", "\"xy\""),
+                  List.of ("\"12\"", "\"+\"", "\"ab\"", "\"\"hello\"\"", "\"xy\""),
                   _imagesOf (m_aPrinter.m_aLines));
     assertTrue (m_aPrinter.m_aLines.toString (), m_aPrinter.m_aLines.contains ("Matched EOF"));
+  }
+
+  /**
+   * A characterization test for a gap, not an endorsement of it.
+   * <p>
+   * In a <em>mixed</em> lexical state - JavaCC's name for one whose string literals and NFA cannot
+   * be kept apart - the interpreter cannot carry a literal match on into the NFA. It matches the
+   * literal "select", stops, and starts again, so "selecting" comes out as SELECT followed by the
+   * identifier "ing" instead of one identifier.
+   * <p>
+   * The reason is {@code ExpRStringLiteral._getStateSetForKind}, which returns -1 for a mixed state
+   * before looking at anything else, so {@code TokenizerData.m_kindToNfaStartState} holds -1 for
+   * every literal and the interpreter has nowhere to continue. The generated token manager does not
+   * use that table at all; it emits {@code jjStartNfaWithStates} calls instead. Closing this means
+   * giving the interpreter the equivalent, which is more than it looks.
+   * <p>
+   * {@code IGNORE_CASE} is what makes the state mixed here - drop it from the grammar below and the
+   * same input tokenizes correctly as one identifier, because the literal is then folded into the
+   * NFA and never goes through the literal table.
+   * <p>
+   * This is the one token where the interpreter disagrees with the compiled parser on the grammar
+   * in {@code JavaRoundTripFuncTest}, which has an IGNORE_CASE keyword for exactly this reason.
+   */
+  @Test
+  public void testALiteralDoesNotContinueIntoTheNfaInAMixedState ()
+  {
+    final String sMixed = "PARSER_BEGIN(X)\npublic class X {}\nPARSER_END(X)\n" +
+                          "SKIP : { \" \" }\n" +
+                          "TOKEN [IGNORE_CASE] : { < SELECT : \"select\" > }\n" +
+                          "TOKEN : { < IDENT : ([\"a\"-\"z\"])+ > }\n" +
+                          "void start() : {} { ( <SELECT> | <IDENT> )* <EOF> }\n";
+    Main.reInitAll ();
+    new JavaCCInterpreter ().runTokenizer (sMixed, "selecting");
+
+    assertEquals ("The mixed state literal gap appears to be closed - make this a positive test",
+                  List.of ("\"select\"", "\"ing\""),
+                  _imagesOf (m_aPrinter.m_aLines));
   }
 
   @Test
