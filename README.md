@@ -88,6 +88,7 @@ v3.0.0 - work in progress
 * **Breaking API change** `Nfa` and the two carriers inside `TokenizerData` are records. `TokenizerData.NfaState.m_aCharacters` and friends are accessors now, so they read `characters ()`
 * JJDoc's HTML output is HTML5 instead of HTML 3.2. Lower case tags, `<meta charset>`, `id` anchors instead of `<a name>`, and a small default stylesheet in place of the `ALIGN` and `VALIGN` attributes - a stylesheet given with the `CSS` option is linked after it and still wins. Token productions with nothing to show no longer leave an empty table row behind
 * The generated `CharStream` and `AbstractCharStream` are fully documented. `javadoc` reported 28 warnings on them and now reports none, so a project that runs `javadoc` over its generated parser no longer inherits them. The parameter `newCol` of `adjustBeginLineColumn` is `nNewCol`
+* Generation of grammars whose tokens are built from character classes is about three times faster. The NFA construction was resolving the `ThreadLocal` that holds the run's state once per element rather than once per call - in one case for every state, for every state
 * **Breaking API change** Removed `JavaCCErrors.reInit ()`, deprecated since the error counters moved into `PGCCContext`
 
 v2.0.3 - 2026-09-08

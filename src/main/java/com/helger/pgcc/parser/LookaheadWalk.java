@@ -33,10 +33,10 @@
  */
 package com.helger.pgcc.parser;
 
-import org.jspecify.annotations.NonNull;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jspecify.annotations.NonNull;
 
 import com.helger.pgcc.context.LookaheadState;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
@@ -86,7 +86,8 @@ public final class LookaheadWalk
    * @return The extended sequences. Never <code>null</code>, and empty when the expansion cannot
    *         match anything here.
    */
-  public static List <MatchInfo> genFirstSetRecursive (@NonNull final List <MatchInfo> aPartialMatches, final Expansion aExp)
+  public static List <MatchInfo> genFirstSetRecursive (@NonNull final List <MatchInfo> aPartialMatches,
+                                                       final Expansion aExp)
   {
     if (aExp instanceof final AbstractExpRegularExpression aRegularExpression)
     {
@@ -142,7 +143,7 @@ public final class LookaheadWalk
       for (final Expansion element : aSequence.getUnits ())
       {
         v = genFirstSetRecursive (v, element);
-        if (v.size () == 0)
+        if (v.isEmpty ())
           break;
       }
       return v;
@@ -155,7 +156,7 @@ public final class LookaheadWalk
       while (true)
       {
         v = genFirstSetRecursive (v, aOneOrMore.getExpansion ());
-        if (v.size () == 0)
+        if (v.isEmpty ())
           break;
         aRetval.addAll (v);
       }
@@ -169,7 +170,7 @@ public final class LookaheadWalk
       while (true)
       {
         v = genFirstSetRecursive (v, aZeroOrMore.getExpansion ());
-        if (v.size () == 0)
+        if (v.isEmpty ())
           break;
         aRetval.addAll (v);
       }
