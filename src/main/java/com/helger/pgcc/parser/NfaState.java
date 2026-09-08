@@ -1033,7 +1033,7 @@ public class NfaState
           if (!allBitsSet (tmp))
             codeGenerator.genStaticArrayDeclaration (eOutputLanguage.getTypeLong (),
                                                      "jjbitVec" + nfa ().getLoHiByteCnt ());
-            codeGenerator.genCodeLine (tmp);
+          codeGenerator.genCodeLine (tmp);
           nfa ().loHiByteTab ().put (tmp, ind = Integer.valueOf (nfa ().getAndIncLoHiByteCnt ()));
         }
 
@@ -3521,15 +3521,15 @@ public class NfaState
       final int [] aMembers = memberStatesOfComposite (startStateName);
       if (aMembers != null)
         tokenizerBuild ().compositeStartStates ()
-                         .put (Integer.valueOf (lexicalStateIndex),
-                               new CompositeStartState (startStateName, aMembers));
+                         .put (Integer.valueOf (lexicalStateIndex), new CompositeStartState (startStateName, aMembers));
     }
 
     tokenizerBuild ().initialStates ().put (Integer.valueOf (lexicalStateIndex), startState);
     tokenizerBuild ().statesForLexicalState ().put (Integer.valueOf (lexicalStateIndex), cleanStates);
     tokenizerBuild ().nfaStateOffset ().put (Integer.valueOf (lexicalStateIndex), Integer.valueOf (maxState));
-    tokenizerBuild ().matchAnyChar ().put (Integer.valueOf (lexicalStateIndex),
-                        Integer.valueOf (matchAnyCharKind > 0 ? matchAnyCharKind : Integer.MAX_VALUE));
+    tokenizerBuild ().matchAnyChar ()
+                     .put (Integer.valueOf (lexicalStateIndex),
+                           Integer.valueOf (matchAnyCharKind > 0 ? matchAnyCharKind : Integer.MAX_VALUE));
   }
 
   /**
@@ -3615,8 +3615,7 @@ public class NfaState
       // handed out is one past the last state of *its* lexical state, which is exactly where the
       // next lexical state's names start after the shift above, so reusing it would land on that
       // state instead.
-      final CompositeStartState aComposite = tokenizerBuild ().compositeStartStates ()
-                                                              .get (Integer.valueOf (l));
+      final CompositeStartState aComposite = tokenizerBuild ().compositeStartStates ().get (Integer.valueOf (l));
       if (aComposite == null)
       {
         initStates.put (Integer.valueOf (l), Integer.valueOf (-1));

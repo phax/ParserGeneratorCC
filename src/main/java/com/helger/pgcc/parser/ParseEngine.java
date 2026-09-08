@@ -1937,7 +1937,7 @@ public class ParseEngine
         {
           codeGenerator.genCodeNewLine ();
           for (final String sLine : IParserSyntax.of (eOutputLanguage)
-                                                  .getTraceEnterLines (JavaCCGlobals.addUnicodeEscapes (cp.getLhs ())))
+                                                 .getTraceEnterLines (JavaCCGlobals.addUnicodeEscapes (cp.getLhs ())))
             codeGenerator.genCodeLine (sLine);
           codeGenerator.genCodeLine ("    try {");
 

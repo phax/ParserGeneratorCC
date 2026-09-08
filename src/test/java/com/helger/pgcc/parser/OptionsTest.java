@@ -43,8 +43,8 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.helger.base.system.SystemHelper;
 import com.helger.base.system.EJavaVersion;
+import com.helger.base.system.SystemHelper;
 import com.helger.pgcc.output.EOutputLanguage;
 
 /**

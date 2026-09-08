@@ -42,11 +42,11 @@ import com.helger.annotation.Nonempty;
 /**
  * The pieces of parser syntax that differ between the target languages.
  * <p>
- * {@code ParseEngine} builds the body of every production as a string and used to decide these
- * with a <code>switch</code> on {@link EOutputLanguage} at each spot. They are gathered here
- * instead, so that the engine describes <em>what</em> it wants emitted and the implementation
- * decides <em>how</em>. Adding a target language becomes a matter of implementing this rather than
- * finding every branch.
+ * {@code ParseEngine} builds the body of every production as a string and used to decide these with
+ * a <code>switch</code> on {@link EOutputLanguage} at each spot. They are gathered here instead, so
+ * that the engine describes <em>what</em> it wants emitted and the implementation decides
+ * <em>how</em>. Adding a target language becomes a matter of implementing this rather than finding
+ * every branch.
  *
  * @author Philip Helger
  */
@@ -131,8 +131,8 @@ public interface IParserSyntax
   /**
    * @param sInternalName
    *        The generated suffix of the lookahead routine. May not be <code>null</code>.
-   * @return The declaration of the {@code jj_2} entry point, which takes the lookahead limit.
-   *         Never <code>null</code>.
+   * @return The declaration of the {@code jj_2} entry point, which takes the lookahead limit. Never
+   *         <code>null</code>.
    */
   @NonNull
   @Nonempty

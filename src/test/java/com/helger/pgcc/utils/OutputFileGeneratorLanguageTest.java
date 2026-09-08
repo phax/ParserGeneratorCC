@@ -87,8 +87,7 @@ public final class OutputFileGeneratorLanguageTest
     final File aFile = new File (DIR, "t" + Math.abs (sTemplate.hashCode ()) + ".template");
     Files.write (aFile.toPath (), sTemplate.getBytes (StandardCharsets.UTF_8));
 
-    final OutputFileGenerator aGenerator = new OutputFileGenerator ("/template-language/" + aFile.getName (),
-                                                                    aOptions);
+    final OutputFileGenerator aGenerator = new OutputFileGenerator ("/template-language/" + aFile.getName (), aOptions);
     try (final NonBlockingStringWriter aSW = new NonBlockingStringWriter ())
     {
       aGenerator.generate (aSW);
@@ -181,8 +180,7 @@ public final class OutputFileGeneratorLanguageTest
     assertEquals ("both\n", _render (sTemplate, _options ("A", Boolean.TRUE, "B", Boolean.TRUE)));
     assertEquals ("", _render (sTemplate, _options ("A", Boolean.TRUE, "B", Boolean.FALSE)));
 
-    assertEquals ("either\n",
-                  _render ("#if A || B\neither\n#fi\n", _options ("A", Boolean.FALSE, "B", Boolean.TRUE)));
+    assertEquals ("either\n", _render ("#if A || B\neither\n#fi\n", _options ("A", Boolean.FALSE, "B", Boolean.TRUE)));
     assertEquals ("negated\n", _render ("#if !A\nnegated\n#fi\n", _options ("A", Boolean.FALSE)));
   }
 
@@ -195,7 +193,7 @@ public final class OutputFileGeneratorLanguageTest
   }
 
   @Test
-  public void testMissingFiIsAnError () throws IOException
+  public void testMissingFiIsAnError ()
   {
     try
     {
@@ -209,7 +207,7 @@ public final class OutputFileGeneratorLanguageTest
   }
 
   @Test
-  public void testMismatchedBraceIsAnError () throws IOException
+  public void testMismatchedBraceIsAnError ()
   {
     try
     {

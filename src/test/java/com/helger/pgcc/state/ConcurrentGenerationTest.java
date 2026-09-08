@@ -81,7 +81,7 @@ public final class ConcurrentGenerationTest
   }
 
   private static GoldenManifest _generate (final String sRun, final File aGrammar, final String... aOptions)
-                                                                                                            throws Exception
+                                                                                                             throws Exception
   {
     final File aOutDir = new File (WORK_DIR, sRun);
     FileOperationManager.INSTANCE.deleteDirRecursiveIfExisting (aOutDir);

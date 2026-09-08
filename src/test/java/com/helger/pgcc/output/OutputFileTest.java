@@ -183,9 +183,7 @@ public final class OutputFileTest
                        StandardCharsets.UTF_8);
 
     JavaCCErrors.reInit ();
-    try (final OutputFile aOF = new OutputFile (aFile,
-                                                "9.9",
-                                                new String [] { Options.USEROPTION__KEEP_LINE_COLUMN }))
+    try (final OutputFile aOF = new OutputFile (aFile, "9.9", new String [] { Options.USEROPTION__KEEP_LINE_COLUMN }))
     {
       assertFalse (aOF.needToWrite ());
     }
@@ -204,9 +202,7 @@ public final class OutputFileTest
                        StandardCharsets.UTF_8);
 
     JavaCCErrors.reInit ();
-    try (final OutputFile aOF = new OutputFile (aFile,
-                                                "9.9",
-                                                new String [] { Options.USEROPTION__KEEP_LINE_COLUMN }))
+    try (final OutputFile aOF = new OutputFile (aFile, "9.9", new String [] { Options.USEROPTION__KEEP_LINE_COLUMN }))
     {
       assertFalse (aOF.needToWrite ());
     }

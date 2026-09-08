@@ -90,16 +90,15 @@ public final class JavaRoundTripFuncTest
                                       "\"he\\\"llo\" // trailing comment\n";
 
   /** What the lexer must produce for {@link #INPUT}: the token constant name and the image */
-  private static final String [][] EXPECTED = { { "SELECT", "select" },
-                                                { "SELECTOR", "selector" },
-                                                { "IDENT", "selecting" },
-                                                { "NUMBER", "12" },
-                                                { "PLUS", "+" },
-                                                { "PLUSPLUS", "++" },
-                                                { "ARROW", "->" },
-                                                { "MINUS", "-" },
-                                                { "IDENT", "abc" },
-                                                { "STRING", "\"he\\\"llo\"" } };
+  private static final String [] [] EXPECTED = { { "SELECT", "select" }, { "SELECTOR", "selector" }, { "IDENT",
+                                                                                                       "selecting" }, {
+                                                                                                                        "NUMBER",
+                                                                                                                        "12" },
+                                                 { "PLUS", "+" }, { "PLUSPLUS", "++" }, { "ARROW", "->" }, { "MINUS",
+                                                                                                             "-" }, {
+                                                                                                                      "IDENT",
+                                                                                                                      "abc" },
+                                                 { "STRING", "\"he\\\"llo\"" } };
 
   @BeforeClass
   public static void beforeClass ()
@@ -134,7 +133,10 @@ public final class JavaRoundTripFuncTest
         aArgs.add (aFile.getAbsolutePath ());
 
     final ByteArrayOutputStream aErr = new ByteArrayOutputStream ();
-    final int nRet = aCompiler.run (null, null, new PrintStream (aErr, true, StandardCharsets.UTF_8), aArgs.toArray (new String [0]));
+    final int nRet = aCompiler.run (null,
+                                    null,
+                                    new PrintStream (aErr, true, StandardCharsets.UTF_8),
+                                    aArgs.toArray (new String [0]));
     if (nRet != 0)
       fail ("Generated code does not compile:\n" + aErr.toString (StandardCharsets.UTF_8));
   }

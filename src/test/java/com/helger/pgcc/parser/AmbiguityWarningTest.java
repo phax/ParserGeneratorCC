@@ -130,8 +130,7 @@ public final class AmbiguityWarningTest
   private static void _assertNotReported (final List <String> aLines, final String sUnexpectedFragment)
   {
     for (final String sLine : aLines)
-      assertTrue ("Did not expect '" + sUnexpectedFragment + "' in " + sLine,
-                  !sLine.contains (sUnexpectedFragment));
+      assertTrue ("Did not expect '" + sUnexpectedFragment + "' in " + sLine, !sLine.contains (sUnexpectedFragment));
   }
 
   @Test
@@ -160,8 +159,7 @@ public final class AmbiguityWarningTest
   {
     // The (...)* can start with <A> and so can what follows it
     final List <String> aLines = _generate ("Nested",
-                                            "TOKEN : { <A : \"a\"> }\n" +
-                                                      "void start() : {} { ( <A> )* <A> }\n");
+                                            "TOKEN : { <A : \"a\"> }\n" + "void start() : {} { ( <A> )* <A> }\n");
     _assertReported (aLines, "Choice conflict");
   }
 

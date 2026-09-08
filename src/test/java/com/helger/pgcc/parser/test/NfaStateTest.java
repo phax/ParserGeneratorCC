@@ -170,8 +170,7 @@ public class NfaStateTest extends AbstractJavaCCTestCase
                    "            {\n" +
                    "               default : if (i1 == 0 || l1 == 0 || i2 == 0 ||  l2 == 0) break; else break;\n" +
                    "            }\n" +
-                   "         } while(i != startsAt);\n").trim (),
-                  cg.getGeneratedCode ().replaceAll ("\r", "").trim ());
+                   "         } while(i != startsAt);\n").trim (), cg.getGeneratedCode ().replaceAll ("\r", "").trim ());
   }
 
   /**
@@ -457,7 +456,9 @@ public class NfaStateTest extends AbstractJavaCCTestCase
     final CodeGenerator cg = new CodeGenerator ();
     NfaState.dumpStatesForStateJava (cg);
     final String result = cg.getGeneratedCode ().replaceAll ("\r", "");
-    assertEquals ("protected static final class States {\n" + "  protected static final int[][][] statesForState = null;\n" + "}",
+    assertEquals ("protected static final class States {\n" +
+                  "  protected static final int[][][] statesForState = null;\n" +
+                  "}",
                   result.trim ());
   }
 

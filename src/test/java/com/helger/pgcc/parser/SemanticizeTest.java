@@ -115,10 +115,7 @@ public final class SemanticizeTest
 
   private static String _grammar (final String sBody)
   {
-    return "PARSER_BEGIN(T)\n" +
-           "public class T {}\n" +
-           "PARSER_END(T)\n" +
-           sBody;
+    return "PARSER_BEGIN(T)\n" + "public class T {}\n" + "PARSER_END(T)\n" + sBody;
   }
 
   private static void _assertReported (final List <String> aLines, final String sExpectedFragment)

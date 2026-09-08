@@ -70,12 +70,6 @@ import com.helger.pgcc.utils.OptionInfo;
 public class Options
 {
   /**
-   * Limit subclassing to derived classes.
-   */
-  protected Options ()
-  {}
-
-  /**
    * These are options that are not settable by the user themselves, and that are set indirectly via
    * some configuration of user options
    */
@@ -167,7 +161,7 @@ public class Options
    */
   public static final EJavaVersion DEFAULT_JDK_VERSION = EJavaVersion.JDK_1_8;
 
-  private static final Set <OptionInfo> s_userOptions;
+  private static final Set <OptionInfo> USER_OPTIONS;
 
   static
   {
@@ -230,7 +224,7 @@ public class Options
     temp.add (new OptionInfo (USEROPTION__DEPTH_LIMIT, EOptionType.INTEGER, Integer.valueOf (0)));
     temp.add (new OptionInfo (USEROPTION__CPP_STACK_LIMIT, EOptionType.STRING, ""));
 
-    s_userOptions = Collections.unmodifiableSet (temp);
+    USER_OPTIONS = Collections.unmodifiableSet (temp);
   }
 
   /**
@@ -257,7 +251,7 @@ public class Options
     cmdLineSetting ().clear ();
     inputFileSetting ().clear ();
 
-    for (final OptionInfo t : s_userOptions)
+    for (final OptionInfo t : USER_OPTIONS)
       optionValues ().put (t.name (), t.defaultValue ());
 
     PGCCContext.current ().options ().setLanguage (EOutputLanguage.JAVA);
@@ -1094,16 +1088,16 @@ public class Options
     {
       // We also need to split it.
       final StringTokenizer st = new StringTokenizer (ns, "::");
-      String expanded_ns = st.nextToken () + " {";
-      String ns_close = "}";
+      final StringBuilder expanded_ns = new StringBuilder ().append (st.nextToken ()).append (" {");
+      final StringBuilder ns_close = new StringBuilder ("}");
       while (st.hasMoreTokens ())
       {
-        expanded_ns = expanded_ns + "\nnamespace " + st.nextToken () + " {";
-        ns_close = ns_close + "\n}";
+        expanded_ns.append ("\nnamespace ").append (st.nextToken ()).append (" {");
+        ns_close.append ("\n}");
       }
-      optionValues ().put (NONUSER_OPTION__NAMESPACE_OPEN, expanded_ns);
+      optionValues ().put (NONUSER_OPTION__NAMESPACE_OPEN, expanded_ns.toString ());
       optionValues ().put (NONUSER_OPTION__HAS_NAMESPACE, Boolean.TRUE);
-      optionValues ().put (NONUSER_OPTION__NAMESPACE_CLOSE, ns_close);
+      optionValues ().put (NONUSER_OPTION__NAMESPACE_CLOSE, ns_close.toString ());
     }
   }
 
@@ -1154,6 +1148,12 @@ public class Options
   @ReturnsImmutableObject
   public static Set <OptionInfo> getUserOptions ()
   {
-    return s_userOptions;
+    return USER_OPTIONS;
   }
+
+  /**
+   * Limit subclassing to derived classes.
+   */
+  protected Options ()
+  {}
 }

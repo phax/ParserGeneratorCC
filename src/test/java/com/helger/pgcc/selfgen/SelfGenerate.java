@@ -140,7 +140,8 @@ public final class SelfGenerate
               com.helger.pgcc.parser.Main.mainProgram ("-JDK_VERSION=" + JDK_VERSION,
                                                        "-JAVA_TEMPLATE_TYPE=" + JAVA_TEMPLATE_TYPE,
                                                        "-OUTPUT_DIRECTORY=" +
-                                                                          _outputDirOf (aTargetDir, aGrammar).getAbsolutePath (),
+                                                                                                    _outputDirOf (aTargetDir,
+                                                                                                                  aGrammar).getAbsolutePath (),
                                                        aGrammar.getAbsolutePath ()));
       }
 
@@ -149,10 +150,10 @@ public final class SelfGenerate
       final File aJJTreeGrammar = new File ("src/main/jjtree", "JJTree.jjt");
       final File aJJTreeDir = _outputDirOf (aTargetDir, aJJTreeGrammar);
       _run ("JJTree.jjt",
-            new JJTree ().main (new String [] { "-JDK_VERSION=" + JDK_VERSION,
-                                                "-JAVA_TEMPLATE_TYPE=" + JAVA_TEMPLATE_TYPE,
-                                                "-OUTPUT_DIRECTORY=" + aJJTreeDir.getAbsolutePath (),
-                                                aJJTreeGrammar.getAbsolutePath () }));
+            new JJTree ().main (new String [] { "-JDK_VERSION=" + JDK_VERSION, "-JAVA_TEMPLATE_TYPE=" +
+                                                                               JAVA_TEMPLATE_TYPE,
+                                                "-OUTPUT_DIRECTORY=" + aJJTreeDir.getAbsolutePath (), aJJTreeGrammar
+                                                                                                                    .getAbsolutePath () }));
       _run ("JJTree.jj",
             com.helger.pgcc.parser.Main.mainProgram ("-JDK_VERSION=" + JDK_VERSION,
                                                      "-JAVA_TEMPLATE_TYPE=" + JAVA_TEMPLATE_TYPE,
@@ -198,8 +199,7 @@ public final class SelfGenerate
 
   /**
    * @param args
-   *        Optional single argument: the target directory. Defaults to
-   *        <code>target/selfgen</code>.
+   *        Optional single argument: the target directory. Defaults to <code>target/selfgen</code>.
    * @throws IOException
    *         On IO error
    */

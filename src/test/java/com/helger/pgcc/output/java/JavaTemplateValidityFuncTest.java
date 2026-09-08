@@ -53,8 +53,8 @@ import com.helger.io.file.IFileFilter;
 import com.helger.pgcc.parser.Options;
 
 /**
- * Test class that creates the Java template files to disk and tries to parse
- * them with the JavaParser
+ * Test class that creates the Java template files to disk and tries to parse them with the
+ * JavaParser
  *
  * @author Philip Helger
  */
@@ -124,6 +124,5 @@ public final class JavaTemplateValidityFuncTest
         }
       }
     }
-
   }
 }

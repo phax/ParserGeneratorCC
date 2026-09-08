@@ -130,9 +130,8 @@ public final class JJTreeRoundTripFuncTest
 
     // 2. the .jj becomes the parser
     LOGGER.info ("Running the parser generator on " + aGeneratedGrammar.getName ());
-    final ESuccess eParser = com.helger.pgcc.parser.Main.mainProgram ("-OUTPUT_DIRECTORY=" +
-                                                                     OUT_DIR.getAbsolutePath (),
-                                                                     aGeneratedGrammar.getAbsolutePath ());
+    final ESuccess eParser = com.helger.pgcc.parser.Main.mainProgram ("-OUTPUT_DIRECTORY=" + OUT_DIR.getAbsolutePath (),
+                                                                      aGeneratedGrammar.getAbsolutePath ());
     assertTrue ("Parser generation failed", eParser.isSuccess ());
 
     // 3. all of it has to compile
@@ -226,29 +225,27 @@ public final class JJTreeRoundTripFuncTest
 
     final List <String> aVisited = new ArrayList <> ();
     final Object aVisitor = java.lang.reflect.Proxy.newProxyInstance (aVisitorClass.getClassLoader (),
-                                                                     new Class <?> [] { aVisitorClass },
-                                                                     (proxy, method, args) -> {
-                                                                       if (!"visit".equals (method.getName ()))
-                                                                         return null;
-                                                                       final Object aNode = args[0];
-                                                                       aVisited.add (method.getParameterTypes ()[0].getSimpleName ());
-                                                                       final int n = ((Integer) s_aGetNumChildren.invoke (aNode)).intValue ();
-                                                                       for (int i = 0; i < n; ++i)
-                                                                       {
-                                                                         final Object aChild = s_aGetChild.invoke (aNode,
-                                                                                                                   Integer.valueOf (i));
-                                                                         aChild.getClass ()
-                                                                               .getMethod ("jjtAccept",
-                                                                                           aVisitorClass,
-                                                                                           Object.class)
-                                                                               .invoke (aChild, proxy, null);
-                                                                       }
-                                                                       return null;
-                                                                     });
+                                                                      new Class <?> [] { aVisitorClass },
+                                                                      (proxy, method, args) -> {
+                                                                        if (!"visit".equals (method.getName ()))
+                                                                          return null;
+                                                                        final Object aNode = args[0];
+                                                                        aVisited.add (method.getParameterTypes ()[0].getSimpleName ());
+                                                                        final int n = ((Integer) s_aGetNumChildren.invoke (aNode)).intValue ();
+                                                                        for (int i = 0; i < n; ++i)
+                                                                        {
+                                                                          final Object aChild = s_aGetChild.invoke (aNode,
+                                                                                                                    Integer.valueOf (i));
+                                                                          aChild.getClass ()
+                                                                                .getMethod ("jjtAccept",
+                                                                                            aVisitorClass,
+                                                                                            Object.class)
+                                                                                .invoke (aChild, proxy, null);
+                                                                        }
+                                                                        return null;
+                                                                      });
 
-    aTree.getClass ()
-         .getMethod ("jjtAccept", aVisitorClass, Object.class)
-         .invoke (aTree, aVisitor, null);
+    aTree.getClass ().getMethod ("jjtAccept", aVisitorClass, Object.class).invoke (aTree, aVisitor, null);
 
     // One overload per node type, so the dispatch has to pick the right one at every level
     assertEquals (List.of ("ASTStart", "ASTSum", "ASTNum", "ASTNum"), aVisited);

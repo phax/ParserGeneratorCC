@@ -93,8 +93,8 @@ final class CppParserSyntax implements IParserSyntax
                     sProductionName +
                     "\"); });",
                     "    JJExit <std::function<void()>> jjexit ([this]() {trace_return(\"" +
-                                                                                              sProductionName +
-                                                                                              "\"); });");
+                                sProductionName +
+                                "\"); });");
   }
 
   @NonNull

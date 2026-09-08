@@ -1898,7 +1898,6 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
    * codeGenerator.genCodeLine("};"); }
    */
 
-
   public static void updateStringLiteralData (final int lexStateIndex)
   {
     for (int kind = 0; kind < strLit ().getAllImages ().length; kind++)
@@ -1927,7 +1926,9 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       {
         actualKind = kind;
       }
-      NfaState.tokenizerBuild ().kindToLexicalState ().put (Integer.valueOf (actualKind), Integer.valueOf (lexStateIndex));
+      NfaState.tokenizerBuild ()
+              .kindToLexicalState ()
+              .put (Integer.valueOf (actualKind), Integer.valueOf (lexStateIndex));
       if (Options.isIgnoreCase ())
       {
         s = s.toLowerCase (Locale.US);

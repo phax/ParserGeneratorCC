@@ -81,7 +81,7 @@ public final class PGCCContextTest
     final AtomicReference <Integer> aOtherWarnings = new AtomicReference <> ();
     final CountDownLatch aDone = new CountDownLatch (1);
 
-    final Thread aThread = new Thread ( () -> {
+    final Thread aThread = new Thread (() -> {
       Options.init ();
       Options.setCmdLineOption ("-OUTPUT_LANGUAGE=c++");
       JavaCCErrors.warning ("only in this thread");

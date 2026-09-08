@@ -45,16 +45,17 @@ import com.helger.pgcc.context.PGCCContext;
  * Describes expansions - entities that may occur on the right hand sides of productions. This is
  * the base class of a bunch of other more specific classes.
  */
-public sealed class Expansion permits ExpAction,
-                                     ExpChoice,
-                                     ExpLookahead,
-                                     ExpNonTerminal,
-                                     ExpOneOrMore,
-                                     ExpSequence,
-                                     ExpTryBlock,
-                                     ExpZeroOrMore,
-                                     ExpZeroOrOne,
-                                     AbstractExpRegularExpression
+public sealed class Expansion permits
+                              ExpAction,
+                              ExpChoice,
+                              ExpLookahead,
+                              ExpNonTerminal,
+                              ExpOneOrMore,
+                              ExpSequence,
+                              ExpTryBlock,
+                              ExpZeroOrMore,
+                              ExpZeroOrOne,
+                              AbstractExpRegularExpression
 {
   protected static final String EOL = System.getProperty ("line.separator", "\n");
 

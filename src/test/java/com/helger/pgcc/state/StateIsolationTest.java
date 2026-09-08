@@ -78,7 +78,9 @@ public final class StateIsolationTest
     FilesJava.setReadFromClassPath (true);
   }
 
-  private static GoldenManifest _generate (final String sRun, final File aGrammar, final boolean bJJTree,
+  private static GoldenManifest _generate (final String sRun,
+                                           final File aGrammar,
+                                           final boolean bJJTree,
                                            final String... aOptions) throws Exception
   {
     final File aOutDir = new File (WORK_DIR, sRun);
@@ -148,7 +150,7 @@ public final class StateIsolationTest
     final File aTreeHeader = new File (aBetaDir, "BetaTree.h");
     assertTrue (aTreeHeader + " was not generated", aTreeHeader.isFile ());
     final String sTreeHeader = java.nio.file.Files.readString (aTreeHeader.toPath (),
-                                                              java.nio.charset.StandardCharsets.UTF_8);
+                                                               java.nio.charset.StandardCharsets.UTF_8);
     assertTrue ("BetaTree.h must not mention Alpha's node:\n" + sTreeHeader, !sTreeHeader.contains ("Alfa"));
   }
 

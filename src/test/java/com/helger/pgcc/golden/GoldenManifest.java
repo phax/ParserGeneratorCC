@@ -106,7 +106,9 @@ public final class GoldenManifest
     {
       aStream.filter (Files::isRegularFile)
              .sorted ()
-             .forEach (aFile -> aLines.add (_sha256 (aFile) + "  " + aRoot.relativize (aFile).toString ().replace ('\\', '/')));
+             .forEach (aFile -> aLines.add (_sha256 (aFile) +
+                                            "  " +
+                                            aRoot.relativize (aFile).toString ().replace ('\\', '/')));
     }
     return new GoldenManifest (aLines);
   }

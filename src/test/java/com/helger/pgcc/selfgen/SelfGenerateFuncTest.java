@@ -173,9 +173,8 @@ public final class SelfGenerateFuncTest
       if (aTheirs == null)
         continue;
 
-      if (_normalize (Files.readString (aMine, StandardCharsets.UTF_8))
-                                                                     .equals (_normalize (Files.readString (aTheirs,
-                                                                                                            StandardCharsets.UTF_8))))
+      if (_normalize (Files.readString (aMine, StandardCharsets.UTF_8)).equals (_normalize (Files.readString (aTheirs,
+                                                                                                              StandardCharsets.UTF_8))))
         nSame++;
       else
         aDifferent.add (sRelative);
@@ -193,7 +192,8 @@ public final class SelfGenerateFuncTest
     // instead of quietly waiting two releases to become visible
     assertEquals ("The parsers this project would generate for itself differ from the ones it is " +
                   "built with. That is expected right after a codegen change - update this " +
-                  "expectation together with the golden files. Differing: " + aDifferent,
+                  "expectation together with the golden files. Differing: " +
+                  aDifferent,
                   List.of (),
                   aDifferent);
   }

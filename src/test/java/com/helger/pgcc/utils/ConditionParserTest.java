@@ -58,7 +58,8 @@ public final class ConditionParserTest
     _test (input, values, expectedValue);
   }
 
-  private static void _test (final String input, final Map <String, Object> values, final boolean expectedValue) throws ParseException
+  private static void _test (final String input, final Map <String, Object> values, final boolean expectedValue)
+                                                                                                                 throws ParseException
   {
     final ConditionParser cp = new ConditionParser (input);
     final boolean value = cp.CompilationUnit (values);

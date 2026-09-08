@@ -37,10 +37,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.string.StringHelper;
@@ -63,7 +61,6 @@ public final class NodeFilesJava
    * ID of the latest version (of JJTree) in which one of the Node classes was modified.
    */
   private static final String s_nodeVersion = PGVersion.MAJOR_DOT_MINOR;
-
 
   public static void ensure (final JJTreeIO io, final String nodeType)
   {
@@ -99,9 +96,8 @@ public final class NodeFilesJava
       return;
     }
 
-    final String [] options = new String [] { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX",
-                                              "NODE_EXTENDS", "NODE_FACTORY",
-                                              Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    final String [] options = { "MULTI", "NODE_USES_PARSER", "VISITOR", "TRACK_TOKENS", "NODE_PREFIX", "NODE_EXTENDS",
+                                "NODE_FACTORY", Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
     try (final OutputFile outputFile = new OutputFile (file, s_nodeVersion, options))
     {
       outputFile.setToolName ("JJTree");
@@ -182,9 +178,8 @@ public final class NodeFilesJava
       ostr.println ();
 
       ostr.println ("  public String[] jjtNodeName = {");
-      for (int i = 0; i < nodeNames.size (); ++i)
+      for (final String n : nodeNames)
       {
-        final String n = nodeNames.get (i);
         ostr.println ("    \"" + n + "\",");
       }
       ostr.println ("  };");
@@ -237,9 +232,8 @@ public final class NodeFilesJava
                     ";");
       if (JJTreeOptions.isMulti ())
       {
-        for (int i = 0; i < nodeNames.size (); ++i)
+        for (final String n : nodeNames)
         {
-          final String n = nodeNames.get (i);
           if (n.equals ("void"))
           {
             continue;
@@ -325,9 +319,8 @@ public final class NodeFilesJava
 
       if (JJTreeOptions.isMulti ())
       {
-        for (int i = 0; i < nodeNames.size (); ++i)
+        for (final String n : nodeNames)
         {
-          final String n = nodeNames.get (i);
           if (n.equals ("void"))
           {
             continue;
