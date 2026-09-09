@@ -61,6 +61,7 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 # News and noteworthy
 
 v3.0.0 - work in progress
+* Generating a large lexer is around 3x faster. The epsilon closure walked the whole state list twice per call purely to record which states a pass had visited, which is quadratic in the token count; the passes are numbered now and the walks are gone. On a synthetic 1280 token grammar that loop ran 690 million times and was 70% of the run, and generation drops from 1344 ms to 413 ms. Generated output is unchanged
 * Every public and protected member of the generator carries javadoc now, and `mvn javadoc:javadoc` reports no warnings. Writing it up turned up 16 members with no caller left and two option constants that were never registered, all removed. `TOKEN_MANAGER_SUPERCLASS` is documented as accepted and ignored - the option that works is `TOKEN_MANAGER_SUPER_CLASS`
 * Fixed the generated C++ token manager not compiling for a grammar with `'` or `\` in a string literal. The switch over the current character got `case ''':` and `case '\':`, because only the Java backend escaped those two characters in a case label
 * Fixed two token manager debug messages in the generated C++ running into the following line, and one being indented outside the `if` that guards it. `DEBUG_TOKEN_MANAGER` only
