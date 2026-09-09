@@ -76,7 +76,14 @@ public final class NfaBuildState
   private int m_nLoHiByteCnt;
   private int m_nDummyStateIndex = -1;
   private boolean m_bDone;
-  private boolean [] m_aMark;
+  /**
+   * The number of the epsilon closure pass that is running. It is never rewound, not even between
+   * lexical states, so that a state object which outlives the automaton it belonged to cannot match
+   * a generation of the next one.
+   */
+  private int m_nPassGeneration = 0;
+  /** The pass whose states count as having a finished closure, -1 for none. */
+  private int m_nClosureDoneGeneration = -1;
   private boolean [] m_aStateDone;
   private List <NfaState> m_aAllStates = new ArrayList <> ();
   private boolean m_bJJCheckNAddStatesUnaryNeeded = false;
@@ -201,26 +208,50 @@ public final class NfaBuildState
   }
 
   /**
-   * One flag per state, used by the closure computation to avoid walking a state twice. It is
-   * cleared between passes rather than reallocated.
+   * The epsilon closure walks the states over and over until a pass changes nothing, and each pass
+   * has to know which states it has already been to. Rather than clearing a flag on every state
+   * between passes, each pass gets a number and a visited state is stamped with it, so that a stale
+   * stamp is recognised by not matching rather than by having been cleared.
    *
-   * @return The flags, indexed by state id. May be <code>null</code> before generation starts.
+   * @return The number of the pass that is running.
    */
-  public boolean [] getMark ()
+  public int getPassGeneration ()
   {
-    return m_aMark;
+    return m_nPassGeneration;
   }
 
   /**
-   * One flag per state, used by the closure computation to avoid walking a state twice. It is
-   * cleared between passes rather than reallocated.
+   * Start a new epsilon closure pass, which invalidates every stamp from the pass before.
    *
-   * @param aMark
-   *        The flags, indexed by state id.
+   * @return The number of the new pass.
    */
-  public void setMark (final boolean [] aMark)
+  public int nextPassGeneration ()
   {
-    m_aMark = aMark;
+    return ++m_nPassGeneration;
+  }
+
+  /**
+   * The states stamped with this generation are the ones whose closure is finished, which is what
+   * lets the walk stop early and what lets {@code computeClosures} skip them. It is the generation
+   * of the last pass of the most recent closure computation, so a state that computation did not
+   * reach stops counting as finished - which is what the per state flag this replaced also did.
+   *
+   * @return The generation, -1 before the first closure computation.
+   */
+  public int getClosureDoneGeneration ()
+  {
+    return m_nClosureDoneGeneration;
+  }
+
+  /**
+   * Declare the states stamped with one generation to be the ones whose closure is finished.
+   *
+   * @param nGeneration
+   *        The generation of the pass that just finished.
+   */
+  public void setClosureDoneGeneration (final int nGeneration)
+  {
+    m_nClosureDoneGeneration = nGeneration;
   }
 
   /**
@@ -561,7 +592,9 @@ public final class NfaBuildState
     m_nIdCnt = 0;
     m_nDummyStateIndex = -1;
     m_bDone = false;
-    m_aMark = null;
+    // Do not rewind the pass counter: a state object that outlives its lexical state must not
+    // be able to match a generation of the next one
+    m_nClosureDoneGeneration = -1;
     m_aStateDone = null;
 
     m_aAllStates.clear ();

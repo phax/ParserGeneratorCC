@@ -117,7 +117,16 @@ public class NfaState
   private int m_nRound = 0;
   private int m_nOnlyChar = 0;
   private char m_cMatchSingleChar;
-  private boolean m_bClosureDone = false;
+  /**
+   * The epsilon closure pass that last visited this state, 0 for none.
+   * <p>
+   * This one field answers both of the questions the closure walk asks, by being compared against
+   * two different generations held by {@link NfaBuildState}: it equals
+   * {@link NfaBuildState#getPassGeneration()} when the pass that is running has already been here,
+   * and it equals {@link NfaBuildState#getClosureDoneGeneration()} when this state's closure is
+   * finished. Passes are numbered from 1, so the initial 0 matches neither.
+   */
+  private int m_nClosureGeneration = 0;
 
   /**
    * Create a state and register it with the automaton of the lexical state that is currently being
@@ -512,13 +521,22 @@ public class NfaState
    * kind of token number for the same length.
    */
 
+  /**
+   * Add everything reachable from this state without consuming a character to its own set of
+   * epsilon moves, and do the same for everything it reaches.
+   * <p>
+   * The walk stops at a state whose closure is already finished and at one this pass has already
+   * been to; {@link #m_nClosureGeneration} answers both questions.
+   */
   private void _recursiveEpsilonClosure ()
   {
     final NfaBuildState aNfa = nfa ();
-    if (m_bClosureDone || aNfa.getMark ()[m_nId])
+    // Already finished, or already been here in this pass
+    if (m_nClosureGeneration == aNfa.getClosureDoneGeneration () ||
+        m_nClosureGeneration == aNfa.getPassGeneration ())
       return;
 
-    aNfa.getMark ()[m_nId] = true;
+    m_nClosureGeneration = aNfa.getPassGeneration ();
 
     // Recursively do closure
     for (final NfaState aReached : m_aEpsilonMoves)
@@ -715,13 +733,13 @@ public class NfaState
     for (int i = aNfa.getAllStates ().size () - 1; i >= 0; --i)
     {
       final NfaState aState = aNfa.getAllStates ().get (i);
-      if (!aState.m_bClosureDone)
+      if (aState.m_nClosureGeneration != aNfa.getClosureDoneGeneration ())
         aState._optimizeEpsilonMoves (true);
     }
 
     // Operate on copy!
     for (final NfaState tmp : new ArrayList <> (aNfa.getAllStates ()))
-      if (!tmp.m_bClosureDone)
+      if (tmp.m_nClosureGeneration != aNfa.getClosureDoneGeneration ())
         tmp._optimizeEpsilonMoves (false);
 
     if (false)
@@ -744,6 +762,21 @@ public class NfaState
    * states that lead to the same place keep one of their number with the others' character moves
    * merged in.
    *
+   * <h2>Why the passes are numbered</h2> The closure used to track its progress with a
+   * <code>boolean []</code> over every state plus a <code>closureDone</code> flag on each state.
+   * That cost two walks of the whole state list per call - one <code>Arrays.fill</code> to clear
+   * the array before each pass, and one loop afterwards to copy the array into the per state flags
+   * - and {@code computeClosures} calls this method once per state. Two walks of n states, n times,
+   * is quadratic in a grammar's token count for work that carries no information: for a synthetic
+   * 1280 token lexer that copy alone ran 690 million times and was 70% of the whole generator run.
+   * <p>
+   * Numbering the passes says the same thing without the walks. A state stamps itself with the
+   * number of the pass that visits it, so a stamp from an earlier pass is recognised by not
+   * matching rather than by having been cleared, and the states the final pass reached are named
+   * afterwards by recording that pass's number rather than by copying anything. The semantics are
+   * unchanged, including the part that is easy to miss: a state the last pass did not reach stops
+   * counting as finished, exactly as the old copy loop overwrote its flag with <code>false</code>.
+   *
    * @param bOptReqd
    *        <code>false</code> to do the closure only and skip the shrinking.
    */
@@ -752,24 +785,18 @@ public class NfaState
     // First do epsilon closure. nfa () walks a ThreadLocal, so take it once rather than per element
     final NfaBuildState aNfa = nfa ();
     aNfa.setDone (false);
+    int nPass = 0;
     while (!aNfa.isDone ())
     {
-      final int nStateCount = aNfa.getAllStates ().size ();
-      if (aNfa.getMark () == null || aNfa.getMark ().length < nStateCount)
-        aNfa.setMark (new boolean [nStateCount]);
-      else
-        Arrays.fill (aNfa.getMark (), false);
-
+      // A fresh number invalidates every stamp from the pass before, so nothing has to be cleared
+      nPass = aNfa.nextPassGeneration ();
       aNfa.setDone (true);
       _recursiveEpsilonClosure ();
     }
 
-    final boolean [] aMark = aNfa.getMark ();
-    for (int i = aNfa.getAllStates ().size (); i-- > 0;)
-    {
-      final NfaState aState = aNfa.getAllStates ().get (i);
-      aState.m_bClosureDone = aMark[aState.m_nId];
-    }
+    // The states the last pass reached are the ones whose closure is now finished. Naming that
+    // pass is the whole of the bookkeeping the copy loop used to do.
+    aNfa.setClosureDoneGeneration (nPass);
 
     // Warning : The following piece of code is just an optimization.
     // in case of trouble, just remove this piece.
