@@ -294,6 +294,28 @@
       <properties>
         <ph-javacc-maven-plugin.version>5.0.3-SNAPSHOT</ph-javacc-maven-plugin.version>
       </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.helger.maven</groupId>
+            <artifactId>ph-javacc-maven-plugin</artifactId>
+            <!--
+              Naming the SNAPSHOT plugin is not enough. The plugin resolves its own generator
+              through its installed POM, which carries the released pgcc.version as the property
+              default, so "mvn install -Dpgcc.version=..." on the plugin does not reach a consumer.
+              Overriding the plugin's dependency here is what actually makes this build use the
+              generator in this checkout.
+            -->
+            <dependencies>
+              <dependency>
+                <groupId>com.helger</groupId>
+                <artifactId>parser-generator-cc</artifactId>
+                <version>${project.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 

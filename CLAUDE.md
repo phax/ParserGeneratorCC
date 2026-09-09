@@ -50,15 +50,22 @@ To go further and actually *build* with the regenerated parser, use the `selfhos
 ```
 mvn clean install -DskipTests                                  # 1. this project, built by the released plugin
 cd ../ph-javacc-maven-plugin
-mvn clean install -DskipTests -Dpgcc.version=<X.Y.Z-SNAPSHOT>  # 2. plugin, wrapping that snapshot
+mvn clean install -DskipTests                                  # 2. the plugin itself
 cd -
 mvn clean verify -Pselfhost                                    # 3. this project, built by itself
 ```
 
-Step 2 overrides the plugin's `pgcc.version` property on the command line, so the sibling checkout
-is never modified. The `selfhost` profile pins `ph-javacc-maven-plugin.version` to the plugin's
-current SNAPSHOT. The default profile must always stay on a released plugin - a release build has to
-work with what is on Maven Central.
+The sibling checkout is never modified. The `selfhost` profile pins
+`ph-javacc-maven-plugin.version` to the plugin's current SNAPSHOT **and** overrides the plugin's
+`parser-generator-cc` dependency to `${project.version}`. Both halves are needed: naming the
+SNAPSHOT plugin alone is not enough, because the plugin resolves its generator through its own
+installed POM, which carries the released `pgcc.version` as the property default. Passing
+`-Dpgcc.version=` while installing the plugin does not help either - that affects the plugin's own
+build, not what a consumer resolves later. Anything downstream that wants to try an unreleased
+generator - ph-css, for instance - needs the same `<dependencies>` override on the plugin.
+
+The default profile must always stay on a released plugin - a release build has to work with what is
+on Maven Central.
 
 ## Generator state
 
