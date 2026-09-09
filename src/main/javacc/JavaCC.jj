@@ -31,36 +31,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
 
 /*
  * This file contains the grammar and actions that describe
@@ -766,7 +736,7 @@ void cppcode_production() :
 
 void bnf_production() :
   {
-    Container c = new Container();
+    Container<Expansion> c = new Container<>();
     Token t = getToken(1);
     List<Token> excName;
     String lhs;
@@ -806,7 +776,7 @@ void bnf_production() :
   {
     p.setLastToken(t);
     p.setJumpPatched(m_bJumpPatched);
-    productionAddExpansion(p, (Expansion)(c.getMember ()));
+    productionAddExpansion(p, c.getMember ());
     addProduction(p);
   }
 }
@@ -935,7 +905,7 @@ void regexpr_kind(TokenProduction p) :
 
 void regexpr_spec(TokenProduction p) :
   {
-    Container c = new Container();
+    Container<Expansion> c = new Container<>();
     ExpAction act = new ExpAction();
     Token t = null;
     RegExprSpec res = new RegExprSpec();
@@ -975,25 +945,25 @@ void regexpr_spec(TokenProduction p) :
   }
 }
 
-void expansion_choices(Container c1) :
+void expansion_choices(Container<Expansion> c1) :
   {
     boolean morethanone = false;
     ExpChoice ch = null; // unnecessary initialization to make Java compiler happy!
-    Container c2 = new Container();
+    Container<Expansion> c2 = new Container<>();
   }
 {
   expansion(c1)
   ( "|" expansion(c2)
   {
     if (morethanone) {
-      ch.addChoice((Expansion)c2.getMember ());
-      ((Expansion)c2.getMember ()).setParent (ch);
+      ch.addChoice(c2.getMember ());
+      c2.getMember ().setParent (ch);
     } else {
       morethanone = true;
-      ch = new ExpChoice((Expansion)c1.getMember ());
-      ((Expansion)c1.getMember ()).setParent (ch);
-      ch.addChoice((Expansion)c2.getMember ());
-      ((Expansion)c2.getMember ()).setParent (ch);
+      ch = new ExpChoice(c1.getMember ());
+      c1.getMember ().setParent (ch);
+      ch.addChoice(c2.getMember ());
+      c2.getMember ().setParent (ch);
     }
   }
   )*
@@ -1004,10 +974,10 @@ void expansion_choices(Container c1) :
   }
 }
 
-void expansion(Container c1) :
+void expansion(Container<Expansion> c1) :
   {
     final ExpSequence seq = new ExpSequence();
-    final Container c2 = new Container();
+    final Container<Expansion> c2 = new Container<>();
     ExpLookahead la = new ExpLookahead();
     Token t = getToken(1);
     seq.setLineNumber(t.beginLine);
@@ -1035,9 +1005,9 @@ void expansion(Container c1) :
   ( LOOKAHEAD(0, { notTailOfExpansionUnit() } )
     expansion_unit(c2)
   {
-    seq.addUnit((Expansion) c2.getMember ());
-    ((Expansion)c2.getMember ()).setParent (seq);
-    ((Expansion)c2.getMember ()).setOrdinalBase (seq.getUnitCount () - 1);
+    seq.addUnit(c2.getMember ());
+    c2.getMember ().setParent (seq);
+    c2.getMember ().setOrdinalBase (seq.getUnitCount () - 1);
   }
   )+
   {
@@ -1056,7 +1026,7 @@ ExpLookahead local_lookahead() :
     la.setLineNumber(t.beginLine);
     la.setColumnNumber(t.beginColumn);
     la.setLaExpansion(null);
-    final Container c = new Container();
+    final Container<Expansion> c = new Container<>();
     boolean commaAtEnd = false, emptyLA = true;
     int laAmount;
     m_nInLocalLA++;
@@ -1086,7 +1056,7 @@ ExpLookahead local_lookahead() :
     expansion_choices(c)
   {
     emptyLA = false; commaAtEnd = false;
-    la.setLaExpansion((Expansion)c.getMember ());
+    la.setLaExpansion(c.getMember ());
   }
   ]
   [ LOOKAHEAD(0, { !emptyLA && !commaAtEnd && (getToken(1).kind != RPAREN) } )
@@ -1122,7 +1092,7 @@ ExpLookahead local_lookahead() :
   }
 }
 
-void expansion_unit(Container c) :
+void expansion_unit(Container<Expansion> c) :
   {
     String name;
     final List<Token> lhsTokens = new ArrayList <>();
@@ -1184,11 +1154,11 @@ void expansion_unit(Container c) :
 |
   t="[" expansion_choices(c) "]"
   {
-    c.setMember (new ExpZeroOrOne(t, (Expansion)c.getMember ()));
+    c.setMember (new ExpZeroOrOne(t, c.getMember ()));
   }
 |
   {
-    Container expch = new Container();
+    Container<Expansion> expch = new Container<>();
     List<List<Token>> types = new ArrayList<List<Token>>();
     List<Token> ids = new ArrayList<Token>();
     List<List<Token>> catchblks = new ArrayList<List<Token>>();
@@ -1290,13 +1260,13 @@ void expansion_unit(Container c) :
   )
 |
   t="(" expansion_choices(c) ")"
-  (  "+" { c.setMember (new ExpOneOrMore(t, (Expansion)c.getMember ())); }
-   | "*" { c.setMember (new ExpZeroOrMore(t, (Expansion)c.getMember ())); }
-   | "?" { c.setMember (new ExpZeroOrOne(t, (Expansion)c.getMember ())); }
+  (  "+" { c.setMember (new ExpOneOrMore(t, c.getMember ())); }
+   | "*" { c.setMember (new ExpZeroOrMore(t, c.getMember ())); }
+   | "?" { c.setMember (new ExpZeroOrOne(t, c.getMember ())); }
   )?
 }
 
-void regular_expression(Container c) :
+void regular_expression(Container<Expansion> c) :
   {
     ExpREndOfFile ef;
     String image;
@@ -1355,11 +1325,11 @@ void regular_expression(Container c) :
   }
 }
 
-void complex_regular_expression_choices(Container c1) :
+void complex_regular_expression_choices(Container<Expansion> c1) :
   {
     boolean morethanone = false;
     ExpRChoice ch = null; // unnecessary initialization to make Java compiler happy!
-    Container c2 = new Container();
+    Container<Expansion> c2 = new Container<>();
   }
 {
   complex_regular_expression(c1)
@@ -1384,11 +1354,11 @@ void complex_regular_expression_choices(Container c1) :
   }
 }
 
-void complex_regular_expression(Container c1) :
+void complex_regular_expression(Container<Expansion> c1) :
   {
     int count = 0;
     ExpRSequence seq = null; // unnecessary initialization to make Java compiler happy!
-    Container c2 = new Container();
+    Container<Expansion> c2 = new Container<>();
   }
 {
   ( complex_regular_expression_unit(c2)
@@ -1414,7 +1384,7 @@ void complex_regular_expression(Container c1) :
   }
 }
 
-void complex_regular_expression_unit(Container c) :
+void complex_regular_expression_unit(Container<Expansion> c) :
   {
     String image;
     final Token t = getToken(1);
@@ -1456,13 +1426,13 @@ void complex_regular_expression_unit(Container c) :
   )?
 }
 
-void character_list(Container c1) :
+void character_list(Container<Expansion> c1) :
   {
     ExpRCharacterList chlist = new ExpRCharacterList();
     Token t = getToken(1);
     chlist.setLineNumber(t.beginLine);
     chlist.setColumnNumber(t.beginColumn);
-    Container c2 = new Container();
+    Container<ICCCharacter> c2 = new Container<>();
   }
 {
   ["~"
@@ -1472,11 +1442,11 @@ void character_list(Container c1) :
   ]
   "[" [ character_descriptor(c2)
   {
-    chlist.addDescriptor((ICCCharacter) c2.getMember ());
+    chlist.addDescriptor(c2.getMember ());
   }
         ( "," character_descriptor(c2)
   {
-    chlist.addDescriptor((ICCCharacter) c2.getMember ());
+    chlist.addDescriptor(c2.getMember ());
   }
         )*
       ]
@@ -1486,7 +1456,7 @@ void character_list(Container c1) :
   }
 }
 
-void character_descriptor(Container c) :
+void character_descriptor(Container<ICCCharacter> c) :
   {
     char c1, c2 = ' '; // unnecessary initialization to make Java compiler happy!
     boolean isrange = false;

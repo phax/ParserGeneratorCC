@@ -35,22 +35,24 @@ package com.helger.pgcc.parser;
 
 /**
  * An object container. Used to pass references to objects as parameter.
+ *
+ * @param <T>
+ *        The type of the contained object.
  */
-
-public final class Container
+public final class Container <T>
 {
+  private T m_aMember;
+
   /** Default constructor. */
   public Container ()
   {}
-
-  private Object m_aMember;
 
   /**
    * The member.
    *
    * @return The value of m_aMember.
    */
-  public Object getMember ()
+  public T getMember ()
   {
     return m_aMember;
   }
@@ -61,7 +63,7 @@ public final class Container
    * @param aValue
    *        The new value of m_aMember.
    */
-  public void setMember (final Object aValue)
+  public void setMember (final T aValue)
   {
     m_aMember = aValue;
   }

@@ -547,8 +547,8 @@ public abstract class AbstractJavaCCParserInternals
    *        The body of the finally clause, or <code>null</code> if there is none.
    */
   protected static void makeTryBlock (@NonNull final Token aTryLoc,
-                                      @NonNull final Container aResult,
-                                      @NonNull final Container aNestedExp,
+                                      @NonNull final Container <Expansion> aResult,
+                                      @NonNull final Container <Expansion> aNestedExp,
                                       final List <List <Token>> types,
                                       final List <Token> ids,
                                       @NonNull final List <List <Token>> catchblks,
@@ -562,7 +562,7 @@ public abstract class AbstractJavaCCParserInternals
     final ExpTryBlock aTblk = new ExpTryBlock ();
     aTblk.setLineNumber (aTryLoc.beginLine);
     aTblk.setColumnNumber (aTryLoc.beginColumn);
-    aTblk.setExp ((Expansion) aNestedExp.getMember ());
+    aTblk.setExp (aNestedExp.getMember ());
     aTblk.getExp ().setParent (aTblk);
     aTblk.getExp ().setOrdinalBase (0);
     aTblk.setTypes (types);

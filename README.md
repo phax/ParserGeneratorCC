@@ -61,6 +61,10 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 # News and noteworthy
 
 v3.0.0 - 2026-06-09
+* **Breaking API change** `Container` is generic - `Container <T>` with a typed `getMember ()` and `setMember (T)` instead of `Object`.
+  The grammar passes it as an out parameter through nine productions; they are typed `Container<Expansion>` for the BNF and regular expression chain and `Container<ICCCharacter>` for the character descriptors, which are an unrelated hierarchy.
+  17 of the 37 casts on `getMember ()` in `JavaCC.jj` are gone, plus one in `makeTryBlock`.
+  The remaining 19 `AbstractExpRegularExpression` casts stay because `expansion_unit` hands its `Container<Expansion>` to `regular_expression`, and generics are invariant - that pins the whole regular expression chain to `Expansion`
 * The code generators resolve `lexer ()`, `grammar ()`, `tokenizerBuild ()` and `optionValues ()` into a local variable instead of calling them once per use.
   Each call is a `ThreadLocal` lookup, and they sat in the innermost loops - `LexGenJava.start` alone made 184 of them, 175 inside loops, and `LexGenCpp.start` 157.
   1069 calls across 35 methods became 35 locals; generating `grammars/JavaCC.jj` drops from 13.3 ms to 11.3 ms and `grammars/CobolParser.jj` from 20.2 ms to 17.0 ms (best of 25 runs after 8 warm ups).
