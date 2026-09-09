@@ -69,7 +69,7 @@ public final class JJDocState
    *
    * @param sInputFile
    *        The file name, or {@link com.helger.pgcc.jjdoc.JJDocGlobals#STANDARD_INPUT}. May be
-   *         <code>null</code>.
+   *        <code>null</code>.
    */
   public void setInputFile (@Nullable final String sInputFile)
   {
@@ -90,7 +90,7 @@ public final class JJDocState
    *
    * @param sOutputFile
    *        The file name, or {@link com.helger.pgcc.jjdoc.JJDocGlobals#STANDARD_OUTPUT}. May be
-   *         <code>null</code>.
+   *        <code>null</code>.
    */
   public void setOutputFile (@Nullable final String sOutputFile)
   {

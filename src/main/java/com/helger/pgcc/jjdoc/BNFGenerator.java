@@ -48,10 +48,10 @@ import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpNonTerminal;
 import com.helger.pgcc.parser.exp.Expansion;
 
-  /**
-   * Writes the grammar back out as plain BNF, without any of the documentation JJDoc otherwise
-   * produces.
-   */
+/**
+ * Writes the grammar back out as plain BNF, without any of the documentation JJDoc otherwise
+ * produces.
+ */
 public class BNFGenerator implements IDocGenerator
 {
   /** Default constructor. */

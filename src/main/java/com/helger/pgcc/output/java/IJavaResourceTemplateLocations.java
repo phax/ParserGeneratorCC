@@ -33,11 +33,11 @@
  */
 package com.helger.pgcc.output.java;
 
-  /**
-   * Where the templates of the generated Java support classes live. There is one implementation
-   * per JAVA_TEMPLATE_TYPE, which is how the classic and the modern variants pick different files
-   * without the emitters knowing about either.
-   */
+/**
+ * Where the templates of the generated Java support classes live. There is one implementation per
+ * JAVA_TEMPLATE_TYPE, which is how the classic and the modern variants pick different files without
+ * the emitters knowing about either.
+ */
 public interface IJavaResourceTemplateLocations
 {
   /**

@@ -51,9 +51,9 @@ import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.parser.Semanticize;
 import com.helger.pgcc.parser.TokenizerData;
 
-  /**
-   * Run a grammar over some input directly, without generating and compiling a parser first.
-   */
+/**
+ * Run a grammar over some input directly, without generating and compiling a parser first.
+ */
 public class JavaCCInterpreter
 {
   /** Default constructor. */
@@ -65,7 +65,6 @@ public class JavaCCInterpreter
    *
    * @param aArgs
    *        The command line arguments. May not be <code>null</code>.
-   *
    * @throws Exception
    *         on any failure
    */

@@ -47,10 +47,10 @@ import com.helger.pgcc.jjtree.output.JJTreeStateJava;
 import com.helger.pgcc.jjtree.output.NodeFilesJava;
 import com.helger.pgcc.parser.JavaCCGlobals;
 
-  /**
-   * Writes the .jj that JJTree hands to the parser generator, by walking the tree and copying the
-   * grammar back out with the node building code woven in.
-   */
+/**
+ * Writes the .jj that JJTree hands to the parser generator, by walking the tree and copying the
+ * grammar back out with the node building code woven in.
+ */
 public class CodeGeneratorJava extends DefaultJJTreeVisitor
 {
   /** Default constructor. */

@@ -299,8 +299,8 @@ public class Options
   public static final String USEROPTION__CPP_TOKEN_MANAGER_INCLUDES = "TOKEN_MANAGER_INCLUDES";
 
   /**
-   * The {@value} grammar option, C++ only. Accepted and then ignored - nothing reads it. The
-   * option that does have an effect is {@link #USEROPTION__TOKEN_MANAGER_SUPER_CLASS}.
+   * The {@value} grammar option, C++ only. Accepted and then ignored - nothing reads it. The option
+   * that does have an effect is {@link #USEROPTION__TOKEN_MANAGER_SUPER_CLASS}.
    */
   public static final String USEROPTION__CPP_TOKEN_MANAGER_SUPERCLASS = "TOKEN_MANAGER_SUPERCLASS";
 
@@ -313,7 +313,6 @@ public class Options
    * The {@value} grammar option, read by {@link #getCppStackLimit()}.
    */
   public static final String USEROPTION__CPP_STACK_LIMIT = "STACK_LIMIT";
-
 
   /**
    * 2013/07/22 -- GWT Compliant Output -- no external dependencies on GWT, but generated code adds
@@ -1281,8 +1280,8 @@ public class Options
   }
 
   /**
-   * The language to generate. Unlike the other options this is kept as an enum rather than as a
-   * map entry, because almost everything in the generator branches on it.
+   * The language to generate. Unlike the other options this is kept as an enum rather than as a map
+   * entry, because almost everything in the generator branches on it.
    *
    * @return The output language. Never <code>null</code>.
    */

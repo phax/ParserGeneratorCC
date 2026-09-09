@@ -198,8 +198,8 @@ public final class GrammarState
   /**
    * The grammar file this run is reading.
    *
-   * @return The file name as it was given on the command line. May be <code>null</code> before parsing
-   *   *         starts.
+   * @return The file name as it was given on the command line. May be <code>null</code> before
+   *         parsing * starts.
    */
   @Nullable
   public String getFileName ()
@@ -218,11 +218,9 @@ public final class GrammarState
     m_sFileName = sFileName;
   }
 
-
-
   /**
-   * Whether the grammar handed to the parser generator came out of JJTree rather than straight
-   * from the user. Error messages have to point back at the .jjt in that case.
+   * Whether the grammar handed to the parser generator came out of JJTree rather than straight from
+   * the user. Error messages have to point back at the .jjt in that case.
    *
    * @return <code>true</code> if JJTree produced this grammar.
    */
@@ -232,8 +230,8 @@ public final class GrammarState
   }
 
   /**
-   * Whether the grammar handed to the parser generator came out of JJTree rather than straight
-   * from the user. Error messages have to point back at the .jjt in that case.
+   * Whether the grammar handed to the parser generator came out of JJTree rather than straight from
+   * the user. Error messages have to point back at the .jjt in that case.
    *
    * @param bJJTreeGenerated
    *        <code>true</code> if JJTree produced this grammar.
@@ -306,8 +304,8 @@ public final class GrammarState
   }
 
   /**
-   * The number of token kinds declared so far. Every regular expression that gets an ordinal
-   * takes the current value and increments it.
+   * The number of token kinds declared so far. Every regular expression that gets an ordinal takes
+   * the current value and increments it.
    *
    * @return The count.
    */
@@ -317,8 +315,8 @@ public final class GrammarState
   }
 
   /**
-   * The number of token kinds declared so far. Every regular expression that gets an ordinal
-   * takes the current value and increments it.
+   * The number of token kinds declared so far. Every regular expression that gets an ordinal takes
+   * the current value and increments it.
    *
    * @param nTokenCount
    *        The count.
@@ -345,7 +343,6 @@ public final class GrammarState
     return m_nMaskIndex;
   }
 
-
   /**
    * Claim one more entry of the generated jj_la1 error reporting array.
    */
@@ -355,9 +352,9 @@ public final class GrammarState
   }
 
   /**
-   * How many jj2 lookahead routines the parser needs. A choice that cannot be decided with a
-   * simple token mask gets one, and it is nonzero exactly when the generated parser needs the
-   * whole backtracking machinery.
+   * How many jj2 lookahead routines the parser needs. A choice that cannot be decided with a simple
+   * token mask gets one, and it is nonzero exactly when the generated parser needs the whole
+   * backtracking machinery.
    *
    * @return The number of jj2 routines generated so far.
    */
@@ -365,7 +362,6 @@ public final class GrammarState
   {
     return m_nJJ2Index;
   }
-
 
   /** {@return the jj2 index after incrementing it} */
   public int incAndGetJJ2Index ()
@@ -465,8 +461,8 @@ public final class GrammarState
   }
 
   /**
-   * The token just past the class declaration of a C++ grammar, the end of the range that starts
-   * at {@link #getOtherLanguageDeclTokenBegin()}.
+   * The token just past the class declaration of a C++ grammar, the end of the range that starts at
+   * {@link #getOtherLanguageDeclTokenBegin()}.
    *
    * @return The token. May be <code>null</code>.
    */
@@ -477,8 +473,8 @@ public final class GrammarState
   }
 
   /**
-   * The token just past the class declaration of a C++ grammar, the end of the range that starts
-   * at {@link #getOtherLanguageDeclTokenBegin()}.
+   * The token just past the class declaration of a C++ grammar, the end of the range that starts at
+   * {@link #getOtherLanguageDeclTokenBegin()}.
    *
    * @param aToken
    *        The token.
@@ -496,8 +492,7 @@ public final class GrammarState
 
   /**
    * Where the token printer has got to in the grammar file. Copying a stretch of the grammar into
-   * the output means reproducing its blank lines, so the printer tracks the position it last
-   * wrote.
+   * the output means reproducing its blank lines, so the printer tracks the position it last wrote.
    *
    * @param nCurrentLine
    *        The line number.
@@ -526,7 +521,7 @@ public final class GrammarState
 
   /**
    * {@return a generation number that is unique within this run. Used by the lookahead computation
-   *         to mark the expansions it has already visited.}
+   * to mark the expansions it has already visited.}
    */
   public long getAndIncNextExpansionGeneration ()
   {

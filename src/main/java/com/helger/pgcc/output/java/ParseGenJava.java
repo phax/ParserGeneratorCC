@@ -166,7 +166,6 @@ public class ParseGenJava extends AbstractCodeGenerator
    *
    * @param bIsJavaModernMode
    *        <code>true</code> to generate the Provider based variant.
-   *
    * @throws MetaParseException
    *         if the grammar cannot be generated from
    */

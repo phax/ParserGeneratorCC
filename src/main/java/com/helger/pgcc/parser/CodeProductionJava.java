@@ -42,4 +42,3 @@ public class CodeProductionJava extends AbstractCodeProduction
   public CodeProductionJava ()
   {}
 }
-

@@ -303,8 +303,7 @@ public abstract class AbstractCodeGenerator
   }
 
   /**
-   * Copy a run of grammar tokens into the output, ending with the comments that trail the last
-   * one.
+   * Copy a run of grammar tokens into the output, ending with the comments that trail the last one.
    *
    * @param aList
    *        The tokens to copy. May not be <code>null</code>.
@@ -323,8 +322,7 @@ public abstract class AbstractCodeGenerator
   }
 
   /**
-   * Copy one grammar token and the whitespace in front of it, without the comments attached to
-   * it.
+   * Copy one grammar token and the whitespace in front of it, without the comments attached to it.
    *
    * @param t
    *        The token to copy. May not be <code>null</code>.
@@ -335,8 +333,8 @@ public abstract class AbstractCodeGenerator
   }
 
   /**
-   * Render one token, padded with the newlines and spaces needed to put it at its original line
-   * and column.
+   * Render one token, padded with the newlines and spaces needed to put it at its original line and
+   * column.
    *
    * @param t
    *        The token to render. May not be <code>null</code>.
@@ -529,16 +527,15 @@ public abstract class AbstractCodeGenerator
     genCode (getOutputLanguage ().getClassStart (sMod, sName, aSuperClasses, aSuperInterfaces));
   }
 
-
   /**
    * Write the header of a method that throws nothing.
    *
    * @param sModsAndRetType
    *        The modifiers and the return type, as this language spells them. May not be
-   *         <code>null</code>.
+   *        <code>null</code>.
    * @param sClassName
    *        The class the method belongs to. Only C++ needs it, to qualify the out of line
-   *         definition. May be <code>null</code>.
+   *        definition. May be <code>null</code>.
    * @param sNameAndParams
    *        The method name and its parameter list. May not be <code>null</code>.
    */
@@ -554,10 +551,10 @@ public abstract class AbstractCodeGenerator
    *
    * @param sQualifiedModsAndRetType
    *        The modifiers and the return type, as this language spells them. May not be
-   *         <code>null</code>.
+   *        <code>null</code>.
    * @param sClassName
    *        The class the method belongs to. Only C++ needs it, to qualify the out of line
-   *         definition. May be <code>null</code>.
+   *        definition. May be <code>null</code>.
    * @param sNameAndParams
    *        The method name and its parameter list. May not be <code>null</code>.
    * @param sExceptions
@@ -646,8 +643,8 @@ public abstract class AbstractCodeGenerator
    *
    * @param sClassName
    *        The class the member belongs to. May be <code>null</code>.
-   * @return The "ClassName::" prefix C++ wants on an out of line definition, empty for Java.
-   *         Never <code>null</code>.
+   * @return The "ClassName::" prefix C++ wants on an out of line definition, empty for Java. Never
+   *         <code>null</code>.
    */
   protected final String getClassQualifier (@Nullable final String sClassName)
   {
@@ -656,7 +653,7 @@ public abstract class AbstractCodeGenerator
 
   /**
    * {@return the name of the char stream class the current options select. Never
-   *         <code>null</code>.}
+   * <code>null</code>.}
    */
   public static String getCharStreamName ()
   {
@@ -680,7 +677,6 @@ public abstract class AbstractCodeGenerator
    *        The template resource path. May not be <code>null</code>.
    * @param aOptions
    *        The values the template substitutes. May not be <code>null</code>.
-   *
    * @throws IOException
    *         if the template cannot be read
    */

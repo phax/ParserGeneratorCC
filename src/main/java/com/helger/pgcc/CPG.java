@@ -35,9 +35,9 @@ package com.helger.pgcc;
 
 import com.helger.annotation.concurrent.Immutable;
 
-  /**
-   * The names this generator goes by.
-   */
+/**
+ * The names this generator goes by.
+ */
 @Immutable
 public final class CPG
 {

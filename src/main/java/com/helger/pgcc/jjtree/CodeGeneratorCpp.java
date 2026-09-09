@@ -45,9 +45,9 @@ import com.helger.pgcc.jjtree.output.NodeFilesCpp;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.Options;
 
-  /**
-   * The C++ form of {@link CodeGeneratorJava}.
-   */
+/**
+ * The C++ form of {@link CodeGeneratorJava}.
+ */
 public class CodeGeneratorCpp extends DefaultJJTreeVisitor
 {
   /** Default constructor. */

@@ -39,14 +39,14 @@ import com.helger.pgcc.parser.AbstractCodeGenerator;
 import com.helger.pgcc.parser.Options;
 
 /**
- * The lines a generated token manager writes to its debug stream when <code>DEBUG_TOKEN_MANAGER</code>
- * is on.
+ * The lines a generated token manager writes to its debug stream when
+ * <code>DEBUG_TOKEN_MANAGER</code> is on.
  * <p>
- * They used to be spelled out at every place that needed them - the "Currently matched the first ..."
- * line alone existed in five copies, each with its own idea of how many spaces go after a comma.
- * Java concatenates the values into one expression while C++ passes them to <code>fprintf</code>, so
- * the two spellings cannot be derived from one another and each method here keeps its own pair.
- * What can be derived lives on {@link EOutputLanguage} instead.
+ * They used to be spelled out at every place that needed them - the "Currently matched the first
+ * ..." line alone existed in five copies, each with its own idea of how many spaces go after a
+ * comma. Java concatenates the values into one expression while C++ passes them to
+ * <code>fprintf</code>, so the two spellings cannot be derived from one another and each method
+ * here keeps its own pair. What can be derived lives on {@link EOutputLanguage} instead.
  *
  * @author Philip Helger
  */

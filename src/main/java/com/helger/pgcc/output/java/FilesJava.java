@@ -91,13 +91,13 @@ public class FilesJava
   {}
 
   /**
-   * Choose where the templates come from. The default reads them from the classpath, which is
-   * what a released jar needs; a test that has to see the templates in the checkout turns it off.
-   * This is process wide state, so a test that changes it has to change it back.
+   * Choose where the templates come from. The default reads them from the classpath, which is what
+   * a released jar needs; a test that has to see the templates in the checkout turns it off. This
+   * is process wide state, so a test that changes it has to change it back.
    *
    * @param bReadFromClassPath
    *        <code>true</code> to read from the classpath, <code>false</code> to read from the file
-   *         system.
+   *        system.
    */
   public static void setReadFromClassPath (final boolean bReadFromClassPath)
   {
@@ -206,8 +206,7 @@ public class FilesJava
   }
 
   /**
-   * Write JavaCharStream.java, the char stream that understands Java unicode escapes in the
-   * input.
+   * Write JavaCharStream.java, the char stream that understands Java unicode escapes in the input.
    *
    * @param aLocations
    *        Where the templates live. May not be <code>null</code>.
@@ -276,8 +275,7 @@ public class FilesJava
   }
 
   /**
-   * Write CharSequenceCharStream.java, the char stream that reads from something already in
-   * memory.
+   * Write CharSequenceCharStream.java, the char stream that reads from something already in memory.
    *
    * @param aLocations
    *        Where the templates live. May not be <code>null</code>.

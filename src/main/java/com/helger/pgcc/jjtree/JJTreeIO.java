@@ -49,9 +49,9 @@ import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.Options;
 
-  /**
-   * The input and output of one JJTree run: the grammar being read and the .jj being written.
-   */
+/**
+ * The input and output of one JJTree run: the grammar being read and the .jj being written.
+ */
 public final class JJTreeIO
 {
   private String m_sInputFilename = "<uninitialized input>";

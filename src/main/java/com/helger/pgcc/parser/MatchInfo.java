@@ -64,8 +64,8 @@ public class MatchInfo
   private int m_nFirstFreeLoc;
 
   /**
-   * The token kinds matched so far, in order. Only the first {@link #getFirstFreeLoc()} entries
-   * are meaningful.
+   * The token kinds matched so far, in order. Only the first {@link #getFirstFreeLoc()} entries are
+   * meaningful.
    *
    * @return The value of m_aMatch.
    */
@@ -75,8 +75,8 @@ public class MatchInfo
   }
 
   /**
-   * The token kinds matched so far, in order. Only the first {@link #getFirstFreeLoc()} entries
-   * are meaningful.
+   * The token kinds matched so far, in order. Only the first {@link #getFirstFreeLoc()} entries are
+   * meaningful.
    *
    * @param aValue
    *        The new value of m_aMatch.

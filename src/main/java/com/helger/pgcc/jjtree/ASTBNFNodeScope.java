@@ -35,10 +35,10 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
-  /**
-   * The node scope a BNF production opens - the <code>#Name</code> that says the production
-   * builds a node and everything it matches becomes that node's children.
-   */
+/**
+ * The node scope a BNF production opens - the <code>#Name</code> that says the production builds a
+ * node and everything it matches becomes that node's children.
+ */
 public class ASTBNFNodeScope extends JJTreeNode
 {
   /**

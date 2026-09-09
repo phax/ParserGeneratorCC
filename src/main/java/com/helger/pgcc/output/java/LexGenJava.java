@@ -305,7 +305,6 @@ public class LexGenJava extends AbstractLexGenJavaLike
     lexer ().setCanReachOnMore (new boolean [lexer ().getMaxLexStates ()]);
   }
 
-
   /**
    * Record a character that is skipped on its own, without an automaton.
    *
@@ -659,7 +658,6 @@ public class LexGenJava extends AbstractLexGenJavaLike
       saveOutput (sFileName);
     }
   }
-
 
   private void _dumpStaticVarDeclarations (final String sCharStreamName) throws IOException
   {

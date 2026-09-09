@@ -70,7 +70,7 @@ public final class JavaCCGlobals
 
   /**
    * {@return the grammar that is being processed by the current run. Never <code>null</code>. This
-   *         replaces the pile of static fields this class used to be.}
+   * replaces the pile of static fields this class used to be.}
    */
   @NonNull
   public static GrammarState grammar ()
@@ -99,8 +99,8 @@ public final class JavaCCGlobals
   }
 
   /**
-   * {@return the first token of the class declaration a C++ grammar writes between PARSER_BEGIN
-   * and PARSER_END, or <code>null</code>}
+   * {@return the first token of the class declaration a C++ grammar writes between PARSER_BEGIN and
+   * PARSER_END, or <code>null</code>}
    */
   @Nullable
   public static Token getOtherLanguageDeclTokenBegin ()

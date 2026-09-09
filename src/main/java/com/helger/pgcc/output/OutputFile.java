@@ -103,7 +103,6 @@ public class OutputFile implements AutoCloseable
    * @param aOptions
    *        if the file already exists, and cannot be overwritten, this is a list of options (such s
    *        STATIC=false) to check for changes.
-   *
    * @throws IOException
    *         on error
    */
@@ -189,12 +188,10 @@ public class OutputFile implements AutoCloseable
   }
 
   /**
-   * Open an output file that carries no version and no options, and is therefore always
-   * rewritten.
+   * Open an output file that carries no version and no options, and is therefore always rewritten.
    *
    * @param aFile
    *        The file to write. May not be <code>null</code>.
-   *
    * @throws IOException
    *         if the existing file cannot be read
    */

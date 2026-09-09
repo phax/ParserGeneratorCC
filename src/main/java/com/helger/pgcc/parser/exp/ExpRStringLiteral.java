@@ -73,7 +73,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
   /**
    * {@return the build state of the lexical state that is currently being generated. Never
-   *         <code>null</code>.}
+   * <code>null</code>.}
    */
   public static StringLiteralBuildState strLit ()
   {
@@ -99,12 +99,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       m_aFinalKinds = new long [nMaxKind / 64 + 1];
     }
 
-  /**
-   * Record that a kind can still match at this position of the trie.
-   *
-   * @param nKind
-   *        The token ordinal.
-   */
+    /**
+     * Record that a kind can still match at this position of the trie.
+     *
+     * @param nKind
+     *        The token ordinal.
+     */
     public void insertValidKind (final int nKind)
     {
       m_aValidKinds[nKind / 64] |= (1L << (nKind % 64));
@@ -112,12 +112,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       m_aValidKindSet.add (Integer.valueOf (nKind));
     }
 
-  /**
-   * Record that a kind is complete at this position of the trie, so a match can be accepted here.
-   *
-   * @param nKind
-   *        The token ordinal.
-   */
+    /**
+     * Record that a kind is complete at this position of the trie, so a match can be accepted here.
+     *
+     * @param nKind
+     *        The token ordinal.
+     */
     public void insertFinalKind (final int nKind)
     {
       m_aFinalKinds[nKind / 64] |= (1L << (nKind % 64));
@@ -153,8 +153,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
    * @param t
    *        The token it was declared at, for error messages. May not be <code>null</code>.
    * @param sImage
-   *        The literal, with the quotes and escapes already resolved. May not be
-   *         <code>null</code>.
+   *        The literal, with the quotes and escapes already resolved. May not be <code>null</code>.
    */
   public ExpRStringLiteral (@NonNull final Token t, final String sImage)
   {
@@ -277,8 +276,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   }
 
   /**
-   * The Java half of {@link #dumpStrLiteralImages(AbstractCodeGenerator)}, which writes an array
-   * of string literals where C++ writes arrays of character codes.
+   * The Java half of {@link #dumpStrLiteralImages(AbstractCodeGenerator)}, which writes an array of
+   * string literals where C++ writes arrays of character codes.
    *
    * @param aCodeGenerator
    *        The generator to write to. May not be <code>null</code>.
@@ -655,16 +654,17 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
                                             LexGenJava.lexer ().getTokenMgrClassName (),
                                             "jjStartNfaWithStates" +
-                                                                    LexGenJava.lexer ().getLexStateSuffix () +
-                                                                    "(int pos, int kind, int state)");
+                                                                                         LexGenJava.lexer ()
+                                                                                                   .getLexStateSuffix () +
+                                                                                         "(int pos, int kind, int state)");
     aCodeGenerator.genCodeLine ("{");
     aCodeGenerator.genCodeLine ("   jjmatchedKind = kind;");
     aCodeGenerator.genCodeLine ("   jjmatchedPos = pos;");
 
     if (Options.isDebugTokenManager ())
     {
-        TokenManagerDebug.genMessage (aCodeGenerator, "   ", "   No more string literal token matches are possible.");
-        TokenManagerDebug.genCurrentlyMatched (aCodeGenerator, "   ");
+      TokenManagerDebug.genMessage (aCodeGenerator, "   ", "   No more string literal token matches are possible.");
+      TokenManagerDebug.genCurrentlyMatched (aCodeGenerator, "   ");
     }
 
     switch (eOutputLanguage)
@@ -758,7 +758,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   @NonNull
   private static String _getCaseChar (final char c)
   {
-    // Anything outside printable ASCII goes out as a number - a literal would only be harder to read
+    // Anything outside printable ASCII goes out as a number - a literal would only be harder to
+    // read
     if (c < 0x20 || c >= 0x7f)
       return Integer.toString (c);
 
@@ -771,8 +772,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
   /**
    * Write the jjMoveStringLiteralDfa chain of the current lexical state, one method per character
-   * position, which is the fast path that matches keywords and operators without touching the
-   * NFA.
+   * position, which is the fast path that matches keywords and operators without touching the NFA.
    *
    * @param aCodeGenerator
    *        The generator to write to. May not be <code>null</code>.
@@ -793,8 +793,9 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
                                               LexGenJava.lexer ().getTokenMgrClassName (),
                                               "jjMoveStringLiteralDfa0" +
-                                                                         LexGenJava.lexer ().getLexStateSuffix () +
-                                                                         "()");
+                                                                                           LexGenJava.lexer ()
+                                                                                                     .getLexStateSuffix () +
+                                                                                           "()");
       dumpNullStrLiterals (aCodeGenerator);
       return;
     }
@@ -875,9 +876,10 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
                                               LexGenJava.lexer ().getTokenMgrClassName (),
                                               "jjMoveStringLiteralDfa" +
-                                                                        i +
-                                                                        LexGenJava.lexer ().getLexStateSuffix () +
-                                                                        aParams,
+                                                                                           i +
+                                                                                           LexGenJava.lexer ()
+                                                                                                     .getLexStateSuffix () +
+                                                                                           aParams,
                                               null,
                                               false);
 
@@ -1071,9 +1073,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
         if (Options.isDebugTokenManager ())
         {
-          TokenManagerDebug.genCurrentCharacter (aCodeGenerator,
-                                                 "   ",
-                                                 LexGenJava.lexer ().getMaxLexStates () > 1);
+          TokenManagerDebug.genCurrentCharacter (aCodeGenerator, "   ", LexGenJava.lexer ().getMaxLexStates () > 1);
         }
       }
 
@@ -1133,14 +1133,10 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         if (Options.isIgnoreCase ())
         {
           if (c != Character.toUpperCase (c))
-            aCodeGenerator.genCodeLine ("      case " +
-                                        _getCaseChar (Character.toUpperCase (c)) +
-                                        ":");
+            aCodeGenerator.genCodeLine ("      case " + _getCaseChar (Character.toUpperCase (c)) + ":");
 
           if (c != Character.toLowerCase (c))
-            aCodeGenerator.genCodeLine ("      case " +
-                                        _getCaseChar (Character.toLowerCase (c)) +
-                                        ":");
+            aCodeGenerator.genCodeLine ("      case " + _getCaseChar (Character.toLowerCase (c)) + ":");
         }
 
         aCodeGenerator.genCodeLine ("      case " + _getCaseChar (c) + ":");
@@ -1479,7 +1475,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
    * @param aInitialState
    *        The state a match starts in. May not be <code>null</code>.
    */
-  public static void generateNfaStartStates (final AbstractCodeGenerator aCodeGenerator, @NonNull final NfaState aInitialState)
+  public static void generateNfaStartStates (final AbstractCodeGenerator aCodeGenerator,
+                                             @NonNull final NfaState aInitialState)
   {
     final boolean [] aSeen = new boolean [NfaState.nfa ().getGeneratedStates ()];
     final Map <String, String> aStateSets = new HashMap <> ();
@@ -1631,9 +1628,10 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private final") + "int",
                                             LexGenJava.lexer ().getTokenMgrClassName (),
                                             "jjStopStringLiteralDfa" +
-                                                                      LexGenJava.lexer ().getLexStateSuffix () +
-                                                                      "(int pos, " +
-                                                                      aParams,
+                                                                                         LexGenJava.lexer ()
+                                                                                                   .getLexStateSuffix () +
+                                                                                         "(int pos, " +
+                                                                                         aParams,
                                             null,
                                             false);
 
@@ -1641,9 +1639,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
     if (Options.isDebugTokenManager ())
     {
-      TokenManagerDebug.genMessage (aCodeGenerator,
-                                    "      ",
-                                    "   No more string literal token matches are possible.");
+      TokenManagerDebug.genMessage (aCodeGenerator, "      ", "   No more string literal token matches are possible.");
     }
 
     aCodeGenerator.genCodeLine ("   switch (pos)");
@@ -1832,8 +1828,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
    */
 
   /**
-   * Hand the string literals of one lexical state over to the TokenizerData that
-   * JavaCCInterpreter runs.
+   * Hand the string literals of one lexical state over to the TokenizerData that JavaCCInterpreter
+   * runs.
    *
    * @param nLexStateIndex
    *        The lexical state.
@@ -1897,8 +1893,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   }
 
   /**
-   * Copy the collected literals into the tokenizer description, keyed the way the interpreter
-   * looks them up.
+   * Copy the collected literals into the tokenizer description, keyed the way the interpreter looks
+   * them up.
    *
    * @param aTokenizerData
    *        Where to put them. May not be <code>null</code>.

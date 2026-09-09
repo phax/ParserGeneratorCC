@@ -59,7 +59,6 @@ public interface IDocGenerator
    *
    * @param s
    *        the String to output
-   *
    * @throws IOException
    *         on IO error
    */
@@ -70,7 +69,6 @@ public interface IDocGenerator
    *
    * @param s
    *        String to output
-   *
    * @throws IOException
    *         on IO error
    */
@@ -97,7 +95,6 @@ public interface IDocGenerator
    *
    * @param s
    *        tokens to output
-   *
    * @throws IOException
    *         on IO error
    */
@@ -108,7 +105,6 @@ public interface IDocGenerator
    *
    * @param tp
    *        The production. May not be <code>null</code>.
-   *
    * @throws IOException
    *         if the output cannot be written
    */
@@ -163,7 +159,6 @@ public interface IDocGenerator
    *
    * @param jp
    *        the JavaCodeProduction to output
-   *
    * @throws IOException
    *         on IO error
    */
@@ -174,7 +169,6 @@ public interface IDocGenerator
    *
    * @param cp
    *        the CppCodeProduction to output
-   *
    * @throws IOException
    *         on IO error
    */
@@ -185,7 +179,6 @@ public interface IDocGenerator
    *
    * @param np
    *        the AbstractNormalProduction being output
-   *
    * @throws IOException
    *         on IO error
    */
@@ -196,7 +189,6 @@ public interface IDocGenerator
    *
    * @param np
    *        the AbstractNormalProduction being output
-   *
    * @throws IOException
    *         on IO error
    */
@@ -209,7 +201,6 @@ public interface IDocGenerator
    *        Expansion being output
    * @param first
    *        whether this is the first expansion
-   *
    * @throws IOException
    *         on IO error
    */
@@ -222,7 +213,6 @@ public interface IDocGenerator
    *        Expansion being output
    * @param first
    *        whether this is the first expansion
-   *
    * @throws IOException
    *         on IO error
    */
@@ -233,7 +223,6 @@ public interface IDocGenerator
    *
    * @param nt
    *        the NonTerminal being output
-   *
    * @throws IOException
    *         on IO error
    */
@@ -244,7 +233,6 @@ public interface IDocGenerator
    *
    * @param nt
    *        the NonTerminal being output
-   *
    * @throws IOException
    *         on IO error
    */
@@ -255,7 +243,6 @@ public interface IDocGenerator
    *
    * @param re
    *        the RegularExpression being output
-   *
    * @throws IOException
    *         on IO error
    */
@@ -266,7 +253,6 @@ public interface IDocGenerator
    *
    * @param re
    *        the RegularExpression being output
-   *
    * @throws IOException
    *         on IO error
    */

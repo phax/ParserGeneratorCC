@@ -290,8 +290,8 @@ public sealed class Expansion implements IGrammarLocation permits
   }
 
   /**
-   * Mark this expansion as visited in a generation, so that a right recursive grammar does not
-   * send the follow set walk round forever.
+   * Mark this expansion as visited in a generation, so that a right recursive grammar does not send
+   * the follow set walk round forever.
    *
    * @param n
    *        The current generation, from {@link #getNextGenerationIndex()}.

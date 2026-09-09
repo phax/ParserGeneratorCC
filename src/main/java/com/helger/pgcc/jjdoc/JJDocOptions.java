@@ -95,8 +95,7 @@ public class JJDocOptions extends Options
   }
 
   /**
-   * {@return <code>true</code> if JJDoc should produce an XText grammar rather than
-   * documentation}
+   * {@return <code>true</code> if JJDoc should produce an XText grammar rather than documentation}
    */
   public static boolean isXText ()
   {

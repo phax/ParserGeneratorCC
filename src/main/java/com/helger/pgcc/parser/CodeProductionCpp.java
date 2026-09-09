@@ -42,4 +42,3 @@ public class CodeProductionCpp extends AbstractCodeProduction
   public CodeProductionCpp ()
   {}
 }
-

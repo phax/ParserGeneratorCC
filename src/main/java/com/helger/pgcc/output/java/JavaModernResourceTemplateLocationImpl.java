@@ -33,10 +33,10 @@
  */
 package com.helger.pgcc.output.java;
 
-  /**
-   * Where the modern Java templates live, which is the classic set with the Provider based files
-   * replaced.
-   */
+/**
+ * Where the modern Java templates live, which is the classic set with the Provider based files
+ * replaced.
+ */
 public class JavaModernResourceTemplateLocationImpl extends JavaResourceTemplateLocationImpl
 {
   /** Default constructor. */

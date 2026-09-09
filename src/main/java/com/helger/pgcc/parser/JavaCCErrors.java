@@ -184,7 +184,6 @@ public final class JavaCCErrors
    *
    * @param sMessage
    *        The message. May not be <code>null</code>.
-   *
    * @throws IllegalStateException
    *         always
    */

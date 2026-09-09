@@ -218,14 +218,14 @@ public class Token implements IGrammarLocation
      */
     int m_nRealKind = JavaCCParserConstants.GT;
 
-  /**
-   * Create the token.
-   *
-   * @param nKind
-   *        The token kind.
-   * @param sImage
-   *        The text it matched. May be <code>null</code>.
-   */
+    /**
+     * Create the token.
+     *
+     * @param nKind
+     *        The token kind.
+     * @param sImage
+     *        The text it matched. May be <code>null</code>.
+     */
     public GTToken (final int nKind, final String sImage)
     {
       super (nKind, sImage);

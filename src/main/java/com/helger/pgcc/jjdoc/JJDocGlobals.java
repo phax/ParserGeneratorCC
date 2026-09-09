@@ -45,8 +45,8 @@ public final class JJDocGlobals
   {}
 
   /**
-   * The name {@link com.helger.pgcc.context.JJDocState#getInputFile()} carries when the grammar
-   * is read from stdin rather than from a file.
+   * The name {@link com.helger.pgcc.context.JJDocState#getInputFile()} carries when the grammar is
+   * read from stdin rather than from a file.
    */
   public static final String STANDARD_INPUT = "standard input";
   /**

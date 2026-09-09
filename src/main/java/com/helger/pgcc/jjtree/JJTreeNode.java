@@ -37,11 +37,11 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.style.OverrideOnDemand;
 
-  /**
-   * The base of every node in JJTree's own syntax tree. On top of what SimpleNode gives it, a
-   * node remembers the first and the last token it covers, which is what lets JJTree copy
-   * stretches of the grammar back out with their original layout.
-   */
+/**
+ * The base of every node in JJTree's own syntax tree. On top of what SimpleNode gives it, a node
+ * remembers the first and the last token it covers, which is what lets JJTree copy stretches of the
+ * grammar back out with their original layout.
+ */
 public class JJTreeNode extends SimpleNode
 {
   /**
@@ -193,8 +193,7 @@ public class JJTreeNode extends SimpleNode
   private boolean m_bWhitingOut = false;
 
   /**
-   * Copy one token and the comments attached to it into the output, keeping its original
-   * position.
+   * Copy one token and the comments attached to it into the output, keeping its original position.
    *
    * @param t
    *        The token to copy. May not be <code>null</code>.

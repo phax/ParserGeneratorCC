@@ -288,6 +288,7 @@ public enum EOutputLanguage implements IHasID <String>
       aSB.append (" {\npublic:\n");
       return aSB.toString ();
     }
+
     @Override
     public String getMemberAccess ()
     {
@@ -423,7 +424,7 @@ public enum EOutputLanguage implements IHasID <String>
 
   /**
    * {@return the file extension for a generated source file in this language, dot included. Never
-   *         <code>null</code>.}
+   * <code>null</code>.}
    */
   @NonNull
   @Nonempty
@@ -534,7 +535,7 @@ public enum EOutputLanguage implements IHasID <String>
 
   /**
    * {@return how a member of a pointer or reference is reached - "." in Java, "-&gt;" in C++. Never
-   *         <code>null</code>.}
+   * <code>null</code>.}
    */
   @NonNull
   @Nonempty
@@ -575,8 +576,7 @@ public enum EOutputLanguage implements IHasID <String>
 
   /**
    * {@return the statement that a non-void production ends with when control can fall off the end -
-   *         the compiler requires it in Java, and C++ needs its own spelling. Never
-   *         <code>null</code>.}
+   * the compiler requires it in Java, and C++ needs its own spelling. Never <code>null</code>.}
    */
   @NonNull
   @Nonempty

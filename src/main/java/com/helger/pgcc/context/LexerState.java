@@ -158,9 +158,8 @@ public final class LexerState
   }
 
   /**
-   * What each token kind does when it matches: produce a token, skip, continue with MORE or
-   * produce a special token. Indexed by ordinal, <code>null</code> for a private regular
-   * expression.
+   * What each token kind does when it matches: produce a token, skip, continue with MORE or produce
+   * a special token. Indexed by ordinal, <code>null</code> for a private regular expression.
    *
    * @return The kinds, indexed by ordinal. May be <code>null</code> before generation starts.
    */
@@ -170,9 +169,8 @@ public final class LexerState
   }
 
   /**
-   * What each token kind does when it matches: produce a token, skip, continue with MORE or
-   * produce a special token. Indexed by ordinal, <code>null</code> for a private regular
-   * expression.
+   * What each token kind does when it matches: produce a token, skip, continue with MORE or produce
+   * a special token. Indexed by ordinal, <code>null</code> for a private regular expression.
    *
    * @param aKinds
    *        The kinds, indexed by ordinal.
@@ -231,10 +229,11 @@ public final class LexerState
   }
 
   /**
-   * The lexical state each token kind switches to when it matches, <code>null</code> where it
-   * stays in the current one. Indexed by ordinal.
+   * The lexical state each token kind switches to when it matches, <code>null</code> where it stays
+   * in the current one. Indexed by ordinal.
    *
-   * @return The target state names, indexed by ordinal. May be <code>null</code> before generation starts.
+   * @return The target state names, indexed by ordinal. May be <code>null</code> before generation
+   *         starts.
    */
   public String [] getNewLexState ()
   {
@@ -242,8 +241,8 @@ public final class LexerState
   }
 
   /**
-   * The lexical state each token kind switches to when it matches, <code>null</code> where it
-   * stays in the current one. Indexed by ordinal.
+   * The lexical state each token kind switches to when it matches, <code>null</code> where it stays
+   * in the current one. Indexed by ordinal.
    *
    * @param aNewLexState
    *        The target state names, indexed by ordinal.
@@ -256,7 +255,8 @@ public final class LexerState
   /**
    * The lexical state each token kind was declared in, indexed by ordinal.
    *
-   * @return The state indices, indexed by ordinal. May be <code>null</code> before generation starts.
+   * @return The state indices, indexed by ordinal. May be <code>null</code> before generation
+   *         starts.
    */
   public int [] getLexStates ()
   {
@@ -298,8 +298,8 @@ public final class LexerState
   }
 
   /**
-   * The lexical action attached to each token kind, <code>null</code> where there is none.
-   * Indexed by ordinal.
+   * The lexical action attached to each token kind, <code>null</code> where there is none. Indexed
+   * by ordinal.
    *
    * @return The actions, indexed by ordinal. May be <code>null</code> before generation starts.
    */
@@ -309,8 +309,8 @@ public final class LexerState
   }
 
   /**
-   * The lexical action attached to each token kind, <code>null</code> where there is none.
-   * Indexed by ordinal.
+   * The lexical action attached to each token kind, <code>null</code> where there is none. Indexed
+   * by ordinal.
    *
    * @param aActions
    *        The actions, indexed by ordinal.
@@ -321,8 +321,8 @@ public final class LexerState
   }
 
   /**
-   * The number of NFA states of the lexical state that produced the largest automaton, which is
-   * how wide the generated jjstateSet array has to be.
+   * The number of NFA states of the lexical state that produced the largest automaton, which is how
+   * wide the generated jjstateSet array has to be.
    *
    * @return The number of states.
    */
@@ -332,8 +332,8 @@ public final class LexerState
   }
 
   /**
-   * The number of NFA states of the lexical state that produced the largest automaton, which is
-   * how wide the generated jjstateSet array has to be.
+   * The number of NFA states of the lexical state that produced the largest automaton, which is how
+   * wide the generated jjstateSet array has to be.
    *
    * @param nStateSetSize
    *        The number of states.
@@ -344,8 +344,8 @@ public final class LexerState
   }
 
   /**
-   * The number of NFA states over all lexical states together, used to decide whether the
-   * generated token manager needs the two or the four argument jjCheckNAddStates.
+   * The number of NFA states over all lexical states together, used to decide whether the generated
+   * token manager needs the two or the four argument jjCheckNAddStates.
    *
    * @return The number of states.
    */
@@ -355,8 +355,8 @@ public final class LexerState
   }
 
   /**
-   * The number of NFA states over all lexical states together, used to decide whether the
-   * generated token manager needs the two or the four argument jjCheckNAddStates.
+   * The number of NFA states over all lexical states together, used to decide whether the generated
+   * token manager needs the two or the four argument jjCheckNAddStates.
    *
    * @param nTotalNumStates
    *        The number of states.
@@ -367,8 +367,8 @@ public final class LexerState
   }
 
   /**
-   * The number of lexical states in the grammar, and therefore the length of every array indexed
-   * by lexical state.
+   * The number of lexical states in the grammar, and therefore the length of every array indexed by
+   * lexical state.
    *
    * @return The number of lexical states.
    */
@@ -378,8 +378,8 @@ public final class LexerState
   }
 
   /**
-   * The number of lexical states in the grammar, and therefore the length of every array indexed
-   * by lexical state.
+   * The number of lexical states in the grammar, and therefore the length of every array indexed by
+   * lexical state.
    *
    * @param nMaxLexStates
    *        The number of lexical states.
@@ -411,11 +411,12 @@ public final class LexerState
   }
 
   /**
-   * For each lexical state, the single characters that are skipped outright - a SKIP of exactly
-   * one character needs no automaton, the generated code just loops over them. The NfaState is a
-   * dummy that is used as a character set, not as part of the automaton.
+   * For each lexical state, the single characters that are skipped outright - a SKIP of exactly one
+   * character needs no automaton, the generated code just loops over them. The NfaState is a dummy
+   * that is used as a character set, not as part of the automaton.
    *
-   * @return The character sets, indexed by lexical state. May be <code>null</code> before generation starts.
+   * @return The character sets, indexed by lexical state. May be <code>null</code> before
+   *         generation starts.
    */
   public NfaState [] getSinglesToSkip ()
   {
@@ -423,9 +424,9 @@ public final class LexerState
   }
 
   /**
-   * For each lexical state, the single characters that are skipped outright - a SKIP of exactly
-   * one character needs no automaton, the generated code just loops over them. The NfaState is a
-   * dummy that is used as a character set, not as part of the automaton.
+   * For each lexical state, the single characters that are skipped outright - a SKIP of exactly one
+   * character needs no automaton, the generated code just loops over them. The NfaState is a dummy
+   * that is used as a character set, not as part of the automaton.
    *
    * @param aSinglesToSkip
    *        The character sets, indexed by lexical state.
@@ -554,7 +555,8 @@ public final class LexerState
    * The regular expression behind each token kind, indexed by ordinal. This is what an error
    * message needs to point back at the grammar.
    *
-   * @return The regular expressions, indexed by ordinal. May be <code>null</code> before generation starts.
+   * @return The regular expressions, indexed by ordinal. May be <code>null</code> before generation
+   *         starts.
    */
   public AbstractExpRegularExpression [] getRexprs ()
   {
@@ -574,11 +576,12 @@ public final class LexerState
   }
 
   /**
-   * How many 64 bit words the "which literals are still possible" bit vector needs in each
-   * lexical state, indexed by lexical state. It decides how many active0, active1 ... parameters
-   * the generated jjMoveStringLiteralDfa methods take.
+   * How many 64 bit words the "which literals are still possible" bit vector needs in each lexical
+   * state, indexed by lexical state. It decides how many active0, active1 ... parameters the
+   * generated jjMoveStringLiteralDfa methods take.
    *
-   * @return The word counts, indexed by lexical state. May be <code>null</code> before generation starts.
+   * @return The word counts, indexed by lexical state. May be <code>null</code> before generation
+   *         starts.
    */
   public int [] getMaxLongsReqd ()
   {
@@ -586,9 +589,9 @@ public final class LexerState
   }
 
   /**
-   * How many 64 bit words the "which literals are still possible" bit vector needs in each
-   * lexical state, indexed by lexical state. It decides how many active0, active1 ... parameters
-   * the generated jjMoveStringLiteralDfa methods take.
+   * How many 64 bit words the "which literals are still possible" bit vector needs in each lexical
+   * state, indexed by lexical state. It decides how many active0, active1 ... parameters the
+   * generated jjMoveStringLiteralDfa methods take.
    *
    * @param aMaxLongsReqd
    *        The word counts, indexed by lexical state.
@@ -602,7 +605,8 @@ public final class LexerState
    * The token kind that matches the empty string in each lexical state, indexed by lexical state.
    * Both 0 and {@link Integer#MAX_VALUE} mean there is none.
    *
-   * @return The ordinals, indexed by lexical state. May be <code>null</code> before generation starts.
+   * @return The ordinals, indexed by lexical state. May be <code>null</code> before generation
+   *         starts.
    */
   public int [] getInitMatch ()
   {
@@ -623,10 +627,11 @@ public final class LexerState
 
   /**
    * The lowest ordinal of a token kind that matches any character at all in each lexical state,
-   * indexed by lexical state, or -1 where there is none. Such a kind is the fallback the
-   * automaton falls through to.
+   * indexed by lexical state, or -1 where there is none. Such a kind is the fallback the automaton
+   * falls through to.
    *
-   * @return The ordinals, indexed by lexical state. May be <code>null</code> before generation starts.
+   * @return The ordinals, indexed by lexical state. May be <code>null</code> before generation
+   *         starts.
    */
   public int [] getCanMatchAnyChar ()
   {
@@ -635,8 +640,8 @@ public final class LexerState
 
   /**
    * The lowest ordinal of a token kind that matches any character at all in each lexical state,
-   * indexed by lexical state, or -1 where there is none. Such a kind is the fallback the
-   * automaton falls through to.
+   * indexed by lexical state, or -1 where there is none. Such a kind is the fallback the automaton
+   * falls through to.
    *
    * @param aCanMatchAnyChar
    *        The ordinals, indexed by lexical state.
@@ -691,8 +696,6 @@ public final class LexerState
   {
     m_aCanLoop = aCanLoop;
   }
-
-
 
   /**
    * Whether {@link #getCanLoop()} is set for any lexical state.
@@ -763,8 +766,8 @@ public final class LexerState
 
   /**
    * Whether each lexical state mixes case sensitive and IGNORE_CASE string literals, indexed by
-   * lexical state. The string literal DFA cannot be shared between the two, so a mixed state
-   * falls back to the NFA.
+   * lexical state. The string literal DFA cannot be shared between the two, so a mixed state falls
+   * back to the NFA.
    *
    * @return The flags, indexed by lexical state. May be <code>null</code> before generation starts.
    */
@@ -775,8 +778,8 @@ public final class LexerState
 
   /**
    * Whether each lexical state mixes case sensitive and IGNORE_CASE string literals, indexed by
-   * lexical state. The string literal DFA cannot be shared between the two, so a mixed state
-   * falls back to the NFA.
+   * lexical state. The string literal DFA cannot be shared between the two, so a mixed state falls
+   * back to the NFA.
    *
    * @param aMixed
    *        The flags, indexed by lexical state.
@@ -831,8 +834,8 @@ public final class LexerState
   }
 
   /**
-   * Whether any skipped token kind carries a lexical action or switches the lexical state, which
-   * is what decides whether the generated token manager needs a SkipLexicalActions method.
+   * Whether any skipped token kind carries a lexical action or switches the lexical state, which is
+   * what decides whether the generated token manager needs a SkipLexicalActions method.
    *
    * @return <code>true</code> if such a kind exists.
    */
@@ -842,8 +845,8 @@ public final class LexerState
   }
 
   /**
-   * Whether any skipped token kind carries a lexical action or switches the lexical state, which
-   * is what decides whether the generated token manager needs a SkipLexicalActions method.
+   * Whether any skipped token kind carries a lexical action or switches the lexical state, which is
+   * what decides whether the generated token manager needs a SkipLexicalActions method.
    *
    * @param bHasSkipActions
    *        <code>true</code> if such a kind exists.
@@ -1007,8 +1010,8 @@ public final class LexerState
   /**
    * A copy of the TOKEN_MGR_ERROR_CLASS option, taken when generation starts.
    *
-   * @return The class name the generated token manager throws. May be <code>null</code> before generation
-   *         starts.
+   * @return The class name the generated token manager throws. May be <code>null</code> before
+   *         generation starts.
    */
   public String getErrorHandlingClass ()
   {

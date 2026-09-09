@@ -115,8 +115,8 @@ public final class NfaBuildState
   }
 
   /**
-   * How many NFA states of the current lexical state have been given a number. This is the size
-   * the generated jjstateSet array needs.
+   * How many NFA states of the current lexical state have been given a number. This is the size the
+   * generated jjstateSet array needs.
    *
    * @return The number of numbered states.
    */
@@ -125,14 +125,11 @@ public final class NfaBuildState
     return m_nGeneratedStates;
   }
 
-
   /** {@return the current value, and increments it afterwards} */
   public int getAndIncGeneratedStates ()
   {
     return m_nGeneratedStates++;
   }
-
-
 
   /** {@return the current value, and increments it afterwards} */
   public int getAndIncIdCnt ()
@@ -141,8 +138,8 @@ public final class NfaBuildState
   }
 
   /**
-   * How many jjbitVec arrays have been emitted for non ASCII character tests. Each distinct 256
-   * bit vector gets one, and the counter names it.
+   * How many jjbitVec arrays have been emitted for non ASCII character tests. Each distinct 256 bit
+   * vector gets one, and the counter names it.
    *
    * @return The number of vectors emitted so far.
    */
@@ -150,7 +147,6 @@ public final class NfaBuildState
   {
     return m_nLoHiByteCnt;
   }
-
 
   /** {@return the current value, and increments it afterwards} */
   public int getAndIncLoHiByteCnt ()
@@ -182,8 +178,8 @@ public final class NfaBuildState
   }
 
   /**
-   * The termination flag of the epsilon move optimisation, which keeps merging states until a
-   * full pass changes nothing.
+   * The termination flag of the epsilon move optimisation, which keeps merging states until a full
+   * pass changes nothing.
    *
    * @return <code>true</code> when the last pass changed nothing.
    */
@@ -193,8 +189,8 @@ public final class NfaBuildState
   }
 
   /**
-   * The termination flag of the epsilon move optimisation, which keeps merging states until a
-   * full pass changes nothing.
+   * The termination flag of the epsilon move optimisation, which keeps merging states until a full
+   * pass changes nothing.
    *
    * @param bDone
    *        <code>true</code> when the last pass changed nothing.
@@ -228,8 +224,8 @@ public final class NfaBuildState
   }
 
   /**
-   * One flag per numbered state, telling {@code getStateSetString} which members of a state set
-   * are still live.
+   * One flag per numbered state, telling {@code getStateSetString} which members of a state set are
+   * still live.
    *
    * @return The flags, indexed by state number. May be <code>null</code> before generation starts.
    */
@@ -239,8 +235,8 @@ public final class NfaBuildState
   }
 
   /**
-   * One flag per numbered state, telling {@code getStateSetString} which members of a state set
-   * are still live.
+   * One flag per numbered state, telling {@code getStateSetString} which members of a state set are
+   * still live.
    *
    * @param aStateDone
    *        The flags, indexed by state number.
@@ -330,7 +326,6 @@ public final class NfaBuildState
     return m_aAllBitVectors;
   }
 
-
   /**
    * Scratch space collecting the jjbitVec indices of one state's character ranges while its
    * transition is being written.
@@ -342,7 +337,6 @@ public final class NfaBuildState
     return m_aTmpIndices;
   }
 
-
   /**
    * The initialiser of a bit vector with every bit set, kept here so that a state whose vector
    * matches it can be recognised and generated as an unconditional move.
@@ -353,7 +347,6 @@ public final class NfaBuildState
   {
     return m_sAllBits;
   }
-
 
   /**
    * How much of the generated jjnextStates array is in use. Every state set that goes in there
@@ -379,11 +372,11 @@ public final class NfaBuildState
   }
 
   /**
-   * For each lexical state, the token kind each numbered state matches. Filled in when the
-   * lexical state is generated and read again when the whole table is written out.
+   * For each lexical state, the token kind each numbered state matches. Filled in when the lexical
+   * state is generated and read again when the whole table is written out.
    *
-   * @return The kinds, indexed by lexical state and then by state number. May be <code>null</code> before
-   *   *         generation starts.
+   * @return The kinds, indexed by lexical state and then by state number. May be <code>null</code>
+   *         before * generation starts.
    */
   public int [] [] getKinds ()
   {
@@ -391,8 +384,8 @@ public final class NfaBuildState
   }
 
   /**
-   * For each lexical state, the token kind each numbered state matches. Filled in when the
-   * lexical state is generated and read again when the whole table is written out.
+   * For each lexical state, the token kind each numbered state matches. Filled in when the lexical
+   * state is generated and read again when the whole table is written out.
    *
    * @param aKinds
    *        The kinds, indexed by lexical state and then by state number.
@@ -403,11 +396,11 @@ public final class NfaBuildState
   }
 
   /**
-   * For each lexical state, the composite state sets each numbered state stands for. Filled in
-   * when the lexical state is generated and read again when the whole table is written out.
+   * For each lexical state, the composite state sets each numbered state stands for. Filled in when
+   * the lexical state is generated and read again when the whole table is written out.
    *
-   * @return The state sets, indexed by lexical state and then by state number. May be <code>null</code>
-   *   *         before generation starts.
+   * @return The state sets, indexed by lexical state and then by state number. May be
+   *         <code>null</code> * before generation starts.
    */
   public int [] [] [] getStatesForState ()
   {
@@ -415,8 +408,8 @@ public final class NfaBuildState
   }
 
   /**
-   * For each lexical state, the composite state sets each numbered state stands for. Filled in
-   * when the lexical state is generated and read again when the whole table is written out.
+   * For each lexical state, the composite state sets each numbered state stands for. Filled in when
+   * the lexical state is generated and read again when the whole table is written out.
    *
    * @param aStatesForState
    *        The state sets, indexed by lexical state and then by state number.
@@ -427,8 +420,8 @@ public final class NfaBuildState
   }
 
   /**
-   * The NFA states that carry a state number, indexed by that number. A state only gets one once
-   * it is reachable by a real character move, so this is a subset of {@link #getAllStates()}.
+   * The NFA states that carry a state number, indexed by that number. A state only gets one once it
+   * is reachable by a real character move, so this is a subset of {@link #getAllStates()}.
    *
    * @return The numbered states, indexed by state number. Never <code>null</code>.
    */
@@ -498,8 +491,8 @@ public final class NfaBuildState
   }
 
   /**
-   * The reverse of {@link #stateNameForComposite()}: the set of states each composite number
-   * stands for, keyed by the same string form.
+   * The reverse of {@link #stateNameForComposite()}: the set of states each composite number stands
+   * for, keyed by the same string form.
    *
    * @return The state numbers per state set string. Never <code>null</code>.
    */
@@ -511,8 +504,8 @@ public final class NfaBuildState
 
   /**
    * The state sets that are entered as a block rather than as a start state, used as a set - key
-   * and value are the same string. A block can be generated as one contiguous run of
-   * jjnextStates entries.
+   * and value are the same string. A block can be generated as one contiguous run of jjnextStates
+   * entries.
    *
    * @return The state set strings that are blocks. Never <code>null</code>.
    */

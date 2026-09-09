@@ -70,7 +70,7 @@ public final class ParserBuildState
 
   /**
    * {@return the compilation unit token list that is currently being filled. Never
-   *         <code>null</code>.}
+   * <code>null</code>.}
    */
   @NonNull
   public List <Token> getAddTokenHere ()
@@ -111,8 +111,8 @@ public final class ParserBuildState
   }
 
   /**
-   * {@return <code>true</code> once the parser class declaration has been seen, which is what
-   * makes a second one an error}
+   * {@return <code>true</code> once the parser class declaration has been seen, which is what makes
+   * a second one an error}
    */
   public boolean isInsertionPoint1Set ()
   {

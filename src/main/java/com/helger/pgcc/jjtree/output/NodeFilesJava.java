@@ -53,10 +53,10 @@ import com.helger.pgcc.output.OutputFile;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.utils.OutputFileGenerator;
 
-  /**
-   * The Java half of the JJTree output: Node, SimpleNode, one class per node type, the tree
-   * constants and the visitor interfaces.
-   */
+/**
+ * The Java half of the JJTree output: Node, SimpleNode, one class per node type, the tree constants
+ * and the visitor interfaces.
+ */
 @Immutable
 public final class NodeFilesJava
 {

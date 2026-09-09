@@ -40,9 +40,9 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.pgcc.context.PGCCContext;
 
-  /**
-   * The static facade over the JJTree part of the run state.
-   */
+/**
+ * The static facade over the JJTree part of the run state.
+ */
 public class JJTreeGlobals
 {
   /** Default constructor. */
@@ -87,8 +87,7 @@ public class JJTreeGlobals
   }
 
   /**
-   * Whether an option is one JJTree handles itself rather than passing on to the parser
-   * generator.
+   * Whether an option is one JJTree handles itself rather than passing on to the parser generator.
    *
    * @param sOptionName
    *        The option name. May not be <code>null</code>.

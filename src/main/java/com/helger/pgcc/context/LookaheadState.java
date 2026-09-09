@@ -62,7 +62,7 @@ public final class LookaheadState
 
   /**
    * {@return how many tokens deep the current lookahead computation goes. 0 if no computation is
-   *         running.}
+   * running.}
    */
   public int getLimit ()
   {
@@ -102,7 +102,7 @@ public final class LookaheadState
 
   /**
    * {@return the matches that reached the lookahead limit. <code>null</code> if they are not being
-   *         collected.}
+   * collected.}
    */
   @Nullable
   public List <MatchInfo> getSizeLimitedMatches ()

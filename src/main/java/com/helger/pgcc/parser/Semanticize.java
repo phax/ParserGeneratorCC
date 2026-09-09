@@ -47,10 +47,10 @@ import org.jspecify.annotations.Nullable;
 import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.exp.*;
 
-  /**
-   * The checks that a grammar which parses also makes sense: every production is defined, no
-   * token is unreachable, no loop can match the empty string.
-   */
+/**
+ * The checks that a grammar which parses also makes sense: every production is defined, no token is
+ * unreachable, no loop can match the empty string.
+ */
 public class Semanticize
 {
   /** Default constructor. */

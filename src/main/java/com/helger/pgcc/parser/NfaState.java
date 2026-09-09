@@ -64,7 +64,7 @@ public class NfaState
 {
   /**
    * {@return the build state of the lexical state that is currently being generated. Never
-   *         <code>null</code>.}
+   * <code>null</code>.}
    */
   public static TokenizerDataBuildState tokenizerBuild ()
   {
@@ -120,8 +120,8 @@ public class NfaState
   private boolean m_bClosureDone = false;
 
   /**
-   * Create a state and register it with the automaton of the lexical state that is currently
-   * being built. The state's id is its position in {@link NfaBuildState#getAllStates()}.
+   * Create a state and register it with the automaton of the lexical state that is currently being
+   * built. The state's id is its position in {@link NfaBuildState#getAllStates()}.
    */
   public NfaState ()
   {
@@ -1469,8 +1469,8 @@ public class NfaState
   }
 
   /**
-   * {@return the state number the generated automaton starts a match in, or -1 if the lexical
-   * state has no NFA at all}
+   * {@return the state number the generated automaton starts a match in, or -1 if the lexical state
+   * has no NFA at all}
    */
   public static int initStateName ()
   {
@@ -1567,8 +1567,8 @@ public class NfaState
   }
 
   /**
-   * Turn a set of states into the string that identifies it in the tables of {@link
-   * com.helger.pgcc.context.NfaBuildState}, registering the set on the way.
+   * Turn a set of states into the string that identifies it in the tables of
+   * {@link com.helger.pgcc.context.NfaBuildState}, registering the set on the way.
    *
    * @param aStates
    *        The states. May be <code>null</code>.
@@ -2287,7 +2287,9 @@ public class NfaState
       aCodeGenerator.genCodeLine ("                  }");
   }
 
-  private void _dumpAsciiMove (@NonNull final AbstractCodeGenerator aCodeGenerator, final int nByteNum, final boolean dumped[])
+  private void _dumpAsciiMove (@NonNull final AbstractCodeGenerator aCodeGenerator,
+                               final int nByteNum,
+                               final boolean dumped[])
   {
     final NfaBuildState aNfa = nfa ();
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
@@ -2873,8 +2875,7 @@ public class NfaState
   }
 
   /**
-   * Write the character tests of every state of the current lexical state that matches above
-   * ASCII.
+   * Write the character tests of every state of the current lexical state that matches above ASCII.
    *
    * @param aCodeGenerator
    *        The generator to write to. May not be <code>null</code>.
@@ -2973,12 +2974,12 @@ public class NfaState
                                             eOutputLanguage.getTypeBoolean (),
                                             LexGenJava.lexer ().getTokenMgrClassName (),
                                             "jjCanMove_" +
-                                                           m_nNonAsciiMethod +
-                                                           "(int hiByte, int i1, int i2, " +
-                                                           eOutputLanguage.getTypeLong () +
-                                                           " l1, " +
-                                                           eOutputLanguage.getTypeLong () +
-                                                           " l2)");
+                                                                                         m_nNonAsciiMethod +
+                                                                                         "(int hiByte, int i1, int i2, " +
+                                                                                         eOutputLanguage.getTypeLong () +
+                                                                                         " l1, " +
+                                                                                         eOutputLanguage.getTypeLong () +
+                                                                                         " l2)");
     aCodeGenerator.genCodeLine ("{");
     aCodeGenerator.genCodeLine ("   switch(hiByte)");
     aCodeGenerator.genCodeLine ("   {");
@@ -3258,8 +3259,8 @@ public class NfaState
   }
 
   /**
-   * Write the jjMoveNfa method of the current lexical state, the loop that runs the automaton
-   * over the input.
+   * Write the jjMoveNfa method of the current lexical state, the loop that runs the automaton over
+   * the input.
    *
    * @param aCodeGenerator
    *        The generator to write to. May not be <code>null</code>.
@@ -3324,8 +3325,9 @@ public class NfaState
     aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
                                             LexGenJava.lexer ().getTokenMgrClassName (),
                                             "jjMoveNfa" +
-                                                         LexGenJava.lexer ().getLexStateSuffix () +
-                                                         "(int startState, int curPos)");
+                                                                                         LexGenJava.lexer ()
+                                                                                                   .getLexStateSuffix () +
+                                                                                         "(int startState, int curPos)");
     aCodeGenerator.genCodeLine ("{");
     if (aNfa.getGeneratedStates () == 0)
     {
@@ -3644,8 +3646,8 @@ public class NfaState
   }
 
   /**
-   * Write the Java form of the table that maps a state number to the composite state set it
-   * stands for.
+   * Write the Java form of the table that maps a state number to the composite state set it stands
+   * for.
    *
    * @param aCodeGenerator
    *        The generator to write to. May not be <code>null</code>.
@@ -3699,8 +3701,7 @@ public class NfaState
   }
 
   /**
-   * Write the table that maps a state number to the token kind it matches, for every lexical
-   * state.
+   * Write the table that maps a state number to the token kind it matches, for every lexical state.
    *
    * @param aCodeGenerator
    *        The generator to write to. May not be <code>null</code>.

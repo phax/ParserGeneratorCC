@@ -109,7 +109,7 @@ public final class JJTreeState
 
   /**
    * {@return the node ids already recorded, so that a repeated descriptor is only counted once.
-   *         Never <code>null</code>.}
+   * Never <code>null</code>.}
    */
   @NonNull
   public Map <String, String> nodeSeen ()
@@ -146,7 +146,7 @@ public final class JJTreeState
 
   /**
    * {@return the header file names to be included from the generated JJTree header. Never
-   *         <code>null</code>.}
+   * <code>null</code>.}
    */
   @NonNull
   public List <String> headersForJJTreeH ()
@@ -162,8 +162,7 @@ public final class JJTreeState
   }
 
   /**
-   * {@return the name of the parser JJTree is generating for, from the PARSER_BEGIN of the
-   * grammar}
+   * {@return the name of the parser JJTree is generating for, from the PARSER_BEGIN of the grammar}
    */
   @Nullable
   public String getParserName ()
@@ -201,8 +200,8 @@ public final class JJTreeState
   }
 
   /**
-   * {@return the package of the generated node classes, which is <code>NODE_PACKAGE</code> if it was
-   *         set and the parser's package otherwise. Never <code>null</code>, but maybe empty.}
+   * {@return the package of the generated node classes, which is <code>NODE_PACKAGE</code> if it
+   * was set and the parser's package otherwise. Never <code>null</code>, but maybe empty.}
    */
   @NonNull
   public String getNodePackageName ()
@@ -229,8 +228,8 @@ public final class JJTreeState
   }
 
   /**
-   * Record where the implements clause of the parser class begins, so that the generated parser
-   * can be made to implement the visitor interface as well.
+   * Record where the implements clause of the parser class begins, so that the generated parser can
+   * be made to implement the visitor interface as well.
    *
    * @param aToken
    *        The token the clause starts at. May be <code>null</code> if there is no clause.
@@ -267,8 +266,8 @@ public final class JJTreeState
   }
 
   /**
-   * Record where the import section of the grammar ends, so that JJTree can add the imports its
-   * own output needs.
+   * Record where the import section of the grammar ends, so that JJTree can add the imports its own
+   * output needs.
    *
    * @param aToken
    *        The token after the last import. May be <code>null</code>.

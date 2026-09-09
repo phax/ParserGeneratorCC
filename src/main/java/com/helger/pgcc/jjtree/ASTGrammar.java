@@ -39,9 +39,9 @@ import com.helger.pgcc.jjtree.output.NodeFilesCpp;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.parser.Options;
 
-  /**
-   * The root of the tree JJTree builds for the grammar it is reading.
-   */
+/**
+ * The root of the tree JJTree builds for the grammar it is reading.
+ */
 public class ASTGrammar extends JJTreeNode
 {
   ASTGrammar (final int nID)

@@ -112,7 +112,6 @@ public final class JJDocMain
    *
    * @param aArgs
    *        Cmdline args
-   *
    * @throws Exception
    *         in case of error
    */

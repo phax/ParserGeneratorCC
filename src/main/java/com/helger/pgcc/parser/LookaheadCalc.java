@@ -54,10 +54,9 @@ import com.helger.pgcc.parser.exp.ExpZeroOrMore;
 import com.helger.pgcc.parser.exp.ExpZeroOrOne;
 import com.helger.pgcc.parser.exp.Expansion;
 
-  /**
-   * Works out how much lookahead each choice needs, and warns about the ones that cannot be
-   * decided.
-   */
+/**
+ * Works out how much lookahead each choice needs, and warns about the ones that cannot be decided.
+ */
 public final class LookaheadCalc
 {
   private LookaheadCalc ()
@@ -312,8 +311,8 @@ public final class LookaheadCalc
   }
 
   /**
-   * Check a loop or an optional expansion against what can follow it, and report the case where
-   * the two cannot be told apart.
+   * Check a loop or an optional expansion against what can follow it, and report the case where the
+   * two cannot be told apart.
    *
    * @param aExp
    *        The expansion. May not be <code>null</code>.

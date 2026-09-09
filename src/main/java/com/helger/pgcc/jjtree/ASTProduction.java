@@ -40,9 +40,9 @@ import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
 
-  /**
-   * A production of the grammar, and the node scopes opened inside it.
-   */
+/**
+ * A production of the grammar, and the node scopes opened inside it.
+ */
 public class ASTProduction extends JJTreeNode
 {
   /**

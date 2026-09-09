@@ -182,7 +182,12 @@ public class OtherFilesGenCpp
         for (int i = 0; i < AbstractLexGenJavaLike.lexer ().getLexStateName ().length; i++)
         {
           s_ostr.println ("  /** Lexical state. */");
-          s_ostr.println (sConstPrefix + "  int " + AbstractLexGenJavaLike.lexer ().getLexStateName ()[i] + " = " + i + ";");
+          s_ostr.println (sConstPrefix +
+                          "  int " +
+                          AbstractLexGenJavaLike.lexer ().getLexStateName ()[i] +
+                          " = " +
+                          i +
+                          ";");
         }
         s_ostr.println ("");
       }

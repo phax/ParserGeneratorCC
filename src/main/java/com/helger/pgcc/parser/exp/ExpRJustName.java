@@ -78,8 +78,8 @@ public final class ExpRJustName extends AbstractExpRegularExpression
   }
 
   /**
-   * Create a reference to a token declared elsewhere, which is resolved once the whole grammar
-   * has been read.
+   * Create a reference to a token declared elsewhere, which is resolved once the whole grammar has
+   * been read.
    *
    * @param aToken
    *        The token it was written at, for error messages. May not be <code>null</code>.

@@ -47,10 +47,10 @@ import com.helger.pgcc.jjtree.output.NodeFilesJava;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.Options;
 
-  /**
-   * JJTree: read a .jjt, turn its node annotations into code, and write the .jj that the parser
-   * generator then reads.
-   */
+/**
+ * JJTree: read a .jjt, turn its node annotations into code, and write the .jj that the parser
+ * generator then reads.
+ */
 public class JJTree
 {
   /** Default constructor. */

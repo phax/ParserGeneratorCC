@@ -108,7 +108,7 @@ public final class ProcessState
 
   /**
    * {@return <code>true</code> if the templates are read from the class path, <code>false</code> if
-   *         they are read from the file system of this checkout.}
+   * they are read from the file system of this checkout.}
    */
   public boolean isReadTemplatesFromClassPath ()
   {

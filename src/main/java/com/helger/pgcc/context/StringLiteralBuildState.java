@@ -139,9 +139,9 @@ public final class StringLiteralBuildState
   }
 
   /**
-   * The trie of the string literals of the current lexical state: one entry per character
-   * position, each mapping a character to the kinds that can still match after it. This is what
-   * the generated jjMoveStringLiteralDfa chain is built from.
+   * The trie of the string literals of the current lexical state: one entry per character position,
+   * each mapping a character to the kinds that can still match after it. This is what the generated
+   * jjMoveStringLiteralDfa chain is built from.
    *
    * @return The trie, indexed by character position. Never <code>null</code>.
    */
@@ -149,7 +149,6 @@ public final class StringLiteralBuildState
   {
     return m_aCharPosKind;
   }
-
 
   /**
    * The length of the longest string literal in each 64 kind block, indexed by
@@ -162,7 +161,6 @@ public final class StringLiteralBuildState
   {
     return m_aMaxLenForActive;
   }
-
 
   /**
    * The image of every string literal, indexed by ordinal, or <code>null</code> where the kind is
@@ -189,11 +187,11 @@ public final class StringLiteralBuildState
 
   /**
    * For each string literal and each position in it, the lowest kind that a shorter literal would
-   * already have matched there. It is what lets the generated DFA remember a shorter match while
-   * it keeps looking for a longer one.
+   * already have matched there. It is what lets the generated DFA remember a shorter match while it
+   * keeps looking for a longer one.
    *
-   * @return The kinds, indexed by ordinal and then by position. May be <code>null</code> before generation
-   *   *         starts.
+   * @return The kinds, indexed by ordinal and then by position. May be <code>null</code> before
+   *         generation * starts.
    */
   public int [] [] getIntermediateKinds ()
   {
@@ -202,8 +200,8 @@ public final class StringLiteralBuildState
 
   /**
    * For each string literal and each position in it, the lowest kind that a shorter literal would
-   * already have matched there. It is what lets the generated DFA remember a shorter match while
-   * it keeps looking for a longer one.
+   * already have matched there. It is what lets the generated DFA remember a shorter match while it
+   * keeps looking for a longer one.
    *
    * @param aIntermediateKinds
    *        The kinds, indexed by ordinal and then by position.
@@ -218,7 +216,7 @@ public final class StringLiteralBuildState
    * indexing.
    *
    * @return The positions, indexed by ordinal and then by position. May be <code>null</code> before
-   *   *         generation starts.
+   *         * generation starts.
    */
   public int [] [] getIntermediateMatchedPos ()
   {
@@ -239,8 +237,8 @@ public final class StringLiteralBuildState
 
   /**
    * Whether each string literal is a prefix of some other literal in the same lexical state,
-   * indexed by ordinal. One that is not can be accepted the moment it matches. A mixed case
-   * lexical state marks all of them, because the optimisation does not hold there.
+   * indexed by ordinal. One that is not can be accepted the moment it matches. A mixed case lexical
+   * state marks all of them, because the optimisation does not hold there.
    *
    * @return The flags, indexed by ordinal. May be <code>null</code> before generation starts.
    */
@@ -251,8 +249,8 @@ public final class StringLiteralBuildState
 
   /**
    * Whether each string literal is a prefix of some other literal in the same lexical state,
-   * indexed by ordinal. One that is not can be accepted the moment it matches. A mixed case
-   * lexical state marks all of them, because the optimisation does not hold there.
+   * indexed by ordinal. One that is not can be accepted the moment it matches. A mixed case lexical
+   * state marks all of them, because the optimisation does not hold there.
    *
    * @param aSubString
    *        The flags, indexed by ordinal.
@@ -286,9 +284,9 @@ public final class StringLiteralBuildState
   }
 
   /**
-   * For each position in the literals, the NFA state sets that a match can continue into, keyed
-   * by the string form of the set. This is what the generated jjStopStringLiteralDfa methods
-   * hand back to the NFA.
+   * For each position in the literals, the NFA state sets that a match can continue into, keyed by
+   * the string form of the set. This is what the generated jjStopStringLiteralDfa methods hand back
+   * to the NFA.
    *
    * @return The state sets, indexed by position. May be <code>null</code> before generation starts.
    */
@@ -298,9 +296,9 @@ public final class StringLiteralBuildState
   }
 
   /**
-   * For each position in the literals, the NFA state sets that a match can continue into, keyed
-   * by the string form of the set. This is what the generated jjStopStringLiteralDfa methods
-   * hand back to the NFA.
+   * For each position in the literals, the NFA state sets that a match can continue into, keyed by
+   * the string form of the set. This is what the generated jjStopStringLiteralDfa methods hand back
+   * to the NFA.
    *
    * @param aStatesForPos
    *        The state sets, indexed by position.

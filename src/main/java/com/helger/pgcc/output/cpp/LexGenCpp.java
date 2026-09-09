@@ -313,7 +313,6 @@ public class LexGenCpp extends AbstractLexGenJavaLike
     lexer ().setCanReachOnMore (new boolean [lexer ().getMaxLexStates ()]);
   }
 
-
   /**
    * Write the token manager.
    *

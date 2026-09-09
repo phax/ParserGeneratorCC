@@ -40,10 +40,10 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.pgcc.context.PGCCContext;
 
-  /**
-   * A node descriptor - the <code>#Name</code> or <code>#Name(expr)</code> that says which node a
-   * production builds and when.
-   */
+/**
+ * A node descriptor - the <code>#Name</code> or <code>#Name(expr)</code> that says which node a
+ * production builds and when.
+ */
 public class ASTNodeDescriptor extends JJTreeNode
 {
   static ASTNodeDescriptor indefinite (final String s)
@@ -105,8 +105,8 @@ public class ASTNodeDescriptor extends JJTreeNode
   }
 
   /**
-   * Whether the descriptor was written as <code>#Name(&gt;expr)</code>, which means the
-   * expression counts children rather than deciding whether to build the node at all.
+   * Whether the descriptor was written as <code>#Name(&gt;expr)</code>, which means the expression
+   * counts children rather than deciding whether to build the node at all.
    */
   private boolean m_bIsGT;
 

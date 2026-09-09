@@ -35,9 +35,9 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
-  /**
-   * One <code>name = value</code> line of the options block.
-   */
+/**
+ * One <code>name = value</code> line of the options block.
+ */
 public class ASTOptionBinding extends JJTreeNode
 {
   /**

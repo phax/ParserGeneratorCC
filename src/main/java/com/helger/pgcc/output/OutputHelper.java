@@ -45,9 +45,9 @@ import com.helger.pgcc.CPG;
 import com.helger.pgcc.PGVersion;
 import com.helger.pgcc.parser.Options;
 
-  /**
-   * Small helpers shared by the emitters of both languages.
-   */
+/**
+ * Small helpers shared by the emitters of both languages.
+ */
 public class OutputHelper
 {
   private OutputHelper ()

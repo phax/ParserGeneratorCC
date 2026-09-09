@@ -60,15 +60,15 @@ import com.helger.pgcc.parser.exp.ExpZeroOrMore;
 import com.helger.pgcc.parser.exp.ExpZeroOrOne;
 import com.helger.pgcc.parser.exp.Expansion;
 
-  /**
-   * Turns the productions of the grammar into the methods of the generated parser, deciding at
-   * every choice point how to tell the alternatives apart.
-   */
+/**
+ * Turns the productions of the grammar into the methods of the generated parser, deciding at every
+ * choice point how to tell the alternatives apart.
+ */
 public class ParseEngine
 {
   /**
-   * {@return the syntax of the target language, so that the engine says what it wants emitted rather
-   *         than switching on the language at every spot.}
+   * {@return the syntax of the target language, so that the engine says what it wants emitted
+   * rather than switching on the language at every spot.}
    */
   @NonNull
   private int m_nGenSymbolIndex = 0;

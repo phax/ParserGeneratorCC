@@ -35,9 +35,9 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
-  /**
-   * A JAVACODE production, whose body is Java rather than a grammar expansion.
-   */
+/**
+ * A JAVACODE production, whose body is Java rather than a grammar expansion.
+ */
 public class ASTJavacode extends ASTProduction
 {
   /**

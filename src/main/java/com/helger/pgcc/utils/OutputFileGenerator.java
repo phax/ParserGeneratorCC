@@ -109,9 +109,8 @@ public class OutputFileGenerator
   }
 
   /**
-   * Choose where the template comes from. Reading from the classpath is what a released jar
-   * needs; a test that has to see the template in the checkout reads from the file system
-   * instead.
+   * Choose where the template comes from. Reading from the classpath is what a released jar needs;
+   * a test that has to see the template in the checkout reads from the file system instead.
    *
    * @param bReadFromClasspath
    *        <code>true</code> to read from the classpath.
@@ -129,7 +128,6 @@ public class OutputFileGenerator
    *
    * @param aOut
    *        writer
-   *
    * @throws IOException
    *         on IO error
    */
@@ -373,7 +371,6 @@ public class OutputFileGenerator
    *
    * @param aArgs
    *        The template file and the output file. May not be <code>null</code>.
-   *
    * @throws Exception
    *         if the template cannot be read or the output cannot be written
    */
@@ -401,7 +398,6 @@ public class OutputFileGenerator
    *        The file to write. May not be <code>null</code>.
    * @param aOutputCharset
    *        The encoding to write it in. May not be <code>null</code>.
-   *
    * @throws IOException
    *         if the template cannot be read or the file cannot be written
    */

@@ -54,10 +54,10 @@ import com.helger.pgcc.output.cpp.OtherFilesGenCpp;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.utils.OutputFileGenerator;
 
-  /**
-   * The C++ half of the JJTree output: Node.h, SimpleNode, one class per node type, the tree
-   * constants and the visitor interfaces.
-   */
+/**
+ * The C++ half of the JJTree output: Node.h, SimpleNode, one class per node type, the tree
+ * constants and the visitor interfaces.
+ */
 @Immutable
 public final class NodeFilesCpp
 {
@@ -70,8 +70,8 @@ public final class NodeFilesCpp
   private static final String NODE_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
   /**
-   * Note that a node type is in use, so that a class gets generated for it. Node and SimpleNode
-   * are ignored because they are written out anyway.
+   * Note that a node type is in use, so that a class gets generated for it. Node and SimpleNode are
+   * ignored because they are written out anyway.
    *
    * @param sType
    *        The node class name. May not be <code>null</code>.
@@ -727,7 +727,6 @@ public final class NodeFilesCpp
    *        The values the template substitutes. May not be <code>null</code>.
    * @param bClose
    *        <code>true</code> to close the file afterwards.
-   *
    * @throws IOException
    *         if the template cannot be read or the file cannot be written
    */

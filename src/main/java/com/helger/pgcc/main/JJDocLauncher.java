@@ -48,7 +48,6 @@ public final class JJDocLauncher
    *
    * @param aArgs
    *        The command line arguments. May not be <code>null</code>.
-   *
    * @throws Exception
    *         on any failure
    */

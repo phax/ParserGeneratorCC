@@ -35,9 +35,9 @@ package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
 
-  /**
-   * The options block of the grammar.
-   */
+/**
+ * The options block of the grammar.
+ */
 public class ASTOptions extends JJTreeNode
 {
   /**

@@ -37,10 +37,10 @@ import org.jspecify.annotations.NonNull;
 
 import org.jspecify.annotations.Nullable;
 
-  /**
-   * One node built by a production, and everything the generated code needs to build it: the
-   * variable names, the child count and the point at which the node is closed.
-   */
+/**
+ * One node built by a production, and everything the generated code needs to build it: the variable
+ * names, the child count and the point at which the node is closed.
+ */
 public class NodeScope
 {
   private ASTProduction m_aProduction;

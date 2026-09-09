@@ -47,11 +47,11 @@ import com.helger.base.rt.StackTraceHelper;
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.context.ProcessState;
 
-  /**
-   * Everything the generator prints for a human to read. Routing it through here rather than
-   * through System.out is what lets a caller that embeds the generator - the Maven plugin, a test
-   * - collect the output instead of having it land on the console.
-   */
+/**
+ * Everything the generator prints for a human to read. Routing it through here rather than through
+ * System.out is what lets a caller that embeds the generator - the Maven plugin, a test - collect
+ * the output instead of having it land on the console.
+ */
 public final class PGPrinter
 {
   /**
@@ -60,34 +60,33 @@ public final class PGPrinter
    */
   public interface IPrinter extends AutoCloseable, Flushable
   {
-  /**
-   * Print one line.
-   *
-   * @param s
-   *        The line, without a line break. May not be <code>null</code>.
-   */
+    /**
+     * Print one line.
+     *
+     * @param s
+     *        The line, without a line break. May not be <code>null</code>.
+     */
     void println (@NonNull String s);
 
     void flush ();
   }
 
   /**
-   * An {@link IPrinter} writing to a {@link PrintStream}, which is what the command line
-   * installs.
+   * An {@link IPrinter} writing to a {@link PrintStream}, which is what the command line installs.
    */
   public static final class PSPrinter implements IPrinter
   {
     private final PrintStream m_aPS;
     private final boolean m_bCanClose;
 
-  /**
-   * Create a printer for one stream.
-   *
-   * @param aPS
-   *        The stream to write to. May not be <code>null</code>.
-   * @param bCanClose
-   *        <code>false</code> for a stream this printer does not own, System.out above all.
-   */
+    /**
+     * Create a printer for one stream.
+     *
+     * @param aPS
+     *        The stream to write to. May not be <code>null</code>.
+     * @param bCanClose
+     *        <code>false</code> for a stream this printer does not own, System.out above all.
+     */
     public PSPrinter (@NonNull final PrintStream aPS, final boolean bCanClose)
     {
       m_aPS = aPS;
