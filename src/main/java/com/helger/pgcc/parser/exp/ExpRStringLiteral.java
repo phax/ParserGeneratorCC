@@ -566,8 +566,8 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   {
     final AbstractExpRegularExpression aRe = AbstractLexGenJavaLike.lexer ().getRexprs ()[nKind];
 
-    if (aRe instanceof ExpRStringLiteral)
-      return " \"" + JavaCCGlobals.addEscapes (((ExpRStringLiteral) aRe).m_sImage) + "\"";
+    if (aRe instanceof final ExpRStringLiteral aRStringLiteral)
+      return " \"" + JavaCCGlobals.addEscapes (aRStringLiteral.m_sImage) + "\"";
     if (aRe.hasLabel ())
       return " <" + aRe.getLabel () + ">";
     return " <token of kind " + nKind + ">";

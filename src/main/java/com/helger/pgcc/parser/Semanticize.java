@@ -1100,9 +1100,9 @@ public class Semanticize
 
     public void action (final Expansion e)
     {
-      if (e instanceof ExpOneOrMore)
+      if (e instanceof final ExpOneOrMore aOneOrMore)
       {
-        if (Semanticize.emptyExpansionExists (((ExpOneOrMore) e).getExpansion ()))
+        if (Semanticize.emptyExpansionExists (aOneOrMore.getExpansion ()))
         {
           JavaCCErrors.semanticError (e, "Expansion within \"(...)+\" can be matched by empty string.");
         }
@@ -1141,11 +1141,11 @@ public class Semanticize
 
     public void action (final Expansion e)
     {
-      if (e instanceof ExpChoice)
+      if (e instanceof final ExpChoice aChoice)
       {
         if (Options.getLookahead () == 1 || Options.isForceLaCheck ())
         {
-          LookaheadCalc.choiceCalc ((ExpChoice) e);
+          LookaheadCalc.choiceCalc (aChoice);
         }
       }
       else

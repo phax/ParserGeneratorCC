@@ -61,6 +61,10 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 # News and noteworthy
 
 v3.0.0 - 2026-06-09
+* The remaining `instanceof` tests that were followed by a cast use pattern matching now, in `ParseEngine`, `Semanticize`, `ExpRCharacterList`, `ExpRChoice`, `ExpRStringLiteral`, `JJDoc`, `LexGenCpp` and `Options`.
+  `LexGenCpp` had three casts of `lexer ().getCurRE ()` in one condition where the Java backend already had one binding, so the two backends read alike again.
+  This also removes a latent `ClassCastException` in `Options.setInputFileOption`, which tested `aObject instanceof Integer` but cast `aRealSrc`; only `&&` short circuiting kept it unreachable, because the grammar can produce a `List<String>` but never a `List<Integer>`.
+  The action blocks in `JavaCC.jj` and `ConditionParser.jj` keep their casts on purpose - the Java grammar the generator parses them with has no production for `instanceof Type name`
 * The reworked classes declare their members in one consistent order: nested types, then the fields, then the constructor, then the instance methods, with the static factory methods last.
   `PGCCContext.current ()`, `PGCCContext.reset ()` and `ProcessState.getInstance ()` moved to the end of their class, matching `LookaheadState.current ()`, and `TokenizerData`'s three nested types moved above the fields whose types they are.
   Pure reordering; no API and no behaviour change

@@ -1748,9 +1748,9 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
           final StringBuilder aSB = new StringBuilder ("Before:");
           for (int i = 0; i < m_aDescriptors.size (); i++)
           {
-            if (m_aDescriptors.get (i) instanceof SingleCharacter)
+            if (m_aDescriptors.get (i) instanceof final SingleCharacter aSingleChar)
             {
-              final char c = ((SingleCharacter) m_aDescriptors.get (i)).getChar ();
+              final char c = aSingleChar.getChar ();
               aSB.append ((int) c + " ");
             }
             else
@@ -1774,9 +1774,9 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
           final StringBuilder aSB = new StringBuilder ("After:");
           for (int i = 0; i < m_aDescriptors.size (); i++)
           {
-            if (m_aDescriptors.get (i) instanceof SingleCharacter)
+            if (m_aDescriptors.get (i) instanceof final SingleCharacter aSingleChar)
             {
-              final char c = ((SingleCharacter) m_aDescriptors.get (i)).getChar ();
+              final char c = aSingleChar.getChar ();
               aSB.append ((int) c + " ");
             }
             else
@@ -1814,8 +1814,8 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
     for (i = 0; i < m_aDescriptors.size (); i++)
     {
       final ICCCharacter aTmp = m_aDescriptors.get (i);
-      if (aTmp instanceof SingleCharacter)
-        aStartState.addChar (((SingleCharacter) aTmp).getChar ());
+      if (aTmp instanceof final SingleCharacter aSingleChar)
+        aStartState.addChar (aSingleChar.getChar ());
       // if (descriptors.get(i) instanceof CharacterRange)
       else
       {
@@ -1847,16 +1847,15 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
 
     Outer: for (int i = 0; i < m_aDescriptors.size (); i++)
     {
-      if (m_aDescriptors.get (i) instanceof SingleCharacter)
+      if (m_aDescriptors.get (i) instanceof final SingleCharacter s)
       {
-        final SingleCharacter s = (SingleCharacter) m_aDescriptors.get (i);
 
         for (j = 0; j < nCnt; j++)
         {
           final ICCCharacter aTmp2 = aNewDesc.get (j);
-          if (aTmp2 instanceof SingleCharacter)
+          if (aTmp2 instanceof final SingleCharacter aSingleChar)
           {
-            final char c = ((SingleCharacter) aTmp2).getChar ();
+            final char c = aSingleChar.getChar ();
             if (c > s.getChar ())
               break;
             else
@@ -1885,9 +1884,9 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
         for (j = 0; j < nCnt; j++)
         {
           final ICCCharacter aTmp2 = aNewDesc.get (j);
-          if (aTmp2 instanceof SingleCharacter)
+          if (aTmp2 instanceof final SingleCharacter aSingleChar)
           {
-            final char c = ((SingleCharacter) aTmp2).getChar ();
+            final char c = aSingleChar.getChar ();
             final CharacterRange aRange1 = aRange;
             if (aRange1.isInRange (c))
             {
@@ -1948,9 +1947,9 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
       final StringBuilder aSB = new StringBuilder ("REM. NEG Before:");
       for (final ICCCharacter m_descriptor : m_aDescriptors)
       {
-        if (m_descriptor instanceof SingleCharacter)
+        if (m_descriptor instanceof final SingleCharacter aSingleChar)
         {
-          final char c = ((SingleCharacter) m_descriptor).getChar ();
+          final char c = aSingleChar.getChar ();
           aSB.append ((int) c + " ");
         }
         else
@@ -1970,9 +1969,9 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
     for (int i = 0; i < m_aDescriptors.size (); i++)
     {
       final ICCCharacter aTmp = m_aDescriptors.get (i);
-      if (aTmp instanceof SingleCharacter)
+      if (aTmp instanceof final SingleCharacter aSingleChar)
       {
-        final char c = ((SingleCharacter) aTmp).getChar ();
+        final char c = aSingleChar.getChar ();
 
         if (c >= 0 && c <= nLastRemoved + 1)
         {
@@ -2024,9 +2023,9 @@ public final class ExpRCharacterList extends AbstractExpRegularExpression
       final StringBuilder aSB = new StringBuilder ("REM. NEG After:");
       for (final ICCCharacter m_descriptor : m_aDescriptors)
       {
-        if (m_descriptor instanceof SingleCharacter)
+        if (m_descriptor instanceof final SingleCharacter aSingleChar)
         {
-          final char c = ((SingleCharacter) m_descriptor).getChar ();
+          final char c = aSingleChar.getChar ();
           aSB.append ((int) c + " ");
         }
         else

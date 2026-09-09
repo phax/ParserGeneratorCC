@@ -203,11 +203,10 @@ public final class JJDoc
       if (np instanceof BNFProduction)
       {
         aGen.productionStart (np);
-        if (np.getExpansion () instanceof ExpChoice)
+        if (np.getExpansion () instanceof final ExpChoice aChoice)
         {
           boolean bFirst = true;
-          final ExpChoice c = (ExpChoice) np.getExpansion ();
-          for (final Expansion e : c.getChoices ())
+          for (final Expansion e : aChoice.getChoices ())
           {
             aGen.expansionStart (e, bFirst);
             _emitExpansionTree (e, aGen);

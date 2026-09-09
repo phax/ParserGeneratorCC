@@ -151,7 +151,7 @@ public class ParseEngine
       for (int i = 0; i < seq.getUnitCount (); i++)
       {
         final Expansion aUnit = seq.getUnitAt (i);
-        if (aUnit instanceof ExpLookahead && ((ExpLookahead) aUnit).isExplicit ())
+        if (aUnit instanceof final ExpLookahead aLookahead && aLookahead.isExplicit ())
         {
           // An explicit lookahead (rather than one generated implicitly).
           // Assume
@@ -226,7 +226,7 @@ public class ParseEngine
           if (aExp instanceof final ExpSequence seq)
           {
             final Object aObj = seq.getUnitAt (0);
-            if (aObj instanceof ExpLookahead && ((ExpLookahead) aObj).getActionTokens ().isNotEmpty ())
+            if (aObj instanceof final ExpLookahead aLookahead && aLookahead.getActionTokens ().isNotEmpty ())
             {
               m_bJJ2LA = true;
             }
@@ -238,12 +238,11 @@ public class ParseEngine
               // for the preceding LOOKAHEAD (the semantic checks should have
               // made sure that
               // the LOOKAHEAD is suitable).
-              if (aUnit instanceof ExpNonTerminal &&
-                  ((ExpNonTerminal) aUnit).getProd () instanceof AbstractCodeProduction)
+              if (aUnit instanceof final ExpNonTerminal aNonTerminal &&
+                  aNonTerminal.getProd () instanceof AbstractCodeProduction)
               {
-                if (i > 0 && seq.getUnitAt (i - 1) instanceof ExpLookahead)
+                if (i > 0 && seq.getUnitAt (i - 1) instanceof final ExpLookahead aLa)
                 {
-                  final ExpLookahead aLa = (ExpLookahead) seq.getUnitAt (i - 1);
                   _genFirstSet (aLa.getLaExpansion ());
                 }
               }
@@ -1231,9 +1230,9 @@ public class ParseEngine
                   {
                     final Expansion aNested_e = e_nrw.getExpansion ();
                     ExpLookahead aLa;
-                    if (aNested_e instanceof ExpSequence)
+                    if (aNested_e instanceof final ExpSequence aSequence)
                     {
-                      aLa = (ExpLookahead) (((ExpSequence) aNested_e).getUnitAt (0));
+                      aLa = (ExpLookahead) (aSequence.getUnitAt (0));
                     }
                     else
                     {
@@ -1399,9 +1398,9 @@ public class ParseEngine
     {
       while (true)
       {
-        if (aSeq instanceof ExpSequence && ((ExpSequence) aSeq).getUnitCount () == 2)
+        if (aSeq instanceof final ExpSequence aSequence && aSequence.getUnitCount () == 2)
         {
-          aSeq = ((ExpSequence) aSeq).getUnitAt (1);
+          aSeq = aSequence.getUnitAt (1);
         }
         else
           if (aSeq instanceof final ExpNonTerminal e_nrw)
@@ -1551,7 +1550,7 @@ public class ParseEngine
       }
       _genStackCheck (false);
       m_bXspDeclared = false;
-      if (Options.isDebugLookahead () && e.getParent () instanceof AbstractNormalProduction)
+      if (Options.isDebugLookahead () && e.getParent () instanceof final AbstractNormalProduction aNormalProduction)
       {
         m_aCodeGenerator.genCode ("    ");
         if (Options.isErrorReporting ())
@@ -1559,7 +1558,7 @@ public class ParseEngine
           m_aCodeGenerator.genCode ("if (!jj_rescan) ");
         }
         m_aCodeGenerator.genCodeLine ("trace_call(\"" +
-                                      JavaCCGlobals.addUnicodeEscapes (((AbstractNormalProduction) e.getParent ()).getLhs ()) +
+                                      JavaCCGlobals.addUnicodeEscapes (aNormalProduction.getLhs ()) +
                                       "(LOOKING AHEAD...)\");");
         m_aJj3Expansion = e;
       }
@@ -2174,10 +2173,10 @@ public class ParseEngine
             else
             {
               Expansion aTmp = e_nrw.getUnitAt (1);
-              while (aTmp instanceof ExpNonTerminal)
+              while (aTmp instanceof final ExpNonTerminal aNonTerminal)
               {
                 final AbstractNormalProduction aNtprod = (grammar ().productionTable ()
-                                                                    .get (((ExpNonTerminal) aTmp).getName ()));
+                                                                    .get (aNonTerminal.getName ()));
                 if (aNtprod instanceof AbstractCodeProduction)
                   break;
                 aTmp = aNtprod.getExpansion ();

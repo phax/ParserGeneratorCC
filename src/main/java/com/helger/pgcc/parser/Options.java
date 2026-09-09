@@ -652,22 +652,19 @@ public class Options
       JavaCCErrors.warning (aNameloc, "Bad option name \"" + sName + "\".  Option setting will be ignored.");
       return;
     }
-    final Object aExistingValue = optionValues ().get (sNameUC);
 
+    final Object aExistingValue = optionValues ().get (sNameUC);
     final Object aRealSrc = _upgradeValue (sName, aSrcValue);
 
     if (aExistingValue != null)
     {
-      Object aObject = null;
-      if (aRealSrc instanceof List)
-      {
-        aObject = ((List <?>) aRealSrc).get (0);
-      }
+      final Object aObject;
+      if (aRealSrc instanceof final List <?> aRealSrcList)
+        aObject = aRealSrcList.get (0);
       else
-      {
         aObject = aRealSrc;
-      }
-      final boolean bIsInvalidInteger = aObject instanceof Integer && ((Integer) aRealSrc).intValue () <= 0;
+
+      final boolean bIsInvalidInteger = aObject instanceof final Integer aInteger && aInteger.intValue () <= 0;
       if (aExistingValue.getClass () != aObject.getClass () || bIsInvalidInteger)
       {
         JavaCCErrors.warning (aValueloc,
@@ -675,7 +672,7 @@ public class Options
                                          aRealSrc +
                                          "\" for \"" +
                                          sName +
-                                         "\".  Option setting will be ignored.");
+                                         "\". Option setting will be ignored.");
         return;
       }
 
@@ -860,7 +857,7 @@ public class Options
         {
           try
           {
-            // INteger?
+            // Integer?
             final int i = Integer.parseInt (sRealValue);
             if (i <= 0)
             {

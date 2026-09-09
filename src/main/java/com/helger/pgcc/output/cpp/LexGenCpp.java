@@ -379,10 +379,10 @@ public class LexGenCpp extends AbstractLexGenJavaLike
             continue;
           }
 
-          if (lexer ().getCurRE () instanceof ExpRStringLiteral &&
-              StringHelper.isNotEmpty (((ExpRStringLiteral) lexer ().getCurRE ()).getImage ()))
+          if (lexer ().getCurRE () instanceof final ExpRStringLiteral aExpRStrLit &&
+              StringHelper.isNotEmpty (aExpRStrLit.getImage ()))
           {
-            ((ExpRStringLiteral) lexer ().getCurRE ()).generateDfa ();
+            aExpRStrLit.generateDfa ();
             if (i != 0 && !lexer ().getMixed ()[lexer ().getLexStateIndex ()] && bIgnoring != bIgnore)
               lexer ().getMixed ()[lexer ().getLexStateIndex ()] = true;
           }
@@ -397,8 +397,8 @@ public class LexGenCpp extends AbstractLexGenJavaLike
             {
               Nfa aTemp;
 
-              if (lexer ().getCurRE () instanceof ExpRChoice)
-                aChoices.add ((ExpRChoice) lexer ().getCurRE ());
+              if (lexer ().getCurRE () instanceof final ExpRChoice aChoice)
+                aChoices.add (aChoice);
 
               aTemp = lexer ().getCurRE ().generateNfa (bIgnore);
               aTemp.end ().setFinal (true);
