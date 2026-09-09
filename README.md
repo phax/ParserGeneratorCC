@@ -12,7 +12,7 @@ The overall goal is to maintain compatibility to JavaCC but
 * The code itself should be better maintainable
 * The code itself should conform to best-practices
 * Because this is NOT JavaCC the class names are similar, but the base package name changed from `net.javacc` to `com.helger.pgcc`
-* The created code requires at least Java 1.5  
+* The created code requires at least Java 1.8 by default (`JDK_VERSION`, values from 1.5 upwards are accepted)  
 
 See https://github.com/phax/ph-javacc-maven-plugin/ for a Maven plugin that uses this CC.
 
@@ -58,9 +58,145 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 * `adjustBeginLineColumn` is not available because line and column numbers are not recorded per
   character.
 
+# Migrating from 2.x to 3.0
+
+Everything below is a source level change to code that *drives* the generator. Grammar files and
+generated parsers are unaffected: `.jj` / `.jjt` syntax is unchanged, and the generated parser still
+exposes `token.kind`, `t.image`, the `jj_` and `trace_` methods under their old names.
+
+Most users consume this through
+[ph-javacc-maven-plugin](https://github.com/phax/ph-javacc-maven-plugin/) and need to change nothing
+but the plugin version.
+
+## Moved and renamed classes
+
+| 2.x | 3.0 |
+|---|---|
+| `com.helger.pgcc.parser.LexGenJava` | `com.helger.pgcc.output.java.LexGenJava` |
+| `com.helger.pgcc.parser.ParseGenJava` | `com.helger.pgcc.output.java.ParseGenJava` |
+| `com.helger.pgcc.parser.LexGenCpp` | `com.helger.pgcc.output.cpp.LexGenCpp` |
+| `com.helger.pgcc.parser.ParseGenCPP` | `com.helger.pgcc.output.cpp.ParseGenCpp` |
+| `com.helger.pgcc.output.cpp.OtherFilesGenCPP` | `com.helger.pgcc.output.cpp.OtherFilesGenCpp` |
+| `com.helger.pgcc.parser.CodeGenerator` | `com.helger.pgcc.parser.AbstractCodeGenerator` (now `abstract`) |
+| `com.helger.pgcc.parser.NormalProduction` | `com.helger.pgcc.parser.AbstractNormalProduction` |
+| `com.helger.pgcc.parser.JavaCCParserInternals` | `com.helger.pgcc.parser.AbstractJavaCCParserInternals` |
+| `com.helger.pgcc.EJDKVersion` | `com.helger.base.system.EJavaVersion` (from ph-commons) |
+
+`com.helger.pgcc.parser` no longer contains anything that writes a file. The C++ generators do not
+extend the Java ones any more: `LexGenCpp` and `LexGenJava` share
+`com.helger.pgcc.output.AbstractLexGenJavaLike`, and `ParseGenCpp` extends `AbstractCodeGenerator`
+directly.
+
+Removed without replacement: `ParserData`, `parser.table.TokenManagerCodeGenerator` and
+`parser.table.TableDrivenJavaCodeGenerator` - the table driven token manager and the two
+undocumented options `TOKEN_MANAGER_CODE_GENERATOR` and `PARSER_CODE_GENERATOR` are gone.
+
+## Generator state: static fields became `PGCCContext`
+
+The generator keeps one state object per run and per thread in `com.helger.pgcc.context.PGCCContext`,
+so two generator runs can happen at the same time in one JVM. `Options`, `JavaCCErrors` and
+`JavaCCGlobals` are still used exactly as before, but the public static fields of `JavaCCGlobals` are
+now reached through `grammar ()`:
+
+| 2.x | 3.0 |
+|---|---|
+| `JavaCCGlobals.s_fileName` | `grammar ().getFileName ()` |
+| `JavaCCGlobals.s_jjtreeGenerated` | `grammar ().isJJTreeGenerated ()` |
+| `JavaCCGlobals.s_toolNames` | `grammar ().getToolNameList ()` |
+| `JavaCCGlobals.s_cu_name` | `grammar ().getParserName ()` |
+| `JavaCCGlobals.s_token_mgr_decls` | `grammar ().getTokenMgrDecls ()` |
+| `JavaCCGlobals.s_tokenCount` | `grammar ().getTokenCount ()` |
+| `JavaCCGlobals.s_cline` / `s_ccol` | `grammar ().getCurrentLine ()` / `getCurrentColumn ()` |
+
+`s_origFileName` is gone. `JavaCCErrors.reInit ()` is gone - `Main.reInitAll ()` drops the whole
+context instead.
+
+## Method names are camel case
+
+The public and protected snake_case methods were renamed; the `jj_` and `trace_` methods of
+*generated* parsers keep their names, because grammar action code calls them.
+
+| 2.x | 3.0 | on |
+|---|---|---|
+| `parse_error` | `parseError` | `JavaCCErrors` |
+| `semantic_error` | `semanticError` | `JavaCCErrors` |
+| `add_inline_regexpr` | `addInlineRegexpr` | `AbstractJavaCCParserInternals` |
+| `add_token_manager_decls` | `addTokenManagerDecls` | `AbstractJavaCCParserInternals` |
+| `character_descriptor_assign` | `characterDescriptorAssign` | `AbstractJavaCCParserInternals` |
+| `remove_escapes_and_quotes` | `removeEscapesAndQuotes` | `AbstractJavaCCParserInternals` |
+| `set_initial_cu_token` | `setInitialCuToken` | `AbstractJavaCCParserInternals` |
+| `gen_CharStream` | `genCharStream` | `FilesJava`, `FilesCpp` |
+| `gen_ParseException` | `genParseException` | `FilesJava`, `FilesCpp` |
+| `gen_Token` | `genToken` | `FilesJava`, `FilesCpp` |
+| `gen_TokenManager` | `genTokenManager` | `FilesJava`, `FilesCpp` |
+| `gen_TokenMgrError` | `genTokenMgrError` | `FilesJava`, `FilesCpp` |
+| `gen_AbstractCharStream` | `genAbstractCharStream` | `FilesJava` |
+| `gen_CharSequenceCharStream` | `genCharSequenceCharStream` | `FilesJava` |
+| `gen_JavaCharStream` | `genJavaCharStream` | `FilesJava` |
+| `gen_SimpleCharStream` | `genSimpleCharStream` | `FilesJava` |
+| `gen_JavaModernFiles` | `genJavaModernFiles` | `FilesJava` |
+| `gen_ErrorHandler` | `genErrorHandler` | `FilesCpp` |
+| `gen_JavaCCDefs` | `genJavaCCDefs` | `FilesCpp` |
+| `generateDefaultVisitor_java` | `generateDefaultVisitorJava` | `NodeFilesJava` |
+| `generateTreeConstants_java` | `generateTreeConstantsJava` | `NodeFilesJava` |
+| `generateVisitor_java` | `generateVisitorJava` | `NodeFilesJava` |
+| `generateTreeState_java` | `generateTreeStateJava` | `JJTreeStateJava` |
+| `create_output_stream` | `createOutputStream` | `BNFGenerator` |
+
+`BNFGenerator.get_id` was removed.
+
+## Changed signatures
+
+| 2.x | 3.0 |
+|---|---|
+| `JavaCCErrors.parse_error (Object, String)` | `parseError (IGrammarLocation, String)` |
+| `JavaCCErrors.semantic_error (Object, String)` | `semanticError (IGrammarLocation, String)` |
+| `JavaCCErrors.warning (Object, String)` | `warning (IGrammarLocation, String)` |
+| `Options.setInputFileOption (Object, ...)` | takes `IGrammarLocation` |
+| `Options.getJdkVersion ()` returns `EJDKVersion` | returns `com.helger.base.system.EJavaVersion` |
+| `Container` holding `Object` | `Container <T>`, typed `getMember ()` / `setMember (T)` |
+
+`com.helger.pgcc.parser.IGrammarLocation` extends `com.helger.base.location.ILocation` and is
+implemented by `AbstractNormalProduction`, `TokenProduction`, `Expansion`, `ICCCharacter` and both
+`Token` classes - the six types the old `instanceof` cascade tested for.
+
+## Position accessors
+
+On `AbstractNormalProduction`, `TokenProduction`, `Expansion`, `ICCCharacter` and both `Token`
+classes:
+
+| 2.x | 3.0 |
+|---|---|
+| `getLine ()` / `setLine (int)` | `getLineNumber ()` / `setLineNumber (int)` |
+| `getColumn ()` / `setColumn (int)` | `getColumnNumber ()` / `setColumnNumber (int)` |
+
+## Records
+
+`Nfa` and the two carriers inside `TokenizerData` are records, so their fields are accessors:
+`TokenizerData.NfaState.m_aCharacters` reads `characters ()`, and likewise `index ()`,
+`nextStates ()`, `compositeStates ()` and `kind ()`.
+
+## Command line entry points
+
+`JavaCCLauncher`, `JJTreeLauncher` and `JJDocLauncher` in `com.helger.pgcc.main` are the properly
+named entry points. The lower case `javacc`, `jjtree` and `jjdoc` classes still work but are
+deprecated.
+
+## Behaviour changes to watch
+
+* The default of `JDK_VERSION` moved from `1.5` to `1.8`, so generated code uses the `Charset` based
+  constructors and the diamond operator unless you set it back.
+* `PARSER_SUPER_CLASS` and `TOKEN_MANAGER_SUPER_CLASS` now warn when set with a Java target - they
+  are read by the C++ backend only and were silently ignored before.
+* `TOKEN_MANAGER_SUPERCLASS` is accepted and ignored; the option that works is
+  `TOKEN_MANAGER_SUPER_CLASS`.
+* Regenerating into a directory that already contains generated files now actually rewrites them.
+  The staleness checksum was computed before the writer was flushed, so it never matched. Hand
+  edited files are still protected.
+
 # News and noteworthy
 
-v3.0.0 - 2026-06-09
+v3.0.0 - 2026-09-09
 * **Breaking API change** `Container` is generic - `Container <T>` with a typed `getMember ()` and `setMember (T)` instead of `Object`.
   The grammar passes it as an out parameter through nine productions; they are typed `Container<Expansion>` for the BNF and regular expression chain and `Container<ICCCharacter>` for the character descriptors, which are an unrelated hierarchy.
   17 of the 37 casts on `getMember ()` in `JavaCC.jj` are gone, plus one in `makeTryBlock`.
@@ -90,7 +226,7 @@ v3.0.0 - 2026-06-09
 * **Breaking API change** Replaced the internal `EJDKVersion` enum with `EJavaVersion` from ph-commons, so that `JDK_VERSION` values above 14 are supported.
   `Options.getJdkVersion ()` returns `com.helger.base.system.EJavaVersion` now
 * **Potentially breaking** The default value of `JDK_VERSION` moved from `1.5` to `1.8`, so that generated code uses the `Charset` based constructors and the diamond operator unless configured otherwise
-* **Breaking API change** `LexGenJava`, `ParseGenJava`, `LexGenCpp` and `ParseGenCPP` moved from `com.helger.pgcc.parser` to `com.helger.pgcc.output.java` and `com.helger.pgcc.output.cpp`, so that the package says which target language a class writes.
+* **Breaking API change** `LexGenJava`, `ParseGenJava`, `LexGenCpp` and `ParseGenCpp` moved from `com.helger.pgcc.parser` to `com.helger.pgcc.output.java` and `com.helger.pgcc.output.cpp`, so that the package says which target language a class writes.
   `com.helger.pgcc.parser` no longer contains anything that writes a file
 * **Breaking API change** The generator state moved from static fields into `com.helger.pgcc.context.PGCCContext`, one instance per run and per thread.
   The old classes remain as facades, so `Options`, `JavaCCErrors` and `JavaCCGlobals` are used exactly as before, but `JavaCCGlobals` exposes the grammar through `grammar ()` instead of public static fields.
@@ -141,7 +277,7 @@ v3.0.0 - 2026-06-09
 * **Breaking API change** Method names use camel case throughout: `JavaCCErrors.parse_error` is `parseError`, `semantic_error` is `semanticError`, `FilesJava.gen_Token` is `genToken` and so on for 27 names.
   The `jj_` and `trace_` methods of *generated* parsers keep their names - grammar action code calls them
 * **Breaking API change** `CodeGenerator` is `AbstractCodeGenerator` and is abstract - nothing outside the tests ever instantiated it.
-  The two C++ only methods it carried, `genStringLiteralArrayCPP` and `genStringLiteralInCPP`, moved into `LexGenCpp` where the only caller is
+  The two C++ only methods it carried, `genStringLiteralArrayCPP` and `genStringLiteralInCPP`, moved into `LexGenCpp` - their only caller - as `_genStringLiteralArrayInCpp` and `_genStringLiteralInCpp`
 * **Breaking API change** The C++ generators no longer extend the Java ones.
   `LexGenCpp` and `LexGenJava` share the new `com.helger.pgcc.output.AbstractLexGenJavaLike`, and `ParseGenCpp` extends `AbstractCodeGenerator` directly - it inherited nothing from `ParseGenJava` at all
 * **Breaking API change** Removed `JavaCCErrors.reInit ()`, deprecated since the error counters moved into `PGCCContext`

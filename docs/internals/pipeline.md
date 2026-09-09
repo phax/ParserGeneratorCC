@@ -9,11 +9,11 @@ method and the classes it calls.
  grammar file ─┘                                                   │
                                                                    ├─→ Semanticize
                                                                    │      (checks + numbering)
-                                                                   ├─→ ParseGenJava | ParseGenCPP
+                                                                   ├─→ ParseGenJava | ParseGenCpp
                                                                    │      (the parser)
                                                                    ├─→ LexGenJava  | LexGenCpp
                                                                    │      (the token manager)
-                                                                   └─→ OtherFilesGenJava | …CPP
+                                                                   └─→ OtherFilesGenJava | …Cpp
                                                                           (constants + boilerplate)
 ```
 

@@ -13,7 +13,7 @@ lines with four upstream `TODO(sreeni): fix this mess` markers and no explanatio
 
 | If you want to change… | Start at |
 |---|---|
-| what the parser code looks like | `ParseGenJava` / `ParseGenCPP` |
+| what the parser code looks like | `ParseGenJava` / `ParseGenCpp` |
 | what the token manager looks like | `LexGenJava` / `LexGenCpp` and `templates/{java,cpp}/TokenManager*.template` |
 | the char stream | `templates/java/stream/` — and the [stream-template-change skill](../../.claude/skills/stream-template-change/SKILL.md) |
 | a semantic check or error message | `Semanticize` |
