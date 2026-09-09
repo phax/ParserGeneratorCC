@@ -52,10 +52,10 @@ import com.helger.base.string.StringHelper;
 import com.helger.pgcc.context.NfaBuildState;
 import com.helger.pgcc.context.TokenizerDataBuildState;
 import com.helger.pgcc.context.TokenizerDataBuildState.CompositeStartState;
+import com.helger.pgcc.output.AbstractLexGenJavaLike;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.TokenManagerDebug;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
-import com.helger.pgcc.output.java.LexGenJava;
 
 /**
  * The state of a Non-deterministic Finite Automaton.
@@ -68,7 +68,7 @@ public class NfaState
    */
   public static TokenizerDataBuildState tokenizerBuild ()
   {
-    return LexGenJava.lexer ().tokenizerDataBuild ();
+    return AbstractLexGenJavaLike.lexer ().tokenizerDataBuild ();
   }
 
   /**
@@ -76,7 +76,7 @@ public class NfaState
    */
   public static NfaBuildState nfa ()
   {
-    return LexGenJava.lexer ().nfa ();
+    return AbstractLexGenJavaLike.lexer ().nfa ();
   }
 
   /**
@@ -137,8 +137,8 @@ public class NfaState
     final NfaBuildState aNfa = nfa ();
     m_nId = aNfa.getAndIncIdCnt ();
     aNfa.getAllStates ().add (this);
-    m_nLexState = LexGenJava.lexer ().getLexStateIndex ();
-    m_nLookingFor = LexGenJava.lexer ().getCurKind ();
+    m_nLexState = AbstractLexGenJavaLike.lexer ().getLexStateIndex ();
+    m_nLookingFor = AbstractLexGenJavaLike.lexer ().getCurKind ();
   }
 
   @NonNull
@@ -237,10 +237,10 @@ public class NfaState
         !Options.isJavaUserCharStream ())
     {
       aNfa.setUnicodeWarningGiven (true);
-      JavaCCErrors.warning (LexGenJava.lexer ().getCurRE (),
+      JavaCCErrors.warning (AbstractLexGenJavaLike.lexer ().getCurRE (),
                             "Non-ASCII characters used in regular expression.\n" +
-                                                             "Please make sure you use the correct Reader when you create the parser, " +
-                                                             "one that can handle your character set.");
+                                                                         "Please make sure you use the correct Reader when you create the parser, " +
+                                                                         "one that can handle your character set.");
     }
 
     char cTemp = m_aCharMoves[i];
@@ -292,10 +292,10 @@ public class NfaState
         !Options.isJavaUserCharStream ())
     {
       aNfa.setUnicodeWarningGiven (true);
-      JavaCCErrors.warning (LexGenJava.lexer ().getCurRE (),
+      JavaCCErrors.warning (AbstractLexGenJavaLike.lexer ().getCurRE (),
                             "Non-ASCII characters used in regular expression.\n" +
-                                                             "Please make sure you use the correct Reader when you create the parser, " +
-                                                             "one that can handle your character set.");
+                                                                         "Please make sure you use the correct Reader when you create the parser, " +
+                                                                         "one that can handle your character set.");
     }
 
     if (m_aRangeMoves == null)
@@ -532,8 +532,7 @@ public class NfaState
   {
     final NfaBuildState aNfa = nfa ();
     // Already finished, or already been here in this pass
-    if (m_nClosureGeneration == aNfa.getClosureDoneGeneration () ||
-        m_nClosureGeneration == aNfa.getPassGeneration ())
+    if (m_nClosureGeneration == aNfa.getClosureDoneGeneration () || m_nClosureGeneration == aNfa.getPassGeneration ())
       return;
 
     m_nClosureGeneration = aNfa.getPassGeneration ();
@@ -761,7 +760,6 @@ public class NfaState
    * finds anything: states that consume the same characters collapse into one equivalent state, and
    * states that lead to the same place keep one of their number with the others' character moves
    * merged in.
-   *
    * <h2>Why the passes are numbered</h2> The closure used to track its progress with a
    * <code>boolean []</code> over every state plus a <code>closureDone</code> flag on each state.
    * That cost two walks of the whole state list per call - one <code>Arrays.fill</code> to clear
@@ -973,7 +971,7 @@ public class NfaState
     if (c >= 128)
       JavaCCErrors.internalError ();
 
-    final String s = LexGenJava.lexer ().getInitialState ()._getEpsilonMovesString ();
+    final String s = AbstractLexGenJavaLike.lexer ().getInitialState ()._getEpsilonMovesString ();
 
     if (s == null || s.equals ("null;"))
       return false;
@@ -1501,9 +1499,9 @@ public class NfaState
    */
   public static int initStateName ()
   {
-    final String s = LexGenJava.lexer ().getInitialState ()._getEpsilonMovesString ();
+    final String s = AbstractLexGenJavaLike.lexer ().getInitialState ()._getEpsilonMovesString ();
 
-    if (LexGenJava.lexer ().getInitialState ().m_nUsefulEpsilonMoves != 0)
+    if (AbstractLexGenJavaLike.lexer ().getInitialState ().m_nUsefulEpsilonMoves != 0)
       return _stateNameForComposite (s);
     return -1;
   }
@@ -2323,9 +2321,9 @@ public class NfaState
     boolean bNextIntersects = _selfLoop () && m_bIsComposite;
     boolean bOnlyState = true;
 
-    for (final NfaState s_allState : aNfa.getAllStates ())
+    for (final NfaState aCurState : aNfa.getAllStates ())
     {
-      final NfaState aTemp1 = s_allState;
+      final NfaState aTemp1 = aCurState;
 
       if (this == aTemp1 ||
           aTemp1.m_nStateName == -1 ||
@@ -2506,12 +2504,12 @@ public class NfaState
     for (final String s : aNfa.compositeStateTable ().keySet ())
       _dumpCompositeStatesAsciiMoves (aCodeGenerator, s, nByteNum, aDumped);
 
-    for (final NfaState s_allState : aNfa.getAllStates ())
+    for (final NfaState aCurState : aNfa.getAllStates ())
     {
-      final NfaState aTemp = s_allState;
+      final NfaState aTemp = aCurState;
 
       if (aDumped[aTemp.m_nStateName] ||
-          aTemp.m_nLexState != LexGenJava.lexer ().getLexStateIndex () ||
+          aTemp.m_nLexState != AbstractLexGenJavaLike.lexer ().getLexStateIndex () ||
           !aTemp.hasTransitions () ||
           aTemp.m_bDummy ||
           aTemp.m_nStateName == -1)
@@ -2751,9 +2749,9 @@ public class NfaState
     final NfaBuildState aNfa = nfa ();
     boolean bNextIntersects = _selfLoop () && m_bIsComposite;
 
-    for (final NfaState s_allState : aNfa.getAllStates ())
+    for (final NfaState aCurState : aNfa.getAllStates ())
     {
-      final NfaState aTemp1 = s_allState;
+      final NfaState aTemp1 = aCurState;
 
       if (this == aTemp1 ||
           aTemp1.m_nStateName == -1 ||
@@ -2921,7 +2919,7 @@ public class NfaState
     {
       if (temp.m_nStateName == -1 ||
           aDumped[temp.m_nStateName] ||
-          temp.m_nLexState != LexGenJava.lexer ().getLexStateIndex () ||
+          temp.m_nLexState != AbstractLexGenJavaLike.lexer ().getLexStateIndex () ||
           !temp.hasTransitions () ||
           temp.m_bDummy)
         continue;
@@ -2999,14 +2997,14 @@ public class NfaState
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private static final") +
                                             eOutputLanguage.getTypeBoolean (),
-                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
                                             "jjCanMove_" +
-                                                                                         m_nNonAsciiMethod +
-                                                                                         "(int hiByte, int i1, int i2, " +
-                                                                                         eOutputLanguage.getTypeLong () +
-                                                                                         " l1, " +
-                                                                                         eOutputLanguage.getTypeLong () +
-                                                                                         " l2)");
+                                                                                                     m_nNonAsciiMethod +
+                                                                                                     "(int hiByte, int i1, int i2, " +
+                                                                                                     eOutputLanguage.getTypeLong () +
+                                                                                                     " l1, " +
+                                                                                                     eOutputLanguage.getTypeLong () +
+                                                                                                     " l2)");
     aCodeGenerator.genCodeLine ("{");
     aCodeGenerator.genCodeLine ("   switch(hiByte)");
     aCodeGenerator.genCodeLine ("   {");
@@ -3304,17 +3302,17 @@ public class NfaState
 
     if (aNfa.getKinds () == null)
     {
-      aNfa.setKinds (new int [LexGenJava.lexer ().getMaxLexStates ()] []);
-      aNfa.setStatesForState (new int [LexGenJava.lexer ().getMaxLexStates ()] [] []);
+      aNfa.setKinds (new int [AbstractLexGenJavaLike.lexer ().getMaxLexStates ()] []);
+      aNfa.setStatesForState (new int [AbstractLexGenJavaLike.lexer ().getMaxLexStates ()] [] []);
     }
 
     _reArrange ();
 
-    for (final NfaState s_allState : aNfa.getAllStates ())
+    for (final NfaState aCurState : aNfa.getAllStates ())
     {
-      final NfaState aTemp = s_allState;
+      final NfaState aTemp = aCurState;
 
-      if (aTemp.m_nLexState != LexGenJava.lexer ().getLexStateIndex () ||
+      if (aTemp.m_nLexState != AbstractLexGenJavaLike.lexer ().getLexStateIndex () ||
           !aTemp.hasTransitions () ||
           aTemp.m_bDummy ||
           aTemp.m_nStateName == -1)
@@ -3323,14 +3321,15 @@ public class NfaState
       if (aKindsForStates == null)
       {
         aKindsForStates = new int [aNfa.getGeneratedStates ()];
-        aNfa.getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()] = new int [Math.max (aNfa
-                                                                                                    .getGeneratedStates (),
-                                                                                                aNfa.getDummyStateIndex () +
-                                                                                                                            1)] [];
+        aNfa.getStatesForState ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] = new int [Math.max (aNfa
+                                                                                                                .getGeneratedStates (),
+                                                                                                            aNfa.getDummyStateIndex () +
+                                                                                                                                        1)] [];
       }
 
       aKindsForStates[aTemp.m_nStateName] = aTemp.m_nLookingFor;
-      aNfa.getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()][aTemp.m_nStateName] = aTemp.m_aCompositeStates;
+      aNfa.getStatesForState ()[AbstractLexGenJavaLike.lexer ()
+                                                      .getLexStateIndex ()][aTemp.m_nStateName] = aTemp.m_aCompositeStates;
 
       aTemp._generateNonAsciiMoves (aCodeGenerator);
     }
@@ -3341,20 +3340,21 @@ public class NfaState
       final int nState = aEntry.getValue ().intValue ();
 
       if (nState >= aNfa.getGeneratedStates ())
-        aNfa.getStatesForState ()[LexGenJava.lexer ().getLexStateIndex ()][nState] = aNfa.allNextStates ().get (s);
+        aNfa.getStatesForState ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()][nState] = aNfa.allNextStates ()
+                                                                                                     .get (s);
     }
 
     if (!aNfa.stateSetsToFix ().isEmpty ())
       _fixStateSets ();
 
-    aNfa.getKinds ()[LexGenJava.lexer ().getLexStateIndex ()] = aKindsForStates;
+    aNfa.getKinds ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] = aKindsForStates;
 
     aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
-                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
                                             "jjMoveNfa" +
-                                                                                         LexGenJava.lexer ()
-                                                                                                   .getLexStateSuffix () +
-                                                                                         "(int startState, int curPos)");
+                                                                                                     AbstractLexGenJavaLike.lexer ()
+                                                                                                                           .getLexStateSuffix () +
+                                                                                                     "(int startState, int curPos)");
     aCodeGenerator.genCodeLine ("{");
     if (aNfa.getGeneratedStates () == 0)
     {
@@ -3363,7 +3363,7 @@ public class NfaState
       return;
     }
 
-    if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
+    if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
     {
       aCodeGenerator.genCodeLine ("   int strKind = jjmatchedKind;");
       aCodeGenerator.genCodeLine ("   int strPos = jjmatchedPos;");
@@ -3409,9 +3409,9 @@ public class NfaState
       switch (eOutputLanguage)
       {
         case JAVA -> aCodeGenerator.genCodeLine ("      debugStream.println(" +
-                                                 (LexGenJava.lexer ().getMaxLexStates () > 1
-                                                                                             ? "\"<\" + lexStateNames[curLexState] + \">\" + "
-                                                                                             : "") +
+                                                 (AbstractLexGenJavaLike.lexer ().getMaxLexStates () > 1
+                                                                                                         ? "\"<\" + lexStateNames[curLexState] + \">\" + "
+                                                                                                         : "") +
                                                  "\"Current character : \" + " +
                                                  Options.getTokenMgrErrorClass () +
                                                  ".addEscapes(String.valueOf(curChar)) + \" (\" + (int)curChar + \") " +
@@ -3491,7 +3491,7 @@ public class NfaState
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
-    if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
+    if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
       aCodeGenerator.genCodeLine ("         break;");
     else
       aCodeGenerator.genCodeLine ("         return curPos;");
@@ -3511,13 +3511,13 @@ public class NfaState
     {
       case JAVA:
         aCodeGenerator.genCodeLine ("      try { curChar = input_stream.readChar(); }");
-        if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
+        if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
           aCodeGenerator.genCodeLine ("      catch(final java.io.IOException e) { break; }");
         else
           aCodeGenerator.genCodeLine ("      catch(final java.io.IOException e) { return curPos; }");
         break;
       case CPP:
-        if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
+        if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
           aCodeGenerator.genCodeLine ("      if (input_stream->endOfInput()) { break; }");
         else
           aCodeGenerator.genCodeLine ("      if (input_stream->endOfInput()) { return curPos; }");
@@ -3532,9 +3532,9 @@ public class NfaState
       switch (eOutputLanguage)
       {
         case JAVA -> aCodeGenerator.genCodeLine ("      debugStream.println(" +
-                                                 (LexGenJava.lexer ().getMaxLexStates () > 1
-                                                                                             ? "\"<\" + lexStateNames[curLexState] + \">\" + "
-                                                                                             : "") +
+                                                 (AbstractLexGenJavaLike.lexer ().getMaxLexStates () > 1
+                                                                                                         ? "\"<\" + lexStateNames[curLexState] + \">\" + "
+                                                                                                         : "") +
                                                  "\"Current character : \" + " +
                                                  Options.getTokenMgrErrorClass () +
                                                  ".addEscapes(String.valueOf(curChar)) + \" (\" + (int)curChar + \") " +
@@ -3549,7 +3549,7 @@ public class NfaState
 
     aCodeGenerator.genCodeLine ("   }");
 
-    if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
+    if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
     {
       aCodeGenerator.genCodeLine ("   if (jjmatchedPos > strPos)");
       aCodeGenerator.genCodeLine ("      return curPos;");
@@ -3611,7 +3611,7 @@ public class NfaState
     }
 
     aCodeGenerator.switchToStaticsFile ();
-    for (int i = 0; i < LexGenJava.lexer ().getMaxLexStates (); i++)
+    for (int i = 0; i < AbstractLexGenJavaLike.lexer ().getMaxLexStates (); i++)
     {
       if (aNfa.getStatesForState ()[i] == null)
       {
@@ -3627,7 +3627,7 @@ public class NfaState
                                 "_" +
                                 j +
                                 "[" +
-                                LexGenJava.lexer ().getStateSetSize () +
+                                AbstractLexGenJavaLike.lexer ().getStateSetSize () +
                                 "] = ");
         if (aStateSet == null)
         {
@@ -3645,7 +3645,7 @@ public class NfaState
 
     }
 
-    for (int i = 0; i < LexGenJava.lexer ().getMaxLexStates (); i++)
+    for (int i = 0; i < AbstractLexGenJavaLike.lexer ().getMaxLexStates (); i++)
     {
       aCodeGenerator.genCodeLine ("const int *stateSet_" + i + "[] = {");
       if (aNfa.getStatesForState ()[i] == null)
@@ -3663,7 +3663,7 @@ public class NfaState
     }
 
     aCodeGenerator.genCode ("const int** statesForState[] = { ");
-    for (int i = 0; i < LexGenJava.lexer ().getMaxLexStates (); i++)
+    for (int i = 0; i < AbstractLexGenJavaLike.lexer ().getMaxLexStates (); i++)
     {
       aCodeGenerator.genCodeLine ("stateSet_" + i + ", ");
     }
@@ -3692,7 +3692,7 @@ public class NfaState
     else
     {
       aCodeGenerator.genCodeLine ("{");
-      for (int i = 0; i < LexGenJava.lexer ().getMaxLexStates (); i++)
+      for (int i = 0; i < AbstractLexGenJavaLike.lexer ().getMaxLexStates (); i++)
       {
         if (aNfa.getStatesForState ()[i] == null)
         {
@@ -3757,9 +3757,9 @@ public class NfaState
       {
         aCodeGenerator.switchToStaticsFile ();
         aCodeGenerator.genCode ("static const int kindForState[" +
-                                LexGenJava.lexer ().getStateSetSize () +
+                                AbstractLexGenJavaLike.lexer ().getStateSetSize () +
                                 "][" +
-                                LexGenJava.lexer ().getStateSetSize () +
+                                AbstractLexGenJavaLike.lexer ().getStateSetSize () +
                                 "] = ");
       }
       default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);

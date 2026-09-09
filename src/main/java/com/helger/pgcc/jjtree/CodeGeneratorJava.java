@@ -94,13 +94,13 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
       boolean bNeedClose = true;
       final Node aSp = aNode.getScopingParent (aNs);
 
-      JJTreeNode n = aNode;
+      JJTreeNode aCurNode = aNode;
       while (true)
       {
-        final Node p = n.jjtGetParent ();
-        if (p instanceof ASTBNFSequence || p instanceof ASTBNFTryBlock)
+        final Node aParentNode = aCurNode.jjtGetParent ();
+        if (aParentNode instanceof ASTBNFSequence || aParentNode instanceof ASTBNFTryBlock)
         {
-          if (n.getOrdinal () != p.jjtGetNumChildren () - 1)
+          if (aCurNode.getOrdinal () != aParentNode.jjtGetNumChildren () - 1)
           {
             /* We're not the final unit in the sequence. */
             bNeedClose = false;
@@ -108,17 +108,17 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
           }
         }
         else
-          if (p instanceof ASTBNFZeroOrOne || p instanceof ASTBNFZeroOrMore || p instanceof ASTBNFOneOrMore)
+          if (aParentNode instanceof ASTBNFZeroOrOne || aParentNode instanceof ASTBNFZeroOrMore || aParentNode instanceof ASTBNFOneOrMore)
           {
             bNeedClose = false;
             break;
           }
-        if (p == aSp)
+        if (aParentNode == aSp)
         {
           /* No more parents to look at. */
           break;
         }
-        n = (JJTreeNode) p;
+        aCurNode = (JJTreeNode) aParentNode;
       }
       if (bNeedClose)
       {
@@ -181,11 +181,11 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
   public Object visit (@NonNull final ASTCompilationUnit aNode, final Object aData)
   {
     final JJTreeIO aIo = (JJTreeIO) aData;
-    Token t = aNode.getFirstToken ();
+    Token aToken = aNode.getFirstToken ();
 
     while (true)
     {
-      if (t == PGCCContext.current ().jjtree ().getParserImports ())
+      if (aToken == PGCCContext.current ().jjtree ().getParserImports ())
       {
         // If the parser and nodes are in separate packages (NODE_PACKAGE
         // specified in
@@ -201,11 +201,11 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
         }
       }
 
-      if (t == PGCCContext.current ().jjtree ().getParserImplements ())
+      if (aToken == PGCCContext.current ().jjtree ().getParserImplements ())
       {
-        if (t.image.equals ("implements"))
+        if (aToken.image.equals ("implements"))
         {
-          aNode.print (t, aIo);
+          aNode.print (aToken, aIo);
           openJJTreeComment (aIo, null);
           aIo.getOut ().print (" " + NodeFilesJava.nodeConstants () + ", ");
           closeJJTreeComment (aIo);
@@ -216,26 +216,26 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
           openJJTreeComment (aIo, null);
           aIo.getOut ().print ("implements " + NodeFilesJava.nodeConstants ());
           closeJJTreeComment (aIo);
-          aNode.print (t, aIo);
+          aNode.print (aToken, aIo);
         }
       }
       else
       {
-        aNode.print (t, aIo);
+        aNode.print (aToken, aIo);
       }
 
-      if (t == PGCCContext.current ().jjtree ().getParserClassBodyStart ())
+      if (aToken == PGCCContext.current ().jjtree ().getParserClassBodyStart ())
       {
         openJJTreeComment (aIo, null);
         JJTreeStateJava.insertParserMembers (aIo);
         closeJJTreeComment (aIo);
       }
 
-      if (t == aNode.getLastToken ())
+      if (aToken == aNode.getLastToken ())
       {
         return null;
       }
-      t = t.next;
+      aToken = aToken.next;
     }
   }
 
