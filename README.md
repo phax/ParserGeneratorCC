@@ -61,6 +61,9 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 # News and noteworthy
 
 v3.0.0 - 2026-06-09
+* The reworked classes declare their members in one consistent order: nested types, then the fields, then the constructor, then the instance methods, with the static factory methods last.
+  `PGCCContext.current ()`, `PGCCContext.reset ()` and `ProcessState.getInstance ()` moved to the end of their class, matching `LookaheadState.current ()`, and `TokenizerData`'s three nested types moved above the fields whose types they are.
+  Pure reordering; no API and no behaviour change
 * Generating a large lexer is around 3x faster.
   The epsilon closure walked the whole state list twice per call purely to record which states a pass had visited, which is quadratic in the token count; the passes are numbered now and the walks are gone.
   On a synthetic 1280 token grammar that loop ran 690 million times and was 70% of the run, and generation drops from 1344 ms to 413 ms.

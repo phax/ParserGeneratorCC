@@ -345,6 +345,12 @@ public class Options
    */
   public static final EJavaVersion DEFAULT_JDK_VERSION = EJavaVersion.JDK_1_8;
 
+  private static final Set <String> SUPPORTED_JAVA_TEMPLATE_TYPES = Set.of (JAVA_TEMPLATE_TYPE_CLASSIC,
+                                                                            JAVA_TEMPLATE_TYPE_MODERN);
+
+  private static final Set <String> SUPPORTED_JAVA_CHAR_STREAM_TYPES = Set.of (JAVA_CHAR_STREAM_TYPE_SIMPLE,
+                                                                               JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE);
+
   private static final Set <OptionInfo> USER_OPTIONS;
 
   static
@@ -410,6 +416,12 @@ public class Options
 
     USER_OPTIONS = Collections.unmodifiableSet (aTemp);
   }
+
+  /**
+   * Limit subclassing to derived classes.
+   */
+  protected Options ()
+  {}
 
   /**
    * A mapping of option names (Strings) to values (Integer, Boolean, String). This table is
@@ -1271,9 +1283,6 @@ public class Options
     return new File (stringValue (USEROPTION__OUTPUT_DIRECTORY));
   }
 
-  private static final Set <String> SUPPORTED_JAVA_TEMPLATE_TYPES = Set.of (JAVA_TEMPLATE_TYPE_CLASSIC,
-                                                                            JAVA_TEMPLATE_TYPE_MODERN);
-
   private static boolean _isValidJavaTemplateType (@Nullable final String sType)
   {
     return sType == null ? false : SUPPORTED_JAVA_TEMPLATE_TYPES.contains (sType.toLowerCase (Locale.US));
@@ -1301,9 +1310,6 @@ public class Options
   {
     return stringValue (USEROPTION__JAVA_TEMPLATE_TYPE);
   }
-
-  private static final Set <String> SUPPORTED_JAVA_CHAR_STREAM_TYPES = Set.of (JAVA_CHAR_STREAM_TYPE_SIMPLE,
-                                                                               JAVA_CHAR_STREAM_TYPE_CHARSEQUENCE);
 
   private static boolean _isValidJavaCharStreamType (@Nullable final String sType)
   {
@@ -1442,10 +1448,4 @@ public class Options
   {
     return USER_OPTIONS;
   }
-
-  /**
-   * Limit subclassing to derived classes.
-   */
-  protected Options ()
-  {}
 }

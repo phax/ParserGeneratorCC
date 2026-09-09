@@ -52,13 +52,13 @@ import com.helger.pgcc.parser.MatchInfo;
  */
 public final class LookaheadState
 {
-  /** Default constructor. */
-  public LookaheadState ()
-  {}
-
   private int m_nLimit;
   private boolean m_bConsiderSemanticLA;
   private List <MatchInfo> m_aSizeLimitedMatches;
+
+  /** Default constructor. */
+  public LookaheadState ()
+  {}
 
   /**
    * {@return how many tokens deep the current lookahead computation goes. 0 if no computation is

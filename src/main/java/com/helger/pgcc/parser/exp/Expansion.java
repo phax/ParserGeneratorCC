@@ -58,10 +58,6 @@ public sealed class Expansion implements IGrammarLocation permits
                               ExpZeroOrOne,
                               AbstractExpRegularExpression
 {
-  /** Default constructor. */
-  public Expansion ()
-  {}
-
   /**
    * The line separator the dump methods use.
    */
@@ -103,6 +99,10 @@ public sealed class Expansion implements IGrammarLocation permits
    * This flag is used for bookkeeping by the minimumSize method in class ParseEngine.
    */
   private boolean m_bInMinimumSize = false;
+
+  /** Default constructor. */
+  public Expansion ()
+  {}
 
   /**
    * {@return a generation number that has not been used before in this run, for a follow set walk

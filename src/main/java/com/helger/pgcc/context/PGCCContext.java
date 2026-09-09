@@ -71,25 +71,6 @@ public final class PGCCContext
   {}
 
   /**
-   * {@return the context of the current thread, creating it on first access. Never
-   * <code>null</code>.}
-   */
-  @NonNull
-  public static PGCCContext current ()
-  {
-    return CURRENT.get ();
-  }
-
-  /**
-   * Start a fresh run on the current thread. Everything that has been migrated into the context is
-   * reset by this single call.
-   */
-  public static void reset ()
-  {
-    CURRENT.remove ();
-  }
-
-  /**
    * {@return the errors and warnings collected by this run}
    */
   @NonNull
@@ -168,5 +149,24 @@ public final class PGCCContext
   public LexerState lexer ()
   {
     return m_aLexer;
+  }
+
+  /**
+   * {@return the context of the current thread, creating it on first access. Never
+   * <code>null</code>.}
+   */
+  @NonNull
+  public static PGCCContext current ()
+  {
+    return CURRENT.get ();
+  }
+
+  /**
+   * Start a fresh run on the current thread. Everything that has been migrated into the context is
+   * reset by this single call.
+   */
+  public static void reset ()
+  {
+    CURRENT.remove ();
   }
 }

@@ -47,13 +47,13 @@ import com.helger.pgcc.jjdoc.IDocGenerator;
  */
 public final class JJDocState
 {
-  /** Default constructor. */
-  public JJDocState ()
-  {}
-
   private String m_sInputFile;
   private String m_sOutputFile;
   private IDocGenerator m_aGenerator;
+
+  /** Default constructor. */
+  public JJDocState ()
+  {}
 
   /**
    * {@return the grammar JJDoc is documenting}

@@ -65,14 +65,14 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
  */
 public class OtherFilesGenJava
 {
-  /** Default constructor. */
-  public OtherFilesGenJava ()
-  {}
-
   private static final String CONSTANTS_FILENAME_SUFFIX = "Constants.java";
 
   private static final IJavaResourceTemplateLocations RESOURCES_JAVA_CLASSIC = new JavaResourceTemplateLocationImpl ();
   private static final IJavaResourceTemplateLocations RESOURCES_JAVA_MODERN = new JavaModernResourceTemplateLocationImpl ();
+
+  /** Default constructor. */
+  public OtherFilesGenJava ()
+  {}
 
   /**
    * Write the Java files that are neither the parser nor the token manager - the constants

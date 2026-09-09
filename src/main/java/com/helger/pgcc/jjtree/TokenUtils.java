@@ -33,11 +33,10 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import org.jspecify.annotations.NonNull;
-
-import com.helger.pgcc.parser.JavaCCErrors;
+import com.helger.pgcc.parser.IGrammarLocation;
 import com.helger.pgcc.parser.JavaCCGlobals;
 
 /**
@@ -98,7 +97,7 @@ public final class TokenUtils
       if ((ch < 0x20 || ch > 0x7e) && ch != '\t' && ch != '\n' && ch != '\r' && ch != '\f')
       {
         final String s = "0000" + Integer.toString (ch, 16);
-        aRet.append ("\\u").append (s.substring (s.length () - 4, s.length ()));
+        aRet.append ("\\u").append (s.substring (s.length () - 4));
       }
       else
       {
@@ -130,5 +129,4 @@ public final class TokenUtils
   {
     return JavaCCGlobals.removeEscapesAndQuotes (t, sStr);
   }
-
 }

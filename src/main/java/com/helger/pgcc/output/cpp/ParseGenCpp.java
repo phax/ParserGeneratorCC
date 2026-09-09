@@ -95,9 +95,9 @@ public class ParseGenCpp extends AbstractCodeGenerator
       }
     }
     else
-      if (aObject instanceof List <?>)
+      if (aObject instanceof final List <?> aList)
       {
-        for (final String include : (List <String>) aObject)
+        for (final String include : (List <String>) aList)
           if (include.length () > 0)
           {
             if (include.charAt (0) == '<')

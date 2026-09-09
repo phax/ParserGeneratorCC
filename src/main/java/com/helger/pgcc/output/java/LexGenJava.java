@@ -34,8 +34,6 @@
 
 package com.helger.pgcc.output.java;
 
-import org.jspecify.annotations.Nullable;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.getFileExtension;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
@@ -48,12 +46,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.jspecify.annotations.NonNull;
-
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.CPG;
-import com.helger.pgcc.context.LexerState;
-import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.output.AbstractLexGenJavaLike;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.OutputHelper;
@@ -77,16 +71,16 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
  */
 public class LexGenJava extends AbstractLexGenJavaLike
 {
-  /** Default constructor. */
-  public LexGenJava ()
-  {}
-
   private static final String DUMP_STATIC_VAR_DECLARATIONS_TEMPLATE_RESOURCE_URL = "/templates/java/DumpStaticVarDeclarations.template";
   private static final String DUMP_DEBUG_METHODS_TEMPLATE_RESOURCE_URL = "/templates/java/DumpDebugMethods.template";
   private static final String BOILERPLATER_METHOD_RESOURCE_URL = "/templates/java/TokenManagerBoilerPlateMethods.template";
 
   // Order is important!
   // Order is important!
+
+  /** Default constructor. */
+  public LexGenJava ()
+  {}
 
   private void _printClassHead ()
   {
@@ -389,10 +383,10 @@ public class LexGenJava extends AbstractLexGenJavaLike
           }
 
           if (!Options.isNoDfa () &&
-              lexer ().getCurRE () instanceof ExpRStringLiteral &&
-              StringHelper.isNotEmpty (((ExpRStringLiteral) lexer ().getCurRE ()).getImage ()))
+              lexer ().getCurRE () instanceof final ExpRStringLiteral aExpRStrLit &&
+              StringHelper.isNotEmpty (aExpRStrLit.getImage ()))
           {
-            ((ExpRStringLiteral) lexer ().getCurRE ()).generateDfa ();
+            aExpRStrLit.generateDfa ();
             if (i != 0 && !lexer ().getMixed ()[lexer ().getLexStateIndex ()] && bIgnoring != bIgnore)
             {
               lexer ().getMixed ()[lexer ().getLexStateIndex ()] = true;
@@ -409,8 +403,8 @@ public class LexGenJava extends AbstractLexGenJavaLike
             {
               Nfa aTemp;
 
-              if (lexer ().getCurRE () instanceof ExpRChoice)
-                aChoices.add ((ExpRChoice) lexer ().getCurRE ());
+              if (lexer ().getCurRE () instanceof final ExpRChoice aChoice)
+                aChoices.add (aChoice);
 
               aTemp = lexer ().getCurRE ().generateNfa (bIgnore);
               aTemp.end ().setFinal (true);

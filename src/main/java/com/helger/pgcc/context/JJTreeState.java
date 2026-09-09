@@ -56,10 +56,6 @@ import com.helger.pgcc.jjtree.Token;
  */
 public final class JJTreeState
 {
-  /** Default constructor. */
-  public JJTreeState ()
-  {}
-
   private final Map <String, ASTProduction> m_aProductions = new HashMap <> ();
 
   /*
@@ -88,6 +84,10 @@ public final class JJTreeState
   private Token m_aParserImplements;
   private Token m_aParserClassBodyStart;
   private Token m_aParserImports;
+
+  /** Default constructor. */
+  public JJTreeState ()
+  {}
 
   /**
    * {@return the node ids, in the order the descriptors were seen. Never <code>null</code>}

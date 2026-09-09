@@ -54,10 +54,6 @@ import com.helger.pgcc.parser.NfaState;
  */
 public final class NfaBuildState
 {
-  /** Default constructor. */
-  public NfaBuildState ()
-  {}
-
   private final List <NfaState> m_aIndexedAllStates = new ArrayList <> ();
   private final List <NfaState> m_aNonAsciiTableForMethod = new ArrayList <> ();
   private final Map <String, NfaState> m_aEquivStatesTable = new HashMap <> ();
@@ -97,6 +93,10 @@ public final class NfaBuildState
   private int m_nLastIndex = 0;
   private int [] [] m_aKinds;
   private int [] [] [] m_aStatesForState;
+
+  /** Default constructor. */
+  public NfaBuildState ()
+  {}
 
   /**
    * Whether the "generated code will not compile without UNICODE_INPUT" warning has already been

@@ -51,10 +51,6 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral.KindInfo;
  */
 public final class StringLiteralBuildState
 {
-  /** Default constructor. */
-  public StringLiteralBuildState ()
-  {}
-
   private boolean m_bBoilerPlateDumped = false;
 
   private int m_nMaxStrKind = 0;
@@ -68,6 +64,10 @@ public final class StringLiteralBuildState
   private boolean [] m_aSubString;
   private boolean [] m_aSubStringAtPos;
   private Map <String, long []> [] m_aStatesForPos;
+
+  /** Default constructor. */
+  public StringLiteralBuildState ()
+  {}
 
   /**
    * One past the highest ordinal of a string literal in the current lexical state, and therefore

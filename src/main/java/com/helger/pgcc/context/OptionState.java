@@ -53,14 +53,14 @@ import com.helger.pgcc.output.EOutputLanguage;
  */
 public final class OptionState
 {
-  /** Default constructor. */
-  public OptionState ()
-  {}
-
   private final Map <String, Object> m_aValues = new HashMap <> ();
   private final Set <String> m_aCmdLineSet = new HashSet <> ();
   private final Set <String> m_aInputFileSet = new HashSet <> ();
   private EOutputLanguage m_eLanguage = EOutputLanguage.JAVA;
+
+  /** Default constructor. */
+  public OptionState ()
+  {}
 
   /**
    * {@return the mutable map of option name to value. Never <code>null</code>}

@@ -66,15 +66,6 @@ public final class ProcessState
   {}
 
   /**
-   * {@return the single instance. Never <code>null</code>}
-   */
-  @NonNull
-  public static ProcessState getInstance ()
-  {
-    return INSTANCE;
-  }
-
-  /**
    * {@return where informational output goes, or <code>null</code> if it has not been set yet}
    */
   public IPrinter getOut ()
@@ -124,5 +115,14 @@ public final class ProcessState
   public void setReadTemplatesFromClassPath (final boolean bReadFromClassPath)
   {
     m_bReadTemplatesFromClassPath = bReadFromClassPath;
+  }
+
+  /**
+   * {@return the single instance. Never <code>null</code>}
+   */
+  @NonNull
+  public static ProcessState getInstance ()
+  {
+    return INSTANCE;
   }
 }

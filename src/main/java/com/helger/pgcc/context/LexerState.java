@@ -59,10 +59,6 @@ import com.helger.pgcc.parser.exp.ExpAction;
  */
 public final class LexerState
 {
-  /** Default constructor. */
-  public LexerState ()
-  {}
-
   private final Map <String, List <TokenProduction>> m_aAllTpsForState = new LinkedHashMap <> ();
   private final Map <String, NfaState> m_aInitStates = new LinkedHashMap <> ();
 
@@ -112,6 +108,10 @@ public final class LexerState
   private String m_sErrorHandlingClass;
   private final TokenizerData m_aTokenizerData = new TokenizerData ();
   private boolean m_bGenerateDataOnly;
+
+  /** Default constructor. */
+  public LexerState ()
+  {}
 
   /**
    * The name of the token manager class being generated, the parser name plus "TokenManager".

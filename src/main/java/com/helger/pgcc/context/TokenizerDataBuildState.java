@@ -61,10 +61,6 @@ import com.helger.pgcc.parser.TokenizerData;
  */
 public final class TokenizerDataBuildState
 {
-  /** Default constructor. */
-  public TokenizerDataBuildState ()
-  {}
-
   /**
    * A start state that is composite and got a name no {@code NfaState} object carries.
    *
@@ -86,6 +82,10 @@ public final class TokenizerDataBuildState
   private final Map <Integer, List <Integer>> m_aLiteralKinds = new HashMap <> ();
   private final Map <Integer, Integer> m_aKindToLexicalState = new HashMap <> ();
   private final Map <Integer, NfaState> m_aNfaStateMap = new HashMap <> ();
+
+  /** Default constructor. */
+  public TokenizerDataBuildState ()
+  {}
 
   /**
    * {@return lexical state index to its composite start state, for the lexical states whose start

@@ -34,7 +34,6 @@
 package com.helger.pgcc.jjtree;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -218,7 +217,7 @@ public class NodeScope
   private String constructVariable (final String sId)
   {
     final String s = "000" + m_nScopeNumber;
-    return "jjt" + sId + s.substring (s.length () - 3, s.length ());
+    return "jjt" + sId + s.substring (s.length () - 3);
   }
 
   boolean usesCloseNodeVar ()
@@ -230,27 +229,19 @@ public class NodeScope
   static NodeScope getEnclosingNodeScope (@NonNull final Node aNode)
   {
     if (aNode instanceof final ASTBNFDeclaration aASTBNFDeclaration)
-    {
       return aASTBNFDeclaration.getNodeScope ();
-    }
+
     for (Node n = aNode.jjtGetParent (); n != null; n = n.jjtGetParent ())
     {
-      if (n instanceof ASTBNFDeclaration)
-      {
-        return ((ASTBNFDeclaration) n).getNodeScope ();
-      }
-      else
-        if (n instanceof final ASTBNFNodeScope aASTBNFNodeScope)
-        {
-          return aASTBNFNodeScope.getNodeScope ();
-        }
-        else
-          if (n instanceof final ASTExpansionNodeScope aASTExpansionNodeScope)
-          {
-            return aASTExpansionNodeScope.getNodeScope ();
-          }
+      if (n instanceof final ASTBNFDeclaration aDecl)
+        return aDecl.getNodeScope ();
+
+      if (n instanceof final ASTBNFNodeScope aASTBNFNodeScope)
+        return aASTBNFNodeScope.getNodeScope ();
+
+      if (n instanceof final ASTExpansionNodeScope aASTExpansionNodeScope)
+        return aASTExpansionNodeScope.getNodeScope ();
     }
     return null;
   }
-
 }

@@ -51,8 +51,58 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
  */
 public class TokenizerData
 {
-  /** Default constructor. */
-  public TokenizerData ()
+  // Class representing NFA state.
+  /**
+   * One state of the NFA the interpreter walks.
+   *
+   * @param index
+   *        Index of the state.
+   * @param characters
+   *        The characters this state can move on. May not be <code>null</code>.
+   * @param nextStates
+   *        The states reachable from here. May not be <code>null</code>.
+   * @param compositeStates
+   *        The states this one stands for, if it is a composite one. The initial state has to
+   *        transition to several states at once so that the NFA tries every possibility. May not be
+   *        <code>null</code>.
+   * @param kind
+   *        The token kind matched here, or {@link Integer#MAX_VALUE} if this is not a final state.
+   */
+  public record NfaState (int index,
+                          Set <Character> characters,
+                          Set <Integer> nextStates,
+                          Set <Integer> compositeStates,
+                          int kind)
+  {}
+
+  /** What a matched kind does with the input. */
+  public static enum EMatchType
+  {
+    /** Throw the match away and start again. */
+    SKIP,
+    /** Produce a token that the parser does not see, but that stays attached to the next one. */
+    SPECIAL_TOKEN,
+    /** Keep the match and go on collecting, so that a longer token can be built from it. */
+    MORE,
+    /** Produce a token and hand it to the parser. */
+    TOKEN,
+  }
+
+  /**
+   * What matching a kind means: which token it is and what it does to the lexical state.
+   *
+   * @param image
+   *        The string literal image if this is a string literal token, <code>null</code> otherwise.
+   * @param kind
+   *        The token kind.
+   * @param matchType
+   *        Whether this produces a token, a skip, a special token or more input.
+   * @param newLexState
+   *        The lexical state to switch to, or -1 to stay.
+   * @param action
+   *        The action to run, or <code>null</code> if there is none.
+   */
+  public record MatchInfo (String image, int kind, EMatchType matchType, int newLexState, String action)
   {}
 
   // Name of the parser as specified in the PARSER_BEGIN/PARSER_END block.
@@ -85,6 +135,10 @@ public class TokenizerData
   private String [] m_aLexStateNames;
   // DEFAULT lexical state index.
   private int m_nDefaultLexState;
+
+  /** Default constructor. */
+  public TokenizerData ()
+  {}
 
   /**
    * The parser name, as the PARSER_BEGIN of the grammar gives it.
@@ -397,58 +451,4 @@ public class TokenizerData
   {
     this.m_nDefaultLexState = nDefaultLexState;
   }
-
-  // Class representing NFA state.
-  /**
-   * One state of the NFA the interpreter walks.
-   *
-   * @param index
-   *        Index of the state.
-   * @param characters
-   *        The characters this state can move on. May not be <code>null</code>.
-   * @param nextStates
-   *        The states reachable from here. May not be <code>null</code>.
-   * @param compositeStates
-   *        The states this one stands for, if it is a composite one. The initial state has to
-   *        transition to several states at once so that the NFA tries every possibility. May not be
-   *        <code>null</code>.
-   * @param kind
-   *        The token kind matched here, or {@link Integer#MAX_VALUE} if this is not a final state.
-   */
-  public record NfaState (int index,
-                          Set <Character> characters,
-                          Set <Integer> nextStates,
-                          Set <Integer> compositeStates,
-                          int kind)
-  {}
-
-  /** What a matched kind does with the input. */
-  public static enum EMatchType
-  {
-    /** Throw the match away and start again. */
-    SKIP,
-    /** Produce a token that the parser does not see, but that stays attached to the next one. */
-    SPECIAL_TOKEN,
-    /** Keep the match and go on collecting, so that a longer token can be built from it. */
-    MORE,
-    /** Produce a token and hand it to the parser. */
-    TOKEN,
-  }
-
-  /**
-   * What matching a kind means: which token it is and what it does to the lexical state.
-   *
-   * @param image
-   *        The string literal image if this is a string literal token, <code>null</code> otherwise.
-   * @param kind
-   *        The token kind.
-   * @param matchType
-   *        Whether this produces a token, a skip, a special token or more input.
-   * @param newLexState
-   *        The lexical state to switch to, or -1 to stay.
-   * @param action
-   *        The action to run, or <code>null</code> if there is none.
-   */
-  public record MatchInfo (String image, int kind, EMatchType matchType, int newLexState, String action)
-  {}
 }

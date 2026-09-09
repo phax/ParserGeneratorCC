@@ -61,10 +61,6 @@ import com.helger.pgcc.parser.exp.ExpAction;
  */
 public final class GrammarState
 {
-  /** Default constructor. */
-  public GrammarState ()
-  {}
-
   private final ICommonsList <Token> m_aCuToInsertionPoint1 = new CommonsArrayList <> ();
   private final ICommonsList <Token> m_aCuToInsertionPoint2 = new CommonsArrayList <> ();
   private final ICommonsList <Token> m_aCuFromInsertionPoint2 = new CommonsArrayList <> ();
@@ -96,6 +92,10 @@ public final class GrammarState
   private int m_nCurrentLine;
   private int m_nCurrentColumn;
   private long m_nNextExpansionGeneration = 1;
+
+  /** Default constructor. */
+  public GrammarState ()
+  {}
 
   /** {@return the tokens from the start of the file to the first insertion point} */
   @NonNull
