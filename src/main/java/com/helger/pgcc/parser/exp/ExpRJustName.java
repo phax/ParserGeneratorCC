@@ -33,31 +33,63 @@
  */
 package com.helger.pgcc.parser.exp;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.Token;
 
 /**
- * Describes regular expressions which are referred to just by their name. This
- * means that a regular expression with this name has been declared earlier.
+ * Describes regular expressions which are referred to just by their name. This means that a regular
+ * expression with this name has been declared earlier.
  */
 
-public class ExpRJustName extends AbstractExpRegularExpression
+public final class ExpRJustName extends AbstractExpRegularExpression
 {
   /**
    * "regexpr" points to the regular expression denoted by the name.
    */
-  public AbstractExpRegularExpression m_regexpr;
+  private AbstractExpRegularExpression m_aRegexpr;
 
-  @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  /**
+   * The regexpr.
+   *
+   * @return The value of m_aRegexpr.
+   */
+  public AbstractExpRegularExpression getRegexpr ()
   {
-    return m_regexpr.generateNfa (ignoreCase);
+    return m_aRegexpr;
   }
 
-  public ExpRJustName (final Token token, final String image)
+  /**
+   * The regexpr.
+   *
+   * @param aValue
+   *        The new value of m_aRegexpr.
+   */
+  public void setRegexpr (final AbstractExpRegularExpression aValue)
   {
-    setLine (token.beginLine);
-    setColumn (token.beginColumn);
-    setLabel (image);
+    m_aRegexpr = aValue;
+  }
+
+  @Override
+  public Nfa generateNfa (final boolean bIgnoreCase)
+  {
+    return m_aRegexpr.generateNfa (bIgnoreCase);
+  }
+
+  /**
+   * Create a reference to a token declared elsewhere, which is resolved once the whole grammar has
+   * been read.
+   *
+   * @param aToken
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param sImage
+   *        The token label being referred to. May not be <code>null</code>.
+   */
+  public ExpRJustName (@NonNull final Token aToken, final String sImage)
+  {
+    setLineNumber (aToken.beginLine);
+    setColumnNumber (aToken.beginColumn);
+    setLabel (sImage);
   }
 }

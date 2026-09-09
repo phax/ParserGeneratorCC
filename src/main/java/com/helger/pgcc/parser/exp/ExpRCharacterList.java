@@ -49,7 +49,7 @@ import com.helger.pgcc.parser.Options;
  * Describes character lists.
  */
 
-public class ExpRCharacterList extends AbstractExpRegularExpression
+public final class ExpRCharacterList extends AbstractExpRegularExpression
 {
   private static final char [] DIFF_LOWER_CASE_RANGES = { 65,
                                                           90,
@@ -106,10 +106,11 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
                                                           302,
                                                           302,
                                                           /*
-                                                           * new for fixing
-                                                           * 1.0.2
+                                                           * new for fixing 1.0.2
                                                            */ 304,
-                                                          304, /* End new */
+                                                          304, /*
+                                                                * End new
+                                                                */
                                                           306,
                                                           306,
                                                           308,
@@ -197,8 +198,7 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
                                                           391,
                                                           391,
                                                           /*
-                                                           * new for fixing
-                                                           * 1.0.2
+                                                           * new for fixing 1.0.2
                                                            */ 393,
                                                           393,
                                                           /* End new */ 394,
@@ -206,8 +206,7 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
                                                           395,
                                                           395,
                                                           /*
-                                                           * 398, Sreeni fixed
-                                                           * for 1.2
+                                                           * 398, Sreeni fixed for 1.2
                                                            */ 399,
                                                           399,
                                                           400,
@@ -1063,18 +1062,12 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
                                                           596,
                                                           598,
                                                           /*
-                                                           * new for fixing
-                                                           * 1.0.2
+                                                           * new for fixing 1.0.2
                                                            */ 598,
                                                           599,
                                                           /* End new */ 599, /*
-                                                                              * 600,
-                                                                              * Sreeni
-                                                                              * fixed
-                                                                              * for
-                                                                              * 1
-                                                                              * .
-                                                                              * 2
+                                                                              * 600, Sreeni fixed
+                                                                              * for 1 . 2
                                                                               */
                                                           601,
                                                           601,
@@ -1107,11 +1100,12 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
                                                           945,
                                                           961,
                                                           /*
-                                                           * new for fixing
-                                                           * 1.0.2
+                                                           * new for fixing 1.0.2
                                                            */ 962,
                                                           962,
-                                                          /* End new */ 963,
+                                                          /*
+                                                           * End new
+                                                           */ 963,
                                                           971,
                                                           972,
                                                           972,
@@ -1582,42 +1576,41 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
                                                           0xffff,
                                                           0xffff };
   /**
-   * This is true if a tilde (~) appears before the character list. Otherwise,
-   * this is false.
+   * This is true if a tilde (~) appears before the character list. Otherwise, this is false.
    */
-  private boolean m_negated_list = false;
+  private boolean m_bNegatedList = false;
 
   /**
-   * This is the list of descriptors of the character list. Each list entry will
-   * narrow to either SingleCharacter or to CharacterRange.
+   * This is the list of descriptors of the character list. Each list entry will narrow to either
+   * SingleCharacter or to CharacterRange.
    */
-  private List <ICCCharacter> m_descriptors = new ArrayList <> ();
+  private List <ICCCharacter> m_aDescriptors = new ArrayList <> ();
 
-  private boolean m_transformed = false;
+  private boolean m_bTransformed = false;
 
   void toCaseNeutral ()
   {
-    final int cnt = m_descriptors.size ();
+    final int nCnt = m_aDescriptors.size ();
 
-    for (int i = 0; i < cnt; i++)
+    for (int i = 0; i < nCnt; i++)
     {
-      final ICCCharacter desc = m_descriptors.get (i);
-      if (desc instanceof SingleCharacter)
+      final ICCCharacter aDesc = m_aDescriptors.get (i);
+      if (aDesc instanceof final SingleCharacter aSingleCharacter)
       {
-        final char ch = ((SingleCharacter) desc).getChar ();
+        final char cCh = aSingleCharacter.getChar ();
 
-        final char cLow = Character.toLowerCase (ch);
-        if (ch != cLow)
-          m_descriptors.add (new SingleCharacter (cLow));
+        final char cLow = Character.toLowerCase (cCh);
+        if (cCh != cLow)
+          m_aDescriptors.add (new SingleCharacter (cLow));
 
-        final char cUp = Character.toUpperCase (ch);
-        if (ch != cUp)
-          m_descriptors.add (new SingleCharacter (cUp));
+        final char cUp = Character.toUpperCase (cCh);
+        if (cCh != cUp)
+          m_aDescriptors.add (new SingleCharacter (cUp));
       }
       else
       {
-        final char l = ((CharacterRange) desc).getLeft ();
-        final char r = ((CharacterRange) desc).getRight ();
+        final char l = ((CharacterRange) aDesc).getLeft ();
+        final char r = ((CharacterRange) aDesc).getRight ();
         int j = 0;
 
         /* Add ranges for which lower case is different. */
@@ -1633,33 +1626,33 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
 
             if (r <= DIFF_LOWER_CASE_RANGES[j + 1])
             {
-              m_descriptors.add (new CharacterRange (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]),
-                                                     (char) (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]) +
-                                                             r -
-                                                             DIFF_LOWER_CASE_RANGES[j])));
+              m_aDescriptors.add (new CharacterRange (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]),
+                                                      (char) (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]) +
+                                                              r -
+                                                              DIFF_LOWER_CASE_RANGES[j])));
               break;
             }
 
-            m_descriptors.add (new CharacterRange (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]),
-                                                   Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j + 1])));
+            m_aDescriptors.add (new CharacterRange (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]),
+                                                    Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j + 1])));
           }
           else
           {
             if (r <= DIFF_LOWER_CASE_RANGES[j + 1])
             {
-              m_descriptors.add (new CharacterRange ((char) (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]) +
-                                                             l -
-                                                             DIFF_LOWER_CASE_RANGES[j]),
-                                                     (char) (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]) +
-                                                             r -
-                                                             DIFF_LOWER_CASE_RANGES[j])));
+              m_aDescriptors.add (new CharacterRange ((char) (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]) +
+                                                              l -
+                                                              DIFF_LOWER_CASE_RANGES[j]),
+                                                      (char) (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]) +
+                                                              r -
+                                                              DIFF_LOWER_CASE_RANGES[j])));
               break;
             }
 
-            m_descriptors.add (new CharacterRange ((char) (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]) +
-                                                           l -
-                                                           DIFF_LOWER_CASE_RANGES[j]),
-                                                   Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j + 1])));
+            m_aDescriptors.add (new CharacterRange ((char) (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]) +
+                                                            l -
+                                                            DIFF_LOWER_CASE_RANGES[j]),
+                                                    Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j + 1])));
           }
 
           j += 2;
@@ -1667,15 +1660,15 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
           {
             if (r <= DIFF_LOWER_CASE_RANGES[j + 1])
             {
-              m_descriptors.add (new CharacterRange (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]),
-                                                     (char) (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]) +
-                                                             r -
-                                                             DIFF_LOWER_CASE_RANGES[j])));
+              m_aDescriptors.add (new CharacterRange (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]),
+                                                      (char) (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]) +
+                                                              r -
+                                                              DIFF_LOWER_CASE_RANGES[j])));
               break;
             }
 
-            m_descriptors.add (new CharacterRange (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]),
-                                                   Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j + 1])));
+            m_aDescriptors.add (new CharacterRange (Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j]),
+                                                    Character.toLowerCase (DIFF_LOWER_CASE_RANGES[j + 1])));
             j += 2;
           }
           break;
@@ -1693,31 +1686,33 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
 
           if (r <= DIFF_UPPER_CASE_RANGES[j + 1])
           {
-            m_descriptors.add (new CharacterRange (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]),
-                                                   (char) (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]) +
-                                                           r -
-                                                           DIFF_UPPER_CASE_RANGES[j])));
+            m_aDescriptors.add (new CharacterRange (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]),
+                                                    (char) (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]) +
+                                                            r -
+                                                            DIFF_UPPER_CASE_RANGES[j])));
             continue;
           }
 
-          m_descriptors.add (new CharacterRange (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]),
-                                                 Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j + 1])));
+          m_aDescriptors.add (new CharacterRange (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]),
+                                                  Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j + 1])));
         }
         else
         {
           if (r <= DIFF_UPPER_CASE_RANGES[j + 1])
           {
-            m_descriptors.add (new CharacterRange ((char) (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]) +
-                                                           l -
-                                                           DIFF_UPPER_CASE_RANGES[j]),
-                                                   (char) (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]) +
-                                                           r -
-                                                           DIFF_UPPER_CASE_RANGES[j])));
+            m_aDescriptors.add (new CharacterRange ((char) (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]) +
+                                                            l -
+                                                            DIFF_UPPER_CASE_RANGES[j]),
+                                                    (char) (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]) +
+                                                            r -
+                                                            DIFF_UPPER_CASE_RANGES[j])));
             continue;
           }
 
-          m_descriptors.add (new CharacterRange ((char) (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]) + l - DIFF_UPPER_CASE_RANGES[j]),
-                                                 Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j + 1])));
+          m_aDescriptors.add (new CharacterRange ((char) (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]) +
+                                                          l -
+                                                          DIFF_UPPER_CASE_RANGES[j]),
+                                                  Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j + 1])));
         }
 
         j += 2;
@@ -1725,15 +1720,15 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
         {
           if (r <= DIFF_UPPER_CASE_RANGES[j + 1])
           {
-            m_descriptors.add (new CharacterRange (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]),
-                                                   (char) (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]) +
-                                                           r -
-                                                           DIFF_UPPER_CASE_RANGES[j])));
+            m_aDescriptors.add (new CharacterRange (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]),
+                                                    (char) (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]) +
+                                                            r -
+                                                            DIFF_UPPER_CASE_RANGES[j])));
             break;
           }
 
-          m_descriptors.add (new CharacterRange (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]),
-                                                 Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j + 1])));
+          m_aDescriptors.add (new CharacterRange (Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j]),
+                                                  Character.toUpperCase (DIFF_UPPER_CASE_RANGES[j + 1])));
           j += 2;
         }
       }
@@ -1741,27 +1736,27 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    if (!m_transformed)
+    if (!m_bTransformed)
     {
-      if (Options.isIgnoreCase () || ignoreCase)
+      if (Options.isIgnoreCase () || bIgnoreCase)
       {
         // Internal debug only
         if (false)
         {
           final StringBuilder aSB = new StringBuilder ("Before:");
-          for (int i = 0; i < m_descriptors.size (); i++)
+          for (int i = 0; i < m_aDescriptors.size (); i++)
           {
-            if (m_descriptors.get (i) instanceof SingleCharacter)
+            if (m_aDescriptors.get (i) instanceof SingleCharacter)
             {
-              final char c = ((SingleCharacter) m_descriptors.get (i)).getChar ();
+              final char c = ((SingleCharacter) m_aDescriptors.get (i)).getChar ();
               aSB.append ((int) c + " ");
             }
             else
             {
-              final char l = ((CharacterRange) m_descriptors.get (i)).getLeft ();
-              final char r = ((CharacterRange) m_descriptors.get (i)).getRight ();
+              final char l = ((CharacterRange) m_aDescriptors.get (i)).getLeft ();
+              final char r = ((CharacterRange) m_aDescriptors.get (i)).getRight ();
               aSB.append ((int) l + "-" + (int) r + " ");
             }
             if ((i + 1) % 6 == 0)
@@ -1777,17 +1772,17 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
         if (false)
         {
           final StringBuilder aSB = new StringBuilder ("After:");
-          for (int i = 0; i < m_descriptors.size (); i++)
+          for (int i = 0; i < m_aDescriptors.size (); i++)
           {
-            if (m_descriptors.get (i) instanceof SingleCharacter)
+            if (m_aDescriptors.get (i) instanceof SingleCharacter)
             {
-              final char c = ((SingleCharacter) m_descriptors.get (i)).getChar ();
+              final char c = ((SingleCharacter) m_aDescriptors.get (i)).getChar ();
               aSB.append ((int) c + " ");
             }
             else
             {
-              final char l = ((CharacterRange) m_descriptors.get (i)).getLeft ();
-              final char r = ((CharacterRange) m_descriptors.get (i)).getRight ();
+              final char l = ((CharacterRange) m_aDescriptors.get (i)).getLeft ();
+              final char r = ((CharacterRange) m_aDescriptors.get (i)).getRight ();
               aSB.append ((int) l + "-" + (int) r + " ");
             }
             if ((i + 1) % 6 == 0)
@@ -1797,69 +1792,71 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
         }
       }
 
-      if (m_negated_list)
-        removeNegation (); // This also sorts the list
+      if (m_bNegatedList)
+        // This also sorts the list
+        removeNegation ();
       else
         sortDescriptors ();
     }
 
-    if (m_descriptors.size () == 0 && !m_negated_list)
+    if (m_aDescriptors.isEmpty () && !m_bNegatedList)
     {
-      JavaCCErrors.semantic_error (this, "Empty character set is not allowed as it will not match any character.");
+      JavaCCErrors.semanticError (this, "Empty character set is not allowed as it will not match any character.");
       return new Nfa ();
     }
 
-    m_transformed = true;
-    final Nfa retVal = new Nfa ();
-    final NfaState startState = retVal.start ();
-    final NfaState finalState = retVal.end ();
+    m_bTransformed = true;
+    final Nfa aRetVal = new Nfa ();
+    final NfaState aStartState = aRetVal.start ();
+    final NfaState aFinalState = aRetVal.end ();
     int i;
 
-    for (i = 0; i < m_descriptors.size (); i++)
+    for (i = 0; i < m_aDescriptors.size (); i++)
     {
-      final ICCCharacter tmp = m_descriptors.get (i);
-      if (tmp instanceof SingleCharacter)
-        startState.addChar (((SingleCharacter) tmp).getChar ());
-      else // if (descriptors.get(i) instanceof CharacterRange)
+      final ICCCharacter aTmp = m_aDescriptors.get (i);
+      if (aTmp instanceof SingleCharacter)
+        aStartState.addChar (((SingleCharacter) aTmp).getChar ());
+      // if (descriptors.get(i) instanceof CharacterRange)
+      else
       {
-        final CharacterRange cr = (CharacterRange) tmp;
+        final CharacterRange aCr = (CharacterRange) aTmp;
 
-        if (cr.getLeft () == cr.getRight ())
-          startState.addChar (cr.getLeft ());
+        if (aCr.getLeft () == aCr.getRight ())
+          aStartState.addChar (aCr.getLeft ());
         else
-          startState.addRange (cr.getLeft (), cr.getRight ());
+          aStartState.addRange (aCr.getLeft (), aCr.getRight ());
       }
     }
 
-    startState.m_next = finalState;
+    aStartState.setNext (aFinalState);
 
-    return retVal;
+    return aRetVal;
   }
 
-  private static boolean _overlaps (@NonNull final CharacterRange r1, @NonNull final CharacterRange r2)
+  private static boolean _overlaps (@NonNull final CharacterRange aR1, @NonNull final CharacterRange aR2)
   {
-    return r1.getLeft () <= r2.getRight () && r1.getRight () > r2.getRight ();
+    return aR1.getLeft () <= aR2.getRight () && aR1.getRight () > aR2.getRight ();
   }
 
   void sortDescriptors ()
   {
     int j;
 
-    final List <ICCCharacter> newDesc = new ArrayList <> (m_descriptors.size ());
-    int cnt = 0;
+    final List <ICCCharacter> aNewDesc = new ArrayList <> (m_aDescriptors.size ());
+    int nCnt = 0;
 
-    Outer: for (int i = 0; i < m_descriptors.size (); i++)
+    Outer: for (int i = 0; i < m_aDescriptors.size (); i++)
     {
-      if (m_descriptors.get (i) instanceof SingleCharacter)
+      if (m_aDescriptors.get (i) instanceof SingleCharacter)
       {
-        final SingleCharacter s = (SingleCharacter) m_descriptors.get (i);
+        final SingleCharacter s = (SingleCharacter) m_aDescriptors.get (i);
 
-        for (j = 0; j < cnt; j++)
+        for (j = 0; j < nCnt; j++)
         {
-          final ICCCharacter tmp2 = newDesc.get (j);
-          if (tmp2 instanceof SingleCharacter)
+          final ICCCharacter aTmp2 = aNewDesc.get (j);
+          if (aTmp2 instanceof SingleCharacter)
           {
-            final char c = ((SingleCharacter) tmp2).getChar ();
+            final char c = ((SingleCharacter) aTmp2).getChar ();
             if (c > s.getChar ())
               break;
             else
@@ -1868,9 +1865,9 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
           }
           else
           {
-            final char l = ((CharacterRange) tmp2).getLeft ();
+            final char l = ((CharacterRange) aTmp2).getLeft ();
 
-            if (((CharacterRange) tmp2).isInRange (s.getChar ()))
+            if (((CharacterRange) aTmp2).isInRange (s.getChar ()))
               continue Outer;
             else
               if (l > s.getChar ())
@@ -1878,68 +1875,68 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
           }
         }
 
-        newDesc.add (j, s);
-        cnt++;
+        aNewDesc.add (j, s);
+        nCnt++;
       }
       else
       {
-        CharacterRange range = (CharacterRange) m_descriptors.get (i);
+        CharacterRange aRange = (CharacterRange) m_aDescriptors.get (i);
 
-        for (j = 0; j < cnt; j++)
+        for (j = 0; j < nCnt; j++)
         {
-          final ICCCharacter tmp2 = newDesc.get (j);
-          if (tmp2 instanceof SingleCharacter)
+          final ICCCharacter aTmp2 = aNewDesc.get (j);
+          if (aTmp2 instanceof SingleCharacter)
           {
-            final char c = ((SingleCharacter) tmp2).getChar ();
-            final CharacterRange range1 = range;
-            if (range1.isInRange (c))
+            final char c = ((SingleCharacter) aTmp2).getChar ();
+            final CharacterRange aRange1 = aRange;
+            if (aRange1.isInRange (c))
             {
-              newDesc.remove (j--);
-              cnt--;
+              aNewDesc.remove (j--);
+              nCnt--;
             }
             else
-              if (c > range.getRight ())
+              if (c > aRange.getRight ())
                 break;
           }
           else
           {
-            final CharacterRange rtmp = (CharacterRange) tmp2;
+            final CharacterRange aRtmp = (CharacterRange) aTmp2;
 
-            if (range.isSubRangeOf (rtmp))
+            if (aRange.isSubRangeOf (aRtmp))
             {
               continue Outer;
             }
 
-            if (rtmp.isSubRangeOf (range))
+            if (aRtmp.isSubRangeOf (aRange))
             {
-              newDesc.set (j, range);
+              aNewDesc.set (j, aRange);
               continue Outer;
             }
 
-            if (_overlaps (range, rtmp))
+            if (_overlaps (aRange, aRtmp))
             {
-              range.setLeft ((char) (rtmp.getRight () + 1));
+              aRange.setLeft ((char) (aRtmp.getRight () + 1));
             }
             else
-              if (_overlaps (rtmp, range))
+              if (_overlaps (aRtmp, aRange))
               {
-                final CharacterRange tmp = range;
-                rtmp.setRight ((char) (range.getLeft () + 1));
-                range = rtmp;
-                newDesc.set (j, tmp);
+                final CharacterRange aTmp = aRange;
+                aRtmp.setRight ((char) (aRange.getLeft () + 1));
+                aRange = aRtmp;
+                aNewDesc.set (j, aTmp);
               }
               else
-                if (rtmp.getLeft () > range.getRight ())
+                if (aRtmp.getLeft () > aRange.getRight ())
                   break;
           }
         }
 
-        newDesc.add (j, range);
-        cnt++;
+        aNewDesc.add (j, aRange);
+        nCnt++;
       }
     }
 
-    m_descriptors = newDesc;
+    m_aDescriptors = aNewDesc;
   }
 
   void removeNegation ()
@@ -1949,7 +1946,7 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
     if (false)
     {
       final StringBuilder aSB = new StringBuilder ("REM. NEG Before:");
-      for (final ICCCharacter m_descriptor : m_descriptors)
+      for (final ICCCharacter m_descriptor : m_aDescriptors)
       {
         if (m_descriptor instanceof SingleCharacter)
         {
@@ -1966,66 +1963,66 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
       PGPrinter.info (aSB.toString ());
     }
 
-    final List <ICCCharacter> newDescriptors = new ArrayList <> ();
+    final List <ICCCharacter> aNewDescriptors = new ArrayList <> ();
     // One less than the first valid character.
-    int lastRemoved = -1;
+    int nLastRemoved = -1;
 
-    for (int i = 0; i < m_descriptors.size (); i++)
+    for (int i = 0; i < m_aDescriptors.size (); i++)
     {
-      final ICCCharacter tmp = m_descriptors.get (i);
-      if (tmp instanceof SingleCharacter)
+      final ICCCharacter aTmp = m_aDescriptors.get (i);
+      if (aTmp instanceof SingleCharacter)
       {
-        final char c = ((SingleCharacter) tmp).getChar ();
+        final char c = ((SingleCharacter) aTmp).getChar ();
 
-        if (c >= 0 && c <= lastRemoved + 1)
+        if (c >= 0 && c <= nLastRemoved + 1)
         {
-          lastRemoved = c;
+          nLastRemoved = c;
           continue;
         }
 
         if (false)
-          PGPrinter.info ("lastRemoved : " + lastRemoved + "; char : " + (int) c);
-        newDescriptors.add (new CharacterRange ((char) (lastRemoved + 1), (char) ((lastRemoved = c) - 1)));
+          PGPrinter.info ("lastRemoved : " + nLastRemoved + "; char : " + (int) c);
+        aNewDescriptors.add (new CharacterRange ((char) (nLastRemoved + 1), (char) ((nLastRemoved = c) - 1)));
       }
       else
       {
-        final char l = ((CharacterRange) tmp).getLeft ();
-        final char r = ((CharacterRange) tmp).getRight ();
+        final char l = ((CharacterRange) aTmp).getLeft ();
+        final char r = ((CharacterRange) aTmp).getRight ();
 
-        if (l >= 0 && l <= lastRemoved + 1)
+        if (l >= 0 && l <= nLastRemoved + 1)
         {
-          lastRemoved = r;
+          nLastRemoved = r;
           continue;
         }
 
         if (false)
-          PGPrinter.info ("lastRemoved : " + lastRemoved + "; left : " + l + "; right : " + (int) r);
-        newDescriptors.add (new CharacterRange ((char) (lastRemoved + 1), (char) (l - 1)));
-        lastRemoved = r;
+          PGPrinter.info ("lastRemoved : " + nLastRemoved + "; left : " + l + "; right : " + (int) r);
+        aNewDescriptors.add (new CharacterRange ((char) (nLastRemoved + 1), (char) (l - 1)));
+        nLastRemoved = r;
       }
     }
 
     if (false)
-      PGPrinter.info ("lastRem : " + lastRemoved);
+      PGPrinter.info ("lastRem : " + nLastRemoved);
 
-    if (NfaState.s_unicodeWarningGiven || Options.isJavaUnicodeEscape ())
+    if (NfaState.nfa ().isUnicodeWarningGiven () || Options.isJavaUnicodeEscape ())
     {
-      if (lastRemoved < (char) 0xffff)
-        newDescriptors.add (new CharacterRange ((char) (lastRemoved + 1), (char) 0xffff));
+      if (nLastRemoved < (char) 0xffff)
+        aNewDescriptors.add (new CharacterRange ((char) (nLastRemoved + 1), (char) 0xffff));
     }
     else
     {
-      if (lastRemoved < (char) 0xff)
-        newDescriptors.add (new CharacterRange ((char) (lastRemoved + 1), (char) 0xff));
+      if (nLastRemoved < (char) 0xff)
+        aNewDescriptors.add (new CharacterRange ((char) (nLastRemoved + 1), (char) 0xff));
     }
 
-    m_descriptors = newDescriptors;
-    m_negated_list = false;
+    m_aDescriptors = aNewDescriptors;
+    m_bNegatedList = false;
 
     if (false)
     {
       final StringBuilder aSB = new StringBuilder ("REM. NEG After:");
-      for (final ICCCharacter m_descriptor : m_descriptors)
+      for (final ICCCharacter m_descriptor : m_aDescriptors)
       {
         if (m_descriptor instanceof SingleCharacter)
         {
@@ -2043,14 +2040,17 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
     }
   }
 
+  /**
+   * Create an empty character list.
+   */
   public ExpRCharacterList ()
   {}
 
   ExpRCharacterList (final char c)
   {
-    m_descriptors = new ArrayList <> ();
-    m_descriptors.add (new SingleCharacter (c));
-    m_negated_list = false;
+    m_aDescriptors = new ArrayList <> ();
+    m_aDescriptors.add (new SingleCharacter (c));
+    m_bNegatedList = false;
     setOrdinal (Integer.MAX_VALUE);
   }
 
@@ -2058,28 +2058,48 @@ public class ExpRCharacterList extends AbstractExpRegularExpression
   public boolean canMatchAnyChar ()
   {
     // Return true only if it is ~[]
-    return m_negated_list && (m_descriptors == null || m_descriptors.size () == 0);
+    return m_bNegatedList && (m_aDescriptors == null || m_aDescriptors.isEmpty ());
   }
 
+  /**
+   * {@return <code>true</code> if this list was written as <code>~[...]</code> and matches
+   * everything it does not contain}
+   */
   public final boolean isNegatedList ()
   {
-    return m_negated_list;
+    return m_bNegatedList;
   }
 
+  /**
+   * Record that this list was written with a leading tilde.
+   *
+   * @param b
+   *        <code>true</code> for a negated list.
+   */
   public final void setNegatedList (final boolean b)
   {
-    m_negated_list = b;
+    m_bNegatedList = b;
   }
 
+  /**
+   * {@return the single characters and ranges this list is made of, as a list the caller may add
+   * to}
+   */
   @NonNull
   public final List <ICCCharacter> getDescriptors ()
   {
-    return m_descriptors;
+    return m_aDescriptors;
   }
 
+  /**
+   * Append a single character or a range to this list.
+   *
+   * @param a
+   *        The descriptor. May not be <code>null</code>.
+   */
   public final void addDescriptor (@NonNull final ICCCharacter a)
   {
     ValueEnforcer.notNull (a, "CCCharacter");
-    m_descriptors.add (a);
+    m_aDescriptors.add (a);
   }
 }

@@ -36,6 +36,9 @@ package com.helger.pgcc.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
+import com.helger.pgcc.context.LookaheadState;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpChoice;
 import com.helger.pgcc.parser.exp.ExpLookahead;
@@ -47,132 +50,164 @@ import com.helger.pgcc.parser.exp.ExpZeroOrMore;
 import com.helger.pgcc.parser.exp.ExpZeroOrOne;
 import com.helger.pgcc.parser.exp.Expansion;
 
+/**
+ * The FIRST and FOLLOW set computation that the LL(k) decisions are made from.
+ * <p>
+ * A {@link MatchInfo} is one possible sequence of token kinds, up to
+ * {@link LookaheadState#getLimit()} of them. Both methods take the sequences matched so far and
+ * return them extended by everything the expansion could match next, so a caller starting from one
+ * empty sequence ends up with every token sequence of that length the expansion admits. Two
+ * expansions are ambiguous at length k exactly when their sets share an entry, which is what
+ * {@link LookaheadCalc} looks for.
+ * <p>
+ * The walk stops early in two ways. Reaching the limit records the sequence in
+ * {@link LookaheadState#getSizeLimitedMatches()} rather than growing it, so the ambiguity report
+ * can show what it found; and a cyclic grammar is cut off by the generation stamp described on
+ * {@link #genFollowSetRecursive(List, Expansion, long)}.
+ *
+ * @author Philip Helger
+ */
 public final class LookaheadWalk
 {
-  static boolean s_considerSemanticLA;
-  static List <MatchInfo> s_sizeLimitedMatches;
-
   private LookaheadWalk ()
   {}
 
-  public static List <MatchInfo> genFirstSet (final List <MatchInfo> partialMatches, final Expansion exp)
+  /**
+   * Extend every sequence matched so far by what this expansion can match next: the FIRST set.
+   * <p>
+   * Recursive over the expansion tree, and through {@link ExpNonTerminal} into the productions it
+   * calls, so a left recursive grammar would not terminate here - {@code Semanticize} rejects those
+   * before this runs.
+   *
+   * @param aPartialMatches
+   *        The sequences to extend. May not be <code>null</code>.
+   * @param aExp
+   *        The expansion to walk. May not be <code>null</code>.
+   * @return The extended sequences. Never <code>null</code>, and empty when the expansion cannot
+   *         match anything here.
+   */
+  public static List <MatchInfo> genFirstSetRecursive (@NonNull final List <MatchInfo> aPartialMatches,
+                                                       final Expansion aExp)
   {
-    if (exp instanceof AbstractExpRegularExpression)
+    if (aExp instanceof final AbstractExpRegularExpression aRegularExpression)
     {
-      final List <MatchInfo> retval = new ArrayList <> ();
-      for (int i = 0; i < partialMatches.size (); i++)
+      final List <MatchInfo> aRetval = new ArrayList <> ();
+      for (int i = 0; i < aPartialMatches.size (); i++)
       {
-        final MatchInfo m = partialMatches.get (i);
-        final MatchInfo mnew = new MatchInfo ();
-        for (int j = 0; j < m.m_firstFreeLoc; j++)
+        final MatchInfo m = aPartialMatches.get (i);
+        final MatchInfo aMnew = new MatchInfo ();
+        for (int j = 0; j < m.getFirstFreeLoc (); j++)
         {
-          mnew.m_match[j] = m.m_match[j];
+          aMnew.getMatch ()[j] = m.getMatch ()[j];
         }
-        mnew.m_firstFreeLoc = m.m_firstFreeLoc;
-        mnew.m_match[mnew.m_firstFreeLoc++] = ((AbstractExpRegularExpression) exp).getOrdinal ();
-        if (mnew.m_firstFreeLoc == MatchInfo.s_laLimit)
+        aMnew.setFirstFreeLoc (m.getFirstFreeLoc ());
+        aMnew.getMatch ()[aMnew.getFirstFreeLoc ()] = aRegularExpression.getOrdinal ();
+        aMnew.setFirstFreeLoc (aMnew.getFirstFreeLoc () + 1);
+        if (aMnew.getFirstFreeLoc () == LookaheadState.current ().getLimit ())
         {
-          s_sizeLimitedMatches.add (mnew);
+          LookaheadState.current ().getSizeLimitedMatches ().add (aMnew);
         }
         else
         {
-          retval.add (mnew);
+          aRetval.add (aMnew);
         }
       }
-      return retval;
+      return aRetval;
     }
 
-    if (exp instanceof ExpNonTerminal)
+    if (aExp instanceof final ExpNonTerminal aNonTerminal)
     {
-      final NormalProduction prod = ((ExpNonTerminal) exp).getProd ();
-      if (prod instanceof AbstractCodeProduction)
+      final AbstractNormalProduction aProd = aNonTerminal.getProd ();
+      // JAVACODE and CPPCODE productions have no expansion to walk into, so nothing
+      // can be said about what they match
+      if (aProd instanceof AbstractCodeProduction)
       {
         return new ArrayList <> ();
       }
-      return genFirstSet (partialMatches, prod.getExpansion ());
+      return genFirstSetRecursive (aPartialMatches, aProd.getExpansion ());
     }
 
-    if (exp instanceof ExpChoice)
+    if (aExp instanceof final ExpChoice aChoice)
     {
-      final List <MatchInfo> retval = new ArrayList <> ();
-      final ExpChoice ch = (ExpChoice) exp;
-      for (final Expansion element : ch.getChoices ())
+      final List <MatchInfo> aRetval = new ArrayList <> ();
+      for (final Expansion element : aChoice.getChoices ())
       {
-        final List <MatchInfo> v = genFirstSet (partialMatches, element);
-        retval.addAll (v);
+        final List <MatchInfo> v = genFirstSetRecursive (aPartialMatches, element);
+        aRetval.addAll (v);
       }
-      return retval;
+      return aRetval;
     }
 
-    if (exp instanceof ExpSequence)
+    if (aExp instanceof final ExpSequence aSequence)
     {
-      List <MatchInfo> v = partialMatches;
-      final ExpSequence seq = (ExpSequence) exp;
-      for (final Expansion element : seq.getUnits ())
+      List <MatchInfo> v = aPartialMatches;
+      for (final Expansion element : aSequence.getUnits ())
       {
-        v = genFirstSet (v, element);
-        if (v.size () == 0)
+        v = genFirstSetRecursive (v, element);
+        if (v.isEmpty ())
           break;
       }
       return v;
     }
 
-    if (exp instanceof ExpOneOrMore)
+    if (aExp instanceof final ExpOneOrMore aOneOrMore)
     {
-      final List <MatchInfo> retval = new ArrayList <> ();
-      List <MatchInfo> v = partialMatches;
-      final ExpOneOrMore om = (ExpOneOrMore) exp;
+      final List <MatchInfo> aRetval = new ArrayList <> ();
+      List <MatchInfo> v = aPartialMatches;
       while (true)
       {
-        v = genFirstSet (v, om.getExpansion ());
-        if (v.size () == 0)
+        v = genFirstSetRecursive (v, aOneOrMore.getExpansion ());
+        if (v.isEmpty ())
           break;
-        retval.addAll (v);
+        aRetval.addAll (v);
       }
-      return retval;
+      return aRetval;
     }
 
-    if (exp instanceof ExpZeroOrMore)
+    if (aExp instanceof final ExpZeroOrMore aZeroOrMore)
     {
-      final List <MatchInfo> retval = new ArrayList <> (partialMatches);
-      List <MatchInfo> v = partialMatches;
-      final ExpZeroOrMore zm = (ExpZeroOrMore) exp;
+      final List <MatchInfo> aRetval = new ArrayList <> (aPartialMatches);
+      List <MatchInfo> v = aPartialMatches;
       while (true)
       {
-        v = genFirstSet (v, zm.getExpansion ());
-        if (v.size () == 0)
+        v = genFirstSetRecursive (v, aZeroOrMore.getExpansion ());
+        if (v.isEmpty ())
           break;
-        retval.addAll (v);
+        aRetval.addAll (v);
       }
-      return retval;
+      return aRetval;
     }
 
-    if (exp instanceof ExpZeroOrOne)
+    if (aExp instanceof final ExpZeroOrOne aZeroOrOne)
     {
-      final List <MatchInfo> retval = new ArrayList <> ();
-      retval.addAll (partialMatches);
-      retval.addAll (genFirstSet (partialMatches, ((ExpZeroOrOne) exp).getExpansion ()));
-      return retval;
+      final List <MatchInfo> aRetval = new ArrayList <> ();
+      aRetval.addAll (aPartialMatches);
+      aRetval.addAll (genFirstSetRecursive (aPartialMatches, aZeroOrOne.getExpansion ()));
+      return aRetval;
     }
 
-    if (exp instanceof ExpTryBlock)
+    if (aExp instanceof final ExpTryBlock aTryBlock)
     {
-      return genFirstSet (partialMatches, ((ExpTryBlock) exp).m_exp);
+      return genFirstSetRecursive (aPartialMatches, aTryBlock.getExp ());
     }
 
-    if (s_considerSemanticLA && exp instanceof ExpLookahead && ((ExpLookahead) exp).getActionTokens ().isNotEmpty ())
+    // A semantic lookahead can reject anything, so when it is being taken into account nothing
+    // downstream of it is guaranteed to be reachable
+    if (LookaheadState.current ().isConsiderSemanticLA () &&
+        aExp instanceof final ExpLookahead aLookahead &&
+        aLookahead.getActionTokens ().isNotEmpty ())
     {
       return new ArrayList <> ();
     }
 
-    final List <MatchInfo> retval = new ArrayList <> (partialMatches);
-    return retval;
+    final List <MatchInfo> aRetval = new ArrayList <> (aPartialMatches);
+    return aRetval;
   }
 
-  private static void _listSplit (final List <MatchInfo> toSplit,
-                                  final List <MatchInfo> mask,
-                                  final List <MatchInfo> partInMask,
-                                  final List <MatchInfo> rest)
+  private static void _listSplit (@NonNull final List <MatchInfo> toSplit,
+                                  @NonNull final List <MatchInfo> mask,
+                                  @NonNull final List <MatchInfo> partInMask,
+                                  @NonNull final List <MatchInfo> aRest)
   {
     OuterLoop: for (int i = 0; i < toSplit.size (); i++)
     {
@@ -184,100 +219,111 @@ public final class LookaheadWalk
           continue OuterLoop;
         }
       }
-      rest.add (toSplit.get (i));
+      aRest.add (toSplit.get (i));
     }
   }
 
-  public static List <MatchInfo> genFollowSet (final List <MatchInfo> partialMatches, final Expansion exp, final long generation)
+  /**
+   * Extend every sequence matched so far by what can follow this expansion: the FOLLOW set.
+   * <p>
+   * Recursive upwards rather than downwards - it asks what surrounds the expansion, then what
+   * surrounds that. A grammar can be cyclic, so each expansion is stamped with the generation it
+   * was last visited in and a second visit within the same generation returns nothing. The caller
+   * gets a fresh generation from {@link Expansion#getNextGenerationIndex()}; the sequence branch
+   * below deliberately takes another one, so that the two halves of a split are followed
+   * independently rather than the second being cut off by the first.
+   *
+   * @param aPartialMatches
+   *        The sequences to extend. May not be <code>null</code>.
+   * @param aExp
+   *        The expansion whose surroundings to walk. May not be <code>null</code>.
+   * @param nGeneration
+   *        The visit stamp for this walk.
+   * @return The extended sequences. Never <code>null</code>.
+   */
+  public static List <MatchInfo> genFollowSetRecursive (final List <MatchInfo> aPartialMatches,
+                                                        @NonNull final Expansion aExp,
+                                                        final long nGeneration)
   {
-    if (exp.getMyGeneration () == generation)
+    if (aExp.getMyGeneration () == nGeneration)
     {
       return new ArrayList <> ();
     }
-    // System.out.println("*** Parent: " + exp.parent);
-    exp.setMyGeneration (generation);
-    if (exp.getParent () == null)
+    aExp.setMyGeneration (nGeneration);
+    if (aExp.getParent () == null)
     {
-      final List <MatchInfo> retval = new ArrayList <> (partialMatches);
-      return retval;
+      final List <MatchInfo> aRetval = new ArrayList <> (aPartialMatches);
+      return aRetval;
     }
 
-    if (exp.getParent () instanceof NormalProduction)
+    // At the top of a production, what follows is whatever follows any of its call sites
+    if (aExp.getParent () instanceof final AbstractNormalProduction aProduction)
     {
-      final List <Expansion> parents = ((NormalProduction) exp.getParent ()).getParents ();
-      final List <MatchInfo> retval = new ArrayList <> ();
-      // System.out.println("1; gen: " + generation + "; exp: " + exp);
-      for (final Expansion parent : parents)
+      final List <Expansion> aParents = aProduction.getParents ();
+      final List <MatchInfo> aRetval = new ArrayList <> ();
+      for (final Expansion parent : aParents)
       {
-        final List <MatchInfo> v = genFollowSet (partialMatches, parent, generation);
-        retval.addAll (v);
+        final List <MatchInfo> v = genFollowSetRecursive (aPartialMatches, parent, nGeneration);
+        aRetval.addAll (v);
       }
-      return retval;
+      return aRetval;
     }
 
-    if (exp.getParent () instanceof ExpSequence)
+    // Inside a sequence, what follows is the rest of the sequence, and then whatever follows the
+    // sequence itself if the rest can match nothing
+    if (aExp.getParent () instanceof final ExpSequence aSeq)
     {
-      final ExpSequence seq = (ExpSequence) exp.getParent ();
-      List <MatchInfo> v = partialMatches;
-      for (int i = exp.getOrdinalBase () + 1; i < seq.getUnitCount (); i++)
+      List <MatchInfo> v = aPartialMatches;
+      for (int i = aExp.getOrdinalBase () + 1; i < aSeq.getUnitCount (); i++)
       {
-        v = genFirstSet (v, seq.getUnitAt (i));
+        v = genFirstSetRecursive (v, aSeq.getUnitAt (i));
         if (v.isEmpty ())
           return v;
       }
-      List <MatchInfo> v1 = new ArrayList <> ();
-      List <MatchInfo> v2 = new ArrayList <> ();
-      _listSplit (v, partialMatches, v1, v2);
-      if (!v1.isEmpty ())
+      List <MatchInfo> aV1 = new ArrayList <> ();
+      List <MatchInfo> aV2 = new ArrayList <> ();
+      _listSplit (v, aPartialMatches, aV1, aV2);
+      if (!aV1.isEmpty ())
       {
-        // System.out.println("2; gen: " + generation + "; exp: " + exp);
-        v1 = genFollowSet (v1, seq, generation);
+        aV1 = genFollowSetRecursive (aV1, aSeq, nGeneration);
       }
-      if (!v2.isEmpty ())
+      if (!aV2.isEmpty ())
       {
-        // System.out.println("3; gen: " + generation + "; exp: " + exp);
-        v2 = genFollowSet (v2, seq, Expansion.getNextGenerationIndex ());
+        aV2 = genFollowSetRecursive (aV2, aSeq, Expansion.getNextGenerationIndex ());
       }
-      v2.addAll (v1);
-      return v2;
+      aV2.addAll (aV1);
+      return aV2;
     }
 
-    if (exp.getParent () instanceof ExpOneOrMore || exp.getParent () instanceof ExpZeroOrMore)
+    // Inside a loop, the body can follow itself, so keep extending until nothing new comes back.
+    // No pattern variable here: one binding cannot span the two loop types
+    if (aExp.getParent () instanceof ExpOneOrMore || aExp.getParent () instanceof ExpZeroOrMore)
     {
-      final Expansion aParent = (Expansion) exp.getParent ();
-      final List <MatchInfo> moreMatches = new ArrayList <> (partialMatches);
-      List <MatchInfo> v = partialMatches;
+      final Expansion aParent = (Expansion) aExp.getParent ();
+      final List <MatchInfo> aMoreMatches = new ArrayList <> (aPartialMatches);
+      List <MatchInfo> v = aPartialMatches;
       while (true)
       {
-        v = genFirstSet (v, exp);
-        if (v.size () == 0)
+        v = genFirstSetRecursive (v, aExp);
+        if (v.isEmpty ())
           break;
-        moreMatches.addAll (v);
+        aMoreMatches.addAll (v);
       }
-      List <MatchInfo> v1 = new ArrayList <> ();
-      List <MatchInfo> v2 = new ArrayList <> ();
-      _listSplit (moreMatches, partialMatches, v1, v2);
-      if (v1.size () != 0)
+      List <MatchInfo> aV1 = new ArrayList <> ();
+      List <MatchInfo> aV2 = new ArrayList <> ();
+      _listSplit (aMoreMatches, aPartialMatches, aV1, aV2);
+      if (!aV1.isEmpty ())
       {
-        // System.out.println("4; gen: " + generation + "; exp: " + exp);
-        v1 = genFollowSet (v1, aParent, generation);
+        aV1 = genFollowSetRecursive (aV1, aParent, nGeneration);
       }
-      if (v2.size () != 0)
+      if (!aV2.isEmpty ())
       {
-        // System.out.println("5; gen: " + generation + "; exp: " + exp);
-        v2 = genFollowSet (v2, aParent, Expansion.getNextGenerationIndex ());
+        aV2 = genFollowSetRecursive (aV2, aParent, Expansion.getNextGenerationIndex ());
       }
-      v2.addAll (v1);
-      return v2;
+      aV2.addAll (aV1);
+      return aV2;
     }
 
-    // System.out.println("6; gen: " + generation + "; exp: " + exp);
-    return genFollowSet (partialMatches, (Expansion) exp.getParent (), generation);
-  }
-
-  public static void reInit ()
-  {
-    s_considerSemanticLA = false;
-    s_sizeLimitedMatches = null;
+    return genFollowSetRecursive (aPartialMatches, (Expansion) aExp.getParent (), nGeneration);
   }
 }

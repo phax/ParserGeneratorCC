@@ -88,7 +88,7 @@ import java.util.ArrayList;
 
 import com.helger.pgcc.parser.exp.*;
 
-public class JavaCCParser extends JavaCCParserInternals {
+public class JavaCCParser extends AbstractJavaCCParserInternals {
   /**
    * The name of the parser class.
    */
@@ -98,7 +98,7 @@ public class JavaCCParser extends JavaCCParserInternals {
    * This flag is set to true when the part between PARSER_BEGIN and
    * PARSER_END is being parsed.
    */
-  private boolean m_processing_cu = false;
+  private boolean m_bProcessingCU = false;
 
   /**
    * The level of class nesting.
@@ -523,14 +523,14 @@ TOKEN :
   < RUNSIGNEDSHIFT: ">>>" >
   {
      matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).m_realKind = RUNSIGNEDSHIFT;
+     ((Token.GTToken)matchedToken).m_nRealKind = RUNSIGNEDSHIFT;
      input_stream.backup(2);
      matchedToken.image = ">";
   }
 | < RSIGNEDSHIFT: ">>" >
   {
      matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).m_realKind = RSIGNEDSHIFT;
+     ((Token.GTToken)matchedToken).m_nRealKind = RSIGNEDSHIFT;
      input_stream.backup(1);
      matchedToken.image = ">";
   }
@@ -557,7 +557,7 @@ void javacc_input() :
   }
     ")"
   {
-    m_processing_cu = true;
+    m_bProcessingCU = true;
     m_sParserClassName = id1;
 
     if (!isJavaLanguage()) {
@@ -570,7 +570,7 @@ void javacc_input() :
   }
     CompilationUnit()
   {
-    m_processing_cu = false;
+    m_bProcessingCU = false;
   }
     "PARSER_END" "(" id2=identifier()
   {
@@ -688,8 +688,8 @@ void javacode_production() :
     p.setFirstToken(t);
     List<Token> excName;
     p.setThrowsList(new ArrayList<List<Token>>());
-    p.setLine(t.beginLine);
-    p.setColumn(t.beginColumn);
+    p.setLineNumber(t.beginLine);
+    p.setColumnNumber(t.beginColumn);
   }
 {
   "JAVACODE"
@@ -730,8 +730,8 @@ void cppcode_production() :
     p.setFirstToken(t);
     List<Token> excName;
     p.setThrowsList(new ArrayList<List<Token>>());
-    p.setLine(t.beginLine);
-    p.setColumn(t.beginColumn);
+    p.setLineNumber(t.beginLine);
+    p.setColumnNumber(t.beginColumn);
   }
 {
   "CPPCODE"
@@ -773,8 +773,8 @@ void bnf_production() :
     BNFProduction p = new BNFProduction();
     p.setFirstToken(t);
     p.setThrowsList(new ArrayList<List<Token>>());
-    p.setLine(t.beginLine);
-    p.setColumn(t.beginColumn);
+    p.setLineNumber(t.beginLine);
+    p.setColumnNumber(t.beginColumn);
     m_bJumpPatched = false;
   }
 {
@@ -806,12 +806,12 @@ void bnf_production() :
   {
     p.setLastToken(t);
     p.setJumpPatched(m_bJumpPatched);
-    productionAddExpansion(p, (Expansion)(c.member));
+    productionAddExpansion(p, (Expansion)(c.getMember ()));
     addProduction(p);
   }
 }
 
-void AccessModifier(NormalProduction p) :
+void AccessModifier(AbstractNormalProduction p) :
   {
     Token t = null;
   }
@@ -828,20 +828,20 @@ void regular_expr_production() :
     List<String> states;
     Token t = getToken(1);
     TokenProduction p = new TokenProduction();
-    p.m_firstToken = t;
-    p.setLine(t.beginLine);
-    p.setColumn(t.beginColumn);
+    p.setFirstToken (t);
+    p.setLineNumber(t.beginLine);
+    p.setColumnNumber(t.beginColumn);
   }
 {
   {
-    // set p.m_lexStates assuming there is no state spec.
+    // set p.getLexStates () assuming there is no state spec.
     // and then override if necessary.
-    p.m_lexStates = new String[] {"DEFAULT"};
+    p.setLexStates (new String[] {"DEFAULT"});
   }
   [
     LOOKAHEAD(2) "<" "*" ">"
   {
-    p.m_lexStates = null;
+    p.setLexStates (null);
   }
   |
     "<"
@@ -859,22 +859,22 @@ void regular_expr_production() :
       )*
     ">"
   {
-    p.m_lexStates = new String[states.size()];
+    p.setLexStates (new String[states.size()]);
     for (int i = 0; i < states.size(); i++) {
-      p.m_lexStates[i] = (String)states.get(i);
+      p.getLexStates ()[i] = (String)states.get(i);
     }
   }
   ]
   regexpr_kind(p)
   {
-    if (p.m_kind != ETokenKind.TOKEN && Options.isUserTokenManager()) {
+    if (p.getKind () != ETokenKind.TOKEN && Options.isUserTokenManager()) {
       JavaCCErrors.warning(getToken(0), "Regular expression is being treated as if it were a TOKEN since option USER_TOKEN_MANAGER has been set to true.");
     }
   }
   [
     "[" t="IGNORE_CASE" "]"
   {
-    p.m_ignoreCase = true;
+    p.setIgnoreCase (true);
     if (Options.isUserTokenManager()) {
       JavaCCErrors.warning(t, "Ignoring \"IGNORE_CASE\" specification since option USER_TOKEN_MANAGER has been set to true.");
     }
@@ -883,7 +883,7 @@ void regular_expr_production() :
   ":"
   "{" regexpr_spec(p) ( "|" regexpr_spec(p) )* t="}"
   {
-    p.m_lastToken = t;
+    p.setLastToken (t);
     addregexpr(p);
   }
 }
@@ -905,7 +905,7 @@ void token_manager_decls() :
 
   [ ClassOrInterfaceBody(false, decls) ]
   {
-    add_token_manager_decls(t, decls);
+    addTokenManagerDecls(t, decls);
   }
 }
 
@@ -914,22 +914,22 @@ void regexpr_kind(TokenProduction p) :
 {
   "TOKEN"
   {
-    p.m_kind = ETokenKind.TOKEN;
+    p.setKind (ETokenKind.TOKEN);
   }
 |
   "SPECIAL_TOKEN"
   {
-    p.m_kind = ETokenKind.SPECIAL;
+    p.setKind (ETokenKind.SPECIAL);
   }
 |
   "SKIP"
   {
-    p.m_kind = ETokenKind.SKIP;
+    p.setKind (ETokenKind.SKIP);
   }
 |
   "MORE"
   {
-    p.m_kind = ETokenKind.MORE;
+    p.setKind (ETokenKind.MORE);
   }
 }
 
@@ -943,8 +943,8 @@ void regexpr_spec(TokenProduction p) :
 {
   regular_expression(c)
   {
-    res.rexp = (AbstractExpRegularExpression)c.member;
-    res.rexp.m_tpContext = p;
+    res.setRexp ((AbstractExpRegularExpression)c.getMember ());
+    res.getRexp ().m_aTpContext = p;
   }
   [
   {
@@ -955,23 +955,23 @@ void regexpr_spec(TokenProduction p) :
     if (Options.isUserTokenManager()) {
       JavaCCErrors.warning(t, "Ignoring action in regular expression specification since option USER_TOKEN_MANAGER has been set to true.");
     }
-    if (res.rexp.m_private_rexp) {
-      JavaCCErrors.parse_error(t, "Actions are not permitted on private (#) regular expressions.");
+    if (res.getRexp ().m_bPrivateRexp) {
+      JavaCCErrors.parseError(t, "Actions are not permitted on private (#) regular expressions.");
     }
   }
   ]
   [ ":" t=<IDENTIFIER>
   {
-    res.nextState = t.image;
-    if (res.rexp.m_private_rexp) {
-      JavaCCErrors.parse_error(t, "Lexical state changes are not permitted after private (#) regular expressions.");
+    res.setNextState (t.image);
+    if (res.getRexp ().m_bPrivateRexp) {
+      JavaCCErrors.parseError(t, "Lexical state changes are not permitted after private (#) regular expressions.");
     }
   }
   ]
   {
-    res.act = act;
-    res.nsTok = t;
-    p.m_respecs.add(res);
+    res.setAct (act);
+    res.setNsTok (t);
+    p.getRespecs ().add(res);
   }
 }
 
@@ -986,20 +986,20 @@ void expansion_choices(Container c1) :
   ( "|" expansion(c2)
   {
     if (morethanone) {
-      ch.addChoice((Expansion)c2.member);
-      ((Expansion)c2.member).setParent (ch);
+      ch.addChoice((Expansion)c2.getMember ());
+      ((Expansion)c2.getMember ()).setParent (ch);
     } else {
       morethanone = true;
-      ch = new ExpChoice((Expansion)c1.member);
-      ((Expansion)c1.member).setParent (ch);
-      ch.addChoice((Expansion)c2.member);
-      ((Expansion)c2.member).setParent (ch);
+      ch = new ExpChoice((Expansion)c1.getMember ());
+      ((Expansion)c1.getMember ()).setParent (ch);
+      ch.addChoice((Expansion)c2.getMember ());
+      ((Expansion)c2.getMember ()).setParent (ch);
     }
   }
   )*
   {
     if (morethanone) {
-      c1.member = ch;
+      c1.setMember (ch);
     }
   }
 }
@@ -1010,10 +1010,10 @@ void expansion(Container c1) :
     final Container c2 = new Container();
     ExpLookahead la = new ExpLookahead();
     Token t = getToken(1);
-    seq.setLine(t.beginLine);
-    seq.setColumn(t.beginColumn);
-    la.setLine(t.beginLine);
-    la.setColumn(t.beginColumn);
+    seq.setLineNumber(t.beginLine);
+    seq.setColumnNumber(t.beginColumn);
+    la.setLineNumber(t.beginLine);
+    la.setColumnNumber(t.beginColumn);
   }
 {
   {
@@ -1035,16 +1035,16 @@ void expansion(Container c1) :
   ( LOOKAHEAD(0, { notTailOfExpansionUnit() } )
     expansion_unit(c2)
   {
-    seq.addUnit((Expansion) c2.member);
-    ((Expansion)c2.member).setParent (seq);
-    ((Expansion)c2.member).setOrdinalBase (seq.getUnitCount () - 1);
+    seq.addUnit((Expansion) c2.getMember ());
+    ((Expansion)c2.getMember ()).setParent (seq);
+    ((Expansion)c2.getMember ()).setOrdinalBase (seq.getUnitCount () - 1);
   }
   )+
   {
     if (la.getLaExpansion() == null) {
       la.setLaExpansion(seq);
     }
-    c1.member = seq;
+    c1.setMember (seq);
   }
 }
 
@@ -1053,8 +1053,8 @@ ExpLookahead local_lookahead() :
     ExpLookahead la = new ExpLookahead();
     la.setExplicit(true);
     Token t = getToken(1);
-    la.setLine(t.beginLine);
-    la.setColumn(t.beginColumn);
+    la.setLineNumber(t.beginLine);
+    la.setColumnNumber(t.beginColumn);
     la.setLaExpansion(null);
     final Container c = new Container();
     boolean commaAtEnd = false, emptyLA = true;
@@ -1086,7 +1086,7 @@ ExpLookahead local_lookahead() :
     expansion_choices(c)
   {
     emptyLA = false; commaAtEnd = false;
-    la.setLaExpansion((Expansion)c.member);
+    la.setLaExpansion((Expansion)c.getMember ());
   }
   ]
   [ LOOKAHEAD(0, { !emptyLA && !commaAtEnd && (getToken(1).kind != RPAREN) } )
@@ -1148,8 +1148,8 @@ void expansion_unit(Container c) :
     la.setParent (seq);
     la.setOrdinalBase (0);
     act = new ExpAction();
-    act.setLine(t.beginLine);
-    act.setColumn(t.beginColumn);
+    act.setLineNumber(t.beginLine);
+    act.setColumnNumber(t.beginColumn);
     seq.addUnit(act);
     act.setParent (seq);
     act.setOrdinalBase (1);
@@ -1163,14 +1163,14 @@ void expansion_unit(Container c) :
         JavaCCErrors.warning(t, "Encountered LOOKAHEAD(...) at a non-choice location.  This will be ignored.");
       }
     }
-    c.member = ch;
+    c.setMember (ch);
   }
 |
   {
     act = new ExpAction();
     t = getToken(1);
-    act.setLine(t.beginLine);
-    act.setColumn(t.beginColumn);
+    act.setLineNumber(t.beginLine);
+    act.setColumnNumber(t.beginColumn);
     m_bInAction = true;
   }
   Block(act.getActionTokens())
@@ -1179,12 +1179,12 @@ void expansion_unit(Container c) :
     if (m_nInLocalLA != 0) {
       JavaCCErrors.warning(t, "Action within lookahead specification will be ignored.");
     }
-    c.member = act;
+    c.setMember (act);
   }
 |
   t="[" expansion_choices(c) "]"
   {
-    c.member = new ExpZeroOrOne(t, (Expansion)c.member);
+    c.setMember (new ExpZeroOrOne(t, (Expansion)c.getMember ()));
   }
 |
   {
@@ -1271,28 +1271,28 @@ void expansion_unit(Container c) :
   {
     t = getToken(1);
     nt = new ExpNonTerminal();
-    nt.setLine(t.beginLine);
-    nt.setColumn(t.beginColumn);
+    nt.setLineNumber(t.beginLine);
+    nt.setColumnNumber(t.beginColumn);
     nt.setLhsTokens(lhsTokens);
   }
    name=identifier() [ TypeArguments(nt.getMutableParametrizedTypeTokens()) ] Arguments(nt.getMutableArgumentTokens())
   {
     nt.setName(name);
-    c.member = nt;
+    c.setMember (nt);
   }
   |
     regular_expression(c)
   {
-    ((AbstractExpRegularExpression) c.member).setLhsTokens (lhsTokens);
-    add_inline_regexpr((AbstractExpRegularExpression) c.member);
+    ((AbstractExpRegularExpression) c.getMember ()).setLhsTokens (lhsTokens);
+    addInlineRegexpr((AbstractExpRegularExpression) c.getMember ());
   }
-  [ "." t=<IDENTIFIER> { ((AbstractExpRegularExpression) c.member).setRhsToken (t); } ]
+  [ "." t=<IDENTIFIER> { ((AbstractExpRegularExpression) c.getMember ()).setRhsToken (t); } ]
   )
 |
   t="(" expansion_choices(c) ")"
-  (  "+" { c.member = new ExpOneOrMore(t, (Expansion)c.member); }
-   | "*" { c.member = new ExpZeroOrMore(t, (Expansion)c.member); }
-   | "?" { c.member = new ExpZeroOrOne(t, (Expansion)c.member); }
+  (  "+" { c.setMember (new ExpOneOrMore(t, (Expansion)c.getMember ())); }
+   | "*" { c.setMember (new ExpZeroOrMore(t, (Expansion)c.getMember ())); }
+   | "?" { c.setMember (new ExpZeroOrOne(t, (Expansion)c.getMember ())); }
   )?
 }
 
@@ -1306,7 +1306,7 @@ void regular_expression(Container c) :
 {
   image=StringLiteral()
   {
-    c.member = new ExpRStringLiteral(t, image);
+    c.setMember (new ExpRStringLiteral(t, image));
   }
 |
   LOOKAHEAD(3)
@@ -1325,33 +1325,33 @@ void regular_expression(Container c) :
   complex_regular_expression_choices(c) < RANGLE: ">" >
   {
     final AbstractExpRegularExpression re;
-    if (c.member instanceof ExpRJustName) {
+    if (c.getMember () instanceof ExpRJustName) {
       ExpRSequence seq = new ExpRSequence();
-      seq.addUnit((ExpRJustName) c.member);
+      seq.addUnit((ExpRJustName) c.getMember ());
       re = seq;
     } else {
-      re = (AbstractExpRegularExpression)c.member;
+      re = (AbstractExpRegularExpression)c.getMember ();
     }
     re.setLabel (image);
-    re.m_private_rexp = private_rexp;
-    re.setLine(t.beginLine);
-    re.setColumn(t.beginColumn);
-    c.member = re;
+    re.m_bPrivateRexp = private_rexp;
+    re.setLineNumber(t.beginLine);
+    re.setColumnNumber(t.beginColumn);
+    c.setMember (re);
   }
 |
   LOOKAHEAD(2)
   "<" image=identifier() ">"
   {
-    c.member = new ExpRJustName(t, image);
+    c.setMember (new ExpRJustName(t, image));
   }
 |
   "<" "EOF" ">"
   {
     ef = new ExpREndOfFile();
-    ef.setLine(t.beginLine);
-    ef.setColumn(t.beginColumn);
+    ef.setLineNumber(t.beginLine);
+    ef.setColumnNumber(t.beginColumn);
     ef.setOrdinalBase(0);
-    c.member = ef;
+    c.setMember (ef);
   }
 }
 
@@ -1366,20 +1366,20 @@ void complex_regular_expression_choices(Container c1) :
   ( "|" complex_regular_expression(c2)
   {
     if (morethanone) {
-      ch.addChoice((AbstractExpRegularExpression)c2.member);
+      ch.addChoice((AbstractExpRegularExpression)c2.getMember ());
     } else {
       morethanone = true;
       ch = new ExpRChoice();
-      ch.setLine(((AbstractExpRegularExpression)c1.member).getLine());
-      ch.setColumn(((AbstractExpRegularExpression)c1.member).getColumn());
-      ch.addChoice((AbstractExpRegularExpression)c1.member);
-      ch.addChoice((AbstractExpRegularExpression)c2.member);
+      ch.setLineNumber(((AbstractExpRegularExpression)c1.getMember ()).getLineNumber());
+      ch.setColumnNumber(((AbstractExpRegularExpression)c1.getMember ()).getColumnNumber());
+      ch.addChoice((AbstractExpRegularExpression)c1.getMember ());
+      ch.addChoice((AbstractExpRegularExpression)c2.getMember ());
     }
   }
   )*
   {
     if (morethanone) {
-      c1.member = ch;
+      c1.setMember (ch);
     }
   }
 }
@@ -1395,21 +1395,21 @@ void complex_regular_expression(Container c1) :
   {
     count++;
     if (count == 1) {
-      c1.member = c2.member; // if count does not go beyond 1, we are done.
+      c1.setMember (c2.getMember ()); // if count does not go beyond 1, we are done.
     } else if (count == 2) { // more than 1, so create a sequence.
       seq = new ExpRSequence();
-      seq.setLine(((AbstractExpRegularExpression)c1.member).getLine());
-      seq.setColumn(((AbstractExpRegularExpression)c1.member).getColumn());
-      seq.addUnit((AbstractExpRegularExpression) c1.member);
-      seq.addUnit((AbstractExpRegularExpression) c2.member);
+      seq.setLineNumber(((AbstractExpRegularExpression)c1.getMember ()).getLineNumber());
+      seq.setColumnNumber(((AbstractExpRegularExpression)c1.getMember ()).getColumnNumber());
+      seq.addUnit((AbstractExpRegularExpression) c1.getMember ());
+      seq.addUnit((AbstractExpRegularExpression) c2.getMember ());
     } else {
-      seq.addUnit((AbstractExpRegularExpression) c2.member);
+      seq.addUnit((AbstractExpRegularExpression) c2.getMember ());
     }
   }
   )+
   {
     if (count > 1) {
-      c1.member = seq;
+      c1.setMember (seq);
     }
   }
 }
@@ -1424,12 +1424,12 @@ void complex_regular_expression_unit(Container c) :
 {
   image=StringLiteral()
   {
-    c.member = new ExpRStringLiteral(t, image);
+    c.setMember (new ExpRStringLiteral(t, image));
   }
 |
   "<" image=identifier() ">"
   {
-    c.member = new ExpRJustName(t, image);
+    c.setMember (new ExpRJustName(t, image));
   }
 |
   character_list(c)
@@ -1437,21 +1437,21 @@ void complex_regular_expression_unit(Container c) :
   "(" complex_regular_expression_choices(c) ")"
   (  "+"
   {
-    c.member = new ExpROneOrMore(t, (AbstractExpRegularExpression)c.member);
+    c.setMember (new ExpROneOrMore(t, (AbstractExpRegularExpression)c.getMember ()));
   }
    | "*"
   {
-    c.member = new ExpRZeroOrMore(t, (AbstractExpRegularExpression)c.member);
+    c.setMember (new ExpRZeroOrMore(t, (AbstractExpRegularExpression)c.getMember ()));
   }
    | "?"
   {
-    c.member = new ExpRZeroOrOne(t, (AbstractExpRegularExpression)c.member);
+    c.setMember (new ExpRZeroOrOne(t, (AbstractExpRegularExpression)c.getMember ()));
   }
    | "{" r1 = IntegerLiteral()
          [ "," { hasMax = true; } [ r2 = IntegerLiteral() ] ]
      "}"
   {
-    c.member = new ExpRRepetitionRange(t, r1, r2, hasMax, (AbstractExpRegularExpression)c.member);
+    c.setMember (new ExpRRepetitionRange(t, r1, r2, hasMax, (AbstractExpRegularExpression)c.getMember ()));
   }
   )?
 }
@@ -1460,8 +1460,8 @@ void character_list(Container c1) :
   {
     ExpRCharacterList chlist = new ExpRCharacterList();
     Token t = getToken(1);
-    chlist.setLine(t.beginLine);
-    chlist.setColumn(t.beginColumn);
+    chlist.setLineNumber(t.beginLine);
+    chlist.setColumnNumber(t.beginColumn);
     Container c2 = new Container();
   }
 {
@@ -1472,17 +1472,17 @@ void character_list(Container c1) :
   ]
   "[" [ character_descriptor(c2)
   {
-    chlist.addDescriptor((ICCCharacter) c2.member);
+    chlist.addDescriptor((ICCCharacter) c2.getMember ());
   }
         ( "," character_descriptor(c2)
   {
-    chlist.addDescriptor((ICCCharacter) c2.member);
+    chlist.addDescriptor((ICCCharacter) c2.getMember ());
   }
         )*
       ]
   "]"
   {
-    c1.member = chlist;
+    c1.setMember (chlist);
   }
 }
 
@@ -1496,19 +1496,19 @@ void character_descriptor(Container c) :
 {
   imageL=StringLiteral()
   {
-    c1 = character_descriptor_assign(getToken(0), imageL);
+    c1 = characterDescriptorAssign(getToken(0), imageL);
   }
   [ "-" imageR=StringLiteral()
   {
     isrange = true;
-    c2 = character_descriptor_assign(getToken(0), imageR, imageL);
+    c2 = characterDescriptorAssign(getToken(0), imageR, imageL);
   }
   ]
   {
     if (isrange) {
-      c.member = new CharacterRange(t, c1, c2);
+      c.setMember (new CharacterRange(t, c1, c2));
     } else {
-      c.member = new SingleCharacter(t, c1);
+      c.setMember (new SingleCharacter(t, c1));
     }
   }
 }
@@ -1580,7 +1580,7 @@ void CompilationUnit() :
  * within grammar code.
  */
   {
-    set_initial_cu_token(getToken(1));
+    setInitialCuToken(getToken(1));
   }
 {
   [ LOOKAHEAD( ( Annotation() )* "package" ) PackageDeclaration() ]
@@ -1687,7 +1687,7 @@ void ClassOrInterfaceDeclaration(int modifiers, List<Token> tokens):
   [ ExtendsList(isInterface) ]
   [ ImplementsList(isInterface) ]
   {
-    if (t.image.equals(m_sParserClassName) && m_nClassNesting == 1 && m_processing_cu) {
+    if (t.image.equals(m_sParserClassName) && m_nClassNesting == 1 && m_bProcessingCU) {
       is_parser_class = true;
       setinsertionpoint(getToken(1), 1);
     }
@@ -2408,7 +2408,7 @@ String StringLiteral() :
 {
   t=<STRING_LITERAL>
   {
-    return remove_escapes_and_quotes(t, t.image);
+    return removeEscapesAndQuotes(t, t.image);
   }
 }
 
@@ -2821,7 +2821,7 @@ void RUNSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).m_realKind == RUNSIGNEDSHIFT} )
+                ((Token.GTToken)getToken(1)).m_nRealKind == RUNSIGNEDSHIFT} )
    ">" ">" ">"
   )
 }
@@ -2830,7 +2830,7 @@ void RSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).m_realKind == RSIGNEDSHIFT} )
+                ((Token.GTToken)getToken(1)).m_nRealKind == RSIGNEDSHIFT} )
   ">" ">"
   )
 }

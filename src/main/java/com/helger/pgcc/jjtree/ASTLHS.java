@@ -33,6 +33,12 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * The assignment in front of a non-terminal or a token, the <code>x =</code> that says where the
+ * match goes.
+ */
 public class ASTLHS extends JJTreeNode
 {
   ASTLHS (final int nID)
@@ -41,8 +47,8 @@ public class ASTLHS extends JJTreeNode
   }
 
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

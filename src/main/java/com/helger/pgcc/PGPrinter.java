@@ -43,24 +43,50 @@ import java.nio.charset.Charset;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.rt.StackTraceHelper;
 import com.helger.base.string.StringHelper;
+import com.helger.pgcc.context.ProcessState;
 
+/**
+ * Everything the generator prints for a human to read. Routing it through here rather than through
+ * System.out is what lets a caller that embeds the generator - the Maven plugin, a test - collect
+ * the output instead of having it land on the console.
+ */
 public final class PGPrinter
 {
+  /**
+   * Where the messages go. Two of these are installed at a time, one for the ordinary output and
+   * one for the errors, and they may well be the same object.
+   */
   public interface IPrinter extends AutoCloseable, Flushable
   {
+    /**
+     * Print one line.
+     *
+     * @param s
+     *        The line, without a line break. May not be <code>null</code>.
+     */
     void println (@NonNull String s);
 
     void flush ();
   }
 
+  /**
+   * An {@link IPrinter} writing to a {@link PrintStream}, which is what the command line installs.
+   */
   public static final class PSPrinter implements IPrinter
   {
     private final PrintStream m_aPS;
     private final boolean m_bCanClose;
 
+    /**
+     * Create a printer for one stream.
+     *
+     * @param aPS
+     *        The stream to write to. May not be <code>null</code>.
+     * @param bCanClose
+     *        <code>false</code> for a stream this printer does not own, System.out above all.
+     */
     public PSPrinter (@NonNull final PrintStream aPS, final boolean bCanClose)
     {
       m_aPS = aPS;
@@ -87,82 +113,169 @@ public final class PGPrinter
     }
   }
 
-  private static IPrinter s_aOut = new PSPrinter (System.out, false);
-  private static IPrinter s_aErr = new PSPrinter (System.err, false);
+  static
+  {
+    // The default is the console. It lives on ProcessState so that no static non final field
+    // exists outside the context package
+    ProcessState.getInstance ().setPrinters (new PSPrinter (System.out, false), new PSPrinter (System.err, false));
+  }
 
   private PGPrinter ()
   {}
 
+  @NonNull
+  private static IPrinter _out ()
+  {
+    return ProcessState.getInstance ().getOut ();
+  }
+
+  @NonNull
+  private static IPrinter _err ()
+  {
+    return ProcessState.getInstance ().getErr ();
+  }
+
+  /**
+   * Send both the ordinary output and the errors to the same printer.
+   *
+   * @param aPrinter
+   *        Where everything goes. May not be <code>null</code>.
+   */
   public static void init (@NonNull final IPrinter aPrinter)
   {
     init (aPrinter, aPrinter);
   }
 
+  /**
+   * Send the ordinary output and the errors to different printers.
+   *
+   * @param aPrinterInfo
+   *        Where the ordinary output goes. May not be <code>null</code>.
+   * @param aPrinterError
+   *        Where the errors go. May not be <code>null</code>.
+   */
   public static void init (@NonNull final IPrinter aPrinterInfo, @NonNull final IPrinter aPrinterError)
   {
-    ValueEnforcer.notNull (aPrinterInfo, "PrinterInfo");
-    ValueEnforcer.notNull (aPrinterError, "PrinterError");
-    s_aOut = aPrinterInfo;
-    s_aErr = aPrinterError;
+    ProcessState.getInstance ().setPrinters (aPrinterInfo, aPrinterError);
   }
 
+  /**
+   * Print a message that only matters while chasing a problem.
+   *
+   * @param sMsg
+   *        The message. May not be <code>null</code>.
+   */
   public static void debug (@NonNull final String sMsg)
   {
-    s_aOut.println (sMsg);
+    _out ().println (sMsg);
   }
 
+  /**
+   * Print an empty line, to separate what comes next from what came before.
+   */
   public static void info ()
   {
-    s_aOut.println (null);
+    _out ().println (null);
   }
 
+  /**
+   * Print a message that the user is meant to read.
+   *
+   * @param sMsg
+   *        The message. May not be <code>null</code>.
+   */
   public static void info (@NonNull final String sMsg)
   {
-    s_aOut.println (sMsg);
+    _out ().println (sMsg);
   }
 
+  /**
+   * Print a warning.
+   *
+   * @param sMsg
+   *        The message. May not be <code>null</code>.
+   */
   public static void warn (@NonNull final String sMsg)
   {
     warn (sMsg, null);
   }
 
+  /**
+   * Print a warning together with what went wrong.
+   *
+   * @param sMsg
+   *        The message. May not be <code>null</code>.
+   * @param t
+   *        The exception behind it. May be <code>null</code>.
+   */
   public static void warn (@NonNull final String sMsg, @Nullable final Throwable t)
   {
-    s_aErr.println (sMsg);
+    _err ().println (sMsg);
     if (t != null)
-      s_aErr.println (StackTraceHelper.getStackAsString (t));
+      _err ().println (StackTraceHelper.getStackAsString (t));
   }
 
+  /**
+   * Print an error.
+   *
+   * @param sMsg
+   *        The message. May not be <code>null</code>.
+   */
   public static void error (@NonNull final String sMsg)
   {
     error (sMsg, null);
   }
 
+  /**
+   * Print an error together with what went wrong.
+   *
+   * @param sMsg
+   *        The message. May not be <code>null</code>.
+   * @param t
+   *        The exception behind it. May be <code>null</code>.
+   */
   public static void error (@NonNull final String sMsg, @Nullable final Throwable t)
   {
-    s_aErr.println (sMsg);
+    _err ().println (sMsg);
     if (t != null)
-      s_aErr.println (StackTraceHelper.getStackAsString (t));
+      _err ().println (StackTraceHelper.getStackAsString (t));
   }
 
+  /**
+   * Push everything written so far out to both printers.
+   */
   public static void flush ()
   {
-    s_aOut.flush ();
-    s_aErr.flush ();
+    _out ().flush ();
+    _err ().flush ();
   }
 
+  /**
+   * Close both printers, which is a no-op for the ones that do not own their stream.
+   *
+   * @throws Exception
+   *         if a printer refuses to close
+   */
   public static void close () throws Exception
   {
-    s_aOut.close ();
-    s_aErr.close ();
+    _out ().close ();
+    _err ().close ();
   }
 
+  /**
+   * {@return a writer onto the process's standard output, for the code that needs a PrintWriter
+   * rather than an IPrinter}
+   */
   @NonNull
   public static PrintWriter getOutWriter ()
   {
     return new PrintWriter (new OutputStreamWriter (System.out, Charset.defaultCharset ()));
   }
 
+  /**
+   * {@return a writer onto the process's standard error, for the code that needs a PrintWriter
+   * rather than an IPrinter}
+   */
   @NonNull
   public static PrintWriter getErrWriter ()
   {

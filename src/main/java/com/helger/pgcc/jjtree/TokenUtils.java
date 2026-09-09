@@ -33,9 +33,12 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.Nullable;
+
 import org.jspecify.annotations.NonNull;
 
 import com.helger.pgcc.parser.JavaCCErrors;
+import com.helger.pgcc.parser.JavaCCGlobals;
 
 /**
  * Utilities for manipulating Tokens.
@@ -45,48 +48,64 @@ public final class TokenUtils
   private TokenUtils ()
   {}
 
-  static void print (final Token t, final JJTreeIO io, final String in, final String out)
+  static void print (@NonNull final Token t, @NonNull final JJTreeIO aIo, @Nullable final String sIn, final String sOut)
   {
-    Token tt = t.specialToken;
-    if (tt != null)
+    Token aTt = t.specialToken;
+    if (aTt != null)
     {
-      while (tt.specialToken != null)
-        tt = tt.specialToken;
-      while (tt != null)
+      while (aTt.specialToken != null)
+        aTt = aTt.specialToken;
+      while (aTt != null)
       {
-        io.print (addUnicodeEscapes (tt.image));
-        tt = tt.next;
+        aIo.print (addUnicodeEscapes (aTt.image));
+        aTt = aTt.next;
       }
     }
     String i = t.image;
-    if (in != null && i.equals (in))
+    if (sIn != null && i.equals (sIn))
     {
-      i = out;
+      i = sOut;
     }
-    io.print (addUnicodeEscapes (i));
+    aIo.print (addUnicodeEscapes (i));
   }
 
-  static void print (final Token t, final JJTreeIO io)
+  static void print (final Token t, final JJTreeIO aIo)
   {
-    print (t, io, null, null);
+    print (t, aIo, null, null);
   }
 
-  static String addUnicodeEscapes (final String str)
+  /**
+   * Escape what a text file cannot carry, and nothing else.
+   * <p>
+   * This is not the same function as {@code EOutputLanguage.JAVA.addUnicodeEscapes}, although it
+   * looks like it. That one escapes into a Java <em>string literal</em>, where a raw newline is
+   * illegal, so it escapes everything outside printable ASCII. This one escapes into grammar
+   * <em>source text</em>: JJTree copies the input grammar through to the generated .jj verbatim,
+   * and there the newlines and tabs are the layout. Escaping them turns the whole file into one
+   * line of \\u000a - which is exactly what happens if the two are merged, as 17 of the golden
+   * cases will tell you.
+   *
+   * @param sStr
+   *        The text to escape. May not be <code>null</code>.
+   * @return The text with non-printable characters escaped, whitespace left alone. Never
+   *         <code>null</code>.
+   */
+  static String addUnicodeEscapes (@NonNull final String sStr)
   {
-    final StringBuilder ret = new StringBuilder (str.length ());
-    for (final char ch : str.toCharArray ())
+    final StringBuilder aRet = new StringBuilder (sStr.length ());
+    for (final char ch : sStr.toCharArray ())
     {
       if ((ch < 0x20 || ch > 0x7e) && ch != '\t' && ch != '\n' && ch != '\r' && ch != '\f')
       {
         final String s = "0000" + Integer.toString (ch, 16);
-        ret.append ("\\u").append (s.substring (s.length () - 4, s.length ()));
+        aRet.append ("\\u").append (s.substring (s.length () - 4, s.length ()));
       }
       else
       {
-        ret.append (ch);
+        aRet.append (ch);
       }
     }
-    return ret.toString ();
+    return aRet.toString ();
   }
 
   static boolean hasTokens (@NonNull final JJTreeNode n)
@@ -96,146 +115,20 @@ public final class TokenUtils
     return true;
   }
 
-  static String remove_escapes_and_quotes (final Token t, final String str)
+  /**
+   * Turn a string literal as written in the grammar into the characters it stands for. The same
+   * function JavaCC uses - both Token classes are an {@link IGrammarLocation}, which is what lets
+   * them share it.
+   *
+   * @param t
+   *        Where to report a bad escape.
+   * @param sStr
+   *        The literal including its quotes. May not be <code>null</code>.
+   * @return The characters the literal denotes. Never <code>null</code>.
+   */
+  static String removeEscapesAndQuotes (final Token t, @NonNull final String sStr)
   {
-    String retval = "";
-    int index = 1;
-    while (index < str.length () - 1)
-    {
-      if (str.charAt (index) != '\\')
-      {
-        retval += str.charAt (index);
-        index++;
-        continue;
-      }
-      index++;
-      char ch = str.charAt (index);
-      if (ch == 'b')
-      {
-        retval += '\b';
-        index++;
-        continue;
-      }
-      if (ch == 't')
-      {
-        retval += '\t';
-        index++;
-        continue;
-      }
-      if (ch == 'n')
-      {
-        retval += '\n';
-        index++;
-        continue;
-      }
-      if (ch == 'f')
-      {
-        retval += '\f';
-        index++;
-        continue;
-      }
-      if (ch == 'r')
-      {
-        retval += '\r';
-        index++;
-        continue;
-      }
-      if (ch == '"')
-      {
-        retval += '\"';
-        index++;
-        continue;
-      }
-      if (ch == '\'')
-      {
-        retval += '\'';
-        index++;
-        continue;
-      }
-      if (ch == '\\')
-      {
-        retval += '\\';
-        index++;
-        continue;
-      }
-      if (ch >= '0' && ch <= '7')
-      {
-        int ordinal = (ch) - ('0');
-        index++;
-        char ch1 = str.charAt (index);
-        if (ch1 >= '0' && ch1 <= '7')
-        {
-          ordinal = ordinal * 8 + (ch1) - ('0');
-          index++;
-          ch1 = str.charAt (index);
-          if (ch <= '3' && ch1 >= '0' && ch1 <= '7')
-          {
-            ordinal = ordinal * 8 + (ch1) - ('0');
-            index++;
-          }
-        }
-        retval += (char) ordinal;
-        continue;
-      }
-      if (ch == 'u')
-      {
-        index++;
-        ch = str.charAt (index);
-        if (_isHexchar (ch))
-        {
-          int ordinal = _getHexVal (ch);
-          index++;
-          ch = str.charAt (index);
-          if (_isHexchar (ch))
-          {
-            ordinal = ordinal * 16 + _getHexVal (ch);
-            index++;
-            ch = str.charAt (index);
-            if (_isHexchar (ch))
-            {
-              ordinal = ordinal * 16 + _getHexVal (ch);
-              index++;
-              ch = str.charAt (index);
-              if (_isHexchar (ch))
-              {
-                ordinal = ordinal * 16 + _getHexVal (ch);
-                index++;
-                continue;
-              }
-            }
-          }
-        }
-        JavaCCErrors.parse_error (t,
-                                  "Encountered non-hex character '" +
-                                     ch +
-                                     "' at position " +
-                                     index +
-                                     " of string - Unicode escape must have 4 hex digits after it.");
-        return retval;
-      }
-      JavaCCErrors.parse_error (t, "Illegal escape sequence '\\" + ch + "' at position " + index + " of string.");
-      return retval;
-    }
-    return retval;
+    return JavaCCGlobals.removeEscapesAndQuotes (t, sStr);
   }
 
-  private static boolean _isHexchar (final char ch)
-  {
-    if (ch >= '0' && ch <= '9')
-      return true;
-    if (ch >= 'A' && ch <= 'F')
-      return true;
-    if (ch >= 'a' && ch <= 'f')
-      return true;
-    return false;
-  }
-
-  private static int _getHexVal (final char ch)
-  {
-    if (ch >= '0' && ch <= '9')
-      return ch - '0';
-    if (ch >= 'A' && ch <= 'F')
-      return ch - 'A' + 10;
-    return ch - 'a' + 10;
-  }
 }

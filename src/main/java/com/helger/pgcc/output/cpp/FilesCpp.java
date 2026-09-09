@@ -53,81 +53,105 @@ public class FilesCpp
   private FilesCpp ()
   {}
 
-  private static void genFile (final String dir, final String name, final String version, final String [] parameters)
+  private static void genFile (final String sDir,
+                               final String sName,
+                               final String sVersion,
+                               final String [] aParameters)
   {
-    final File file = new File (Options.getOutputDirectory (), name);
-    try (final OutputFile outputFile = new OutputFile (file, version, parameters))
+    final File aFile = new File (Options.getOutputDirectory (), sName);
+    try (final OutputFile aOutputFile = new OutputFile (aFile, sVersion, aParameters))
     {
-      if (!outputFile.needToWrite ())
+      if (!aOutputFile.needToWrite ())
         return;
 
-      try (final PrintWriter ostr = outputFile.getPrintWriter ())
+      try (final PrintWriter aOstr = aOutputFile.getPrintWriter ())
       {
-        final OutputFileGenerator generator = new OutputFileGenerator ("/templates/" + dir + "/" + name + ".template",
-                                                                       Options.getAllOptions ());
-        generator.generate (ostr);
+        final OutputFileGenerator aGenerator = new OutputFileGenerator ("/templates/" +
+                                                                        sDir +
+                                                                        "/" +
+                                                                        sName +
+                                                                        ".template",
+                                                                        Options.getAllOptions ());
+        aGenerator.generate (aOstr);
       }
     }
     catch (final IOException e)
     {
-      PGPrinter.error ("Failed to create file: " + file, e);
-      JavaCCErrors.semantic_error ("Could not open file: " + file + " for writing.");
+      PGPrinter.error ("Failed to create file: " + aFile, e);
+      JavaCCErrors.semanticError ("Could not open file: " + aFile + " for writing.");
       throw new UncheckedIOException (e);
     }
   }
 
-  public static void gen_CharStream ()
+  /**
+   * Write CharStream.h and CharStream.cc, what the generated token manager reads through.
+   */
+  public static void genCharStream ()
   {
-    final String [] parameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
-    genFile ("stream/cpp", "CharStream.h", PGVersion.MAJOR_DOT_MINOR, parameters);
-    genFile ("stream/cpp", "CharStream.cc", PGVersion.MAJOR_DOT_MINOR, parameters);
+    final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    genFile ("cpp/stream", "CharStream.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
+    genFile ("cpp/stream", "CharStream.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_ParseException ()
+  /**
+   * Write ParseException.h and ParseException.cc, the exception the generated parser throws.
+   */
+  public static void genParseException ()
   {
-    final String [] parameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
-    genFile ("cpp", "ParseException.h", PGVersion.MAJOR_DOT_MINOR, parameters);
-    genFile ("cpp", "ParseException.cc", PGVersion.MAJOR_DOT_MINOR, parameters);
+    final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    genFile ("cpp", "ParseException.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
+    genFile ("cpp", "ParseException.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_TokenMgrError ()
+  /**
+   * Write the exception the generated token manager throws when it cannot match.
+   */
+  public static void genTokenMgrError ()
   {
-    final String [] parameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
-    genFile ("cpp", "TokenMgrError.h", PGVersion.MAJOR_DOT_MINOR, parameters);
-    genFile ("cpp", "TokenMgrError.cc", PGVersion.MAJOR_DOT_MINOR, parameters);
+    final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    genFile ("cpp", "TokenMgrError.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
+    genFile ("cpp", "TokenMgrError.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_Token ()
+  /**
+   * Write Token.h and Token.cc, the token the generated parser works with.
+   */
+  public static void genToken ()
   {
-    final String [] parameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC,
-                                                 Options.USEROPTION__CPP_TOKEN_INCLUDES,
-                                                 Options.USEROPTION__TOKEN_EXTENDS };
-    genFile ("cpp", "Token.h", PGVersion.MAJOR_DOT_MINOR, parameters);
-    genFile ("cpp", "Token.cc", PGVersion.MAJOR_DOT_MINOR, parameters);
+    final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC,
+                                                  Options.USEROPTION__CPP_TOKEN_INCLUDES,
+                                                  Options.USEROPTION__TOKEN_EXTENDS };
+    genFile ("cpp", "Token.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
+    genFile ("cpp", "Token.cc", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_TokenManager ()
+  /**
+   * Write TokenManager.h, the interface the generated parser pulls tokens through.
+   */
+  public static void genTokenManager ()
   {
-    final String [] parameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
-    genFile ("cpp", "TokenManager.h", PGVersion.MAJOR_DOT_MINOR, parameters);
+    final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    genFile ("cpp", "TokenManager.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_JavaCCDefs ()
+  /**
+   * Write JavaCC.h, the typedefs and macros the rest of the generated C++ is written against.
+   */
+  public static void genJavaCCDefs ()
   {
-    final String [] parameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
-    genFile ("cpp", "JavaCC.h", PGVersion.MAJOR_DOT_MINOR, parameters);
+    final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC };
+    genFile ("cpp", "JavaCC.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void gen_ErrorHandler ()
+  /**
+   * Write ErrorHandler.h, which the generated parser calls instead of throwing.
+   */
+  public static void genErrorHandler ()
   {
-    final String [] parameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC,
-                                                 Options.USEROPTION__BUILD_PARSER,
-                                                 Options.USEROPTION__BUILD_TOKEN_MANAGER };
-    genFile ("cpp", "ErrorHandler.h", PGVersion.MAJOR_DOT_MINOR, parameters);
+    final String [] aParameters = new String [] { Options.USEROPTION__SUPPORT_CLASS_VISIBILITY_PUBLIC,
+                                                  Options.USEROPTION__BUILD_PARSER,
+                                                  Options.USEROPTION__BUILD_TOKEN_MANAGER };
+    genFile ("cpp", "ErrorHandler.h", PGVersion.MAJOR_DOT_MINOR, aParameters);
   }
 
-  public static void reInit ()
-  {
-    // empty
-  }
 }

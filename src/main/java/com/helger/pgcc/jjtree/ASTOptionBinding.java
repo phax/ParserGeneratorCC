@@ -33,10 +33,21 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * One <code>name = value</code> line of the options block.
+ */
 public class ASTOptionBinding extends JJTreeNode
 {
-  private boolean m_suppressed = false;
-  private String m_name;
+  /**
+   * Whether this binding is one JJTree handles itself and keeps out of the grammar it passes on.
+   */
+  private boolean m_bSuppressed = false;
+  /**
+   * The option name.
+   */
+  private String m_sName;
 
   ASTOptionBinding (final int nID)
   {
@@ -53,31 +64,31 @@ public class ASTOptionBinding extends JJTreeNode
    */
   void initialize (final String sName, final String sValue)
   {
-    m_name = sName;
+    m_sName = sName;
 
     // If an option is specific to JJTree it should not be written out
     // to the output file for JavaCC.
 
-    if (JJTreeGlobals.isOptionJJTreeOnly (m_name))
+    if (JJTreeGlobals.isOptionJJTreeOnly (m_sName))
     {
-      m_suppressed = true;
+      m_bSuppressed = true;
     }
   }
 
   boolean isSuppressed ()
   {
-    return m_suppressed;
+    return m_bSuppressed;
   }
 
   void suppressOption (final boolean bSuppressed)
   {
-    m_suppressed = bSuppressed;
+    m_bSuppressed = bSuppressed;
   }
 
   @Override
-  String translateImage (final Token t)
+  String translateImage (@NonNull final Token t)
   {
-    if (m_suppressed)
+    if (m_bSuppressed)
     {
       return whiteOut (t);
     }
@@ -86,8 +97,8 @@ public class ASTOptionBinding extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

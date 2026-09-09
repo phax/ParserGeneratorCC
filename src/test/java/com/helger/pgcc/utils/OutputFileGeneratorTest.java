@@ -55,8 +55,8 @@ public final class OutputFileGeneratorTest
   {
     final File fBaseDir = new File ("src/main/resources").getAbsoluteFile ();
     // Find all template files
-    for (final File f : new FileSystemRecursiveIterator (new File (fBaseDir,
-                                                                   "templates/")).withFilter (IFileFilter.filenameEndsWith (".template")))
+    for (final File f : new FileSystemRecursiveIterator (new File (fBaseDir, "templates/")).withFilter (IFileFilter
+                                                                                                                   .filenameEndsWith (".template")))
     {
       final String sTemplateName = f.getAbsolutePath ().substring (fBaseDir.getAbsolutePath ().length () + 1);
       LOGGER.info ("Parsing template file " + sTemplateName);
@@ -66,9 +66,9 @@ public final class OutputFileGeneratorTest
 
       // Main parsing
       final OutputFileGenerator aOutputGenerator = new OutputFileGenerator (sTemplateName, aOptions);
-      try (final NonBlockingStringWriter sw = new NonBlockingStringWriter ())
+      try (final NonBlockingStringWriter aSw = new NonBlockingStringWriter ())
       {
-        aOutputGenerator.generate (sw);
+        aOutputGenerator.generate (aSw);
       }
     }
   }

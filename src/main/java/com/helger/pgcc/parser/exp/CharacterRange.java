@@ -44,8 +44,7 @@ import com.helger.pgcc.parser.Token;
 public final class CharacterRange implements ICCCharacter
 {
   /**
-   * The line and column number of the construct that corresponds most closely
-   * to this node.
+   * The line and column number of the construct that corresponds most closely to this node.
    */
   private int m_nColumn;
 
@@ -58,20 +57,38 @@ public final class CharacterRange implements ICCCharacter
 
   private char m_nLeft;
 
+  /**
+   * Create a range without a position in the grammar.
+   *
+   * @param l
+   *        The first character of the range.
+   * @param r
+   *        The last character of the range.
+   */
   public CharacterRange (final char l, final char r)
   {
     if (l > r)
-      JavaCCErrors.semantic_error (this,
-                                   "Invalid range : \"" +
-                                         (int) l +
-                                         "\" - \"" +
-                                         (int) r +
-                                         "\". First character shoud be less than or equal to the second one in a range.");
+      JavaCCErrors.semanticError (this,
+                                  "Invalid range : \"" +
+                                        (int) l +
+                                        "\" - \"" +
+                                        (int) r +
+                                        "\". First character shoud be less than or equal to the second one in a range.");
 
     setLeft (l);
     setRight (r);
   }
 
+  /**
+   * Create a range at the position of a token.
+   *
+   * @param t
+   *        The token the range was written at, for error messages. May not be <code>null</code>.
+   * @param l
+   *        The first character of the range.
+   * @param r
+   *        The last character of the range.
+   */
   public CharacterRange (@NonNull final Token t, final char l, final char r)
   {
     this (l, r);
@@ -80,23 +97,23 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
-   * @return the line
+   * {@return the line}
    */
-  public int getLine ()
+  public int getLineNumber ()
   {
     return m_nLine;
   }
 
   /**
-   * @return the column
+   * {@return the column}
    */
-  public int getColumn ()
+  public int getColumnNumber ()
   {
     return m_nColumn;
   }
 
   /**
-   * @return the left
+   * {@return the left}
    */
   public char getLeft ()
   {
@@ -104,16 +121,18 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
-   * @param left
+   * Set the first character of the range.
+   *
+   * @param cLeft
    *        the left to set
    */
-  public void setLeft (final char left)
+  public void setLeft (final char cLeft)
   {
-    m_nLeft = left;
+    m_nLeft = cLeft;
   }
 
   /**
-   * @return the right
+   * {@return the right}
    */
   public char getRight ()
   {
@@ -121,21 +140,37 @@ public final class CharacterRange implements ICCCharacter
   }
 
   /**
-   * @param right
+   * Set the last character of the range.
+   *
+   * @param cRight
    *        the right to set
    */
-  public void setRight (final char right)
+  public void setRight (final char cRight)
   {
-    m_nRight = right;
+    m_nRight = cRight;
   }
 
+  /**
+   * Whether a character falls inside this range.
+   *
+   * @param c
+   *        The character to test.
+   * @return <code>true</code> if it does.
+   */
   public boolean isInRange (final char c)
   {
     return c >= m_nLeft && c <= m_nRight;
   }
 
-  public boolean isSubRangeOf (@NonNull final CharacterRange r2)
+  /**
+   * Whether this range is wholly contained in another one.
+   *
+   * @param aR2
+   *        The range to test against. May not be <code>null</code>.
+   * @return <code>true</code> if it is.
+   */
+  public boolean isSubRangeOf (@NonNull final CharacterRange aR2)
   {
-    return m_nLeft >= r2.getLeft () && m_nRight <= r2.getRight ();
+    return m_nLeft >= aR2.getLeft () && m_nRight <= aR2.getRight ();
   }
 }

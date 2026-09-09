@@ -39,90 +39,124 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.base.string.StringHelper;
+import com.helger.pgcc.context.PGCCContext;
+import com.helger.pgcc.parser.IGrammarLocation;
 
 /**
- * Describes expansions - entities that may occur on the right hand sides of
- * productions. This is the base class of a bunch of other more specific
- * classes.
+ * Describes expansions - entities that may occur on the right hand sides of productions. This is
+ * the base class of a bunch of other more specific classes.
  */
-public class Expansion
+public sealed class Expansion implements IGrammarLocation permits
+                              ExpAction,
+                              ExpChoice,
+                              ExpLookahead,
+                              ExpNonTerminal,
+                              ExpOneOrMore,
+                              ExpSequence,
+                              ExpTryBlock,
+                              ExpZeroOrMore,
+                              ExpZeroOrOne,
+                              AbstractExpRegularExpression
 {
+  /** Default constructor. */
+  public Expansion ()
+  {}
+
+  /**
+   * The line separator the dump methods use.
+   */
   protected static final String EOL = System.getProperty ("line.separator", "\n");
 
   /**
-   * The line and column number of the construct that corresponds most closely
-   * to this node.
+   * The line and column number of the construct that corresponds most closely to this node.
    */
   private int m_nLine;
   private int m_nColumn;
 
   /**
-   * An internal name for this expansion. This is used to generate parser
-   * routines.
+   * An internal name for this expansion. This is used to generate parser routines.
    */
   private String m_sInternalName = "";
   private int m_nInternalIndex = -1;
 
   /**
-   * The parent of this expansion node. In case this is the top level expansion
-   * of the production it is a reference to the production node otherwise it is
-   * a reference to another Expansion node. In case this is the top level of a
-   * lookahead expansion,then the parent is null.
+   * The parent of this expansion node. In case this is the top level expansion of the production it
+   * is a reference to the production node otherwise it is a reference to another Expansion node. In
+   * case this is the top level of a lookahead expansion,then the parent is null.
    */
-  private Object m_parent;
+  private Object m_aParent;
 
   /**
    * The ordinal of this node with respect to its parent.
    */
-  private int m_ordinalBase;
+  private int m_nOrdinalBase;
 
   /**
-   * To avoid right-recursive loops when calculating follow sets, we use a
-   * generation number which indicates if this expansion was visited by
-   * LookaheadWalk.genFollowSet in the same generation. New generations are
-   * obtained by incrementing the static counter below, and the current
-   * generation is stored in the non-static variable below.
+   * To avoid right-recursive loops when calculating follow sets, we use a generation number which
+   * indicates if this expansion was visited by LookaheadWalk.genFollowSetRecursive in the same
+   * generation. New generations are obtained by incrementing the static counter below, and the
+   * current generation is stored in the non-static variable below.
    */
-  private static long s_nextGenerationIndex = 1;
-  private long m_myGeneration = 0;
+  private long m_nMyGeneration = 0;
 
   /**
-   * This flag is used for bookkeeping by the minimumSize method in class
-   * ParseEngine.
+   * This flag is used for bookkeeping by the minimumSize method in class ParseEngine.
    */
-  private boolean m_inMinimumSize = false;
+  private boolean m_bInMinimumSize = false;
 
-  public static void reInit ()
-  {
-    s_nextGenerationIndex = 1;
-  }
-
+  /**
+   * {@return a generation number that has not been used before in this run, for a follow set walk
+   * to mark the expansions it has already visited}
+   */
   public static long getNextGenerationIndex ()
   {
-    return s_nextGenerationIndex++;
+    return PGCCContext.current ().grammar ().getAndIncNextExpansionGeneration ();
   }
 
+  /**
+   * Give this expansion the name the generated parser routine will carry.
+   *
+   * @param sPrefix
+   *        The name prefix, which says what kind of routine it is. May not be <code>null</code>.
+   * @param nIndex
+   *        The number that makes the name unique.
+   */
   public final void setInternalName (final String sPrefix, final int nIndex)
   {
     m_sInternalName = sPrefix + nIndex;
     m_nInternalIndex = nIndex;
   }
 
+  /**
+   * Give this expansion a name without a number behind it, for the cases that do not need one.
+   *
+   * @param sName
+   *        The name. May not be <code>null</code>.
+   */
   public final void setInternalNameOnly (final String sName)
   {
     m_sInternalName = sName;
   }
 
+  /**
+   * {@return <code>true</code> if this expansion has not been named yet}
+   */
   public final boolean hasNoInternalName ()
   {
     return StringHelper.isEmpty (m_sInternalName);
   }
 
+  /**
+   * {@return the name of the parser routine generated for this expansion, empty if it has none}
+   */
   public final String getInternalName ()
   {
     return m_sInternalName;
   }
 
+  /**
+   * {@return the number behind the internal name, or -1 if the name carries none}
+   */
   public final int getInternalIndex ()
   {
     return m_nInternalIndex;
@@ -135,117 +169,180 @@ public class Expansion
     return sName.substring (sName.lastIndexOf (".") + 1);
   }
 
+  /**
+   * Build the indentation the dump methods put in front of a line.
+   *
+   * @param nIndent
+   *        The nesting depth.
+   * @return A builder holding two spaces per level. Never <code>null</code>.
+   */
   @NonNull
-  protected static StringBuilder dumpPrefix (final int indent)
+  protected static StringBuilder dumpPrefix (final int nIndent)
   {
-    final StringBuilder sb = new StringBuilder (indent * 2);
-    for (int i = 0; i < indent; i++)
-      sb.append ("  ");
-    return sb;
+    final StringBuilder aSB = new StringBuilder (nIndent * 2);
+    for (int i = 0; i < nIndent; i++)
+      aSB.append ("  ");
+    return aSB;
   }
 
   /**
-   * @param indent
+   * Render this expansion and everything below it, for debugging.
+   *
+   * @param nIndent
    *        indentation level
-   * @param alreadyDumped
+   * @param aAlreadyDumped
    *        what was already dumped?
    * @return String
    */
   @OverrideOnDemand
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    return dumpPrefix (indent).append (System.identityHashCode (this)).append (" ").append (_getSimpleName ());
+    return dumpPrefix (nIndent).append (System.identityHashCode (this)).append (' ').append (_getSimpleName ());
   }
 
   /**
+   * Where in the grammar this expansion is written.
+   *
    * @return the column
    */
-  public final int getColumn ()
+  public final int getColumnNumber ()
   {
     return m_nColumn;
   }
 
   /**
-   * @param column
+   * Where in the grammar this expansion is written.
+   *
+   * @param nColumn
    *        the column to set
    */
-  public final void setColumn (final int column)
+  public final void setColumnNumber (final int nColumn)
   {
-    m_nColumn = column;
+    m_nColumn = nColumn;
   }
 
   /**
+   * Where in the grammar this expansion is written.
+   *
    * @return the line
    */
-  public final int getLine ()
+  public final int getLineNumber ()
   {
     return m_nLine;
   }
 
   /**
-   * @param line
+   * Where in the grammar this expansion is written.
+   *
+   * @param nLine
    *        the line to set
    */
-  public final void setLine (final int line)
+  public final void setLineNumber (final int nLine)
   {
-    m_nLine = line;
-  }
-
-  public final Object getParent ()
-  {
-    return m_parent;
-  }
-
-  public final void setParent (final Object o)
-  {
-    m_parent = o;
-  }
-
-  public final int getOrdinalBase ()
-  {
-    return m_ordinalBase;
-  }
-
-  public final void setOrdinalBase (final int n)
-  {
-    m_ordinalBase = n;
-  }
-
-  public final long getMyGeneration ()
-  {
-    return m_myGeneration;
-  }
-
-  public final void setMyGeneration (final long n)
-  {
-    m_myGeneration = n;
-  }
-
-  public final boolean isInMinimumSize ()
-  {
-    return m_inMinimumSize;
-  }
-
-  public final void setInMinimumSize (final boolean b)
-  {
-    m_inMinimumSize = b;
+    m_nLine = nLine;
   }
 
   /**
-   * A reimplementing of Object.hashCode() to be deterministic. This uses the
-   * line and column fields to generate an arbitrary number - we assume that
-   * this method is called only after line and column are set to their actual
-   * values.
+   * {@return the expansion this one sits inside, the production if this is its top level, or
+   * <code>null</code> if this is the top level of a lookahead}
+   */
+  public final Object getParent ()
+  {
+    return m_aParent;
+  }
+
+  /**
+   * Record where this expansion sits.
+   *
+   * @param o
+   *        The enclosing expansion or production. May be <code>null</code>.
+   */
+  public final void setParent (final Object o)
+  {
+    m_aParent = o;
+  }
+
+  /**
+   * {@return the position of this expansion among its parent's children}
+   */
+  public final int getOrdinalBase ()
+  {
+    return m_nOrdinalBase;
+  }
+
+  /**
+   * Record the position of this expansion among its parent's children.
+   *
+   * @param n
+   *        The position.
+   */
+  public final void setOrdinalBase (final int n)
+  {
+    m_nOrdinalBase = n;
+  }
+
+  /**
+   * {@return the generation this expansion was last visited in by a follow set walk}
+   */
+  public final long getMyGeneration ()
+  {
+    return m_nMyGeneration;
+  }
+
+  /**
+   * Mark this expansion as visited in a generation, so that a right recursive grammar does not send
+   * the follow set walk round forever.
+   *
+   * @param n
+   *        The current generation, from {@link #getNextGenerationIndex()}.
+   */
+  public final void setMyGeneration (final long n)
+  {
+    m_nMyGeneration = n;
+  }
+
+  /**
+   * {@return <code>true</code> while the minimum size computation in ParseEngine is inside this
+   * expansion, which is how it recognises a cycle}
+   */
+  public final boolean isInMinimumSize ()
+  {
+    return m_bInMinimumSize;
+  }
+
+  /**
+   * Mark that the minimum size computation has entered or left this expansion.
+   *
+   * @param b
+   *        <code>true</code> on the way in, <code>false</code> on the way out.
+   */
+  public final void setInMinimumSize (final boolean b)
+  {
+    m_bInMinimumSize = b;
+  }
+
+  /**
+   * A re-implementing of Object.hashCode() to be deterministic. This uses the line and column
+   * fields to generate an arbitrary number - we assume that this method is called only after line
+   * and column are set to their actual values.
    */
   @Override
   public int hashCode ()
   {
-    return getLine () + getColumn ();
+    return getLineNumber () + getColumnNumber ();
   }
 
   @Override
   public String toString ()
   {
-    return "[" + getLine () + "," + getColumn () + " " + System.identityHashCode (this) + " " + _getSimpleName () + "]";
+    return "[" +
+           getLineNumber () +
+           "," +
+           getColumnNumber () +
+           " " +
+           System.identityHashCode (this) +
+           " " +
+           _getSimpleName () +
+           "]";
   }
 }

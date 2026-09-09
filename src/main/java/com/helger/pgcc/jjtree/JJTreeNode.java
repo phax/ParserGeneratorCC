@@ -33,26 +33,57 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.OverrideOnDemand;
 
+/**
+ * The base of every node in JJTree's own syntax tree. On top of what SimpleNode gives it, a node
+ * remembers the first and the last token it covers, which is what lets JJTree copy stretches of the
+ * grammar back out with their original layout.
+ */
 public class JJTreeNode extends SimpleNode
 {
+  /**
+   * The position of this node among its parent's children.
+   */
   private int m_nMyOrdinal;
 
+  /**
+   * Create a node of the given kind.
+   *
+   * @param nID
+   *        The node kind, one of the constants JJTree generates.
+   */
   public JJTreeNode (final int nID)
   {
     super (nID);
   }
 
+  /**
+   * The constructor the generated parser calls. The parser argument is not used.
+   *
+   * @param p
+   *        The parser that is building the tree. Ignored.
+   * @param nID
+   *        The node kind, one of the constants JJTree generates.
+   */
   public JJTreeNode (@SuppressWarnings ("unused") final JJTreeParser p, final int nID)
   {
     // Ignore parser - whysoever
     this (nID);
   }
 
-  public static Node jjtCreate (final int id)
+  /**
+   * The factory method the generated parser calls.
+   *
+   * @param nId
+   *        The node kind, one of the constants JJTree generates.
+   * @return The new node. Never <code>null</code>.
+   */
+  public static Node jjtCreate (final int nId)
   {
-    return new JJTreeNode (id);
+    return new JJTreeNode (nId);
   }
 
   @Override
@@ -62,91 +93,131 @@ public class JJTreeNode extends SimpleNode
     ((JJTreeNode) n).setOrdinal (i);
   }
 
+  /**
+   * {@return the position of this node among its parent's children}
+   */
   public int getOrdinal ()
   {
     return m_nMyOrdinal;
   }
 
+  /**
+   * Record the position of this node among its parent's children.
+   *
+   * @param o
+   *        The position.
+   */
   public void setOrdinal (final int o)
   {
     m_nMyOrdinal = o;
   }
 
   /*****************************************************************
-   * The following is added manually to enhance all tree nodes with attributes
-   * that store the first and last tokens corresponding to each node, as well as
-   * to print the tokens back to the specified output stream.
+   * The following is added manually to enhance all tree nodes with attributes that store the first
+   * and last tokens corresponding to each node, as well as to print the tokens back to the
+   * specified output stream.
    *****************************************************************/
 
-  private Token m_first;
-  private Token m_last;
+  /**
+   * The first token this node covers.
+   */
+  private Token m_aFirst;
+  /**
+   * The last token this node covers.
+   */
+  private Token m_aLast;
 
+  /**
+   * {@return the first token this node covers, or <code>null</code> if it covers none}
+   */
   public Token getFirstToken ()
   {
-    return m_first;
+    return m_aFirst;
   }
 
+  /**
+   * Record where the text of this node begins.
+   *
+   * @param t
+   *        The first token. May be <code>null</code>.
+   */
   public void setFirstToken (final Token t)
   {
-    m_first = t;
+    m_aFirst = t;
   }
 
+  /**
+   * {@return the last token this node covers, or <code>null</code> if it covers none}
+   */
   public Token getLastToken ()
   {
-    return m_last;
+    return m_aLast;
   }
 
+  /**
+   * Record where the text of this node ends.
+   *
+   * @param t
+   *        The last token. May be <code>null</code>.
+   */
   public void setLastToken (final Token t)
   {
-    m_last = t;
+    m_aLast = t;
   }
 
   @OverrideOnDemand
-  String translateImage (final Token t)
+  String translateImage (@NonNull final Token t)
   {
     return t.image;
   }
 
-  static String whiteOut (final Token t)
+  static String whiteOut (@NonNull final Token t)
   {
-    final StringBuilder sb = new StringBuilder (t.image.length ());
+    final StringBuilder aSB = new StringBuilder (t.image.length ());
 
     for (final char ch : t.image.toCharArray ())
     {
       if (ch != '\t' && ch != '\n' && ch != '\r' && ch != '\f')
-        sb.append (' ');
+        aSB.append (' ');
       else
-        sb.append (ch);
+        aSB.append (ch);
     }
 
-    return sb.toString ();
+    return aSB.toString ();
   }
 
-  /*
-   * Indicates whether the token should be replaced by white space or replaced
-   * with the actual node variable.
+  /**
+   * Indicates whether the token should be replaced by white space or replaced with the actual node
+   * variable.
    */
-  private boolean m_whitingOut = false;
+  private boolean m_bWhitingOut = false;
 
-  protected void print (final Token t, final JJTreeIO io)
+  /**
+   * Copy one token and the comments attached to it into the output, keeping its original position.
+   *
+   * @param t
+   *        The token to copy. May not be <code>null</code>.
+   * @param aIo
+   *        Where to copy it. May not be <code>null</code>.
+   */
+  protected void print (@NonNull final Token t, @NonNull final JJTreeIO aIo)
   {
-    Token tt = t.specialToken;
-    if (tt != null)
+    Token aTt = t.specialToken;
+    if (aTt != null)
     {
-      while (tt.specialToken != null)
-        tt = tt.specialToken;
-      while (tt != null)
+      while (aTt.specialToken != null)
+        aTt = aTt.specialToken;
+      while (aTt != null)
       {
-        io.print (TokenUtils.addUnicodeEscapes (translateImage (tt)));
-        tt = tt.next;
+        aIo.print (TokenUtils.addUnicodeEscapes (translateImage (aTt)));
+        aTt = aTt.next;
       }
     }
 
     /*
-     * If we're within a node scope we modify the source in the following ways:
-     * 1) we rename all references to `jjtThis' to be references to the actual
-     * node variable. 2) we replace all calls to `jjtree.currentNode()' with
-     * references to the node variable.
+     * If we're within a node scope we modify the source in the following ways: 1) we rename all
+     * references to `jjtThis' to be references to the actual node variable. 2) we replace all calls
+     * to `jjtree.currentNode()' with references to the node variable.
      */
 
     final NodeScope s = NodeScope.getEnclosingNodeScope (this);
@@ -155,13 +226,13 @@ public class JJTreeNode extends SimpleNode
       /*
        * Not within a node scope so we don't need to modify the source.
        */
-      io.print (TokenUtils.addUnicodeEscapes (translateImage (t)));
+      aIo.print (TokenUtils.addUnicodeEscapes (translateImage (t)));
       return;
     }
 
     if (t.image.equals ("jjtThis"))
     {
-      io.print (s.getNodeVariable ());
+      aIo.print (s.getNodeVariable ());
       return;
     }
     else
@@ -176,38 +247,38 @@ public class JJTreeNode extends SimpleNode
               if (t.next.next.next.next.image.equals (")"))
               {
                 /*
-                 * Found `jjtree.currentNode()' so go into white out mode. We'll
-                 * stay in this mode until we find the closing parenthesis.
+                 * Found `jjtree.currentNode()' so go into white out mode. We'll stay in this mode
+                 * until we find the closing parenthesis.
                  */
-                m_whitingOut = true;
+                m_bWhitingOut = true;
               }
             }
           }
         }
       }
-    if (m_whitingOut)
+    if (m_bWhitingOut)
     {
       if (t.image.equals ("jjtree"))
       {
-        io.print (s.getNodeVariable ());
-        io.print (" ");
+        aIo.print (s.getNodeVariable ());
+        aIo.print (" ");
       }
       else
         if (t.image.equals (")"))
         {
-          io.print (" ");
-          m_whitingOut = false;
+          aIo.print (" ");
+          m_bWhitingOut = false;
         }
         else
         {
           for (int i = 0; i < t.image.length (); ++i)
           {
-            io.print (" ");
+            aIo.print (" ");
           }
         }
       return;
     }
 
-    io.print (TokenUtils.addUnicodeEscapes (translateImage (t)));
+    aIo.print (TokenUtils.addUnicodeEscapes (translateImage (t)));
   }
 }

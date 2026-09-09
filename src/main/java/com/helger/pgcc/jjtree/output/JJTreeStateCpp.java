@@ -31,9 +31,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
 package com.helger.pgcc.jjtree.output;
 
 import java.io.File;
@@ -43,7 +40,7 @@ import java.util.Map;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.CGlobal;
 import com.helger.pgcc.PGVersion;
-import com.helger.pgcc.jjtree.JJTreeGlobals;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.jjtree.JJTreeOptions;
 import com.helger.pgcc.output.OutputFile;
 import com.helger.pgcc.parser.Options;
@@ -54,25 +51,32 @@ import com.helger.pgcc.parser.Options;
 @Immutable
 public final class JJTreeStateCpp
 {
-  private static final String JJTStateVersion = PGVersion.MAJOR_DOT_MINOR;
+  private static final String JJT_STATE_VERSION = PGVersion.MAJOR_DOT_MINOR;
 
   private JJTreeStateCpp ()
   {}
 
+  /**
+   * Write the C++ class that the generated parser keeps its half built tree in.
+   *
+   * @throws IOException
+   *         if the file cannot be written
+   */
   public static void generateTreeState () throws IOException
   {
     final Map <String, Object> aOptions = Options.getAllOptions ();
-    aOptions.put (Options.NONUSER_OPTION__PARSER_NAME, JJTreeGlobals.s_parserName);
+    aOptions.put (Options.NONUSER_OPTION__PARSER_NAME, PGCCContext.current ().jjtree ().getParserName ());
 
     final String sFilePrefix = new File (JJTreeOptions.getJJTreeOutputDirectory (),
-                                         "JJT" + JJTreeGlobals.s_parserName + "State").getAbsolutePath ();
+                                         "JJT" + PGCCContext.current ().jjtree ().getParserName () + "State")
+                                                                                                             .getAbsolutePath ();
 
     OutputFile aOutputFile = new OutputFile (new File (sFilePrefix + ".h"),
-                                             JJTStateVersion,
+                                             JJT_STATE_VERSION,
                                              CGlobal.EMPTY_STRING_ARRAY);
-    NodeFilesCpp.generateFile (aOutputFile, "/templates/jjtree/cpp/JJTTreeState.h.template", aOptions, true);
+    NodeFilesCpp.generateFile (aOutputFile, "/templates/cpp/jjtree/JJTTreeState.h.template", aOptions, true);
 
-    aOutputFile = new OutputFile (new File (sFilePrefix + ".cc"), JJTStateVersion, CGlobal.EMPTY_STRING_ARRAY);
-    NodeFilesCpp.generateFile (aOutputFile, "/templates/jjtree/cpp/JJTTreeState.cc.template", aOptions, true);
+    aOutputFile = new OutputFile (new File (sFilePrefix + ".cc"), JJT_STATE_VERSION, CGlobal.EMPTY_STRING_ARRAY);
+    NodeFilesCpp.generateFile (aOutputFile, "/templates/cpp/jjtree/JJTTreeState.cc.template", aOptions, true);
   }
 }

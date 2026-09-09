@@ -33,9 +33,38 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * The Java body of a JAVACODE production.
+ */
 public class ASTJavacodeBody extends JJTreeNode
 {
-  NodeScope m_node_scope;
+  /**
+   * The scope this node opens.
+   */
+  private NodeScope m_aNodeScope;
+
+  /**
+   * The node scope.
+   *
+   * @return The value of m_aNodeScope.
+   */
+  public NodeScope getNodeScope ()
+  {
+    return m_aNodeScope;
+  }
+
+  /**
+   * The node scope.
+   *
+   * @param aValue
+   *        The new value of m_aNodeScope.
+   */
+  public void setNodeScope (final NodeScope aValue)
+  {
+    m_aNodeScope = aValue;
+  }
 
   ASTJavacodeBody (final int nID)
   {
@@ -44,8 +73,8 @@ public class ASTJavacodeBody extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

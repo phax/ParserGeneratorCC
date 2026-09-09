@@ -46,73 +46,118 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes expansions that are sequences of expansion units. (c1 c2 ...)
  */
-public class ExpSequence extends Expansion
+public final class ExpSequence extends Expansion
 {
   /**
-   * The list of units in this expansion sequence. Each List component will
-   * narrow to Expansion.
+   * The list of units in this expansion sequence. Each List component will narrow to Expansion.
    */
-  private final List <Expansion> m_units = new ArrayList <> ();
+  private final List <Expansion> m_aUnits = new ArrayList <> ();
 
+  /**
+   * Create an empty sequence.
+   */
   public ExpSequence ()
   {}
 
-  public ExpSequence (final Token token, final ExpLookahead lookahead)
+  /**
+   * Create a sequence that starts with a lookahead specification.
+   *
+   * @param aToken
+   *        The token the sequence starts at, for error messages. May not be <code>null</code>.
+   * @param aLookahead
+   *        The lookahead. May be <code>null</code>.
+   */
+  public ExpSequence (@NonNull final Token aToken, final ExpLookahead aLookahead)
   {
-    setLine (token.beginLine);
-    setColumn (token.beginColumn);
-    m_units.add (lookahead);
+    setLineNumber (aToken.beginLine);
+    setColumnNumber (aToken.beginColumn);
+    m_aUnits.add (aLookahead);
   }
 
+  /**
+   * {@return the expansions this sequence is made of, in order}
+   */
   @NonNull
   public final Iterable <Expansion> getUnits ()
   {
-    return m_units;
+    return m_aUnits;
   }
 
+  /**
+   * {@return how many expansions this sequence is made of}
+   */
   @Nonnegative
   public final int getUnitCount ()
   {
-    return m_units.size ();
+    return m_aUnits.size ();
   }
 
+  /**
+   * One expansion of this sequence.
+   *
+   * @param nIndex
+   *        The position, from 0.
+   * @return The expansion. Never <code>null</code>.
+   */
   @NonNull
   public final Expansion getUnitAt (final int nIndex)
   {
-    return m_units.get (nIndex);
+    return m_aUnits.get (nIndex);
   }
 
-  public final void addUnit (final Expansion aObj)
+  /**
+   * Append an expansion to this sequence.
+   *
+   * @param aObj
+   *        The expansion to append. May not be <code>null</code>.
+   */
+  public final void addUnit (@NonNull final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
-    m_units.add (aObj);
+    m_aUnits.add (aObj);
   }
 
-  public final void addUnit (final int n, final Expansion aObj)
+  /**
+   * Insert an expansion into this sequence.
+   *
+   * @param n
+   *        The position to insert at, from 0.
+   * @param aObj
+   *        The expansion to insert. May not be <code>null</code>.
+   */
+  public final void addUnit (final int n, @NonNull final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
-    m_units.add (n, aObj);
+    m_aUnits.add (n, aObj);
   }
 
-  public final void setUnit (final int n, final Expansion aObj)
+  /**
+   * Replace one expansion of this sequence.
+   *
+   * @param n
+   *        The position to replace, from 0.
+   * @param aObj
+   *        The new expansion. May not be <code>null</code>.
+   */
+  public final void setUnit (final int n, @NonNull final Expansion aObj)
   {
     ValueEnforcer.notNull (aObj, "Obj");
-    m_units.set (n, aObj);
+    m_aUnits.set (n, aObj);
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
-    if (!alreadyDumped.add (this))
+    if (!aAlreadyDumped.add (this))
     {
-      return super.dump (0, alreadyDumped).insert (0, '[').append (']').insert (0, dumpPrefix (indent));
+      return super.dump (0, aAlreadyDumped).insert (0, '[').append (']').insert (0, dumpPrefix (nIndent));
     }
 
-    final StringBuilder sb = super.dump (indent, alreadyDumped);
-    for (final Expansion next : m_units)
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
+    for (final Expansion next : m_aUnits)
     {
-      sb.append (EOL).append (next.dump (indent + 1, alreadyDumped));
+      aSB.append (EOL).append (next.dump (nIndent + 1, aAlreadyDumped));
     }
-    return sb;
+    return aSB;
   }
 }

@@ -38,15 +38,24 @@
 
 package com.helger.pgcc.parser;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Describes the input token stream.
  */
-public class Token
+/**
+ * Describes the input token stream.
+ * <p>
+ * The fields below are public on purpose and stay that way. Grammar action code reads t.image and
+ * t.kind directly, generated parsers do the same, and going through accessors would put a call in
+ * the hottest path of every parse. This is the one class in the project that is exempt from the
+ * rule that members are private.
+ */
+public class Token implements IGrammarLocation
 {
   /**
-   * An integer that describes the kind of this token. This numbering system is
-   * determined by JavaCCParser, and a table of these numbers is stored in the
-   * file ...Constants.java.
+   * An integer that describes the kind of this token. This numbering system is determined by
+   * JavaCCParser, and a table of these numbers is stored in the file ...Constants.java.
    */
   public int kind;
 
@@ -65,24 +74,21 @@ public class Token
   public String image;
 
   /**
-   * A reference to the next regular (non-special) token from the input stream.
-   * If this is the last token from the input stream, or if the token manager
-   * has not read tokens beyond this one, this field is set to null. This is
-   * true only if this token is also a regular token. Otherwise, see below for a
-   * description of the contents of this field.
+   * A reference to the next regular (non-special) token from the input stream. If this is the last
+   * token from the input stream, or if the token manager has not read tokens beyond this one, this
+   * field is set to null. This is true only if this token is also a regular token. Otherwise, see
+   * below for a description of the contents of this field.
    */
   public Token next;
 
   /**
-   * This field is used to access special tokens that occur prior to this token,
-   * but after the immediately preceding regular (non-special) token. If there
-   * are no such special tokens, this field is set to null. When there are more
-   * than one such special token, this field refers to the last of these special
-   * tokens, which in turn refers to the next previous special token through its
-   * specialToken field, and so on until the first special token (whose
-   * specialToken field is null). The next fields of special tokens refer to
-   * other special tokens that immediately follow it (without an intervening
-   * regular token). If there is no such token, this field is null.
+   * This field is used to access special tokens that occur prior to this token, but after the
+   * immediately preceding regular (non-special) token. If there are no such special tokens, this
+   * field is set to null. When there are more than one such special token, this field refers to the
+   * last of these special tokens, which in turn refers to the next previous special token through
+   * its specialToken field, and so on until the first special token (whose specialToken field is
+   * null). The next fields of special tokens refer to other special tokens that immediately follow
+   * it (without an intervening regular token). If there is no such token, this field is null.
    */
   public Token specialToken;
 
@@ -95,29 +101,29 @@ public class Token
   /**
    * Constructs a new token for the specified Image and Kind.
    *
-   * @param kind
+   * @param nKind
    *        token kind
-   * @param image
+   * @param sImage
    *        token image
    */
-  public Token (final int kind, final String image)
+  public Token (final int nKind, final String sImage)
   {
-    this.kind = kind;
-    this.image = image;
+    this.kind = nKind;
+    this.image = sImage;
   }
 
   /**
    * equals
    */
   @Override
-  public boolean equals (final Object object)
+  public boolean equals (@Nullable final Object aObject)
   {
-    if (object == null)
+    if (aObject == null)
       return false;
-    if (this == object)
+    if (this == aObject)
       return true;
-    if (object instanceof String)
-      return object.equals (image);
+    if (aObject instanceof String)
+      return aObject.equals (image);
     return false;
   }
 
@@ -134,16 +140,25 @@ public class Token
    * Returns the image.
    */
   @Override
+  public int getLineNumber ()
+  {
+    return beginLine;
+  }
+
+  public int getColumnNumber ()
+  {
+    return beginColumn;
+  }
+
   public String toString ()
   {
     return image;
   }
 
   /**
-   * An optional attribute value of the Token. Tokens which are not used as
-   * syntactic sugar will often contain meaningful values that will be used
-   * later on by the compiler or interpreter. This attribute value is often
-   * different from the image. Any subclass of Token that actually wants to
+   * An optional attribute value of the Token. Tokens which are not used as syntactic sugar will
+   * often contain meaningful values that will be used later on by the compiler or interpreter. This
+   * attribute value is often different from the image. Any subclass of Token that actually wants to
    * return a non-null value can override this method as appropriate.
    *
    * @return token value
@@ -154,37 +169,42 @@ public class Token
   }
 
   /**
-   * Returns a new Token object, by default. However, if you want, you can
-   * create and return subclass objects based on the value of ofKind. Simply add
-   * the cases to the switch for all those special cases. For example, if you
-   * have a subclass of Token called IDToken that you want to create if ofKind
-   * is ID, simply add something like : case MyParserConstants.ID : return new
-   * IDToken(ofKind, image); to the following switch statement. Then you can
-   * cast matchedToken variable to the appropriate type and use it in your
-   * lexical actions.
+   * Returns a new Token object, by default. However, if you want, you can create and return
+   * subclass objects based on the value of ofKind. Simply add the cases to the switch for all those
+   * special cases. For example, if you have a subclass of Token called IDToken that you want to
+   * create if ofKind is ID, simply add something like : case MyParserConstants.ID : return new
+   * IDToken(ofKind, image); to the following switch statement. Then you can cast matchedToken
+   * variable to the appropriate type and use it in your lexical actions.
    *
-   * @param ofKind
+   * @param nOfKind
    *        token kind
-   * @param image
+   * @param sImage
    *        token image
    * @return The created token. Never <code>null</code>.
    */
-  public static Token newToken (final int ofKind, final String image)
+  public static Token newToken (final int nOfKind, final String sImage)
   {
-    switch (ofKind)
+    switch (nOfKind)
     {
       case JavaCCParserConstants.RUNSIGNEDSHIFT:
       case JavaCCParserConstants.RSIGNEDSHIFT:
       case JavaCCParserConstants.GT:
-        return new GTToken (ofKind, image);
+        return new GTToken (nOfKind, sImage);
       default:
-        return new Token (ofKind, image);
+        return new Token (nOfKind, sImage);
     }
   }
 
-  public static Token newToken (final int ofKind)
+  /**
+   * Create a token of the given kind.
+   *
+   * @param nOfKind
+   *        The token kind.
+   * @return The token. Never <code>null</code>.
+   */
+  public static Token newToken (final int nOfKind)
   {
-    return newToken (ofKind, null);
+    return newToken (nOfKind, null);
   }
 
   /**
@@ -192,11 +212,23 @@ public class Token
    */
   public static class GTToken extends Token
   {
-    int m_realKind = JavaCCParserConstants.GT;
+    /**
+     * Which shift operator this ">" really belongs to. Read and written straight from the grammar's
+     * action code, like the fields of Token itself, so it stays a field.
+     */
+    int m_nRealKind = JavaCCParserConstants.GT;
 
-    public GTToken (final int kind, final String image)
+    /**
+     * Create the token.
+     *
+     * @param nKind
+     *        The token kind.
+     * @param sImage
+     *        The text it matched. May be <code>null</code>.
+     */
+    public GTToken (final int nKind, final String sImage)
     {
-      super (kind, image);
+      super (nKind, sImage);
     }
   }
 }

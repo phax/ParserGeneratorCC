@@ -43,71 +43,82 @@ import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.NfaState;
 
 /**
- * Describes regular expressions which are sequences of other regular
- * expressions.
+ * Describes regular expressions which are sequences of other regular expressions.
  */
 
-public class ExpRSequence extends AbstractExpRegularExpression
+public final class ExpRSequence extends AbstractExpRegularExpression
 {
 
   /**
-   * The list of units in this regular expression sequence. Each list component
-   * will narrow to RegularExpression.
+   * The list of units in this regular expression sequence. Each list component will narrow to
+   * RegularExpression.
    */
-  private final List <AbstractExpRegularExpression> m_units;
+  private final List <AbstractExpRegularExpression> m_aUnits;
 
+  /**
+   * Create an empty sequence of regular expressions.
+   */
   public ExpRSequence ()
   {
-    m_units = new ArrayList <> ();
+    m_aUnits = new ArrayList <> ();
   }
 
-  ExpRSequence (final List <AbstractExpRegularExpression> seq)
+  ExpRSequence (final List <AbstractExpRegularExpression> aSeq)
   {
     setOrdinal (Integer.MAX_VALUE);
-    m_units = seq;
+    m_aUnits = aSeq;
   }
 
+  /**
+   * {@return the regular expressions this sequence is made of, as a list the caller may add to}
+   */
   @NonNull
   public final List <AbstractExpRegularExpression> getUnits ()
   {
-    return m_units;
+    return m_aUnits;
   }
 
-  public final void addUnit (final AbstractExpRegularExpression ex)
+  /**
+   * Append a regular expression to this sequence.
+   *
+   * @param aEx
+   *        The expression to append. May not be <code>null</code>.
+   */
+  public final void addUnit (@NonNull final AbstractExpRegularExpression aEx)
   {
-    ValueEnforcer.notNull (ex, "RegEx");
-    m_units.add (ex);
+    ValueEnforcer.notNull (aEx, "RegEx");
+    m_aUnits.add (aEx);
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    if (m_units.size () == 1)
-      return m_units.get (0).generateNfa (ignoreCase);
+    if (m_aUnits.size () == 1)
+      return m_aUnits.get (0).generateNfa (bIgnoreCase);
 
-    final Nfa retVal = new Nfa ();
-    final NfaState startState = retVal.start ();
-    final NfaState finalState = retVal.end ();
-    Nfa temp1;
-    Nfa temp2 = null;
+    final Nfa aRetVal = new Nfa ();
+    final NfaState aStartState = aRetVal.start ();
+    final NfaState aFinalState = aRetVal.end ();
+    Nfa aTemp1;
+    Nfa aTemp2 = null;
 
-    AbstractExpRegularExpression curRE;
+    AbstractExpRegularExpression aCurRE;
 
-    curRE = m_units.get (0);
-    temp1 = curRE.generateNfa (ignoreCase);
-    startState.addMove (temp1.start ());
+    aCurRE = m_aUnits.get (0);
+    aTemp1 = aCurRE.generateNfa (bIgnoreCase);
+    aStartState.addMove (aTemp1.start ());
 
-    for (int i = 1; i < m_units.size (); i++)
+    for (int i = 1; i < m_aUnits.size (); i++)
     {
-      curRE = m_units.get (i);
+      aCurRE = m_aUnits.get (i);
 
-      temp2 = curRE.generateNfa (ignoreCase);
-      temp1.end ().addMove (temp2.start ());
-      temp1 = temp2;
+      aTemp2 = aCurRE.generateNfa (bIgnoreCase);
+      aTemp1.end ().addMove (aTemp2.start ());
+      aTemp1 = aTemp2;
     }
 
-    temp2.end ().addMove (finalState);
+    aTemp2.end ().addMove (aFinalState);
 
-    return retVal;
+    return aRetVal;
   }
 }

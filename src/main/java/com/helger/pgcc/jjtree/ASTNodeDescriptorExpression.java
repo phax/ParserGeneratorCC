@@ -33,6 +33,12 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * The expression in brackets after a node name, which decides at run time whether the node is
+ * built.
+ */
 public class ASTNodeDescriptorExpression extends JJTreeNode
 {
   ASTNodeDescriptorExpression (final int nID)
@@ -48,8 +54,8 @@ public class ASTNodeDescriptorExpression extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

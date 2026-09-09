@@ -34,19 +34,25 @@
 package com.helger.pgcc.parser;
 
 /**
- * Definitions of constants that identify the kind of regular expression
- * production this is.
+ * Definitions of constants that identify the kind of regular expression production this is.
  *
  * @author Philip Helger
  * @since 1.1.0
  */
 public enum ETokenKind
 {
+  /** Produce a token and hand it to the parser. */
   TOKEN,
+  /** Throw the match away and start again. */
   SKIP,
+  /** Keep the match and go on collecting, so that a longer token can be built from it. */
   MORE,
+  /** Produce a token that the parser does not see, but that stays attached to the next one. */
   SPECIAL;
 
+  /**
+   * {@return the name this kind carries in the grammar}
+   */
   public String getImage ()
   {
     return name ();

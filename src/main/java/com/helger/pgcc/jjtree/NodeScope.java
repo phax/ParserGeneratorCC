@@ -33,66 +33,192 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
 import org.jspecify.annotations.Nullable;
 
+/**
+ * One node built by a production, and everything the generated code needs to build it: the variable
+ * names, the child count and the point at which the node is closed.
+ */
 public class NodeScope
 {
-  ASTProduction m_production;
-  ASTNodeDescriptor m_node_descriptor;
+  private ASTProduction m_aProduction;
 
-  String m_closedVar;
-  String m_exceptionVar;
-  String m_nodeVar;
-  int m_scopeNumber;
+  /**
+   * The production.
+   *
+   * @return The value of m_aProduction.
+   */
+  public ASTProduction getProduction ()
+  {
+    return m_aProduction;
+  }
+
+  /**
+   * The production.
+   *
+   * @param aValue
+   *        The new value of m_aProduction.
+   */
+  public void setProduction (final ASTProduction aValue)
+  {
+    m_aProduction = aValue;
+  }
+
+  private ASTNodeDescriptor m_aNodeDescriptor;
+
+  /**
+   * The node descriptor.
+   *
+   * @param aValue
+   *        The new value of m_aNodeDescriptor.
+   */
+  public void setNodeDescriptor (final ASTNodeDescriptor aValue)
+  {
+    m_aNodeDescriptor = aValue;
+  }
+
+  private String m_sClosedVar;
+
+  /**
+   * The closed var.
+   *
+   * @return The value of m_sClosedVar.
+   */
+  public String getClosedVar ()
+  {
+    return m_sClosedVar;
+  }
+
+  /**
+   * The closed var.
+   *
+   * @param aValue
+   *        The new value of m_sClosedVar.
+   */
+  public void setClosedVar (final String aValue)
+  {
+    m_sClosedVar = aValue;
+  }
+
+  private String m_sExceptionVar;
+
+  /**
+   * The exception var.
+   *
+   * @return The value of m_sExceptionVar.
+   */
+  public String getExceptionVar ()
+  {
+    return m_sExceptionVar;
+  }
+
+  /**
+   * The exception var.
+   *
+   * @param aValue
+   *        The new value of m_sExceptionVar.
+   */
+  public void setExceptionVar (final String aValue)
+  {
+    m_sExceptionVar = aValue;
+  }
+
+  private String m_sNodeVar;
+
+  /**
+   * The node var.
+   *
+   * @return The value of m_sNodeVar.
+   */
+  public String getNodeVar ()
+  {
+    return m_sNodeVar;
+  }
+
+  /**
+   * The node var.
+   *
+   * @param aValue
+   *        The new value of m_sNodeVar.
+   */
+  public void setNodeVar (final String aValue)
+  {
+    m_sNodeVar = aValue;
+  }
+
+  private int m_nScopeNumber;
+
+  /**
+   * The scope number.
+   *
+   * @return The value of m_nScopeNumber.
+   */
+  public int getScopeNumber ()
+  {
+    return m_nScopeNumber;
+  }
+
+  /**
+   * The scope number.
+   *
+   * @param aValue
+   *        The new value of m_nScopeNumber.
+   */
+  public void setScopeNumber (final int aValue)
+  {
+    m_nScopeNumber = aValue;
+  }
 
   NodeScope (final ASTProduction p, @Nullable final ASTNodeDescriptor n)
   {
-    m_production = p;
+    m_aProduction = p;
 
     if (n == null)
     {
-      String nm = m_production.m_name;
+      String sNm = m_aProduction.getName ();
       if (JJTreeOptions.isNodeDefaultVoid ())
       {
-        nm = "void";
+        sNm = "void";
       }
-      m_node_descriptor = ASTNodeDescriptor.indefinite (nm);
+      m_aNodeDescriptor = ASTNodeDescriptor.indefinite (sNm);
     }
     else
     {
-      m_node_descriptor = n;
+      m_aNodeDescriptor = n;
     }
 
-    m_scopeNumber = m_production.getNodeScopeNumber (this);
-    m_nodeVar = constructVariable ("n");
-    m_closedVar = constructVariable ("c");
-    m_exceptionVar = constructVariable ("e");
+    m_nScopeNumber = m_aProduction.getNodeScopeNumber (this);
+    m_sNodeVar = constructVariable ("n");
+    m_sClosedVar = constructVariable ("c");
+    m_sExceptionVar = constructVariable ("e");
   }
 
   boolean isVoid ()
   {
-    return m_node_descriptor.isVoid ();
+    return m_aNodeDescriptor.isVoid ();
   }
 
   ASTNodeDescriptor getNodeDescriptor ()
   {
-    return m_node_descriptor;
+    return m_aNodeDescriptor;
   }
 
   String getNodeDescriptorText ()
   {
-    return m_node_descriptor.getDescriptor ();
+    return m_aNodeDescriptor.getDescriptor ();
   }
 
   String getNodeVariable ()
   {
-    return m_nodeVar;
+    return m_sNodeVar;
   }
 
-  private String constructVariable (final String id)
+  private String constructVariable (final String sId)
   {
-    final String s = "000" + m_scopeNumber;
-    return "jjt" + id + s.substring (s.length () - 3, s.length ());
+    final String s = "000" + m_nScopeNumber;
+    return "jjt" + sId + s.substring (s.length () - 3, s.length ());
   }
 
   boolean usesCloseNodeVar ()
@@ -101,27 +227,27 @@ public class NodeScope
   }
 
   @Nullable
-  static NodeScope getEnclosingNodeScope (final Node node)
+  static NodeScope getEnclosingNodeScope (@NonNull final Node aNode)
   {
-    if (node instanceof ASTBNFDeclaration)
+    if (aNode instanceof final ASTBNFDeclaration aASTBNFDeclaration)
     {
-      return ((ASTBNFDeclaration) node).m_node_scope;
+      return aASTBNFDeclaration.getNodeScope ();
     }
-    for (Node n = node.jjtGetParent (); n != null; n = n.jjtGetParent ())
+    for (Node n = aNode.jjtGetParent (); n != null; n = n.jjtGetParent ())
     {
       if (n instanceof ASTBNFDeclaration)
       {
-        return ((ASTBNFDeclaration) n).m_node_scope;
+        return ((ASTBNFDeclaration) n).getNodeScope ();
       }
       else
-        if (n instanceof ASTBNFNodeScope)
+        if (n instanceof final ASTBNFNodeScope aASTBNFNodeScope)
         {
-          return ((ASTBNFNodeScope) n).m_node_scope;
+          return aASTBNFNodeScope.getNodeScope ();
         }
         else
-          if (n instanceof ASTExpansionNodeScope)
+          if (n instanceof final ASTExpansionNodeScope aASTExpansionNodeScope)
           {
-            return ((ASTExpansionNodeScope) n).m_node_scope;
+            return aASTExpansionNodeScope.getNodeScope ();
           }
     }
     return null;

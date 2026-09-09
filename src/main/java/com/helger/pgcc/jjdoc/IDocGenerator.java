@@ -33,13 +33,14 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
-import java.io.Serializable;
 
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpNonTerminal;
@@ -51,7 +52,7 @@ import com.helger.pgcc.parser.exp.Expansion;
  * @author timp
  * @since 11-Dec-2006
  */
-public interface IDocGenerator extends Serializable
+public interface IDocGenerator
 {
   /**
    * Output string with entity substitution for brackets and ampersands.
@@ -99,6 +100,14 @@ public interface IDocGenerator extends Serializable
    */
   void specialTokens (String s) throws IOException;
 
+  /**
+   * Write one token production.
+   *
+   * @param tp
+   *        The production. May not be <code>null</code>.
+   * @throws IOException
+   *         if the output cannot be written
+   */
   void handleTokenProduction (TokenProduction tp) throws IOException;
 
   // /**
@@ -169,21 +178,21 @@ public interface IDocGenerator extends Serializable
    * Output start of a normal production.
    *
    * @param np
-   *        the NormalProduction being output
+   *        the AbstractNormalProduction being output
    * @throws IOException
    *         on IO error
    */
-  void productionStart (NormalProduction np) throws IOException;
+  void productionStart (AbstractNormalProduction np) throws IOException;
 
   /**
    * Output end of a normal production.
    *
    * @param np
-   *        the NormalProduction being output
+   *        the AbstractNormalProduction being output
    * @throws IOException
    *         on IO error
    */
-  void productionEnd (NormalProduction np) throws IOException;
+  void productionEnd (AbstractNormalProduction np) throws IOException;
 
   /**
    * Output start of an Expansion.
@@ -255,7 +264,7 @@ public interface IDocGenerator extends Serializable
    * @param o
    *        anything
    */
-  default void doNothing (final Object o)
+  default void doNothing (@NonNull final Object o)
   {
     ValueEnforcer.notNull (o, "any");
   }

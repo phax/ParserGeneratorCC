@@ -31,48 +31,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
 package com.helger.pgcc.output.java;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.CU_TO_INSERTION_POINT_1;
-import static com.helger.pgcc.parser.JavaCCGlobals.ORDERED_NAME_TOKENS;
-import static com.helger.pgcc.parser.JavaCCGlobals.REXPR_LIST;
 import static com.helger.pgcc.parser.JavaCCGlobals.addEscapes;
 import static com.helger.pgcc.parser.JavaCCGlobals.getIdString;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 import static com.helger.pgcc.parser.JavaCCGlobals.printToken;
 import static com.helger.pgcc.parser.JavaCCGlobals.printTokenSetup;
 import static com.helger.pgcc.parser.JavaCCGlobals.printTrailingComments;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_cu_name;
-import static com.helger.pgcc.parser.JavaCCGlobals.s_toolNames;
 import static com.helger.pgcc.parser.JavaCCParserConstants.PACKAGE;
 import static com.helger.pgcc.parser.JavaCCParserConstants.SEMICOLON;
 
@@ -86,7 +52,6 @@ import com.helger.io.file.FileHelper;
 import com.helger.pgcc.CPG;
 import com.helger.pgcc.parser.ETokenKind;
 import com.helger.pgcc.parser.JavaCCErrors;
-import com.helger.pgcc.parser.LexGenJava;
 import com.helger.pgcc.parser.MetaParseException;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.parser.RegExprSpec;
@@ -100,168 +65,181 @@ import com.helger.pgcc.parser.exp.ExpRStringLiteral;
  */
 public class OtherFilesGenJava
 {
+  /** Default constructor. */
+  public OtherFilesGenJava ()
+  {}
+
   private static final String CONSTANTS_FILENAME_SUFFIX = "Constants.java";
 
   private static final IJavaResourceTemplateLocations RESOURCES_JAVA_CLASSIC = new JavaResourceTemplateLocationImpl ();
   private static final IJavaResourceTemplateLocations RESOURCES_JAVA_MODERN = new JavaModernResourceTemplateLocationImpl ();
 
-  public static void start (final boolean isJavaModern) throws MetaParseException
+  /**
+   * Write the Java files that are neither the parser nor the token manager - the constants
+   * interface above all.
+   *
+   * @param bIsJavaModern
+   *        <code>true</code> to generate the Provider based variant.
+   * @throws MetaParseException
+   *         if the grammar cannot be generated from
+   */
+  public static void start (final boolean bIsJavaModern) throws MetaParseException
   {
     if (JavaCCErrors.getErrorCount () != 0)
       throw new MetaParseException ("Error count is already present!");
 
-    final IJavaResourceTemplateLocations templateLoc = isJavaModern ? RESOURCES_JAVA_MODERN : RESOURCES_JAVA_CLASSIC;
+    final IJavaResourceTemplateLocations aTemplateLoc = bIsJavaModern ? RESOURCES_JAVA_MODERN : RESOURCES_JAVA_CLASSIC;
 
     Token t = null;
 
     // Added this if condition -- 2012/10/17 -- cba
     if (Options.isGenerateJavaBoilerplateCode ())
     {
-      if (isJavaModern)
+      if (bIsJavaModern)
       {
-        FilesJava.gen_JavaModernFiles ();
+        FilesJava.genJavaModernFiles ();
       }
 
-      FilesJava.gen_TokenMgrError (templateLoc);
-      FilesJava.gen_ParseException (templateLoc);
-      FilesJava.gen_Token (templateLoc);
+      FilesJava.genTokenMgrError (aTemplateLoc);
+      FilesJava.genParseException (aTemplateLoc);
+      FilesJava.genToken (aTemplateLoc);
     }
 
     if (Options.isUserTokenManager ())
     {
       // CBA -- I think that Token managers are unique so will always be
       // generated
-      FilesJava.gen_TokenManager (templateLoc);
+      FilesJava.genTokenManager (aTemplateLoc);
     }
     else
       if (Options.isGenerateJavaBoilerplateCode ())
       {
-        FilesJava.gen_CharStream (templateLoc);
+        FilesJava.genCharStream (aTemplateLoc);
 
         if (!Options.isJavaUserCharStream ())
         {
           if (Options.isCharSequenceCharStream ())
           {
             // Does not use the buffering of AbstractCharStream
-            FilesJava.gen_CharSequenceCharStream (templateLoc);
+            FilesJava.genCharSequenceCharStream (aTemplateLoc);
           }
           else
           {
-            FilesJava.gen_AbstractCharStream (templateLoc);
+            FilesJava.genAbstractCharStream (aTemplateLoc);
             if (Options.isJavaUnicodeEscape ())
-              FilesJava.gen_JavaCharStream (templateLoc);
+              FilesJava.genJavaCharStream (aTemplateLoc);
             else
-              FilesJava.gen_SimpleCharStream (templateLoc);
+              FilesJava.genSimpleCharStream (aTemplateLoc);
           }
         }
       }
 
-    final Writer w = FileHelper.getBufferedWriter (new File (Options.getOutputDirectory (), s_cu_name + CONSTANTS_FILENAME_SUFFIX),
+    final Writer w = FileHelper.getBufferedWriter (new File (Options.getOutputDirectory (),
+                                                             grammar ().getParserName () + CONSTANTS_FILENAME_SUFFIX),
                                                    Options.getOutputEncoding ());
     if (w == null)
     {
-      JavaCCErrors.semantic_error ("Could not open file " + s_cu_name + CONSTANTS_FILENAME_SUFFIX + " for writing.");
+      JavaCCErrors.semanticError ("Could not open file " +
+                                  grammar ().getParserName () +
+                                  CONSTANTS_FILENAME_SUFFIX +
+                                  " for writing.");
       return;
     }
 
-    try (final PrintWriter ostr = new PrintWriter (w))
+    try (final PrintWriter aOstr = new PrintWriter (w))
     {
-      final List <String> tn = new ArrayList <> (s_toolNames);
-      tn.add (CPG.APP_NAME);
+      final List <String> aTn = new ArrayList <> (grammar ().getToolNameList ());
+      aTn.add (CPG.APP_NAME);
 
-      ostr.println ("/* " + getIdString (tn, s_cu_name + CONSTANTS_FILENAME_SUFFIX) + " */");
+      aOstr.println ("/* " + getIdString (aTn, grammar ().getParserName () + CONSTANTS_FILENAME_SUFFIX) + " */");
 
-      if (CU_TO_INSERTION_POINT_1.isNotEmpty () && CU_TO_INSERTION_POINT_1.get (0).kind == PACKAGE)
+      if (grammar ().cuToInsertionPoint1 ().isNotEmpty () && grammar ().cuToInsertionPoint1 ().get (0).kind == PACKAGE)
       {
-        for (int i = 1; i < CU_TO_INSERTION_POINT_1.size (); i++)
+        for (int i = 1; i < grammar ().cuToInsertionPoint1 ().size (); i++)
         {
-          if (CU_TO_INSERTION_POINT_1.get (i).kind == SEMICOLON)
+          if (grammar ().cuToInsertionPoint1 ().get (i).kind == SEMICOLON)
           {
-            t = CU_TO_INSERTION_POINT_1.get (0);
+            t = grammar ().cuToInsertionPoint1 ().get (0);
             printTokenSetup (t);
             for (int j = 0; j <= i; j++)
             {
-              t = CU_TO_INSERTION_POINT_1.get (j);
-              printToken (t, ostr);
+              t = grammar ().cuToInsertionPoint1 ().get (j);
+              printToken (t, aOstr);
             }
             printTrailingComments (t);
-            ostr.println ();
-            ostr.println ();
+            aOstr.println ();
+            aOstr.println ();
             break;
           }
         }
       }
-      ostr.println ();
-      ostr.println ("/**");
-      ostr.println (" * Token literal values and constants.");
-      ostr.println (" * Generated by " + OtherFilesGenJava.class.getName () + "#start()");
-      ostr.println (" */");
+      aOstr.println ();
+      aOstr.println ("/**");
+      aOstr.println (" * Token literal values and constants.");
+      aOstr.println (" * Generated by " + OtherFilesGenJava.class.getName () + "#start()");
+      aOstr.println (" */");
 
       if (Options.isJavaSupportClassVisibilityPublic ())
       {
-        ostr.print ("public ");
+        aOstr.print ("public ");
       }
-      ostr.println ("interface " + s_cu_name + "Constants {");
-      ostr.println ();
+      aOstr.println ("interface " + grammar ().getParserName () + "Constants {");
+      aOstr.println ();
 
-      ostr.println ("  /** End of File. */");
-      ostr.println ("  int EOF = 0;");
-      for (final AbstractExpRegularExpression re : ORDERED_NAME_TOKENS)
+      aOstr.println ("  /** End of File. */");
+      aOstr.println ("  int EOF = 0;");
+      for (final AbstractExpRegularExpression re : grammar ().orderedNameTokens ())
       {
-        ostr.println ("  /** RegularExpression Id. */");
-        ostr.println ("  int " + re.getLabel () + " = " + re.getOrdinal () + ";");
+        aOstr.println ("  /** RegularExpression Id. */");
+        aOstr.println ("  int " + re.getLabel () + " = " + re.getOrdinal () + ";");
       }
-      ostr.println ();
+      aOstr.println ();
       if (!Options.isUserTokenManager () && Options.isBuildTokenManager ())
       {
-        for (int i = 0; i < LexGenJava.s_lexStateName.length; i++)
+        for (int i = 0; i < LexGenJava.lexer ().getLexStateName ().length; i++)
         {
-          ostr.println ("  /** Lexical state. */");
-          ostr.println ("  int " + LexGenJava.s_lexStateName[i] + " = " + i + ";");
+          aOstr.println ("  /** Lexical state. */");
+          aOstr.println ("  int " + LexGenJava.lexer ().getLexStateName ()[i] + " = " + i + ";");
         }
-        ostr.println ();
+        aOstr.println ();
       }
-      ostr.println ("  /** Literal token values. */");
-      ostr.println ("  String[] tokenImage = {");
-      ostr.println ("    \"<EOF>\",");
+      aOstr.println ("  /** Literal token values. */");
+      aOstr.println ("  String[] tokenImage = {");
+      aOstr.println ("    \"<EOF>\",");
 
-      for (final TokenProduction aTokenProduction : REXPR_LIST)
+      for (final TokenProduction aTokenProduction : grammar ().rexprList ())
       {
-        final TokenProduction tp = (aTokenProduction);
-        final List <RegExprSpec> respecs = tp.m_respecs;
-        for (final RegExprSpec aRegExprSpec : respecs)
+        final TokenProduction aTp = (aTokenProduction);
+        final List <RegExprSpec> aRespecs = aTp.getRespecs ();
+        for (final RegExprSpec aRegExprSpec : aRespecs)
         {
-          final RegExprSpec res = (aRegExprSpec);
-          final AbstractExpRegularExpression re = res.rexp;
-          ostr.print ("    ");
-          if (re instanceof ExpRStringLiteral)
+          final RegExprSpec aRes = (aRegExprSpec);
+          final AbstractExpRegularExpression aRe = aRes.getRexp ();
+          aOstr.print ("    ");
+          if (aRe instanceof final ExpRStringLiteral aRStringLiteral)
           {
-            ostr.println ("\"\\\"" + addEscapes (addEscapes (((ExpRStringLiteral) re).m_image)) + "\\\"\",");
+            aOstr.println ("\"\\\"" + addEscapes (addEscapes (aRStringLiteral.getImage ())) + "\\\"\",");
           }
           else
-            if (re.hasLabel ())
+            if (aRe.hasLabel ())
             {
-              ostr.println ("\"<" + re.getLabel () + ">\",");
+              aOstr.println ("\"<" + aRe.getLabel () + ">\",");
             }
             else
             {
-              if (re.m_tpContext.m_kind == ETokenKind.TOKEN)
+              if (aRe.m_aTpContext.getKind () == ETokenKind.TOKEN)
               {
-                JavaCCErrors.warning (re, "Consider giving this non-string token a label for better error reporting.");
+                JavaCCErrors.warning (aRe, "Consider giving this non-string token a label for better error reporting.");
               }
-              ostr.println ("\"<token of kind " + re.getOrdinal () + ">\",");
+              aOstr.println ("\"<token of kind " + aRe.getOrdinal () + ">\",");
             }
 
         }
       }
-      ostr.println ("  };");
-      ostr.println ();
-      ostr.println ("}");
+      aOstr.println ("  };");
+      aOstr.println ();
+      aOstr.println ("}");
     }
   }
 
-  public static void reInit ()
-  {
-    // empty
-  }
 }

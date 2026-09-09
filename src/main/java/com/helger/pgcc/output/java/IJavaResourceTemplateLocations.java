@@ -33,23 +33,55 @@
  */
 package com.helger.pgcc.output.java;
 
+/**
+ * Where the templates of the generated Java support classes live. There is one implementation per
+ * JAVA_TEMPLATE_TYPE, which is how the classic and the modern variants pick different files without
+ * the emitters knowing about either.
+ */
 public interface IJavaResourceTemplateLocations
 {
+  /**
+   * {@return the resource path of the TokenManager template}
+   */
   String getTokenManagerTemplateResourceUrl ();
 
+  /**
+   * {@return the resource path of the Token template}
+   */
   String getTokenTemplateResourceUrl ();
 
+  /**
+   * {@return the resource path of the template of the exception the token manager throws}
+   */
   String getTokenMgrErrorTemplateResourceUrl ();
 
+  /**
+   * {@return the resource path of the CharStream template}
+   */
   String getCharStreamTemplateResourceUrl ();
 
+  /**
+   * {@return the resource path of the AbstractCharStream template}
+   */
   String getAbstractCharStreamTemplateResourceUrl ();
 
+  /**
+   * {@return the resource path of the JavaCharStream template}
+   */
   String getJavaCharStreamTemplateResourceUrl ();
 
+  /**
+   * {@return the resource path of the SimpleCharStream template}
+   */
   String getSimpleCharStreamTemplateResourceUrl ();
 
+  /**
+   * {@return the resource path of the CharSequenceCharStream template}
+   */
   String getCharSequenceCharStreamTemplateResourceUrl ();
 
+  /**
+   * {@return the resource path of the ParseException template}
+   */
   String getParseExceptionTemplateResourceUrl ();
 }

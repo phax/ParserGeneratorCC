@@ -33,18 +33,77 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.context.LookaheadState;
+
 /**
- * Describes a match, within a given lookahead.
+ * Describes a match, within a given lookahead. The depth of that lookahead comes from
+ * {@link LookaheadState}, which is per generator run.
+ */
+/**
+ * One possible sequence of token kinds, of length up to {@link LookaheadState#getLimit()}. The
+ * FIRST and FOLLOW computation in {@code LookaheadWalk} extends these, and two expansions are
+ * ambiguous at length k exactly when their sets share one.
+ * <p>
+ * Not a record, although it looks like one. The fill level is assigned from outside in four places
+ * - {@code LookaheadCalc} resets it to 0 to reuse an instance, {@code LookaheadWalk} advances it
+ * after writing a kind - so this is mutable state rather than a value, and a record's components
+ * are final. Making it one would mean allocating a new instance per token appended, which is the
+ * opposite of cheaper. A record would not give direct field access either: components are exposed
+ * as accessor methods, exactly like the getters here.
+ * <p>
+ * Performance does not argue for it in any case. Everything that touches this type accounts for
+ * under one percent of a generator run.
  */
 public class MatchInfo
 {
-  public static int s_laLimit;
+  /** Default constructor. */
+  public MatchInfo ()
+  {}
 
-  int [] m_match = new int [s_laLimit];
-  int m_firstFreeLoc;
+  private int [] m_aMatch = new int [LookaheadState.current ().getLimit ()];
+  private int m_nFirstFreeLoc;
 
-  public static void reInitStatic ()
+  /**
+   * The token kinds matched so far, in order. Only the first {@link #getFirstFreeLoc()} entries are
+   * meaningful.
+   *
+   * @return The value of m_aMatch.
+   */
+  public int [] getMatch ()
   {
-    s_laLimit = 0;
+    return m_aMatch;
+  }
+
+  /**
+   * The token kinds matched so far, in order. Only the first {@link #getFirstFreeLoc()} entries are
+   * meaningful.
+   *
+   * @param aValue
+   *        The new value of m_aMatch.
+   */
+  public void setMatch (final int [] aValue)
+  {
+    m_aMatch = aValue;
+  }
+
+  /**
+   * How many entries of the match array are in use, which is also where the next kind goes.
+   *
+   * @return The value of m_nFirstFreeLoc.
+   */
+  public int getFirstFreeLoc ()
+  {
+    return m_nFirstFreeLoc;
+  }
+
+  /**
+   * How many entries of the match array are in use, which is also where the next kind goes.
+   *
+   * @param aValue
+   *        The new value of m_nFirstFreeLoc.
+   */
+  public void setFirstFreeLoc (final int aValue)
+  {
+    m_nFirstFreeLoc = aValue;
   }
 }

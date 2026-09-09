@@ -40,12 +40,71 @@ import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
 
+/**
+ * A production of the grammar, and the node scopes opened inside it.
+ */
 public class ASTProduction extends JJTreeNode
 {
+  /**
+   * Every node scope opened inside this production, and the number that makes its generated
+   * variables unique.
+   */
   private final Map <NodeScope, Integer> m_aScopes = new HashMap <> ();
+  /**
+   * The number the next node scope of this production gets.
+   */
   private int m_nNextNodeScopeNumber = 0;
-  String m_name;
-  List <String> m_throws_list = new ArrayList <> ();
+  /**
+   * The option name.
+   */
+  private String m_sName;
+
+  /**
+   * The name.
+   *
+   * @return The value of m_sName.
+   */
+  public String getName ()
+  {
+    return m_sName;
+  }
+
+  /**
+   * The name.
+   *
+   * @param aValue
+   *        The new value of m_sName.
+   */
+  public void setName (final String aValue)
+  {
+    m_sName = aValue;
+  }
+
+  /**
+   * The exceptions the production declares, which the generated code has to declare as well.
+   */
+  private List <String> m_aThrowsList = new ArrayList <> ();
+
+  /**
+   * The throws list.
+   *
+   * @return The value of m_aThrowsList.
+   */
+  public List <String> getThrowsList ()
+  {
+    return m_aThrowsList;
+  }
+
+  /**
+   * The throws list.
+   *
+   * @param aValue
+   *        The new value of m_aThrowsList.
+   */
+  public void setThrowsList (final List <String> aValue)
+  {
+    m_aThrowsList = aValue;
+  }
 
   ASTProduction (final int nID)
   {
@@ -54,14 +113,14 @@ public class ASTProduction extends JJTreeNode
 
   int getNodeScopeNumber (@NonNull final NodeScope s)
   {
-    final Integer ret = m_aScopes.computeIfAbsent (s, k -> Integer.valueOf (m_nNextNodeScopeNumber++));
-    return ret.intValue ();
+    final Integer aRet = m_aScopes.computeIfAbsent (s, k -> Integer.valueOf (m_nNextNodeScopeNumber++));
+    return aRet.intValue ();
   }
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

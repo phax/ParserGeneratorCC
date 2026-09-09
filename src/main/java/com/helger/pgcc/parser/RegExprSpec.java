@@ -37,34 +37,116 @@ import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpAction;
 
 /**
- * The object type of entries in the vector "respecs" of class
- * "TokenProduction".
+ * The object type of entries in the vector "respecs" of class "TokenProduction".
  */
 
 public class RegExprSpec
 {
+  /** Default constructor. */
+  public RegExprSpec ()
+  {}
 
   /**
    * The regular expression of this specification.
    */
-  public AbstractExpRegularExpression rexp;
-
+  private AbstractExpRegularExpression m_aRexp;
   /**
    * The action corresponding to this specification.
    */
-  public ExpAction act;
+  private ExpAction m_aAct;
+  /**
+   * The next state corresponding to this specification. If no next state has been specified, this
+   * field is set to "null".
+   */
+  private String m_sNextState;
+  /**
+   * If the next state specification was explicit in the previous case, then this token is that of
+   * the identifier denoting the next state. This is used for location information, etc. in error
+   * reporting.
+   */
+  private Token m_aNsTok;
 
   /**
-   * The next state corresponding to this specification. If no next state has
-   * been specified, this field is set to "null".
+   * The rexp.
+   *
+   * @return The value of m_aRexp.
    */
-  public String nextState;
+  public AbstractExpRegularExpression getRexp ()
+  {
+    return m_aRexp;
+  }
 
   /**
-   * If the next state specification was explicit in the previous case, then
-   * this token is that of the identifier denoting the next state. This is used
-   * for location information, etc. in error reporting.
+   * The rexp.
+   *
+   * @param aValue
+   *        The new value of m_aRexp.
    */
-  public Token nsTok;
+  public void setRexp (final AbstractExpRegularExpression aValue)
+  {
+    m_aRexp = aValue;
+  }
 
+  /**
+   * The act.
+   *
+   * @return The value of m_aAct.
+   */
+  public ExpAction getAct ()
+  {
+    return m_aAct;
+  }
+
+  /**
+   * The act.
+   *
+   * @param aValue
+   *        The new value of m_aAct.
+   */
+  public void setAct (final ExpAction aValue)
+  {
+    m_aAct = aValue;
+  }
+
+  /**
+   * The next state.
+   *
+   * @return The value of m_sNextState.
+   */
+  public String getNextState ()
+  {
+    return m_sNextState;
+  }
+
+  /**
+   * The next state.
+   *
+   * @param aValue
+   *        The new value of m_sNextState.
+   */
+  public void setNextState (final String aValue)
+  {
+    m_sNextState = aValue;
+  }
+
+  /**
+   * The ns tok.
+   *
+   * @return The value of m_aNsTok.
+   */
+  public Token getNsTok ()
+  {
+    return m_aNsTok;
+  }
+
+  /**
+   * The ns tok.
+   *
+   * @param aValue
+   *        The new value of m_aNsTok.
+   */
+  public void setNsTok (final Token aValue)
+  {
+    m_aNsTok = aValue;
+  }
 }

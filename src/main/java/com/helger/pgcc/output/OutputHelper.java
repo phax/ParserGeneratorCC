@@ -45,63 +45,66 @@ import com.helger.pgcc.CPG;
 import com.helger.pgcc.PGVersion;
 import com.helger.pgcc.parser.Options;
 
+/**
+ * Small helpers shared by the emitters of both languages.
+ */
 public class OutputHelper
 {
   private OutputHelper ()
   {}
 
   /**
-   * Read the version from the comment in the specified file. This method does
-   * not try to recover from invalid comment syntax, but rather returns version
-   * 0.0 (which will always be taken to mean the file is out of date). Works for
-   * Java and CPP.
+   * Read the version from the comment in the specified file. This method does not try to recover
+   * from invalid comment syntax, but rather returns version 0.0 (which will always be taken to mean
+   * the file is out of date). Works for Java and CPP.
    *
-   * @param fileName
+   * @param sFileName
    *        eg Token.java
    * @return The version as a double, eg 4.1
    * @since 4.1
    */
-  public static double getVersionDashStar (final String fileName)
+  public static double getVersionDashStar (final String sFileName)
   {
-    final String commentHeader = "/* " + getIdString (CPG.APP_NAME, fileName) + " Version ";
-    final File file = new File (Options.getOutputDirectory (), replaceBackslash (fileName));
+    final String sCommentHeader = "/* " + getIdString (CPG.APP_NAME, sFileName) + " Version ";
+    final File aFile = new File (Options.getOutputDirectory (), replaceBackslash (sFileName));
 
-    if (!file.exists ())
+    if (!aFile.exists ())
     {
       // Has not yet been created, so it must be up to date.
       try
       {
-        final String majorVersion = PGVersion.VERSION_NUMBER.replaceAll ("[^0-9.]+.*", "");
-        return Double.parseDouble (majorVersion);
+        final String sMajorVersion = PGVersion.VERSION_NUMBER.replaceAll ("[^0-9.]+.*", "");
+        return Double.parseDouble (sMajorVersion);
       }
       catch (final NumberFormatException e)
       {
-        return 0.0; // Should never happen
+        // Should never happen
+        return 0.0;
       }
     }
 
-    try (final NonBlockingBufferedReader reader = FileHelper.getBufferedReader (file, Options.getOutputEncoding ()))
+    try (final NonBlockingBufferedReader aReader = FileHelper.getBufferedReader (aFile, Options.getOutputEncoding ()))
     {
-      String str;
-      double version = 0.0;
+      String sStr;
+      double dVersion = 0.0;
 
       // Although the version comment should be the first line, sometimes the
       // user might have put comments before it.
-      while ((str = reader.readLine ()) != null)
+      while ((sStr = aReader.readLine ()) != null)
       {
-        if (str.startsWith (commentHeader))
+        if (sStr.startsWith (sCommentHeader))
         {
-          str = str.substring (commentHeader.length ());
-          final int pos = str.indexOf (' ');
-          if (pos >= 0)
-            str = str.substring (0, pos);
-          if (str.length () > 0)
+          sStr = sStr.substring (sCommentHeader.length ());
+          final int nPos = sStr.indexOf (' ');
+          if (nPos >= 0)
+            sStr = sStr.substring (0, nPos);
+          if (sStr.length () > 0)
           {
             try
             {
-              version = Double.parseDouble (str);
+              dVersion = Double.parseDouble (sStr);
             }
-            catch (final NumberFormatException nfe)
+            catch (final NumberFormatException aNfe)
             {
               // Ignore - leave version as 0.0
             }
@@ -111,9 +114,9 @@ public class OutputHelper
         }
       }
 
-      return version;
+      return dVersion;
     }
-    catch (final IOException ioe)
+    catch (final IOException aIoe)
     {
       return 0.0;
     }

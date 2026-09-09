@@ -31,37 +31,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package com.helger.pgcc.jjtree;
 
 import java.io.IOException;
@@ -70,6 +39,7 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.base.state.ESuccess;
 import com.helger.pgcc.PGPrinter;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.jjtree.output.JJTreeStateCpp;
 import com.helger.pgcc.jjtree.output.JJTreeStateJava;
 import com.helger.pgcc.jjtree.output.NodeFilesCpp;
@@ -77,11 +47,19 @@ import com.helger.pgcc.jjtree.output.NodeFilesJava;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.Options;
 
+/**
+ * JJTree: read a .jjt, turn its node annotations into code, and write the .jj that the parser
+ * generator then reads.
+ */
 public class JJTree
 {
-  private JJTreeIO io;
+  /** Default constructor. */
+  public JJTree ()
+  {}
 
-  private void help_message ()
+  private JJTreeIO m_aIO;
+
+  private void helpMessage ()
   {
     PGPrinter.info ("Usage:");
     PGPrinter.info ("    jjtree option-settings inputfile");
@@ -111,14 +89,14 @@ public class JJTree
     PGPrinter.info ("");
     PGPrinter.info ("The string valued options are:");
     PGPrinter.info ("");
-    PGPrinter.info ("    JDK_VERSION              (default \"1.5\")");
+    PGPrinter.info ("    JDK_VERSION              (default \"1.8\")");
     PGPrinter.info ("    NODE_CLASS               (default \"\")");
     PGPrinter.info ("    NODE_PREFIX              (default \"AST\")");
     PGPrinter.info ("    NODE_PACKAGE             (default \"\")");
     PGPrinter.info ("    NODE_EXTENDS             (default \"\")");
     PGPrinter.info ("    NODE_FACTORY             (default \"\")");
     PGPrinter.info ("    OUTPUT_FILE              (default remove input file suffix, add .jj)");
-    PGPrinter.info ("    OUTPUT_DIRECTORY         (default \"\")");
+    PGPrinter.info ("    OUTPUT_DIRECTORY         (default \".\")");
     PGPrinter.info ("    JJTREE_OUTPUT_DIRECTORY  (default value of OUTPUT_DIRECTORY option)");
     PGPrinter.info ("    VISITOR_DATA_TYPE        (default \"\")");
     PGPrinter.info ("    VISITOR_RETURN_TYPE      (default \"Object\")");
@@ -142,96 +120,96 @@ public class JJTree
   /**
    * A main program that exercises the parser.
    *
-   * @param args
+   * @param aArgs
    *        commandline arguments
    * @return {@link ESuccess}
    */
   @NonNull
-  public ESuccess main (final String [] args)
+  public ESuccess main (@NonNull final String [] aArgs)
   {
-    // initialize static state for allowing repeat runs without exiting
-    ASTNodeDescriptor.reInit ();
+    // Drop everything the previous run left behind, so that repeat runs in one JVM are
+    // independent. reInitAll replaces the whole context, the JJTree state included
     com.helger.pgcc.parser.Main.reInitAll ();
 
     JavaCCGlobals.bannerLine ("Tree Builder", "");
 
-    io = new JJTreeIO ();
+    m_aIO = new JJTreeIO ();
     try
     {
 
       initializeOptions ();
-      if (args.length == 0)
+      if (aArgs.length == 0)
       {
         PGPrinter.info ("");
-        help_message ();
+        helpMessage ();
         return ESuccess.FAILURE;
       }
       PGPrinter.info ("(type \"jjtree\" with no arguments for help)");
 
-      final String fn = args[args.length - 1];
-      if (Options.isOption (fn))
+      final String sFn = aArgs[aArgs.length - 1];
+      if (Options.isOption (sFn))
       {
-        PGPrinter.info ("Last argument \"" + fn + "\" is not a filename");
+        PGPrinter.info ("Last argument \"" + sFn + "\" is not a filename");
         return ESuccess.FAILURE;
       }
-      for (int arg = 0; arg < args.length - 1; arg++)
+      for (int nArg = 0; nArg < aArgs.length - 1; nArg++)
       {
-        if (!Options.isOption (args[arg]))
+        if (!Options.isOption (aArgs[nArg]))
         {
-          PGPrinter.info ("Argument \"" + args[arg] + "\" must be an option setting.");
+          PGPrinter.info ("Argument \"" + aArgs[nArg] + "\" must be an option setting.");
           return ESuccess.FAILURE;
         }
-        Options.setCmdLineOption (args[arg]);
+        Options.setCmdLineOption (aArgs[nArg]);
       }
 
       JJTreeOptions.validate ();
 
       try
       {
-        io.setInput (fn);
+        m_aIO.setInput (sFn);
       }
-      catch (final IOException ioe)
+      catch (final IOException aIoe)
       {
-        PGPrinter.info ("Error setting input: " + ioe.getMessage ());
+        PGPrinter.info ("Error setting input: " + aIoe.getMessage ());
         return ESuccess.FAILURE;
       }
-      PGPrinter.info ("Reading from file " + io.getInputFilename () + " . . .");
+      PGPrinter.info ("Reading from file " + m_aIO.getInputFilename () + " . . .");
 
-      JJTreeGlobals.toolList.clear ();
-      JJTreeGlobals.toolList.addAll (JavaCCGlobals.getToolNames (fn));
-      JJTreeGlobals.toolList.add ("JJTree");
+      PGCCContext.current ().jjtree ().toolList ().clear ();
+      PGCCContext.current ().jjtree ().toolList ().addAll (JavaCCGlobals.getToolNames (sFn));
+      PGCCContext.current ().jjtree ().toolList ().add ("JJTree");
 
       try
       {
-        final JJTreeParser parser = new JJTreeParser (new StreamProvider (io.getIn ()));
-        parser.javacc_input ();
+        final JJTreeParser aParser = new JJTreeParser (new StreamProvider (m_aIO.getIn ()));
+        aParser.javacc_input ();
 
-        final ASTGrammar root = (ASTGrammar) parser.jjtree.rootNode ();
+        final ASTGrammar aRoot = (ASTGrammar) aParser.jjtree.rootNode ();
         if (Boolean.getBoolean ("jjtree-dump"))
         {
-          root.dump (" ");
+          aRoot.dump (" ");
         }
         try
         {
-          io.setOutput ();
+          m_aIO.setOutput ();
         }
-        catch (final IOException ioe)
+        catch (final IOException aIoe)
         {
-          PGPrinter.info ("Error setting output: " + ioe.getMessage ());
+          PGPrinter.info ("Error setting output: " + aIoe.getMessage ());
           return ESuccess.FAILURE;
         }
-        root.generate (io);
-        io.getOut ().close ();
+        aRoot.generate (m_aIO);
+        m_aIO.getOut ().close ();
 
         // TODO :: Not yet tested this in GWT/Modern mode (disabled by default
         // in 6.1)
         switch (Options.getOutputLanguage ())
         {
           case JAVA:
-            NodeFilesJava.generateTreeConstants_java ();
-            NodeFilesJava.generateVisitor_java ();
-            NodeFilesJava.generateDefaultVisitor_java ();
-            JJTreeStateJava.generateTreeState_java ();
+            NodeFilesJava.generateTreeConstantsJava ();
+            NodeFilesJava.generateVisitorJava ();
+            NodeFilesJava.generateDefaultVisitorJava ();
+            JJTreeStateJava.generateTreeStateJava ();
             break;
           case CPP:
             NodeFilesCpp.generateTreeConstants ();
@@ -243,12 +221,12 @@ public class JJTree
             return ESuccess.FAILURE;
         }
 
-        PGPrinter.info ("Annotated grammar generated successfully in " + io.getOutputFilename ());
+        PGPrinter.info ("Annotated grammar generated successfully in " + m_aIO.getOutputFilename ());
         return ESuccess.SUCCESS;
       }
-      catch (final ParseException pe)
+      catch (final ParseException aPe)
       {
-        PGPrinter.error ("Error parsing input: " + pe.toString ());
+        PGPrinter.error ("Error parsing input: " + aPe.toString ());
       }
       catch (final Exception e)
       {
@@ -258,7 +236,7 @@ public class JJTree
     }
     finally
     {
-      io.closeAll ();
+      m_aIO.closeAll ();
     }
   }
 

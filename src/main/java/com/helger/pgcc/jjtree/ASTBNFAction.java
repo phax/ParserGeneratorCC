@@ -33,28 +33,46 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * A Java action block inside a BNF production of a JJTree grammar.
+ */
 public class ASTBNFAction extends JJTreeNode
 {
+  /**
+   * @param nID
+   *        The node id assigned by JJTree.
+   */
   ASTBNFAction (final int nID)
   {
     super (nID);
   }
 
-  protected Node getScopingParent (final NodeScope ns)
+  /**
+   * Walk up the tree for the node scope this action sits inside, if it is a different one than the
+   * scope given.
+   *
+   * @param aNs
+   *        The scope to stop at. May be <code>null</code>.
+   * @return The enclosing scoping node, or <code>null</code> if there is none above the given
+   *         scope.
+   */
+  protected Node getScopingParent (final NodeScope aNs)
   {
     for (Node n = this.jjtGetParent (); n != null; n = n.jjtGetParent ())
     {
-      if (n instanceof ASTBNFNodeScope)
+      if (n instanceof final ASTBNFNodeScope aASTBNFNodeScope)
       {
-        if (((ASTBNFNodeScope) n).m_node_scope == ns)
+        if (aASTBNFNodeScope.getNodeScope () == aNs)
         {
           return n;
         }
       }
       else
-        if (n instanceof ASTExpansionNodeScope)
+        if (n instanceof final ASTExpansionNodeScope aASTExpansionNodeScope)
         {
-          if (((ASTExpansionNodeScope) n).m_node_scope == ns)
+          if (aASTExpansionNodeScope.getNodeScope () == aNs)
           {
             return n;
           }
@@ -65,8 +83,8 @@ public class ASTBNFAction extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

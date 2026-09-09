@@ -43,7 +43,7 @@ import com.helger.annotation.style.ReturnsMutableObject;
 /**
  * Describes BNF productions.
  */
-public class BNFProduction extends NormalProduction
+public class BNFProduction extends AbstractNormalProduction
 {
   /**
    * The declarations of this production.
@@ -51,14 +51,17 @@ public class BNFProduction extends NormalProduction
   private final List <Token> m_aDeclarationTokens = new ArrayList <> ();
 
   /**
-   * This flag keeps track of whether or not return and throw statements have
-   * been patched within this production's actions to include a preceding "if
-   * (true)".
+   * This flag keeps track of whether or not return and throw statements have been patched within
+   * this production's actions to include a preceding "if (true)".
    */
   private boolean m_bJumpPatched = false;
 
+  /** Default constructor. */
+  public BNFProduction ()
+  {}
+
   /**
-   * @return the declaration_tokens
+   * {@return the declaration_tokens}
    */
   @NonNull
   @ReturnsMutableObject
@@ -68,16 +71,18 @@ public class BNFProduction extends NormalProduction
   }
 
   /**
-   * @param jumpPatched
+   * Record that the generated code for this production has had its jump targets filled in.
+   *
+   * @param bJumpPatched
    *        the jumpPatched to set
    */
-  public void setJumpPatched (final boolean jumpPatched)
+  public void setJumpPatched (final boolean bJumpPatched)
   {
-    m_bJumpPatched = jumpPatched;
+    m_bJumpPatched = bJumpPatched;
   }
 
   /**
-   * @return the jumpPatched
+   * {@return the jumpPatched}
    */
   public boolean isJumpPatched ()
   {

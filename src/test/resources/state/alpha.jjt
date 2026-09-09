@@ -1,0 +1,31 @@
+/* First half of the JJTree cross run leak fixture. Its only node type is Alfa. */
+options
+{
+  MULTI = true;
+  OUTPUT_LANGUAGE = "c++";
+}
+
+PARSER_BEGIN(Alpha)
+
+class Alpha
+{
+}
+
+PARSER_END(Alpha)
+
+TOKEN :
+{
+  < A : "a" >
+}
+
+void Root() #Root :
+{}
+{
+  Alfa() <EOF>
+}
+
+void Alfa() #Alfa :
+{}
+{
+  <A>
+}

@@ -39,5 +39,30 @@ package com.helger.pgcc.parser;
 
 public final class Container
 {
-  public Object member;
+  /** Default constructor. */
+  public Container ()
+  {}
+
+  private Object m_aMember;
+
+  /**
+   * The member.
+   *
+   * @return The value of m_aMember.
+   */
+  public Object getMember ()
+  {
+    return m_aMember;
+  }
+
+  /**
+   * The member.
+   *
+   * @param aValue
+   *        The new value of m_aMember.
+   */
+  public void setMember (final Object aValue)
+  {
+    m_aMember = aValue;
+  }
 }

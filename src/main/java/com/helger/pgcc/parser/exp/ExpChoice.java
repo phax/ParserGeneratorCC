@@ -46,64 +46,94 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes expansions where one of many choices is taken (c1|c2|...).
  */
-public class ExpChoice extends Expansion
+public final class ExpChoice extends Expansion
 {
   /**
-   * The list of choices of this expansion unit. Each List component will narrow
-   * to ExpansionUnit.
+   * The list of choices of this expansion unit. Each List component will narrow to ExpansionUnit.
    */
-  private final List <Expansion> m_choices = new ArrayList <> ();
+  private final List <Expansion> m_aChoices = new ArrayList <> ();
 
+  /**
+   * Create an empty choice.
+   */
   public ExpChoice ()
   {}
 
-  public ExpChoice (final Token token)
+  /**
+   * Create an empty choice at the position of a token.
+   *
+   * @param aToken
+   *        The token the choice starts at, for error messages. May not be <code>null</code>.
+   */
+  public ExpChoice (@NonNull final Token aToken)
   {
-    setLine (token.beginLine);
-    setColumn (token.beginColumn);
-  }
-
-  public ExpChoice (final Expansion expansion)
-  {
-    setLine (expansion.getLine ());
-    setColumn (expansion.getColumn ());
-    m_choices.add (expansion);
+    setLineNumber (aToken.beginLine);
+    setColumnNumber (aToken.beginColumn);
   }
 
   /**
-   * @return the choices
+   * Create a choice with one alternative, at the same position as that alternative.
+   *
+   * @param aExpansion
+   *        The only alternative. May not be <code>null</code>.
+   */
+  public ExpChoice (@NonNull final Expansion aExpansion)
+  {
+    setLineNumber (aExpansion.getLineNumber ());
+    setColumnNumber (aExpansion.getColumnNumber ());
+    m_aChoices.add (aExpansion);
+  }
+
+  /**
+   * {@return the choices}
    */
   @NonNull
   public final Iterable <Expansion> getChoices ()
   {
-    return m_choices;
+    return m_aChoices;
   }
 
+  /**
+   * {@return how many alternatives this choice has}
+   */
   @Nonnegative
   public final int getChoiceCount ()
   {
-    return m_choices.size ();
+    return m_aChoices.size ();
   }
 
+  /**
+   * One alternative of this choice.
+   *
+   * @param nIndex
+   *        The position, from 0.
+   * @return The alternative. Never <code>null</code>.
+   */
   @NonNull
   public final Expansion getChoiceAt (final int nIndex)
   {
-    return m_choices.get (nIndex);
+    return m_aChoices.get (nIndex);
   }
 
+  /**
+   * Append an alternative to this choice.
+   *
+   * @param a
+   *        The alternative. May not be <code>null</code>.
+   */
   public final void addChoice (@NonNull final Expansion a)
   {
     ValueEnforcer.notNull (a, "Expansion");
-    m_choices.add (a);
+    m_aChoices.add (a);
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder sb = super.dump (indent, alreadyDumped);
-    if (alreadyDumped.add (this))
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
+    if (aAlreadyDumped.add (this))
       for (final Expansion next : getChoices ())
-        sb.append (EOL).append (next.dump (indent + 1, alreadyDumped));
-    return sb;
+        aSB.append (EOL).append (next.dump (nIndent + 1, aAlreadyDumped));
+    return aSB;
   }
 }

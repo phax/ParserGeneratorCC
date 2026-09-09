@@ -33,10 +33,65 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * The node scope an expansion inside a production opens, as opposed to the one the production
+ * itself opens.
+ */
 public class ASTExpansionNodeScope extends JJTreeNode
 {
-  NodeScope m_node_scope;
-  JJTreeNode m_expansion_unit;
+  /**
+   * The scope this node opens.
+   */
+  private NodeScope m_aNodeScope;
+
+  /**
+   * The node scope.
+   *
+   * @return The value of m_aNodeScope.
+   */
+  public NodeScope getNodeScope ()
+  {
+    return m_aNodeScope;
+  }
+
+  /**
+   * The node scope.
+   *
+   * @param aValue
+   *        The new value of m_aNodeScope.
+   */
+  public void setNodeScope (final NodeScope aValue)
+  {
+    m_aNodeScope = aValue;
+  }
+
+  /**
+   * The expansion the scope covers.
+   */
+  private JJTreeNode m_aExpansionUnit;
+
+  /**
+   * The expansion unit.
+   *
+   * @return The value of m_aExpansionUnit.
+   */
+  public JJTreeNode getExpansionUnit ()
+  {
+    return m_aExpansionUnit;
+  }
+
+  /**
+   * The expansion unit.
+   *
+   * @param aValue
+   *        The new value of m_aExpansionUnit.
+   */
+  public void setExpansionUnit (final JJTreeNode aValue)
+  {
+    m_aExpansionUnit = aValue;
+  }
 
   ASTExpansionNodeScope (final int nID)
   {
@@ -45,9 +100,9 @@ public class ASTExpansionNodeScope extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 
 }

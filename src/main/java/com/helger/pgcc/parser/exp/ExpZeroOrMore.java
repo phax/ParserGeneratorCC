@@ -42,35 +42,46 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes zero-or-more expansions (e.g., foo*).
  */
-public class ExpZeroOrMore extends Expansion
+public final class ExpZeroOrMore extends Expansion
 {
   /**
    * The expansion which is repeated zero or more times.
    */
-  private final Expansion m_expansion;
+  private final Expansion m_aExpansion;
 
-  public ExpZeroOrMore (@NonNull final Token token, @NonNull final Expansion e)
+  /**
+   * Create a zero-or-more repetition.
+   *
+   * @param aToken
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param e
+   *        The expansion being repeated. May not be <code>null</code>.
+   */
+  public ExpZeroOrMore (@NonNull final Token aToken, @NonNull final Expansion e)
   {
-    setLine (token.beginLine);
-    setColumn (token.beginColumn);
-    m_expansion = e;
+    setLineNumber (aToken.beginLine);
+    setColumnNumber (aToken.beginColumn);
+    m_aExpansion = e;
     e.setParent (this);
   }
 
+  /**
+   * {@return the expansion this one wraps}
+   */
   @NonNull
   public final Expansion getExpansion ()
   {
-    return m_expansion;
+    return m_aExpansion;
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder sb = super.dump (indent, alreadyDumped);
-    if (alreadyDumped.add (this))
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
+    if (aAlreadyDumped.add (this))
     {
-      sb.append (EOL).append (m_expansion.dump (indent + 1, alreadyDumped));
+      aSB.append (EOL).append (m_aExpansion.dump (nIndent + 1, aAlreadyDumped));
     }
-    return sb;
+    return aSB;
   }
 }

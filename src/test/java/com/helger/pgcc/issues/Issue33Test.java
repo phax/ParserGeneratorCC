@@ -68,26 +68,26 @@ public class Issue33Test
     /*
      * Compile the resulting output
      */
-    final JavaCompiler javac = ToolProvider.getSystemJavaCompiler ();
-    final StandardJavaFileManager fileManager = javac.getStandardFileManager (null, null, null);
+    final JavaCompiler aJavac = ToolProvider.getSystemJavaCompiler ();
+    final StandardJavaFileManager aFileManager = aJavac.getStandardFileManager (null, null, null);
 
-    final List <File> files = Arrays.asList (aOutDir.listFiles (f -> f.getName ().endsWith (".java")));
-    final Iterable <? extends JavaFileObject> compilationUnits1 = fileManager.getJavaFileObjectsFromFiles (files);
-    javac.getTask (null, fileManager, null, null, null, compilationUnits1).call ();
+    final List <File> aFiles = Arrays.asList (aOutDir.listFiles (f -> f.getName ().endsWith (".java")));
+    final Iterable <? extends JavaFileObject> aCompilationUnits1 = aFileManager.getJavaFileObjectsFromFiles (aFiles);
+    aJavac.getTask (null, aFileManager, null, null, null, aCompilationUnits1).call ();
 
     /*
      * Load and run the parser on a test dataset
      */
-    try (final InputStream in = new FileInputStream (aData))
+    try (final InputStream aIn = new FileInputStream (aData))
     {
-      final ClassLoader loader = URLClassLoader.newInstance (new URL [] { aOutDir.toURI ().toURL () },
-                                                             getClass ().getClassLoader ());
-      final Class <?> clazz = Class.forName ("IssueParser", true, loader);
-      final Constructor <? extends Object> constructor = clazz.getConstructor (new Class [] { InputStream.class,
-                                                                                              Charset.class });
-      final Object obj = constructor.newInstance (new Object [] { in, Charset.defaultCharset () });
-      final Method parse = clazz.getDeclaredMethod ("parse", new Class [] {});
-      final int i = ((Integer) parse.invoke (obj, new Object [] {})).intValue ();
+      final ClassLoader aLoader = URLClassLoader.newInstance (new URL [] { aOutDir.toURI ().toURL () },
+                                                              getClass ().getClassLoader ());
+      final Class <?> aClazz = Class.forName ("IssueParser", true, aLoader);
+      final Constructor <? extends Object> aConstructor = aClazz.getConstructor (new Class [] { InputStream.class,
+                                                                                                Charset.class });
+      final Object aObj = aConstructor.newInstance (new Object [] { aIn, Charset.defaultCharset () });
+      final Method aParse = aClazz.getDeclaredMethod ("parse", new Class [] {});
+      final int i = ((Integer) aParse.invoke (aObj, new Object [] {})).intValue ();
       assertEquals (i, 10);
     }
   }

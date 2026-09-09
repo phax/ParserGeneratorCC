@@ -60,8 +60,8 @@ public final class GrammarsParsingFuncTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (GrammarsParsingFuncTest.class);
 
-  private static void _parseCreatedJavaFiles (@NonNull final File fGrammarDest,
-                                              @NonNull final Charset aCharset) throws FileNotFoundException
+  private static void _parseCreatedJavaFiles (@NonNull final File fGrammarDest, @NonNull final Charset aCharset)
+                                                                                                                 throws FileNotFoundException
   {
     // Parse all created Java files
     for (final File fJava : new FileSystemIterator (fGrammarDest).withFilter (IFileFilter.filenameEndsWith (".java")))
@@ -86,9 +86,9 @@ public final class GrammarsParsingFuncTest
       final File fGrammarDest = new File (fDest, FilenameHelper.getBaseName (f));
       fGrammarDest.mkdirs ();
 
-      final ESuccess eSuccess = Main.mainProgram (new String [] { "-OUTPUT_DIRECTORY=" + fGrammarDest.getAbsolutePath (),
-                                                                  "-JDK_VERSION=1.8",
-                                                                  f.getAbsolutePath () });
+      final ESuccess eSuccess = Main.mainProgram (new String [] { "-OUTPUT_DIRECTORY=" +
+                                                                  fGrammarDest.getAbsolutePath (), "-JDK_VERSION=1.8", f
+                                                                                                                        .getAbsolutePath () });
       assertTrue ("Failed to parse " + f.getName (), eSuccess.isSuccess ());
 
       _parseCreatedJavaFiles (fGrammarDest, StandardCharsets.UTF_8);
@@ -108,9 +108,9 @@ public final class GrammarsParsingFuncTest
       final File fGrammarDest = new File (fDest, FilenameHelper.getBaseName (f));
       fGrammarDest.mkdirs ();
 
-      final ESuccess eSuccess = Main.mainProgram (new String [] { "-OUTPUT_DIRECTORY=" + fGrammarDest.getAbsolutePath (),
-                                                                  "-JDK_VERSION=1.5",
-                                                                  f.getAbsolutePath () });
+      final ESuccess eSuccess = Main.mainProgram (new String [] { "-OUTPUT_DIRECTORY=" +
+                                                                  fGrammarDest.getAbsolutePath (), "-JDK_VERSION=1.5", f
+                                                                                                                        .getAbsolutePath () });
       assertTrue ("Failed to parse " + f.getName (), eSuccess.isSuccess ());
 
       _parseCreatedJavaFiles (fGrammarDest, StandardCharsets.UTF_8);
@@ -130,10 +130,9 @@ public final class GrammarsParsingFuncTest
       final File fGrammarDest = new File (fDest, FilenameHelper.getBaseName (f));
       fGrammarDest.mkdirs ();
 
-      final ESuccess eSuccess = Main.mainProgram (new String [] { "-OUTPUT_DIRECTORY=" + fGrammarDest.getAbsolutePath (),
-                                                                  "-JDK_VERSION=1.8",
-                                                                  "-JAVA_TEMPLATE_TYPE=modern",
-                                                                  f.getAbsolutePath () });
+      final ESuccess eSuccess = Main.mainProgram (new String [] { "-OUTPUT_DIRECTORY=" +
+                                                                  fGrammarDest.getAbsolutePath (), "-JDK_VERSION=1.8",
+                                                                  "-JAVA_TEMPLATE_TYPE=modern", f.getAbsolutePath () });
       assertTrue ("Failed to parse " + f.getName (), eSuccess.isSuccess ());
 
       _parseCreatedJavaFiles (fGrammarDest, StandardCharsets.UTF_8);
@@ -153,8 +152,8 @@ public final class GrammarsParsingFuncTest
       final File fGrammarDest = new File (fDest, FilenameHelper.getBaseName (f));
       fGrammarDest.mkdirs ();
 
-      final ESuccess eSuccess = new JJTree ().main (new String [] { "-OUTPUT_DIRECTORY=" + fGrammarDest.getAbsolutePath (),
-                                                                    "-JDK_VERSION=1.8",
+      final ESuccess eSuccess = new JJTree ().main (new String [] { "-OUTPUT_DIRECTORY=" +
+                                                                    fGrammarDest.getAbsolutePath (), "-JDK_VERSION=1.8",
                                                                     f.getAbsolutePath () });
       assertTrue ("Failed to parse " + f.getName (), eSuccess.isSuccess ());
 

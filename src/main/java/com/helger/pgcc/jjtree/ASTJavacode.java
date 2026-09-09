@@ -33,9 +33,38 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * A JAVACODE production, whose body is Java rather than a grammar expansion.
+ */
 public class ASTJavacode extends ASTProduction
 {
-  Token stmBeginLoc;
+  /**
+   * Where the body of the production begins.
+   */
+  private Token m_aStmBeginLoc;
+
+  /**
+   * The stm begin loc.
+   *
+   * @return The value of m_aStmBeginLoc.
+   */
+  public Token getStmBeginLoc ()
+  {
+    return m_aStmBeginLoc;
+  }
+
+  /**
+   * The stm begin loc.
+   *
+   * @param aValue
+   *        The new value of m_aStmBeginLoc.
+   */
+  public void setStmBeginLoc (final Token aValue)
+  {
+    m_aStmBeginLoc = aValue;
+  }
 
   ASTJavacode (final int nID)
   {
@@ -44,8 +73,8 @@ public class ASTJavacode extends ASTProduction
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

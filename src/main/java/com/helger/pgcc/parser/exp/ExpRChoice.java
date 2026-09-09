@@ -40,114 +40,133 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonnegative;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.parser.JavaCCErrors;
-import com.helger.pgcc.parser.LexGenJava;
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.NfaState;
 
 /**
- * Describes regular expressions which are choices from from among included
- * regular expressions.
+ * Describes regular expressions which are choices from from among included regular expressions.
  */
 
-public class ExpRChoice extends AbstractExpRegularExpression
+public final class ExpRChoice extends AbstractExpRegularExpression
 {
   /**
-   * The list of choices of this regular expression. Each list component will
-   * narrow to RegularExpression.
+   * The list of choices of this regular expression. Each list component will narrow to
+   * RegularExpression.
    */
-  private final List <AbstractExpRegularExpression> m_choices = new ArrayList <> ();
+  private final List <AbstractExpRegularExpression> m_aChoices = new ArrayList <> ();
 
+  /**
+   * Create an empty choice of regular expressions.
+   */
   public ExpRChoice ()
   {}
 
   /**
-   * @return the choices
+   * {@return the choices}
    */
   @NonNull
   public final List <AbstractExpRegularExpression> getChoices ()
   {
-    return m_choices;
+    return m_aChoices;
   }
 
+  /**
+   * {@return how many alternatives this choice has}
+   */
   @Nonnegative
   public final int getChoiceCount ()
   {
-    return m_choices.size ();
+    return m_aChoices.size ();
   }
 
+  /**
+   * One alternative of this choice.
+   *
+   * @param nIndex
+   *        The position, from 0.
+   * @return The alternative. Never <code>null</code>.
+   */
   @NonNull
   public final AbstractExpRegularExpression getChoiceAt (final int nIndex)
   {
-    return m_choices.get (nIndex);
+    return m_aChoices.get (nIndex);
   }
 
+  /**
+   * Append an alternative to this choice.
+   *
+   * @param a
+   *        The alternative. May not be <code>null</code>.
+   */
   public final void addChoice (@NonNull final AbstractExpRegularExpression a)
   {
     ValueEnforcer.notNull (a, "Expansion");
-    m_choices.add (a);
+    m_aChoices.add (a);
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
     compressCharLists ();
 
     if (getChoiceCount () == 1)
-      return getChoiceAt (0).generateNfa (ignoreCase);
+      return getChoiceAt (0).generateNfa (bIgnoreCase);
 
-    final Nfa retVal = new Nfa ();
-    final NfaState startState = retVal.start ();
-    final NfaState finalState = retVal.end ();
+    final Nfa aRetVal = new Nfa ();
+    final NfaState aStartState = aRetVal.start ();
+    final NfaState aFinalState = aRetVal.end ();
 
     for (final AbstractExpRegularExpression curRE : getChoices ())
     {
-      final Nfa temp = curRE.generateNfa (ignoreCase);
+      final Nfa aTemp = curRE.generateNfa (bIgnoreCase);
 
-      startState.addMove (temp.start ());
-      temp.end ().addMove (finalState);
+      aStartState.addMove (aTemp.start ());
+      aTemp.end ().addMove (aFinalState);
     }
 
-    return retVal;
+    return aRetVal;
   }
 
   void compressCharLists ()
   {
-    compressChoices (); // Unroll nested choices
-    AbstractExpRegularExpression curRE;
-    ExpRCharacterList curCharList = null;
+    // Unroll nested choices
+    compressChoices ();
+    AbstractExpRegularExpression aCurRE;
+    ExpRCharacterList aCurCharList = null;
 
     for (int i = 0; i < getChoiceCount (); i++)
     {
-      curRE = getChoiceAt (i);
+      aCurRE = getChoiceAt (i);
 
-      while (curRE instanceof ExpRJustName)
-        curRE = ((ExpRJustName) curRE).m_regexpr;
+      while (aCurRE instanceof ExpRJustName)
+        aCurRE = ((ExpRJustName) aCurRE).getRegexpr ();
 
-      if (curRE instanceof ExpRStringLiteral && ((ExpRStringLiteral) curRE).m_image.length () == 1)
+      if (aCurRE instanceof ExpRStringLiteral && ((ExpRStringLiteral) aCurRE).getImage ().length () == 1)
       {
-        curRE = new ExpRCharacterList (((ExpRStringLiteral) curRE).m_image.charAt (0));
-        getChoices ().set (i, curRE);
+        aCurRE = new ExpRCharacterList (((ExpRStringLiteral) aCurRE).getImage ().charAt (0));
+        getChoices ().set (i, aCurRE);
       }
 
-      if (curRE instanceof ExpRCharacterList)
+      if (aCurRE instanceof final ExpRCharacterList aRCharacterList)
       {
-        if (((ExpRCharacterList) curRE).isNegatedList ())
-          ((ExpRCharacterList) curRE).removeNegation ();
+        if (aRCharacterList.isNegatedList ())
+          aRCharacterList.removeNegation ();
 
-        final List <ICCCharacter> tmp = ((ExpRCharacterList) curRE).getDescriptors ();
+        final List <ICCCharacter> aTmp = aRCharacterList.getDescriptors ();
 
-        if (curCharList == null)
+        if (aCurCharList == null)
         {
-          curCharList = new ExpRCharacterList ();
-          curRE = curCharList;
-          getChoices ().set (i, curRE);
+          aCurCharList = new ExpRCharacterList ();
+          aCurRE = aCurCharList;
+          getChoices ().set (i, aCurRE);
         }
         else
           getChoices ().remove (i--);
 
-        for (int j = tmp.size (); j-- > 0;)
-          curCharList.addDescriptor (tmp.get (j));
+        for (int j = aTmp.size (); j-- > 0;)
+          aCurCharList.addDescriptor (aTmp.get (j));
       }
 
     }
@@ -157,34 +176,45 @@ public class ExpRChoice extends AbstractExpRegularExpression
   {
     for (int i = 0; i < getChoiceCount (); i++)
     {
-      AbstractExpRegularExpression curRE = getChoiceAt (i);
+      AbstractExpRegularExpression aCurRE = getChoiceAt (i);
 
-      while (curRE instanceof ExpRJustName)
-        curRE = ((ExpRJustName) curRE).m_regexpr;
+      while (aCurRE instanceof ExpRJustName)
+        aCurRE = ((ExpRJustName) aCurRE).getRegexpr ();
 
-      if (curRE instanceof ExpRChoice)
+      if (aCurRE instanceof final ExpRChoice aRChoice)
       {
         getChoices ().remove (i--);
-        for (int j = ((ExpRChoice) curRE).getChoiceCount (); j-- > 0;)
-          addChoice (((ExpRChoice) curRE).getChoiceAt (j));
+        for (int j = aRChoice.getChoiceCount (); j-- > 0;)
+          addChoice (aRChoice.getChoiceAt (j));
       }
     }
   }
 
+  /**
+   * Warn about alternatives that an earlier token in the same lexical state already matches, and
+   * are therefore dead.
+   *
+   * @return How many of the alternatives are plain string literals.
+   */
   public int checkUnmatchability ()
   {
-    int numStrings = 0;
+    int nNumStrings = 0;
 
     for (final AbstractExpRegularExpression curRE : getChoices ())
     {
-      if (!curRE.m_private_rexp &&
+      if (!curRE.m_bPrivateRexp &&
           // curRE instanceof RJustName &&
           curRE.getOrdinal () > 0 &&
           curRE.getOrdinal () < getOrdinal () &&
-          LexGenJava.s_lexStates[curRE.getOrdinal ()] == LexGenJava.s_lexStates[getOrdinal ()])
+          LexGenJava.lexer ().getLexStates ()[curRE.getOrdinal ()] == LexGenJava.lexer ()
+                                                                                .getLexStates ()[getOrdinal ()])
       {
         if (hasLabel ())
-          JavaCCErrors.warning (this, "Regular Expression choice : " + curRE.getLabel () + " can never be matched as : " + getLabel ());
+          JavaCCErrors.warning (this,
+                                "Regular Expression choice : " +
+                                      curRE.getLabel () +
+                                      " can never be matched as : " +
+                                      getLabel ());
         else
           JavaCCErrors.warning (this,
                                 "Regular Expression choice : " +
@@ -193,9 +223,9 @@ public class ExpRChoice extends AbstractExpRegularExpression
                                       getOrdinal ());
       }
 
-      if (!curRE.m_private_rexp && curRE instanceof ExpRStringLiteral)
-        numStrings++;
+      if (!curRE.m_bPrivateRexp && curRE instanceof ExpRStringLiteral)
+        nNumStrings++;
     }
-    return numStrings;
+    return nNumStrings;
   }
 }

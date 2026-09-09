@@ -33,28 +33,57 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * A BNF production in a JJTree grammar. It always declares ParseException and RuntimeException.
+ */
 public class ASTBNF extends ASTProduction
 {
   ASTBNF (final int nID)
   {
     super (nID);
-    m_throws_list.add ("ParseException");
-    m_throws_list.add ("RuntimeException");
+    getThrowsList ().add ("ParseException");
+    getThrowsList ().add ("RuntimeException");
   }
 
-  Token declBeginLoc;
+  /**
+   * Where the declaration of the production begins.
+   */
+  private Token m_aDeclBeginLoc;
+
+  /**
+   * The decl begin loc.
+   *
+   * @return The value of m_aDeclBeginLoc.
+   */
+  public Token getDeclBeginLoc ()
+  {
+    return m_aDeclBeginLoc;
+  }
+
+  /**
+   * The decl begin loc.
+   *
+   * @param aValue
+   *        The new value of m_aDeclBeginLoc.
+   */
+  public void setDeclBeginLoc (final Token aValue)
+  {
+    m_aDeclBeginLoc = aValue;
+  }
 
   @Override
   public String toString ()
   {
-    return super.toString () + ": " + m_name;
+    return super.toString () + ": " + getName ();
   }
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 
 }

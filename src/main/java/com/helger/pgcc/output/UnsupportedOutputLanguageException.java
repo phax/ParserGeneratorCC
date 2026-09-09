@@ -35,8 +35,18 @@ package com.helger.pgcc.output;
 
 import org.jspecify.annotations.NonNull;
 
+/**
+ * Thrown where a switch over {@link EOutputLanguage} meets a language it has no arm for. It should
+ * never escape a run - every switch in the generator covers both languages.
+ */
 public class UnsupportedOutputLanguageException extends RuntimeException
 {
+  /**
+   * Create the exception.
+   *
+   * @param eOutputLanguage
+   *        The language that was not handled. May not be <code>null</code>.
+   */
   public UnsupportedOutputLanguageException (@NonNull final EOutputLanguage eOutputLanguage)
   {
     super ("Unsupported output language: " + eOutputLanguage);

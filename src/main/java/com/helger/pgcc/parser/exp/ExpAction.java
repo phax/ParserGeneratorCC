@@ -45,19 +45,22 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes actions that may occur on the right hand side of productions.
  */
-public class ExpAction extends Expansion
+public final class ExpAction extends Expansion
 {
   /**
-   * Contains the list of tokens that make up the action. This list does not
-   * include the surrounding braces.
+   * Contains the list of tokens that make up the action. This list does not include the surrounding
+   * braces.
    */
   private final ICommonsList <Token> m_aActionTokens = new CommonsArrayList <> ();
 
+  /**
+   * Create an empty action.
+   */
   public ExpAction ()
   {}
 
   /**
-   * @return the action_tokens
+   * {@return the action_tokens}
    */
   @NonNull
   @ReturnsMutableObject
@@ -67,14 +70,14 @@ public class ExpAction extends Expansion
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder sb = super.dump (indent, alreadyDumped);
-    alreadyDumped.add (this);
-    if (getActionTokens ().size () > 0)
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
+    aAlreadyDumped.add (this);
+    if (!getActionTokens ().isEmpty ())
     {
-      sb.append (' ').append (getActionTokens ().get (0));
+      aSB.append (' ').append (getActionTokens ().get (0));
     }
-    return sb;
+    return aSB;
   }
 }

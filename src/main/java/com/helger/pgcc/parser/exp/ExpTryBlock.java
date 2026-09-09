@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser.exp;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.List;
 import java.util.Set;
 
@@ -42,45 +44,149 @@ import com.helger.pgcc.parser.Token;
  * Describes expansions of the form "try {...} ...".
  */
 
-public class ExpTryBlock extends Expansion
+public final class ExpTryBlock extends Expansion
 {
+  /** Default constructor. */
+  public ExpTryBlock ()
+  {}
 
   /**
    * The expansion contained within the try block.
    */
-  public Expansion m_exp;
-
+  private Expansion m_aExp;
   /**
-   * The types of each catch block. Each list entry is itself a list which in
-   * turn contains tokens as entries.
+   * The types of each catch block. Each list entry is itself a list which in turn contains tokens
+   * as entries.
    */
-  public List <List <Token>> m_types;
-
+  private List <List <Token>> m_aTypes;
   /**
    * The exception identifiers of each catch block. Each list entry is a token.
    */
-  public List <Token> m_ids;
+  private List <Token> m_aIds;
+  /**
+   * The block part of each catch block. Each list entry is itself a list which in turn contains
+   * tokens as entries.
+   */
+  private List <List <Token>> m_aCatchblks;
+  /**
+   * The block part of the finally block. Each list entry is a token. If there is no finally block,
+   * this is null.
+   */
+  private List <Token> m_aFinallyblk;
 
   /**
-   * The block part of each catch block. Each list entry is itself a list which
-   * in turn contains tokens as entries.
+   * The exp.
+   *
+   * @return The value of m_aExp.
    */
-  public List <List <Token>> m_catchblks;
+  public Expansion getExp ()
+  {
+    return m_aExp;
+  }
 
   /**
-   * The block part of the finally block. Each list entry is a token. If there
-   * is no finally block, this is null.
+   * The exp.
+   *
+   * @param aValue
+   *        The new value of m_aExp.
    */
-  public List <Token> m_finallyblk;
+  public void setExp (final Expansion aValue)
+  {
+    m_aExp = aValue;
+  }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder sb = super.dump (indent, alreadyDumped);
-    if (alreadyDumped.add (this))
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped);
+    if (aAlreadyDumped.add (this))
     {
-      sb.append (EOL).append (m_exp.dump (indent + 1, alreadyDumped));
+      aSB.append (EOL).append (m_aExp.dump (nIndent + 1, aAlreadyDumped));
     }
-    return sb;
+    return aSB;
+  }
+
+  /**
+   * The types.
+   *
+   * @return The value of m_aTypes.
+   */
+  public List <List <Token>> getTypes ()
+  {
+    return m_aTypes;
+  }
+
+  /**
+   * The types.
+   *
+   * @param aValue
+   *        The new value of m_aTypes.
+   */
+  public void setTypes (final List <List <Token>> aValue)
+  {
+    m_aTypes = aValue;
+  }
+
+  /**
+   * The ids.
+   *
+   * @return The value of m_aIds.
+   */
+  public List <Token> getIds ()
+  {
+    return m_aIds;
+  }
+
+  /**
+   * The ids.
+   *
+   * @param aValue
+   *        The new value of m_aIds.
+   */
+  public void setIds (final List <Token> aValue)
+  {
+    m_aIds = aValue;
+  }
+
+  /**
+   * The catchblks.
+   *
+   * @return The value of m_aCatchblks.
+   */
+  public List <List <Token>> getCatchblks ()
+  {
+    return m_aCatchblks;
+  }
+
+  /**
+   * The catchblks.
+   *
+   * @param aValue
+   *        The new value of m_aCatchblks.
+   */
+  public void setCatchblks (final List <List <Token>> aValue)
+  {
+    m_aCatchblks = aValue;
+  }
+
+  /**
+   * The finallyblk.
+   *
+   * @return The value of m_aFinallyblk.
+   */
+  public List <Token> getFinallyblk ()
+  {
+    return m_aFinallyblk;
+  }
+
+  /**
+   * The finallyblk.
+   *
+   * @param aValue
+   *        The new value of m_aFinallyblk.
+   */
+  public void setFinallyblk (final List <Token> aValue)
+  {
+    m_aFinallyblk = aValue;
   }
 }

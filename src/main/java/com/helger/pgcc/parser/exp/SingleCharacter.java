@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.parser.exp;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.pgcc.parser.Token;
 
 /**
@@ -41,8 +43,7 @@ import com.helger.pgcc.parser.Token;
 public final class SingleCharacter implements ICCCharacter
 {
   /**
-   * The line and column number of the construct that corresponds most closely
-   * to this node.
+   * The line and column number of the construct that corresponds most closely to this node.
    */
   private int m_nColumn;
 
@@ -51,14 +52,28 @@ public final class SingleCharacter implements ICCCharacter
   /**
    * The character of this descriptor.
    */
-  private final char m_ch;
+  private final char m_cCh;
 
+  /**
+   * Create a single character without a position in the grammar.
+   *
+   * @param c
+   *        The character.
+   */
   public SingleCharacter (final char c)
   {
-    m_ch = c;
+    m_cCh = c;
   }
 
-  public SingleCharacter (final Token t, final char c)
+  /**
+   * Create a single character at the position of a token.
+   *
+   * @param t
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param c
+   *        The character.
+   */
+  public SingleCharacter (@NonNull final Token t, final char c)
   {
     this (c);
     m_nLine = t.beginLine;
@@ -66,23 +81,26 @@ public final class SingleCharacter implements ICCCharacter
   }
 
   /**
-   * @return the line
+   * {@return the line}
    */
-  public int getLine ()
+  public int getLineNumber ()
   {
     return m_nLine;
   }
 
   /**
-   * @return the column
+   * {@return the column}
    */
-  public int getColumn ()
+  public int getColumnNumber ()
   {
     return m_nColumn;
   }
 
+  /**
+   * {@return the character this descriptor matches}
+   */
   public char getChar ()
   {
-    return m_ch;
+    return m_cCh;
   }
 }

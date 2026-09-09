@@ -43,6 +43,7 @@ import org.jspecify.annotations.NonNull;
 import com.helger.base.state.ESuccess;
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.PGPrinter;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.JavaCCParser;
@@ -60,7 +61,7 @@ public final class JJDocMain
   private JJDocMain ()
   {}
 
-  static void help_message ()
+  static void helpMessage ()
   {
     PGPrinter.info ();
     PGPrinter.info ("    jjdoc option-settings - (to read from standard input)");
@@ -109,22 +110,22 @@ public final class JJDocMain
   /**
    * A main program that exercises the parser.
    *
-   * @param args
+   * @param aArgs
    *        Cmdline args
    * @throws Exception
    *         in case of error
    */
-  public static void main (final String [] args) throws Exception
+  public static void main (final String [] aArgs) throws Exception
   {
-    final ESuccess errorcode = mainProgram (args);
-    System.exit (errorcode.isFailure () ? 1 : 0);
+    final ESuccess eErrorcode = mainProgram (aArgs);
+    System.exit (eErrorcode.isFailure () ? 1 : 0);
   }
 
   /**
-   * The method to call to exercise the parser from other Java programs. It
-   * returns an error code. See how the main program above uses this method.
+   * The method to call to exercise the parser from other Java programs. It returns an error code.
+   * See how the main program above uses this method.
    *
-   * @param args
+   * @param aArgs
    *        Cmdline args
    * @return {@link ESuccess}
    * @throws Exception
@@ -132,102 +133,119 @@ public final class JJDocMain
    */
   @SuppressWarnings ("resource")
   @NonNull
-  public static ESuccess mainProgram (final String [] args) throws Exception
+  public static ESuccess mainProgram (@NonNull final String [] aArgs) throws Exception
   {
     Main.reInitAll ();
     JJDocOptions.init ();
 
     JavaCCGlobals.bannerLine ("Documentation Generator", "0.1.4");
 
-    JavaCCParser parser = null;
-    if (args.length == 0)
+    JavaCCParser aParser = null;
+    if (aArgs.length == 0)
     {
-      help_message ();
+      helpMessage ();
       return ESuccess.FAILURE;
     }
     PGPrinter.info ("(type \"jjdoc\" with no arguments for help)");
 
-    if (Options.isOption (args[args.length - 1]))
+    if (Options.isOption (aArgs[aArgs.length - 1]))
     {
-      PGPrinter.error ("Last argument \"" + args[args.length - 1] + "\" is not a filename or \"-\".  ");
+      PGPrinter.error ("Last argument \"" + aArgs[aArgs.length - 1] + "\" is not a filename or \"-\".  ");
       return ESuccess.FAILURE;
     }
-    for (int arg = 0; arg < args.length - 1; arg++)
+    for (int nArg = 0; nArg < aArgs.length - 1; nArg++)
     {
-      if (!Options.isOption (args[arg]))
+      if (!Options.isOption (aArgs[nArg]))
       {
-        PGPrinter.error ("Argument \"" + args[arg] + "\" must be an option setting.");
+        PGPrinter.error ("Argument \"" + aArgs[nArg] + "\" must be an option setting.");
         return ESuccess.FAILURE;
       }
-      Options.setCmdLineOption (args[arg]);
+      Options.setCmdLineOption (aArgs[nArg]);
     }
 
-    if (args[args.length - 1].equals ("-"))
+    if (aArgs[aArgs.length - 1].equals ("-"))
     {
       PGPrinter.info ("Reading from standard input . . .");
-      parser = new JavaCCParser (new StreamProvider (new DataInputStream (System.in), Charset.defaultCharset ()));
-      JJDocGlobals.s_input_file = JJDocGlobals.STANDARD_INPUT;
-      JJDocGlobals.s_output_file = JJDocGlobals.STANDARD_OUTPUT;
+      aParser = new JavaCCParser (new StreamProvider (new DataInputStream (System.in), Charset.defaultCharset ()));
+      PGCCContext.current ().jjdoc ().setInputFile (JJDocGlobals.STANDARD_INPUT);
+      PGCCContext.current ().jjdoc ().setOutputFile (JJDocGlobals.STANDARD_OUTPUT);
     }
     else
     {
-      PGPrinter.info ("Reading from file " + args[args.length - 1] + " . . .");
+      PGPrinter.info ("Reading from file " + aArgs[aArgs.length - 1] + " . . .");
       try
       {
-        final File fp = new File (args[args.length - 1]);
-        if (!fp.exists ())
+        final File aFp = new File (aArgs[aArgs.length - 1]);
+        if (!aFp.exists ())
         {
-          PGPrinter.error ("File " + args[args.length - 1] + " not found.");
+          PGPrinter.error ("File " + aArgs[aArgs.length - 1] + " not found.");
           return ESuccess.FAILURE;
         }
-        if (fp.isDirectory ())
+        if (aFp.isDirectory ())
         {
-          PGPrinter.error (args[args.length - 1] + " is a directory. Please use a valid file name.");
+          PGPrinter.error (aArgs[aArgs.length - 1] + " is a directory. Please use a valid file name.");
           return ESuccess.FAILURE;
         }
-        JJDocGlobals.s_input_file = fp.getName ();
-        final Reader aReader = FileHelper.getBufferedReader (new File (args[args.length - 1]), Options.getGrammarEncoding ());
+        PGCCContext.current ().jjdoc ().setInputFile (aFp.getName ());
+        final Reader aReader = FileHelper.getBufferedReader (new File (aArgs[aArgs.length - 1]),
+                                                             Options.getGrammarEncoding ());
         if (aReader == null)
         {
-          PGPrinter.error ("File " + args[args.length - 1] + " not found.");
+          PGPrinter.error ("File " + aArgs[aArgs.length - 1] + " not found.");
           return ESuccess.FAILURE;
         }
-        parser = new JavaCCParser (new StreamProvider (aReader));
+        aParser = new JavaCCParser (new StreamProvider (aReader));
       }
-      catch (final SecurityException se)
+      catch (final SecurityException aSe)
       {
-        PGPrinter.error ("Security violation while trying to open " + args[args.length - 1]);
+        PGPrinter.error ("Security violation while trying to open " + aArgs[aArgs.length - 1]);
         return ESuccess.FAILURE;
       }
     }
     try
     {
-      parser.javacc_input ();
+      aParser.javacc_input ();
       JJDoc.start ();
 
       if (JavaCCErrors.getErrorCount () == 0)
       {
         if (JavaCCErrors.getWarningCount () == 0)
         {
-          PGPrinter.info ("Grammar documentation generated successfully in " + JJDocGlobals.s_output_file);
+          PGPrinter.info ("Grammar documentation generated successfully in " +
+                          PGCCContext.current ().jjdoc ().getOutputFile ());
         }
         else
         {
-          PGPrinter.info ("Grammar documentation generated with 0 errors and " + JavaCCErrors.getWarningCount () + " warnings.");
+          PGPrinter.info ("Grammar documentation generated with 0 errors and " +
+                          JavaCCErrors.getWarningCount () +
+                          " warnings.");
         }
         return ESuccess.SUCCESS;
       }
 
-      PGPrinter.error ("Detected " + JavaCCErrors.getErrorCount () + " errors and " + JavaCCErrors.getWarningCount () + " warnings.");
+      PGPrinter.error ("Detected " +
+                       JavaCCErrors.getErrorCount () +
+                       " errors and " +
+                       JavaCCErrors.getWarningCount () +
+                       " warnings.");
       return ESuccess.valueOf (JavaCCErrors.getErrorCount () == 0);
     }
     catch (final MetaParseException e)
     {
-      PGPrinter.error ("Detected " + JavaCCErrors.getErrorCount () + " errors and " + JavaCCErrors.getWarningCount () + " warnings.", e);
+      PGPrinter.error ("Detected " +
+                       JavaCCErrors.getErrorCount () +
+                       " errors and " +
+                       JavaCCErrors.getWarningCount () +
+                       " warnings.",
+                       e);
     }
     catch (final ParseException e)
     {
-      PGPrinter.error ("Detected " + (JavaCCErrors.getErrorCount () + 1) + " errors and " + JavaCCErrors.getWarningCount () + " warnings.",
+      PGPrinter.error ("Detected " +
+                       (JavaCCErrors.getErrorCount () + 1) +
+                       " errors and " +
+                       JavaCCErrors.getWarningCount () +
+                       " warnings.",
                        e);
     }
     return ESuccess.FAILURE;

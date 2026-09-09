@@ -1,0 +1,31 @@
+/* Second half of the JJTree cross run leak fixture. Its only node type is Bravo. */
+options
+{
+  MULTI = true;
+  OUTPUT_LANGUAGE = "c++";
+}
+
+PARSER_BEGIN(Beta)
+
+class Beta
+{
+}
+
+PARSER_END(Beta)
+
+TOKEN :
+{
+  < B : "b" >
+}
+
+void Root() #Root :
+{}
+{
+  Bravo() <EOF>
+}
+
+void Bravo() #Bravo :
+{}
+{
+  <B>
+}

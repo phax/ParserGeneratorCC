@@ -39,10 +39,14 @@ import com.helger.pgcc.parser.Nfa;
  * Describes the EOF regular expression
  */
 
-public class ExpREndOfFile extends AbstractExpRegularExpression
+public final class ExpREndOfFile extends AbstractExpRegularExpression
 {
+  /** Default constructor. */
+  public ExpREndOfFile ()
+  {}
+
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
     return null;
   }

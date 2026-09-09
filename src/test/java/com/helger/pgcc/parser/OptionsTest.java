@@ -33,6 +33,7 @@
  */
 package com.helger.pgcc.parser;
 
+import com.helger.pgcc.context.PGCCContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -43,8 +44,9 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.helger.base.system.EJavaVersion;
 import com.helger.base.system.SystemHelper;
-import com.helger.pgcc.EJDKVersion;
+import com.helger.pgcc.output.EOutputLanguage;
 
 /**
  * Test cases to prod at the valitity of Options a little.
@@ -57,13 +59,13 @@ public final class OptionsTest
   public void beforeEach ()
   {
     Options.init ();
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
   }
 
   @Test
   public void testDefaults ()
   {
-    assertEquals (45, Options.s_optionValues.size ());
+    assertEquals (43, Options.optionValues ().size ());
 
     assertTrue (Options.isBuildParser ());
     assertTrue (Options.isBuildTokenManager ());
@@ -87,7 +89,7 @@ public final class OptionsTest
     assertEquals (1, Options.getLookahead ());
     assertEquals (1, Options.getOtherAmbiguityCheck ());
 
-    assertEquals (EJDKVersion.DEFAULT, Options.getJdkVersion ());
+    assertEquals (Options.DEFAULT_JDK_VERSION, Options.getJdkVersion ());
     assertEquals (new File ("."), Options.getOutputDirectory ());
     assertEquals ("", Options.getTokenExtends ());
     assertEquals ("", Options.getTokenFactory ());
@@ -100,63 +102,117 @@ public final class OptionsTest
   }
 
   @Test
+  public void setOutputLanguageFromCommandLine ()
+  {
+    // Used to be ignored on the command line, because only the grammar file path assigned the
+    // indirect language flag
+    assertEquals (EOutputLanguage.JAVA, Options.getOutputLanguage ());
+
+    Options.setCmdLineOption ("-OUTPUT_LANGUAGE=c++");
+    assertEquals (EOutputLanguage.CPP, Options.getOutputLanguage ());
+
+    beforeEach ();
+
+    Options.setCmdLineOption ("-OUTPUT_LANGUAGE=java");
+    assertEquals (EOutputLanguage.JAVA, Options.getOutputLanguage ());
+
+    beforeEach ();
+
+    // An unknown language is warned about and leaves the default in place
+    Options.setCmdLineOption ("-OUTPUT_LANGUAGE=cobol");
+    assertEquals (EOutputLanguage.JAVA, Options.getOutputLanguage ());
+    assertEquals (1, JavaCCErrors.getWarningCount ());
+  }
+
+  @Test
+  public void setCppNamespaceFromCommandLine ()
+  {
+    Options.setCmdLineOption ("-NAMESPACE=foo::bar");
+    assertTrue (Options.booleanValue (Options.NONUSER_OPTION__HAS_NAMESPACE));
+    assertEquals ("foo {\nnamespace bar {", Options.stringValue (Options.NONUSER_OPTION__NAMESPACE_OPEN));
+    assertEquals ("}\n}", Options.stringValue (Options.NONUSER_OPTION__NAMESPACE_CLOSE));
+  }
+
+  @Test
   public void setJdkVersion ()
   {
-    assertEquals (EJDKVersion.DEFAULT, Options.getJdkVersion ());
-    assertEquals (EJDKVersion.JDK_1_5, Options.getJdkVersion ());
+    assertEquals (Options.DEFAULT_JDK_VERSION, Options.getJdkVersion ());
+    assertEquals (EJavaVersion.JDK_1_8, Options.getJdkVersion ());
 
     beforeEach ();
 
     // Version too old
     Options.setCmdLineOption ("JDK_VERSION=1.1");
-    assertEquals (EJDKVersion.DEFAULT, Options.getJdkVersion ());
+    assertEquals (Options.DEFAULT_JDK_VERSION, Options.getJdkVersion ());
 
     beforeEach ();
 
     // Version too old
     Options.setCmdLineOption ("JDK_VERSION=1.4");
-    assertEquals (EJDKVersion.DEFAULT, Options.getJdkVersion ());
+    assertEquals (Options.DEFAULT_JDK_VERSION, Options.getJdkVersion ());
 
     beforeEach ();
 
     Options.setCmdLineOption ("JDK_VERSION=1.5");
-    assertEquals (EJDKVersion.JDK_1_5, Options.getJdkVersion ());
+    assertEquals (EJavaVersion.JDK_1_5, Options.getJdkVersion ());
 
     beforeEach ();
 
     Options.setCmdLineOption ("JDK_VERSION=1.7");
-    assertEquals (EJDKVersion.JDK_1_7, Options.getJdkVersion ());
+    assertEquals (EJavaVersion.JDK_1_7, Options.getJdkVersion ());
 
     beforeEach ();
 
     Options.setCmdLineOption ("JDK_VERSION=1.8");
-    assertEquals (EJDKVersion.JDK_1_8, Options.getJdkVersion ());
+    assertEquals (EJavaVersion.JDK_1_8, Options.getJdkVersion ());
 
     beforeEach ();
 
     Options.setCmdLineOption ("JDK_VERSION=1.9");
-    assertEquals (EJDKVersion.JDK_9, Options.getJdkVersion ());
+    assertEquals (EJavaVersion.JDK_9, Options.getJdkVersion ());
 
     beforeEach ();
 
     Options.setCmdLineOption ("JDK_VERSION=9");
-    assertEquals (EJDKVersion.JDK_9, Options.getJdkVersion ());
+    assertEquals (EJavaVersion.JDK_9, Options.getJdkVersion ());
 
     beforeEach ();
 
     Options.setCmdLineOption ("JDK_VERSION=10");
-    assertEquals (EJDKVersion.JDK_10, Options.getJdkVersion ());
+    assertEquals (EJavaVersion.JDK_10, Options.getJdkVersion ());
 
     beforeEach ();
 
     Options.setCmdLineOption ("JDK_VERSION=11");
-    assertEquals (EJDKVersion.JDK_11, Options.getJdkVersion ());
+    assertEquals (EJavaVersion.JDK_11, Options.getJdkVersion ());
+
+    beforeEach ();
+
+    // Used to silently fall back to the default, because the old EJDKVersion stopped at 14
+    Options.setCmdLineOption ("JDK_VERSION=17");
+    assertEquals (EJavaVersion.JDK_17, Options.getJdkVersion ());
+
+    beforeEach ();
+
+    Options.setCmdLineOption ("JDK_VERSION=21");
+    assertEquals (EJavaVersion.JDK_21, Options.getJdkVersion ());
+
+    beforeEach ();
+
+    Options.setCmdLineOption ("JDK_VERSION=25");
+    assertEquals (EJavaVersion.JDK_25, Options.getJdkVersion ());
+
+    beforeEach ();
+
+    // The major version alone is accepted as well
+    Options.setCmdLineOption ("JDK_VERSION=8");
+    assertEquals (EJavaVersion.JDK_1_8, Options.getJdkVersion ());
 
     beforeEach ();
 
     // Ignore invalid JDK version
     Options.setCmdLineOption ("JDK_VERSION=2.0");
-    assertEquals (EJDKVersion.DEFAULT, Options.getJdkVersion ());
+    assertEquals (Options.DEFAULT_JDK_VERSION, Options.getJdkVersion ());
     assertEquals (0, JavaCCErrors.getWarningCount ());
   }
 
@@ -210,7 +266,7 @@ public final class OptionsTest
     assertEquals ("java.lang.Object", Options.getTokenExtends ());
 
     Options.init ();
-    JavaCCErrors.reInit ();
+    PGCCContext.current ().errors ().reset ();
 
     Options.setInputFileOption (null, null, Options.USEROPTION__TOKEN_EXTENDS, "Object");
     assertEquals ("Object", Options.getTokenExtends ());
@@ -244,6 +300,40 @@ public final class OptionsTest
   }
 
   @Test
+  public void testAnOptionWhoseDefaultIsNullCanBeSetOnTheCommandLine ()
+  {
+    // PARSER_SUPER_CLASS and TOKEN_MANAGER_SUPER_CLASS are the only two options with a null
+    // default, so setCmdLineOption had nothing to take the expected type from and threw a
+    // NullPointerException instead of setting them. Setting them in the grammar file always
+    // worked, because setInputFileOption checks for null first
+    Options.setCmdLineOption ("-PARSER_SUPER_CLASS=MySuperParser");
+    assertEquals ("MySuperParser", Options.stringValue (Options.USEROPTION__PARSER_SUPER_CLASS));
+
+    Options.setCmdLineOption ("-TOKEN_MANAGER_SUPER_CLASS=MySuperTokenManager");
+    assertEquals ("MySuperTokenManager", Options.stringValue (Options.USEROPTION__TOKEN_MANAGER_SUPER_CLASS));
+  }
+
+  @Test
+  public void testTheCppOnlyOptionsWarnWhenSetForJava ()
+  {
+    // Both are read by the C++ backend only, and used to be ignored without a word
+    PGCCContext.current ().errors ().reset ();
+    Options.setCmdLineOption ("-PARSER_SUPER_CLASS=MySuperParser");
+    Options.normalize ();
+    assertEquals (1, JavaCCErrors.getWarningCount ());
+  }
+
+  @Test
+  public void testTheCppOnlyOptionsDoNotWarnForCpp ()
+  {
+    PGCCContext.current ().errors ().reset ();
+    Options.setCmdLineOption ("-OUTPUT_LANGUAGE=c++");
+    Options.setCmdLineOption ("-PARSER_SUPER_CLASS=MySuperParser");
+    Options.normalize ();
+    assertEquals (0, JavaCCErrors.getWarningCount ());
+  }
+
+  @Test
   public void testNormalize ()
   {
     assertFalse (Options.isDebugLookahead ());
@@ -266,9 +356,9 @@ public final class OptionsTest
   {
     Options.setCmdLineOption ("-CACHE_TOKENS=False");
     Options.setCmdLineOption ("-IGNORE_CASE=True");
-    final String [] options = { Options.USEROPTION__CACHE_TOKENS, Options.USEROPTION__IGNORE_CASE };
-    final String optionString = Options.getOptionsString (options);
-    assertEquals ("CACHE_TOKENS=false,IGNORE_CASE=true", optionString);
+    final String [] aOptions = { Options.USEROPTION__CACHE_TOKENS, Options.USEROPTION__IGNORE_CASE };
+    final String sOptionString = Options.getOptionsString (aOptions);
+    assertEquals ("CACHE_TOKENS=false,IGNORE_CASE=true", sOptionString);
   }
 
   @Test

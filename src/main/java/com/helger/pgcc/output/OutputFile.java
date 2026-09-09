@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.output;
 
+import org.jspecify.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -84,7 +86,7 @@ public class OutputFile implements AutoCloseable
   private static final String MD5_LINE_PART_2Q = " \\(do not edit this line\\) \\*/";
 
   private TrapClosePrintWriter m_aPW;
-  private DigestOutputStream m_dos;
+  private DigestOutputStream m_aDos;
   private String m_sToolName = CPG.APP_NAME;
   private final File m_aFile;
   private final String m_sCompatibleVersion;
@@ -94,77 +96,84 @@ public class OutputFile implements AutoCloseable
   /**
    * Create a new OutputFile.
    *
-   * @param file
+   * @param aFile
    *        the file to write to.
-   * @param compatibleVersion
+   * @param sCompatibleVersion
    *        the minimum compatible JavaCC version.
-   * @param options
+   * @param aOptions
    *        if the file already exists, and cannot be overwritten, this is a list of options (such s
    *        STATIC=false) to check for changes.
    * @throws IOException
    *         on error
    */
-  public OutputFile (final File file, final String compatibleVersion, final String [] options) throws IOException
+  public OutputFile (@NonNull final File aFile,
+                     @Nullable final String sCompatibleVersion,
+                     @Nullable final String [] aOptions) throws IOException
   {
-    m_aFile = file;
-    m_sCompatibleVersion = compatibleVersion;
-    m_aOptions = options;
+    m_aFile = aFile;
+    m_sCompatibleVersion = sCompatibleVersion;
+    m_aOptions = aOptions;
 
-    if (file.exists ())
+    if (aFile.exists ())
     {
       // Generate the checksum of the file, and compare with any value
       // stored in the file.
-      try (final NonBlockingBufferedReader br = FileHelper.getBufferedReader (file, Options.getOutputEncoding ()))
+      try (final NonBlockingBufferedReader aBr = FileHelper.getBufferedReader (aFile, Options.getOutputEncoding ()))
       {
-        MessageDigest digest;
+        MessageDigest aDigest;
         try
         {
-          digest = MessageDigest.getInstance ("MD5");
+          aDigest = MessageDigest.getInstance ("MD5");
         }
         catch (final NoSuchAlgorithmException e)
         {
           throw new IOException ("No MD5 implementation", e);
         }
-        try (final DigestOutputStream digestStream = new DigestOutputStream (new NullOutputStream (), digest);
+        try (final DigestOutputStream digestStream = new DigestOutputStream (new NullOutputStream (), aDigest);
              final OutputStreamWriter osw = new OutputStreamWriter (digestStream, Options.getOutputEncoding ());
-             final PrintWriter pw = new PrintWriter (osw))
+             final PrintWriter aPw = new PrintWriter (osw))
         {
-          String line;
-          String existingMD5 = null;
-          while ((line = br.readLine ()) != null)
+          String sLine;
+          String sExistingMD5 = null;
+          while ((sLine = aBr.readLine ()) != null)
           {
-            if (line.startsWith (MD5_LINE_PART_1))
+            if (sLine.startsWith (MD5_LINE_PART_1))
             {
-              existingMD5 = line.replaceAll (MD5_LINE_PART_1Q, "").replaceAll (MD5_LINE_PART_2Q, "");
+              sExistingMD5 = sLine.replaceAll (MD5_LINE_PART_1Q, "").replaceAll (MD5_LINE_PART_2Q, "");
             }
             else
             {
-              pw.println (line);
+              aPw.println (sLine);
             }
           }
 
-          final String calculatedDigest = StringHex.getHexEncoded (digestStream.getMessageDigest ().digest ());
+          // The PrintWriter and the OutputStreamWriter below it buffer, so the digest is only
+          // complete once both have been flushed. Without this, a short file digested to whatever
+          // happened to have been flushed already - usually nothing - so it never matched the
+          // stored checksum and the generator refused to rebuild its own untouched output.
+          aPw.flush ();
+          final String sCalculatedDigest = StringHex.getHexEncoded (digestStream.getMessageDigest ().digest ());
 
-          if (existingMD5 == null || !existingMD5.equals (calculatedDigest))
+          if (sExistingMD5 == null || !sExistingMD5.equals (sCalculatedDigest))
           {
             // No checksum in file, or checksum differs.
             m_bNeedToWrite = false;
 
-            if (compatibleVersion != null)
+            if (sCompatibleVersion != null)
             {
-              _checkVersion (file, compatibleVersion);
+              _checkVersion (aFile, sCompatibleVersion);
             }
 
-            if (options != null)
+            if (aOptions != null)
             {
-              _checkOptions (file, options);
+              _checkOptions (aFile, aOptions);
             }
           }
           else
           {
             // The file has not been altered since JavaCC created it.
             // Rebuild it.
-            PGPrinter.info ("File \"" + file.getName () + "\" is being rebuilt.");
+            PGPrinter.info ("File \"" + aFile.getName () + "\" is being rebuilt.");
             m_bNeedToWrite = true;
           }
         }
@@ -173,40 +182,50 @@ public class OutputFile implements AutoCloseable
     else
     {
       // File does not exist
-      PGPrinter.info ("File \"" + file.getName () + "\" does not exist.  Will create one.");
+      PGPrinter.info ("File \"" + aFile.getName () + "\" does not exist.  Will create one.");
       m_bNeedToWrite = true;
     }
   }
 
-  public OutputFile (final File file) throws IOException
+  /**
+   * Open an output file that carries no version and no options, and is therefore always rewritten.
+   *
+   * @param aFile
+   *        The file to write. May not be <code>null</code>.
+   * @throws IOException
+   *         if the existing file cannot be read
+   */
+  public OutputFile (final File aFile) throws IOException
   {
-    this (file, null, null);
+    this (aFile, null, null);
   }
 
   /**
    * Output a warning if the file was created with an incompatible version of JavaCC.
    *
-   * @param fileName
-   * @param versionId
+   * @param aFile
+   *        The file to inspect. May not be <code>null</code>.
+   * @param sVersionId
+   *        The version this generator would write. May not be <code>null</code>.
    */
-  private void _checkVersion (final File file, final String versionId)
+  private void _checkVersion (@NonNull final File aFile, final String sVersionId)
   {
-    final String firstLine = "/* " + JavaCCGlobals.getIdString (m_sToolName, file.getName ()) + " Version ";
+    final String sFirstLine = "/* " + JavaCCGlobals.getIdString (m_sToolName, aFile.getName ()) + " Version ";
 
-    try (final NonBlockingBufferedReader reader = FileHelper.getBufferedReader (file, Options.getOutputEncoding ()))
+    try (final NonBlockingBufferedReader aReader = FileHelper.getBufferedReader (aFile, Options.getOutputEncoding ()))
     {
-      String line;
-      while ((line = reader.readLine ()) != null)
+      String sLine;
+      while ((sLine = aReader.readLine ()) != null)
       {
-        if (line.startsWith (firstLine))
+        if (sLine.startsWith (sFirstLine))
         {
-          final String version = line.replaceFirst (".*Version ", "").replace (" */", "");
-          if (!version.equals (versionId))
+          final String sVersion = sLine.replaceFirst (".*Version ", "").replace (" */", "");
+          if (!sVersion.equals (sVersionId))
           {
-            JavaCCErrors.warning (file.getName () +
+            JavaCCErrors.warning (aFile.getName () +
                                   ": File is obsolete.  Please rename or delete this file so" +
                                   " that a new one can be generated for you.");
-            JavaCCErrors.warning (file.getName () + " file   version: " + version + " javacc version: " + versionId);
+            JavaCCErrors.warning (aFile.getName () + " file   version: " + sVersion + " javacc version: " + sVersionId);
           }
           return;
         }
@@ -216,7 +235,7 @@ public class OutputFile implements AutoCloseable
     catch (final FileNotFoundException e1)
     {
       // This should never happen
-      JavaCCErrors.semantic_error ("Could not open file " + file.getName () + " for writing.");
+      JavaCCErrors.semanticError ("Could not open file " + aFile.getName () + " for writing.");
       throw new UncheckedIOException (e1);
     }
     catch (final IOException e2)
@@ -227,22 +246,24 @@ public class OutputFile implements AutoCloseable
    * Read the options line from the file and compare to the options currently in use. Output a
    * warning if they are different.
    *
-   * @param fileName
-   * @param options
+   * @param aFile
+   *        The file to inspect. May not be <code>null</code>.
+   * @param aOptions
+   *        The option names whose values the file has to match. May be <code>null</code>.
    */
-  private void _checkOptions (final File file, final String [] options)
+  private void _checkOptions (@NonNull final File aFile, final String [] aOptions)
   {
-    try (final NonBlockingBufferedReader reader = FileHelper.getBufferedReader (file, Options.getOutputEncoding ()))
+    try (final NonBlockingBufferedReader aReader = FileHelper.getBufferedReader (aFile, Options.getOutputEncoding ()))
     {
-      String line;
-      while ((line = reader.readLine ()) != null)
+      String sLine;
+      while ((sLine = aReader.readLine ()) != null)
       {
-        if (line.startsWith ("/* " + OPTIONS_PREFIX + ":"))
+        if (sLine.startsWith ("/* " + OPTIONS_PREFIX + ":"))
         {
-          final String currentOptions = Options.getOptionsString (options);
-          if (line.indexOf (currentOptions) == -1)
+          final String sCurrentOptions = Options.getOptionsString (aOptions);
+          if (sLine.indexOf (sCurrentOptions) == -1)
           {
-            JavaCCErrors.warning (file.getName () +
+            JavaCCErrors.warning (aFile.getName () +
                                   ": Generated using incompatible options. Please rename or delete this file so" +
                                   " that a new one can be generated for you.");
           }
@@ -253,7 +274,7 @@ public class OutputFile implements AutoCloseable
     catch (final FileNotFoundException e1)
     {
       // This should never happen
-      JavaCCErrors.semantic_error ("Could not open file " + file.getName () + " for writing.");
+      JavaCCErrors.semanticError ("Could not open file " + aFile.getName () + " for writing.");
       throw new UncheckedIOException (e1);
     }
     catch (final IOException e2)
@@ -275,24 +296,24 @@ public class OutputFile implements AutoCloseable
   {
     if (m_aPW == null)
     {
-      MessageDigest digest = EMessageDigestAlgorithm.MD5.createMessageDigest ();
+      MessageDigest aDigest = EMessageDigestAlgorithm.MD5.createMessageDigest ();
       try
       {
-        digest = MessageDigest.getInstance ("MD5");
+        aDigest = MessageDigest.getInstance ("MD5");
       }
       catch (final NoSuchAlgorithmException e)
       {
         throw new IOException ("No MD5 implementation", e);
       }
-      m_dos = new DigestOutputStream (FileHelper.getBufferedOutputStream (m_aFile), digest);
-      m_aPW = new TrapClosePrintWriter (m_dos, Options.getOutputEncoding ());
+      m_aDos = new DigestOutputStream (FileHelper.getBufferedOutputStream (m_aFile), aDigest);
+      m_aPW = new TrapClosePrintWriter (m_aDos, Options.getOutputEncoding ());
 
       // Write the headers....
-      final String version = m_sCompatibleVersion == null ? PGVersion.VERSION_NUMBER : m_sCompatibleVersion;
+      final String sVersion = m_sCompatibleVersion == null ? PGVersion.VERSION_NUMBER : m_sCompatibleVersion;
       m_aPW.println ("/* " +
                      JavaCCGlobals.getIdString (m_sToolName, m_aFile.getName ()) +
                      " Version " +
-                     version +
+                     sVersion +
                      " */");
       if (m_aOptions != null)
       {
@@ -321,15 +342,15 @@ public class OutputFile implements AutoCloseable
   private String _getMD5sum ()
   {
     m_aPW.flush ();
-    final byte [] digest = m_dos.getMessageDigest ().digest ();
-    return StringHex.getHexEncoded (digest);
+    final byte [] aDigest = m_aDos.getMessageDigest ().digest ();
+    return StringHex.getHexEncoded (aDigest);
   }
 
   private final class TrapClosePrintWriter extends PrintWriter
   {
-    public TrapClosePrintWriter (final OutputStream os, @NonNull final Charset aCS)
+    public TrapClosePrintWriter (final OutputStream aOs, @NonNull final Charset aCS)
     {
-      super (new OutputStreamWriter (os, aCS));
+      super (new OutputStreamWriter (aOs, aCS));
     }
 
     void closePrintWriter ()
@@ -345,7 +366,7 @@ public class OutputFile implements AutoCloseable
   }
 
   /**
-   * @return the toolName
+   * {@return the toolName}
    */
   public String getToolName ()
   {
@@ -353,19 +374,29 @@ public class OutputFile implements AutoCloseable
   }
 
   /**
-   * @param toolName
+   * The line that names the tool which generated a file, so that a later run can tell its own
+   * output from something the user has written.
+   *
+   * @param sToolName
    *        the toolName to set
    */
-  public void setToolName (final String toolName)
+  public void setToolName (final String sToolName)
   {
-    m_sToolName = toolName;
+    m_sToolName = sToolName;
   }
 
+  /**
+   * {@return the absolute path of the file being written}
+   */
   public String getPath ()
   {
     return m_aFile.getAbsolutePath ();
   }
 
+  /**
+   * {@return <code>true</code> if the file has to be written - a file the user has edited, or one
+   * generated by an older version with the same options, is left alone}
+   */
   public boolean needToWrite ()
   {
     return m_bNeedToWrite;

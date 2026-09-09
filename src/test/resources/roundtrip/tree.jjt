@@ -1,0 +1,73 @@
+/*
+ * A JJTree grammar for the round trip test. It is deliberately built around conditional node
+ * creation: Sum and Product only become nodes when they actually have more than one child, so the
+ * shape of the tree depends on the input rather than on the grammar alone.
+ */
+options
+{
+  MULTI = true;
+  VISITOR = true;
+  NODE_DEFAULT_VOID = true;
+}
+
+PARSER_BEGIN(TreeParser)
+
+public class TreeParser
+{
+}
+
+PARSER_END(TreeParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN :
+{
+  < NUMBER : (["0"-"9"])+ >
+| < PLUS : "+" >
+| < TIMES : "*" >
+| < LPAREN : "(" >
+| < RPAREN : ")" >
+}
+
+SimpleNode Start() #Start :
+{}
+{
+  Sum() <EOF>
+  { return jjtThis; }
+}
+
+void Sum() #Sum(>1) :
+{}
+{
+  Product() ( <PLUS> Product() )*
+}
+
+void Product() #Product(>1) :
+{}
+{
+  Unit() ( <TIMES> Unit() )*
+}
+
+void Unit() :
+{}
+{
+  Num()
+| <LPAREN> Sum() <RPAREN>
+}
+
+void Num() #Num :
+{
+  Token t;
+}
+{
+  t = <NUMBER>
+  {
+    jjtThis.jjtSetValue (t.image);
+  }
+}

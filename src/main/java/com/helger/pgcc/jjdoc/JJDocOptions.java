@@ -55,13 +55,13 @@ public class JJDocOptions extends Options
   {
     Options.init ();
 
-    s_optionValues.put ("ONE_TABLE", Boolean.TRUE);
-    s_optionValues.put ("TEXT", Boolean.FALSE);
-    s_optionValues.put ("XTEXT", Boolean.FALSE);
-    s_optionValues.put ("BNF", Boolean.FALSE);
+    optionValues ().put ("ONE_TABLE", Boolean.TRUE);
+    optionValues ().put ("TEXT", Boolean.FALSE);
+    optionValues ().put ("XTEXT", Boolean.FALSE);
+    optionValues ().put ("BNF", Boolean.FALSE);
 
-    s_optionValues.put ("OUTPUT_FILE", "");
-    s_optionValues.put ("CSS", "");
+    optionValues ().put ("OUTPUT_FILE", "");
+    optionValues ().put ("CSS", "");
   }
 
   /**
@@ -94,6 +94,9 @@ public class JJDocOptions extends Options
     return booleanValue ("TEXT");
   }
 
+  /**
+   * {@return <code>true</code> if JJDoc should produce an XText grammar rather than documentation}
+   */
   public static boolean isXText ()
   {
     return booleanValue ("XTEXT");

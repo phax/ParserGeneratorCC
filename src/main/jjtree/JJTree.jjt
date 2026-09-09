@@ -33,8 +33,6 @@
  */
 options {
   JAVA_UNICODE_ESCAPE = true;
-  LEGACY_EXCEPTION_HANDLING = false;
-  STATIC = false;
 
   MULTI = true;
   NODE_DEFAULT_VOID = true;
@@ -46,6 +44,8 @@ options {
 PARSER_BEGIN(JJTreeParser)
 
 package com.helger.pgcc.jjtree;
+
+import com.helger.pgcc.context.PGCCContext;
 
 public class JJTreeParser {
   void jjtreeOpenNodeScope(final Node n)
@@ -349,14 +349,14 @@ TOKEN :
   < RUNSIGNEDSHIFT: ">>>" >
   {
      matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).m_realKind = RUNSIGNEDSHIFT;
+     ((Token.GTToken)matchedToken).m_nRealKind = RUNSIGNEDSHIFT;
      input_stream.backup(2);
      matchedToken.image = ">";
   }
 | < RSIGNEDSHIFT: ">>" >
   {
      matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).m_realKind = RSIGNEDSHIFT;
+     ((Token.GTToken)matchedToken).m_nRealKind = RSIGNEDSHIFT;
      input_stream.backup(1);
      matchedToken.image = ">";
   }
@@ -380,7 +380,7 @@ void javacc_input() #Grammar :
   (
     "PARSER_BEGIN" "(" t=identifier() ")"
 	{
-	  JJTreeGlobals.s_parserName = t.image;
+	  PGCCContext.current ().jjtree ().setParserName (t.image);
 
           if (!isJavaLanguage) {
             while(getToken(1).kind != _PARSER_END) {
@@ -392,9 +392,9 @@ void javacc_input() #Grammar :
     "PARSER_END" "(" identifier() ")"
 	{
 	  if (JJTreeOptions.getNodePackage().equals("")) {
-	    JJTreeGlobals.s_nodePackageName = JJTreeGlobals.s_packageName;
+	    PGCCContext.current ().jjtree ().setNodePackageName (PGCCContext.current ().jjtree ().getPackageName ());
 	  } else {
-	    JJTreeGlobals.s_nodePackageName = JJTreeOptions.getNodePackage();
+	    PGCCContext.current ().jjtree ().setNodePackageName (JJTreeOptions.getNodePackage());
 	  }
 	}
   ) #CompilationUnit(true)
@@ -435,7 +435,7 @@ void option_binding() #OptionBinding :
 	}
    | v=StringLiteral()
         {	
-	  String vs = TokenUtils.remove_escapes_and_quotes(v, v.image);
+	  String vs = TokenUtils.removeEscapesAndQuotes(v, v.image);
 	  JJTreeOptions.setInputFileOption(o, v, o.image, (Object)vs);
 	  jjtThis.initialize(o.image, vs);
 	}
@@ -496,11 +496,11 @@ void javacode_production() #Javacode :
     [
       "throws" n=Name()
 	{
-	  prod.m_throws_list.add(n);
+	  prod.getThrowsList ().add(n);
 	}
       ( "," n=Name()
 	{
-	  prod.m_throws_list.add(n);
+	  prod.getThrowsList ().add(n);
 	}
       )*
     ]
@@ -509,8 +509,8 @@ void javacode_production() #Javacode :
     // This is really a Block()
     t2="{"
         {
-	  prod.m_name = t1.image;
-	  prod.stmBeginLoc = t2;
+	  prod.setName (t1.image);
+	  prod.setStmBeginLoc (t2);
           if (!isJavaLanguage) {
             eatUptoCloseBrace();
           }
@@ -518,12 +518,12 @@ void javacode_production() #Javacode :
     (
       ( BlockStatement() )*
         {
-	  jjtThis.m_node_scope = new NodeScope(prod, nd);
+	  jjtThis.setNodeScope (new NodeScope(prod, nd));
 	}
     ) #JavacodeBody
     "}"
         {
-	  JJTreeGlobals.s_productions.put(prod.m_name, prod);
+	  PGCCContext.current ().jjtree ().productions ().put(prod.getName (), prod);
 	}
 }
 
@@ -551,11 +551,11 @@ void bnf_production() #BNF :
   [
     "throws" n=Name()
         {
-	  prod.m_throws_list.add(n);
+	  prod.getThrowsList ().add(n);
 	}
     ( "," n=Name()
         {
-	  prod.m_throws_list.add(n);
+	  prod.getThrowsList ().add(n);
 	}
     )*
   ]
@@ -565,8 +565,8 @@ void bnf_production() #BNF :
   // This is really a Block()
   t2="{"
         {
-	  prod.m_name = t1.image;
-	  prod.declBeginLoc = t2;
+	  prod.setName (t1.image);
+	  prod.setDeclBeginLoc (t2);
 	  ns = new NodeScope(prod, nd);
           if (!isJavaLanguage) {
             eatUptoCloseBrace();
@@ -575,7 +575,7 @@ void bnf_production() #BNF :
   (
     ( BlockStatement() )*
         {
-	  jjtThis.m_node_scope = ns;
+	  jjtThis.setNodeScope (ns);
 	}
   ) #BNFDeclaration
   "}"
@@ -584,13 +584,13 @@ void bnf_production() #BNF :
   (
     eu=expansion_choices(prod)
         {
-	  jjtThis.m_node_scope = ns;
-	  jjtThis.m_expansion_unit = eu;
+	  jjtThis.setNodeScope (ns);
+	  jjtThis.setExpansionUnit (eu);
 	}
   ) #BNFNodeScope
  "}"
         {
-	  JJTreeGlobals.s_productions.put(prod.m_name, prod);
+	  PGCCContext.current ().jjtree ().productions ().put(prod.getName (), prod);
 	}
 }
 
@@ -676,8 +676,8 @@ void expansion(ASTProduction p) #BNFSequence(>1) :
      [ nd=node_descriptor() ]
         {
 	  if (jjtree.nodeCreated()) {
-	    jjtThis.m_node_scope = new NodeScope(p, nd);
-	    jjtThis.m_expansion_unit = eu;
+	    jjtThis.setNodeScope (new NodeScope(p, nd));
+	    jjtThis.setExpansionUnit (eu);
 	  }
 	}
    ) #ExpansionNodeScope(>1)
@@ -904,11 +904,11 @@ ASTNodeDescriptor node_descriptor() #NodeDescriptor :
   (
     s=Name()
                    {
-                     jjtThis.m_name = s;
+                     jjtThis.setName (s);
 		   }
   | t=<VOID>
                    {
-                     jjtThis.m_name = t.image;
+                     jjtThis.setName (t.image);
 		   }
   )
   [
@@ -916,13 +916,12 @@ ASTNodeDescriptor node_descriptor() #NodeDescriptor :
    "("
       [ ">"
                    {
-		     jjtThis.m_isGT = true;
+		     jjtThis.setGT (true);
 		   }
       ]
       node_descriptor_expression()
 	           {
-		     jjtThis.m_expression =
-		       (ASTNodeDescriptorExpression)jjtree.peekNode();
+		     jjtThis.setExpression ((ASTNodeDescriptorExpression)jjtree.peekNode());
 		   }
    ")"
   ]
@@ -997,7 +996,7 @@ void CompilationUnit() :
 {}
 {
   [ LOOKAHEAD( ( Annotation() )* "package" ) PackageDeclaration() ]
-  { JJTreeGlobals.s_parserImports = getToken(1); }
+  { PGCCContext.current ().jjtree ().setParserImports (getToken(1)); }
   ( ImportDeclaration() )*
   ( TypeDeclaration() )*
 }
@@ -1009,7 +1008,7 @@ void PackageDeclaration() :
 {
   Modifiers() "package" s=Name() ";"
                 {
-		  JJTreeGlobals.s_packageName = s;
+		  PGCCContext.current ().jjtree ().setPackageName (s);
 		}
 }
 
@@ -1091,13 +1090,13 @@ void ClassOrInterfaceDeclaration():
   [ ExtendsList() ]
   [ { t = getToken(1); } ImplementsList() ]
                 {
-		  if (s.equals(JJTreeGlobals.s_parserName)) {
+		  if (s.equals(PGCCContext.current ().jjtree ().getParserName ())) {
 		    if (t != null) {
-		      JJTreeGlobals.s_parserImplements = t;
+		      PGCCContext.current ().jjtree ().setParserImplements (t);
 		    } else {
-		      JJTreeGlobals.s_parserImplements = getToken(1);
+		      PGCCContext.current ().jjtree ().setParserImplements (getToken(1));
 		    }
-		    JJTreeGlobals.s_parserClassBodyStart = getToken(1);
+		    PGCCContext.current ().jjtree ().setParserClassBodyStart (getToken(1));
 		  }
 		}
   ClassOrInterfaceBody()
@@ -1979,7 +1978,7 @@ void RUNSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).m_realKind == RUNSIGNEDSHIFT} )
+                ((Token.GTToken)getToken(1)).m_nRealKind == RUNSIGNEDSHIFT} )
    ">" ">" ">"
   )
 }
@@ -1988,7 +1987,7 @@ void RSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).m_realKind == RSIGNEDSHIFT} )
+                ((Token.GTToken)getToken(1)).m_nRealKind == RSIGNEDSHIFT} )
   ">" ">"
   )
 }

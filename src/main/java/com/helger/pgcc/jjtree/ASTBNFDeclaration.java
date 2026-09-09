@@ -33,9 +33,39 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * The declaration part of a BNF production in a JJTree grammar: the return type, the name, the
+ * parameter list and the throws clause.
+ */
 public class ASTBNFDeclaration extends JJTreeNode
 {
-  NodeScope m_node_scope;
+  /**
+   * The scope this node opens.
+   */
+  private NodeScope m_aNodeScope;
+
+  /**
+   * The node scope.
+   *
+   * @return The value of m_aNodeScope.
+   */
+  public NodeScope getNodeScope ()
+  {
+    return m_aNodeScope;
+  }
+
+  /**
+   * The node scope.
+   *
+   * @param aValue
+   *        The new value of m_aNodeScope.
+   */
+  public void setNodeScope (final NodeScope aValue)
+  {
+    m_aNodeScope = aValue;
+  }
 
   ASTBNFDeclaration (final int nID)
   {
@@ -44,8 +74,8 @@ public class ASTBNFDeclaration extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

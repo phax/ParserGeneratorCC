@@ -33,8 +33,19 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * The options block of the grammar.
+ */
 public class ASTOptions extends JJTreeNode
 {
+  /**
+   * Create the node.
+   *
+   * @param nID
+   *        The node kind, one of the constants JJTree generates.
+   */
   public ASTOptions (final int nID)
   {
     super (nID);
@@ -42,8 +53,8 @@ public class ASTOptions extends JJTreeNode
 
   /** Accept the visitor. **/
   @Override
-  public Object jjtAccept (final JJTreeParserVisitor visitor, final Object data)
+  public Object jjtAccept (@NonNull final JJTreeParserVisitor aVisitor, final Object aData)
   {
-    return visitor.visit (this, data);
+    return aVisitor.visit (this, aData);
   }
 }

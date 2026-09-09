@@ -33,220 +33,241 @@
  */
 package com.helger.pgcc.jjtree;
 
+import org.jspecify.annotations.NonNull;
+
+/**
+ * A visitor that walks the whole tree and does nothing, for a caller that only cares about a few
+ * node types.
+ */
 public class DefaultJJTreeVisitor implements JJTreeParserVisitor
 {
-  public Object defaultVisit (final SimpleNode node, final Object data)
+  /** Default constructor. */
+  public DefaultJJTreeVisitor ()
+  {}
+
+  /**
+   * Visit the children of a node. Every visit method funnels into this one, so overriding it
+   * changes the behaviour for every node type at once.
+   *
+   * @param aNode
+   *        The node being visited. May not be <code>null</code>.
+   * @param aData
+   *        The value handed down by whoever started the traversal. May be <code>null</code>.
+   * @return The value handed back, which is aData unless a subclass says otherwise. May be
+   *         <code>null</code>.
+   */
+  public Object defaultVisit (@NonNull final SimpleNode aNode, final Object aData)
   {
-    return node.childrenAccept (this, data);
+    return aNode.childrenAccept (this, aData);
   }
 
-  public Object visit (final SimpleNode node, final Object data)
+  public Object visit (final SimpleNode aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTGrammar node, final Object data)
+  public Object visit (final ASTGrammar aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTCompilationUnit node, final Object data)
+  public Object visit (final ASTCompilationUnit aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTProductions node, final Object data)
+  public Object visit (final ASTProductions aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTOptions node, final Object data)
+  public Object visit (final ASTOptions aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTOptionBinding node, final Object data)
+  public Object visit (final ASTOptionBinding aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTJavacode node, final Object data)
+  public Object visit (final ASTJavacode aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTJavacodeBody node, final Object data)
+  public Object visit (final ASTJavacodeBody aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNF node, final Object data)
+  public Object visit (final ASTBNF aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFDeclaration node, final Object data)
+  public Object visit (final ASTBNFDeclaration aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFNodeScope node, final Object data)
+  public Object visit (final ASTBNFNodeScope aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTRE node, final Object data)
+  public Object visit (final ASTRE aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTTokenDecls node, final Object data)
+  public Object visit (final ASTTokenDecls aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTRESpec node, final Object data)
+  public Object visit (final ASTRESpec aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFChoice node, final Object data)
+  public Object visit (final ASTBNFChoice aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFSequence node, final Object data)
+  public Object visit (final ASTBNFSequence aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFLookahead node, final Object data)
+  public Object visit (final ASTBNFLookahead aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTExpansionNodeScope node, final Object data)
+  public Object visit (final ASTExpansionNodeScope aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFAction node, final Object data)
+  public Object visit (final ASTBNFAction aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFZeroOrOne node, final Object data)
+  public Object visit (final ASTBNFZeroOrOne aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFTryBlock node, final Object data)
+  public Object visit (final ASTBNFTryBlock aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFNonTerminal node, final Object data)
+  public Object visit (final ASTBNFNonTerminal aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFAssignment node, final Object data)
+  public Object visit (final ASTBNFAssignment aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFOneOrMore node, final Object data)
+  public Object visit (final ASTBNFOneOrMore aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFZeroOrMore node, final Object data)
+  public Object visit (final ASTBNFZeroOrMore aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTBNFParenthesized node, final Object data)
+  public Object visit (final ASTBNFParenthesized aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTREStringLiteral node, final Object data)
+  public Object visit (final ASTREStringLiteral aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTRENamed node, final Object data)
+  public Object visit (final ASTRENamed aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTREReference node, final Object data)
+  public Object visit (final ASTREReference aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTREEOF node, final Object data)
+  public Object visit (final ASTREEOF aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTREChoice node, final Object data)
+  public Object visit (final ASTREChoice aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTRESequence node, final Object data)
+  public Object visit (final ASTRESequence aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTREOneOrMore node, final Object data)
+  public Object visit (final ASTREOneOrMore aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTREZeroOrMore node, final Object data)
+  public Object visit (final ASTREZeroOrMore aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTREZeroOrOne node, final Object data)
+  public Object visit (final ASTREZeroOrOne aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTRRepetitionRange node, final Object data)
+  public Object visit (final ASTRRepetitionRange aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTREParenthesized node, final Object data)
+  public Object visit (final ASTREParenthesized aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTRECharList node, final Object data)
+  public Object visit (final ASTRECharList aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTCharDescriptor node, final Object data)
+  public Object visit (final ASTCharDescriptor aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTNodeDescriptor node, final Object data)
+  public Object visit (final ASTNodeDescriptor aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTNodeDescriptorExpression node, final Object data)
+  public Object visit (final ASTNodeDescriptorExpression aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 
-  public Object visit (final ASTPrimaryExpression node, final Object data)
+  public Object visit (final ASTPrimaryExpression aNode, final Object aData)
   {
-    return defaultVisit (node, data);
+    return defaultVisit (aNode, aData);
   }
 }

@@ -46,8 +46,8 @@ import com.helger.pgcc.jjtree.JJTree;
 
 /**
  * Test for <a href="https://github.com/tulipcc/ParserGeneratorCC/issues/45">issue 45</a>: the
- * JJTree state must be reset in the <code>ReInit</code> methods of a parser that was generated
- * from a JJTree generated grammar file.
+ * JJTree state must be reset in the <code>ReInit</code> methods of a parser that was generated from
+ * a JJTree generated grammar file.
  *
  * @author Philip Helger
  */
@@ -60,8 +60,7 @@ public final class Issue45Test
     final File aOutDir = new File ("target/issue45");
 
     // Step 1: JJTree creates the annotated grammar
-    new JJTree ().main (new String [] { "-OUTPUT_DIRECTORY=" + aOutDir.getAbsolutePath (),
-                                        aSrc.getAbsolutePath () });
+    new JJTree ().main (new String [] { "-OUTPUT_DIRECTORY=" + aOutDir.getAbsolutePath (), aSrc.getAbsolutePath () });
 
     // Step 2: JavaCC creates the parser from the annotated grammar
     final File aGrammar = new File (aOutDir, "grammar.jj");

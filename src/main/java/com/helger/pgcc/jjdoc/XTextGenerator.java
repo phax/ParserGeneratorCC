@@ -33,12 +33,15 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
 import java.io.Writer;
 
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.RegExprSpec;
 import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
@@ -52,24 +55,27 @@ public class XTextGenerator implements IDocGenerator
 {
   private Writer m_aPW;
 
+  /**
+   * Create the generator.
+   */
   public XTextGenerator ()
   {}
 
-  public void handleTokenProduction (final TokenProduction tp)
+  public void handleTokenProduction (@NonNull final TokenProduction aTp)
   {
-    final StringBuilder sb = new StringBuilder ();
+    final StringBuilder aSB = new StringBuilder ();
 
-    for (final RegExprSpec res : tp.m_respecs)
+    for (final RegExprSpec res : aTp.getRespecs ())
     {
-      final String regularExpressionText = JJDoc.emitRE (res.rexp);
-      sb.append (regularExpressionText);
+      final String sRegularExpressionText = JJDoc.emitRE (res.getRexp ());
+      aSB.append (sRegularExpressionText);
 
-      if (res.nsTok != null)
+      if (res.getNsTok () != null)
       {
-        sb.append (" : " + res.nsTok.image);
+        aSB.append (" : " + res.getNsTok ().image);
       }
 
-      sb.append ("\n");
+      aSB.append ("\n");
     }
   }
 
@@ -91,7 +97,7 @@ public class XTextGenerator implements IDocGenerator
   public void documentStart () throws IOException
   {
     m_aPW = TextGenerator.createPrintWriter ();
-    println ("grammar " + JJDocGlobals.s_input_file + " with org.eclipse.xtext.common.Terminals");
+    println ("grammar " + PGCCContext.current ().jjdoc ().getInputFile () + " with org.eclipse.xtext.common.Terminals");
     println ("import \"http://www.eclipse.org/emf/2002/Ecore\" as ecore");
     println ("");
   }
@@ -122,32 +128,32 @@ public class XTextGenerator implements IDocGenerator
   public void tokensEnd ()
   {}
 
-  public void javacode (final CodeProductionJava jp)
+  public void javacode (final CodeProductionJava aJp)
   {}
 
-  public void cppcode (final CodeProductionCpp cp)
+  public void cppcode (final CodeProductionCpp aCp)
   {}
 
-  public void productionStart (final NormalProduction np)
+  public void productionStart (final AbstractNormalProduction aNp)
   {}
 
-  public void productionEnd (final NormalProduction np)
+  public void productionEnd (final AbstractNormalProduction aNp)
   {}
 
-  public void expansionStart (final Expansion e, final boolean first)
+  public void expansionStart (final Expansion e, final boolean bFirst)
   {}
 
-  public void expansionEnd (final Expansion e, final boolean first) throws IOException
+  public void expansionEnd (final Expansion e, final boolean bFirst) throws IOException
   {
     println (";");
   }
 
-  public void nonTerminalStart (final ExpNonTerminal nt) throws IOException
+  public void nonTerminalStart (final ExpNonTerminal aNt) throws IOException
   {
     print ("terminal ");
   }
 
-  public void nonTerminalEnd (final ExpNonTerminal nt) throws IOException
+  public void nonTerminalEnd (final ExpNonTerminal aNt) throws IOException
   {
     print (";");
   }

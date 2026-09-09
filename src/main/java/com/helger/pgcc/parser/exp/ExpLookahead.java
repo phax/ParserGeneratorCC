@@ -42,36 +42,35 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.pgcc.parser.Token;
 
 /**
- * Describes lookahead rule for a particular expansion or expansion sequence
- * (See Sequence.java). In case this describes the lookahead rule for a single
- * expansion unit, then a sequence is created with this node as the first
- * element, and the expansion unit as the second and last element.
+ * Describes lookahead rule for a particular expansion or expansion sequence (See Sequence.java). In
+ * case this describes the lookahead rule for a single expansion unit, then a sequence is created
+ * with this node as the first element, and the expansion unit as the second and last element.
  */
-public class ExpLookahead extends Expansion
+public final class ExpLookahead extends Expansion
 {
-  /**
-   * Contains the list of tokens that make up the semantic lookahead if any. If
-   * this node represents a different kind of lookahead (other than semantic
-   * lookahead), then this list contains nothing. If this list contains
-   * something, then it is the boolean expression that forms the semantic
-   * lookahead. In this case, the following fields "amount" and "la_expansion"
-   * are ignored.
-   */
-  private final ICommonsList <Token> m_action_tokens = new CommonsArrayList <> ();
+  /** Default constructor. */
+  public ExpLookahead ()
+  {}
 
   /**
-   * The lookahead amount. Its default value essentially gives us infinite
-   * lookahead.
+   * Contains the list of tokens that make up the semantic lookahead if any. If this node represents
+   * a different kind of lookahead (other than semantic lookahead), then this list contains nothing.
+   * If this list contains something, then it is the boolean expression that forms the semantic
+   * lookahead. In this case, the following fields "amount" and "la_expansion" are ignored.
    */
-  private int m_amount = Integer.MAX_VALUE;
+  private final ICommonsList <Token> m_aActionTokens = new CommonsArrayList <> ();
 
   /**
-   * The expansion used to determine whether or not to choose the corresponding
-   * parse option. This expansion is parsed upto "amount" tokens of lookahead or
-   * until a complete match for it is found. Usually, this is the same as the
-   * expansion to be parsed.
+   * The lookahead amount. Its default value essentially gives us infinite lookahead.
    */
-  private Expansion m_la_expansion;
+  private int m_nAmount = Integer.MAX_VALUE;
+
+  /**
+   * The expansion used to determine whether or not to choose the corresponding parse option. This
+   * expansion is parsed upto "amount" tokens of lookahead or until a complete match for it is
+   * found. Usually, this is the same as the expansion to be parsed.
+   */
+  private Expansion m_aLaExpansion;
 
   /**
    * Is set to true if this is an explicit lookahead specification.
@@ -79,50 +78,54 @@ public class ExpLookahead extends Expansion
   private boolean m_bIsExplicit;
 
   /**
-   * @return the action_tokens
+   * {@return the action_tokens}
    */
   @NonNull
   public final ICommonsList <Token> getActionTokens ()
   {
-    return m_action_tokens;
+    return m_aActionTokens;
   }
 
   /**
-   * @return the amount
+   * {@return the amount}
    */
   public final int getAmount ()
   {
-    return m_amount;
+    return m_nAmount;
   }
 
   /**
-   * @param amount
+   * Set how many tokens this lookahead may look at.
+   *
+   * @param nAmount
    *        the amount to set
    */
-  public final void setAmount (final int amount)
+  public final void setAmount (final int nAmount)
   {
-    m_amount = amount;
+    m_nAmount = nAmount;
   }
 
   /**
-   * @return the la_expansion
+   * {@return the la_expansion}
    */
   public final Expansion getLaExpansion ()
   {
-    return m_la_expansion;
+    return m_aLaExpansion;
   }
 
   /**
-   * @param la_expansion
+   * Set the expansion this lookahead tries to match.
+   *
+   * @param aLa_expansion
    *        the la_expansion to set
    */
-  public final void setLaExpansion (final Expansion la_expansion)
+  public final void setLaExpansion (final Expansion aLa_expansion)
   {
-    m_la_expansion = la_expansion;
+    m_aLaExpansion = aLa_expansion;
   }
 
   /**
-   * @return the isExplicit
+   * {@return the isExplicit}
    */
   public final boolean isExplicit ()
   {
@@ -130,22 +133,24 @@ public class ExpLookahead extends Expansion
   }
 
   /**
-   * @param isExplicit
+   * Record whether the grammar wrote this lookahead or the generator added it.
+   *
+   * @param bIsExplicit
    *        the isExplicit to set
    */
-  public final void setExplicit (final boolean isExplicit)
+  public final void setExplicit (final boolean bIsExplicit)
   {
-    m_bIsExplicit = isExplicit;
+    m_bIsExplicit = bIsExplicit;
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, @NonNull final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder sb = super.dump (indent, alreadyDumped).append (m_bIsExplicit ? " explicit" : " implicit");
-    if (alreadyDumped.add (this))
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped).append (m_bIsExplicit ? " explicit" : " implicit");
+    if (aAlreadyDumped.add (this))
     {
-      sb.append (EOL).append (m_la_expansion.dump (indent + 1, alreadyDumped));
+      aSB.append (EOL).append (m_aLaExpansion.dump (nIndent + 1, aAlreadyDumped));
     }
-    return sb;
+    return aSB;
   }
 }

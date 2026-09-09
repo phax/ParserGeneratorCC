@@ -33,29 +33,37 @@
  */
 package com.helger.pgcc.output.java;
 
+/**
+ * Where the modern Java templates live, which is the classic set with the Provider based files
+ * replaced.
+ */
 public class JavaModernResourceTemplateLocationImpl extends JavaResourceTemplateLocationImpl
 {
+  /** Default constructor. */
+  public JavaModernResourceTemplateLocationImpl ()
+  {}
+
   @Override
   public String getSimpleCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/modern/SimpleCharStream.template";
+    return "/templates/java/stream/modern/SimpleCharStream.template";
   }
 
   @Override
   public String getJavaCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/modern/JavaCharStream.template";
+    return "/templates/java/stream/modern/JavaCharStream.template";
   }
 
   @Override
   public String getCharSequenceCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/modern/CharSequenceCharStream.template";
+    return "/templates/java/stream/modern/CharSequenceCharStream.template";
   }
 
   @Override
   public String getParseExceptionTemplateResourceUrl ()
   {
-    return "/templates/gwt/ParseException.template";
+    return "/templates/java/modern/ParseException.template";
   }
 }

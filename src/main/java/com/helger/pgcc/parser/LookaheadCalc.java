@@ -33,8 +33,8 @@
  */
 package com.helger.pgcc.parser;
 
-import static com.helger.pgcc.parser.JavaCCGlobals.REXPS_OF_TOKENS;
 import static com.helger.pgcc.parser.JavaCCGlobals.addEscapes;
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +43,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.pgcc.PGPrinter;
+import com.helger.pgcc.context.LookaheadState;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpChoice;
 import com.helger.pgcc.parser.exp.ExpLookahead;
@@ -53,45 +54,48 @@ import com.helger.pgcc.parser.exp.ExpZeroOrMore;
 import com.helger.pgcc.parser.exp.ExpZeroOrOne;
 import com.helger.pgcc.parser.exp.Expansion;
 
+/**
+ * Works out how much lookahead each choice needs, and warns about the ones that cannot be decided.
+ */
 public final class LookaheadCalc
 {
   private LookaheadCalc ()
   {}
 
   @Nullable
-  private static MatchInfo _overlap (final List <MatchInfo> v1, final List <MatchInfo> v2)
+  private static MatchInfo _overlap (final List <MatchInfo> v1, final List <MatchInfo> aV2)
   {
-    MatchInfo m1, m2, m3;
-    int size;
-    boolean diff;
+    MatchInfo aM1, aM2, aM3;
+    int nSize;
+    boolean bDiff;
     for (final MatchInfo element : v1)
     {
-      m1 = element;
-      for (final MatchInfo element2 : v2)
+      aM1 = element;
+      for (final MatchInfo element2 : aV2)
       {
-        m2 = element2;
-        size = m1.m_firstFreeLoc;
-        m3 = m1;
-        if (size > m2.m_firstFreeLoc)
+        aM2 = element2;
+        nSize = aM1.getFirstFreeLoc ();
+        aM3 = aM1;
+        if (nSize > aM2.getFirstFreeLoc ())
         {
-          size = m2.m_firstFreeLoc;
-          m3 = m2;
+          nSize = aM2.getFirstFreeLoc ();
+          aM3 = aM2;
         }
-        if (size == 0)
+        if (nSize == 0)
           return null;
 
         // we wish to ignore empty expansions and the JAVACODE stuff here.
-        diff = false;
-        for (int k = 0; k < size; k++)
+        bDiff = false;
+        for (int k = 0; k < nSize; k++)
         {
-          if (m1.m_match[k] != m2.m_match[k])
+          if (aM1.getMatch ()[k] != aM2.getMatch ()[k])
           {
-            diff = true;
+            bDiff = true;
             break;
           }
         }
-        if (!diff)
-          return m3;
+        if (!bDiff)
+          return aM3;
       }
     }
     return null;
@@ -100,274 +104,288 @@ public final class LookaheadCalc
   private static boolean _isJavaCodeCheck (final List <MatchInfo> v)
   {
     for (final MatchInfo mi : v)
-      if (mi.m_firstFreeLoc == 0)
+      if (mi.getFirstFreeLoc () == 0)
         return true;
     return false;
   }
 
   private static String _image (@NonNull final MatchInfo m)
   {
-    String ret = "";
-    for (int i = 0; i < m.m_firstFreeLoc; i++)
+    String sRet = "";
+    for (int i = 0; i < m.getFirstFreeLoc (); i++)
     {
-      if (m.m_match[i] == 0)
+      if (m.getMatch ()[i] == 0)
       {
-        ret += " <EOF>";
+        sRet += " <EOF>";
       }
       else
       {
-        final AbstractExpRegularExpression re = REXPS_OF_TOKENS.get (Integer.valueOf (m.m_match[i]));
-        if (re instanceof ExpRStringLiteral)
+        final AbstractExpRegularExpression aRe = grammar ().rexpsOfTokens ().get (Integer.valueOf (m.getMatch ()[i]));
+        if (aRe instanceof final ExpRStringLiteral aRStringLiteral)
         {
-          ret += " \"" + addEscapes (((ExpRStringLiteral) re).m_image) + "\"";
+          sRet += " \"" + addEscapes (aRStringLiteral.getImage ()) + "\"";
         }
         else
-          if (re.hasLabel ())
-            ret += " <" + re.getLabel () + ">";
+          if (aRe.hasLabel ())
+            sRet += " <" + aRe.getLabel () + ">";
           else
-            ret += " <token of kind " + i + ">";
+            sRet += " <token of kind " + i + ">";
       }
     }
-    if (m.m_firstFreeLoc == 0)
+    if (m.getFirstFreeLoc () == 0)
       return "";
-    return ret.substring (1);
+    return sRet.substring (1);
   }
 
-  public static void choiceCalc (final ExpChoice ch)
+  /**
+   * Check one choice for alternatives that a earlier alternative already matches, and report the
+   * ones that do.
+   *
+   * @param aCh
+   *        The choice. May not be <code>null</code>.
+   */
+  public static void choiceCalc (@NonNull final ExpChoice aCh)
   {
-    final int first = _firstChoice (ch);
+    final int nFirst = _firstChoice (aCh);
     // dbl[i] and dbr[i] are lists of size limited matches for choice i
     // of ch. dbl ignores matches with semantic lookaheads (when force_la_check
     // is false), while dbr ignores semantic lookahead.
     @SuppressWarnings ("unchecked")
-    final List <MatchInfo> [] dbl = new List [ch.getChoiceCount ()];
+    final List <MatchInfo> [] aDbl = new List [aCh.getChoiceCount ()];
     @SuppressWarnings ("unchecked")
-    final List <MatchInfo> [] dbr = new List [ch.getChoiceCount ()];
-    final int [] minLA = new int [ch.getChoiceCount () - 1];
-    final MatchInfo [] overlapInfo = new MatchInfo [ch.getChoiceCount () - 1];
-    final int [] other = new int [ch.getChoiceCount () - 1];
+    final List <MatchInfo> [] aDbr = new List [aCh.getChoiceCount ()];
+    final int [] aMinLA = new int [aCh.getChoiceCount () - 1];
+    final MatchInfo [] aOverlapInfo = new MatchInfo [aCh.getChoiceCount () - 1];
+    final int [] aOther = new int [aCh.getChoiceCount () - 1];
     MatchInfo m;
     List <MatchInfo> v;
-    boolean overlapDetected;
-    for (int la = 1; la <= Options.getChoiceAmbiguityCheck (); la++)
+    boolean bOverlapDetected;
+    for (int nLa = 1; nLa <= Options.getChoiceAmbiguityCheck (); nLa++)
     {
-      MatchInfo.s_laLimit = la;
-      LookaheadWalk.s_considerSemanticLA = !Options.isForceLaCheck ();
-      for (int i = first; i < ch.getChoiceCount () - 1; i++)
+      LookaheadState.current ().setLimit (nLa);
+      LookaheadState.current ().setConsiderSemanticLA (!Options.isForceLaCheck ());
+      for (int i = nFirst; i < aCh.getChoiceCount () - 1; i++)
       {
-        LookaheadWalk.s_sizeLimitedMatches = new ArrayList <> ();
+        LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
         m = new MatchInfo ();
-        m.m_firstFreeLoc = 0;
+        m.setFirstFreeLoc (0);
         v = new ArrayList <> ();
         v.add (m);
-        LookaheadWalk.genFirstSet (v, ch.getChoiceAt (i));
-        dbl[i] = LookaheadWalk.s_sizeLimitedMatches;
+        LookaheadWalk.genFirstSetRecursive (v, aCh.getChoiceAt (i));
+        aDbl[i] = LookaheadState.current ().getSizeLimitedMatches ();
       }
-      LookaheadWalk.s_considerSemanticLA = false;
-      for (int i = first + 1; i < ch.getChoiceCount (); i++)
+      LookaheadState.current ().setConsiderSemanticLA (false);
+      for (int i = nFirst + 1; i < aCh.getChoiceCount (); i++)
       {
-        LookaheadWalk.s_sizeLimitedMatches = new ArrayList <> ();
+        LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
         m = new MatchInfo ();
-        m.m_firstFreeLoc = 0;
+        m.setFirstFreeLoc (0);
         v = new ArrayList <> ();
         v.add (m);
-        LookaheadWalk.genFirstSet (v, ch.getChoiceAt (i));
-        dbr[i] = LookaheadWalk.s_sizeLimitedMatches;
+        LookaheadWalk.genFirstSetRecursive (v, aCh.getChoiceAt (i));
+        aDbr[i] = LookaheadState.current ().getSizeLimitedMatches ();
       }
-      if (la == 1)
+      if (nLa == 1)
       {
-        for (int i = first; i < ch.getChoiceCount () - 1; i++)
+        for (int i = nFirst; i < aCh.getChoiceCount () - 1; i++)
         {
-          final Expansion exp = ch.getChoiceAt (i);
-          if (Semanticize.emptyExpansionExists (exp))
+          final Expansion aExp = aCh.getChoiceAt (i);
+          if (Semanticize.emptyExpansionExists (aExp))
           {
-            JavaCCErrors.warning (exp,
+            JavaCCErrors.warning (aExp,
                                   "This choice can expand to the empty token sequence " +
-                                       "and will therefore always be taken in favor of the choices appearing later.");
+                                        "and will therefore always be taken in favor of the choices appearing later.");
             break;
           }
           else
-            if (_isJavaCodeCheck (dbl[i]))
+            if (_isJavaCodeCheck (aDbl[i]))
             {
-              JavaCCErrors.warning (exp,
+              JavaCCErrors.warning (aExp,
                                     "JAVACODE non-terminal will force this choice to be taken " +
-                                         "in favor of the choices appearing later.");
+                                          "in favor of the choices appearing later.");
               break;
             }
         }
       }
-      overlapDetected = false;
-      for (int i = first; i < ch.getChoiceCount () - 1; i++)
+      bOverlapDetected = false;
+      for (int i = nFirst; i < aCh.getChoiceCount () - 1; i++)
       {
-        for (int j = i + 1; j < ch.getChoiceCount (); j++)
+        for (int j = i + 1; j < aCh.getChoiceCount (); j++)
         {
-          if ((m = _overlap (dbl[i], dbr[j])) != null)
+          if ((m = _overlap (aDbl[i], aDbr[j])) != null)
           {
-            minLA[i] = la + 1;
-            overlapInfo[i] = m;
-            other[i] = j;
-            overlapDetected = true;
+            aMinLA[i] = nLa + 1;
+            aOverlapInfo[i] = m;
+            aOther[i] = j;
+            bOverlapDetected = true;
             break;
           }
         }
       }
-      if (!overlapDetected)
+      if (!bOverlapDetected)
       {
         break;
       }
     }
-    for (int i = first; i < ch.getChoiceCount () - 1; i++)
+    for (int i = nFirst; i < aCh.getChoiceCount () - 1; i++)
     {
-      final Expansion exp = ch.getChoiceAt (i);
-      if (_explicitLA (exp) && !Options.isForceLaCheck ())
+      final Expansion aExp = aCh.getChoiceAt (i);
+      if (_explicitLA (aExp) && !Options.isForceLaCheck ())
       {
         continue;
       }
-      if (minLA[i] > Options.getChoiceAmbiguityCheck ())
+      if (aMinLA[i] > Options.getChoiceAmbiguityCheck ())
       {
         JavaCCErrors.warning ("Choice conflict involving two expansions at");
         PGPrinter.error ("         line " +
-                         exp.getLine () +
+                         aExp.getLineNumber () +
                          ", column " +
-                         exp.getColumn () +
+                         aExp.getColumnNumber () +
                          " and line " +
-                         ch.getChoiceAt (other[i]).getLine () +
+                         aCh.getChoiceAt (aOther[i]).getLineNumber () +
                          ", column " +
-                         ch.getChoiceAt (other[i]).getColumn () +
+                         aCh.getChoiceAt (aOther[i]).getColumnNumber () +
                          " respectively.");
-        PGPrinter.error ("         A common prefix is: " + _image (overlapInfo[i]));
-        PGPrinter.error ("         Consider using a lookahead of " + minLA[i] + " or more for earlier expansion.");
+        PGPrinter.error ("         A common prefix is: " + _image (aOverlapInfo[i]));
+        PGPrinter.error ("         Consider using a lookahead of " + aMinLA[i] + " or more for earlier expansion.");
       }
       else
-        if (minLA[i] > 1)
+        if (aMinLA[i] > 1)
         {
           JavaCCErrors.warning ("Choice conflict involving two expansions at");
           PGPrinter.error ("         line " +
-                           exp.getLine () +
+                           aExp.getLineNumber () +
                            ", column " +
-                           exp.getColumn () +
+                           aExp.getColumnNumber () +
                            " and line " +
-                           ch.getChoiceAt (other[i]).getLine () +
+                           aCh.getChoiceAt (aOther[i]).getLineNumber () +
                            ", column " +
-                           ch.getChoiceAt (other[i]).getColumn () +
+                           aCh.getChoiceAt (aOther[i]).getColumnNumber () +
                            " respectively.");
-          PGPrinter.error ("         A common prefix is: " + _image (overlapInfo[i]));
-          PGPrinter.error ("         Consider using a lookahead of " + minLA[i] + " for earlier expansion.");
+          PGPrinter.error ("         A common prefix is: " + _image (aOverlapInfo[i]));
+          PGPrinter.error ("         Consider using a lookahead of " + aMinLA[i] + " for earlier expansion.");
         }
     }
   }
 
-  private static boolean _explicitLA (final Expansion exp)
+  private static boolean _explicitLA (final Expansion aExp)
   {
-    if (exp instanceof ExpSequence)
+    if (aExp instanceof final ExpSequence seq)
     {
-      final ExpSequence seq = (ExpSequence) exp;
-      final Object obj = seq.getUnitAt (0);
-      if (obj instanceof ExpLookahead)
+      final Object aObj = seq.getUnitAt (0);
+      if (aObj instanceof final ExpLookahead la)
       {
-        final ExpLookahead la = (ExpLookahead) obj;
         return la.isExplicit ();
       }
     }
     return false;
   }
 
-  private static int _firstChoice (final ExpChoice ch)
+  private static int _firstChoice (@NonNull final ExpChoice aCh)
   {
     if (Options.isForceLaCheck ())
       return 0;
 
-    int idx = 0;
-    for (final Expansion element : ch.getChoices ())
+    int nIdx = 0;
+    for (final Expansion element : aCh.getChoices ())
     {
       if (!_explicitLA (element))
-        return idx;
-      idx++;
+        return nIdx;
+      nIdx++;
     }
 
-    return ch.getChoiceCount ();
+    return aCh.getChoiceCount ();
   }
 
   @NonNull
-  private static String _image (final Expansion exp)
+  private static String _image (final Expansion aExp)
   {
-    if (exp instanceof ExpOneOrMore)
+    if (aExp instanceof ExpOneOrMore)
       return "(...)+";
 
-    if (exp instanceof ExpZeroOrMore)
+    if (aExp instanceof ExpZeroOrMore)
       return "(...)*";
 
-    assert exp instanceof ExpZeroOrOne;
+    assert aExp instanceof ExpZeroOrOne;
     return "[...]";
   }
 
-  public static void ebnfCalc (final Expansion exp, final Expansion nested)
+  /**
+   * Check a loop or an optional expansion against what can follow it, and report the case where the
+   * two cannot be told apart.
+   *
+   * @param aExp
+   *        The expansion. May not be <code>null</code>.
+   * @param aNested
+   *        What is inside it. May be <code>null</code>.
+   */
+  public static void ebnfCalc (@NonNull final Expansion aExp, final Expansion aNested)
   {
     // exp is one of OneOrMore, ZeroOrMore, ZeroOrOne
     MatchInfo m, m1 = null;
     List <MatchInfo> v;
-    List <MatchInfo> first, follow;
-    int la;
-    for (la = 1; la <= Options.getOtherAmbiguityCheck (); la++)
+    List <MatchInfo> aFirst, aFollow;
+    int nLa;
+    for (nLa = 1; nLa <= Options.getOtherAmbiguityCheck (); nLa++)
     {
-      MatchInfo.s_laLimit = la;
-      LookaheadWalk.s_sizeLimitedMatches = new ArrayList <> ();
+      LookaheadState.current ().setLimit (nLa);
+      LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
       m = new MatchInfo ();
-      m.m_firstFreeLoc = 0;
+      m.setFirstFreeLoc (0);
       v = new ArrayList <> ();
       v.add (m);
-      LookaheadWalk.s_considerSemanticLA = !Options.isForceLaCheck ();
-      LookaheadWalk.genFirstSet (v, nested);
-      first = LookaheadWalk.s_sizeLimitedMatches;
-      LookaheadWalk.s_sizeLimitedMatches = new ArrayList <> ();
-      LookaheadWalk.s_considerSemanticLA = false;
-      LookaheadWalk.genFollowSet (v, exp, Expansion.getNextGenerationIndex ());
-      follow = LookaheadWalk.s_sizeLimitedMatches;
-      if (la == 1)
+      LookaheadState.current ().setConsiderSemanticLA (!Options.isForceLaCheck ());
+      LookaheadWalk.genFirstSetRecursive (v, aNested);
+      aFirst = LookaheadState.current ().getSizeLimitedMatches ();
+      LookaheadState.current ().setSizeLimitedMatches (new ArrayList <> ());
+      LookaheadState.current ().setConsiderSemanticLA (false);
+      LookaheadWalk.genFollowSetRecursive (v, aExp, Expansion.getNextGenerationIndex ());
+      aFollow = LookaheadState.current ().getSizeLimitedMatches ();
+      if (nLa == 1)
       {
-        if (_isJavaCodeCheck (first))
+        if (_isJavaCodeCheck (aFirst))
         {
-          JavaCCErrors.warning (nested,
+          JavaCCErrors.warning (aNested,
                                 "JAVACODE non-terminal within " +
-                                        _image (exp) +
-                                        " construct will force this construct to be entered in favor of " +
-                                        "expansions occurring after construct.");
+                                         _image (aExp) +
+                                         " construct will force this construct to be entered in favor of " +
+                                         "expansions occurring after construct.");
         }
       }
-      if ((m = _overlap (first, follow)) == null)
+      if ((m = _overlap (aFirst, aFollow)) == null)
       {
         break;
       }
       m1 = m;
     }
-    if (la > Options.getOtherAmbiguityCheck ())
+    if (nLa > Options.getOtherAmbiguityCheck ())
     {
       JavaCCErrors.warning ("Choice conflict in " +
-                            _image (exp) +
+                            _image (aExp) +
                             " construct " +
                             "at line " +
-                            exp.getLine () +
+                            aExp.getLineNumber () +
                             ", column " +
-                            exp.getColumn () +
+                            aExp.getColumnNumber () +
                             ".");
       PGPrinter.error ("         Expansion nested within construct and expansion following construct");
       PGPrinter.error ("         have common prefixes, one of which is: " + _image (m1));
-      PGPrinter.error ("         Consider using a lookahead of " + la + " or more for nested expansion.");
+      PGPrinter.error ("         Consider using a lookahead of " + nLa + " or more for nested expansion.");
     }
     else
-      if (la > 1)
+      if (nLa > 1)
       {
         JavaCCErrors.warning ("Choice conflict in " +
-                              _image (exp) +
+                              _image (aExp) +
                               " construct " +
                               "at line " +
-                              exp.getLine () +
+                              aExp.getLineNumber () +
                               ", column " +
-                              exp.getColumn () +
+                              aExp.getColumnNumber () +
                               ".");
         PGPrinter.error ("         Expansion nested within construct and expansion following construct");
         PGPrinter.error ("         have common prefixes, one of which is: " + _image (m1));
-        PGPrinter.error ("         Consider using a lookahead of " + la + " for nested expansion.");
+        PGPrinter.error ("         Consider using a lookahead of " + nLa + " for nested expansion.");
       }
   }
 

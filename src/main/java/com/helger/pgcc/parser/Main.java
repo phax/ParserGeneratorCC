@@ -31,37 +31,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
 package com.helger.pgcc.parser;
+
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,8 +47,12 @@ import com.helger.io.file.FileHelper;
 import com.helger.pgcc.CPG;
 import com.helger.pgcc.PGPrinter;
 import com.helger.pgcc.output.EOutputLanguage;
-import com.helger.pgcc.output.cpp.OtherFilesGenCPP;
+import com.helger.pgcc.output.cpp.LexGenCpp;
+import com.helger.pgcc.output.cpp.OtherFilesGenCpp;
+import com.helger.pgcc.output.cpp.ParseGenCpp;
+import com.helger.pgcc.output.java.LexGenJava;
 import com.helger.pgcc.output.java.OtherFilesGenJava;
+import com.helger.pgcc.output.java.ParseGenJava;
 import com.helger.pgcc.utils.EOptionType;
 import com.helger.pgcc.utils.OptionInfo;
 
@@ -111,135 +87,126 @@ public class Main
     _printOptions ();
 
     PGPrinter.info ("EXAMPLE:");
-    PGPrinter.info ("    " + CPG.CMDLINE_NAME + " -OUTPUT_DIRECTORY=target/code -LOOKAHEAD:2 -debug_parser mygrammar.jj");
+    PGPrinter.info ("    " +
+                    CPG.CMDLINE_NAME +
+                    " -OUTPUT_DIRECTORY=target/code -LOOKAHEAD:2 -debug_parser mygrammar.jj");
     PGPrinter.info ();
   }
 
   private static void _printOptions ()
   {
-    final Set <OptionInfo> options = Options.getUserOptions ();
+    final Set <OptionInfo> aOptions = Options.getUserOptions ();
 
-    int maxLengthInt = 0;
-    int maxLengthBool = 0;
-    int maxLengthString = 0;
+    int nMaxLengthInt = 0;
+    int nMaxLengthBool = 0;
+    int nMaxLengthString = 0;
 
-    for (final OptionInfo i : options)
+    for (final OptionInfo i : aOptions)
     {
-      final int length = i.getName ().length ();
-      switch (i.getType ())
+      final int nLength = i.name ().length ();
+      switch (i.type ())
       {
-        case INTEGER:
-          maxLengthInt = length > maxLengthInt ? length : maxLengthInt;
-          break;
-        case BOOLEAN:
-          maxLengthBool = length > maxLengthBool ? length : maxLengthBool;
-          break;
-        case STRING:
-          maxLengthString = length > maxLengthString ? length : maxLengthString;
-          break;
-        case OTHER:
-        default:
-          // Not interested
-          break;
+        case INTEGER -> nMaxLengthInt = Math.max (nLength, nMaxLengthInt);
+        case BOOLEAN -> nMaxLengthBool = Math.max (nLength, nMaxLengthBool);
+        case STRING -> nMaxLengthString = Math.max (nLength, nMaxLengthString);
+        // OTHER is not printed
+        default ->
+            {
+            }
       }
     }
 
-    if (maxLengthInt > 0)
+    if (nMaxLengthInt > 0)
     {
       PGPrinter.info ("The integer valued options are:");
       PGPrinter.info ();
-      for (final OptionInfo i : options)
+      for (final OptionInfo i : aOptions)
       {
-        _printOptionInfo (EOptionType.INTEGER, i, maxLengthInt);
+        _printOptionInfo (EOptionType.INTEGER, i, nMaxLengthInt);
       }
       PGPrinter.info ();
     }
 
-    if (maxLengthBool > 0)
+    if (nMaxLengthBool > 0)
     {
       PGPrinter.info ("The boolean valued options are:");
       PGPrinter.info ();
-      for (final OptionInfo i : options)
+      for (final OptionInfo i : aOptions)
       {
-        _printOptionInfo (EOptionType.BOOLEAN, i, maxLengthBool);
+        _printOptionInfo (EOptionType.BOOLEAN, i, nMaxLengthBool);
       }
       PGPrinter.info ();
     }
 
-    if (maxLengthString > 0)
+    if (nMaxLengthString > 0)
     {
       PGPrinter.info ("The string valued options are:");
       PGPrinter.info ();
-      for (final OptionInfo i : options)
+      for (final OptionInfo i : aOptions)
       {
-        _printOptionInfo (EOptionType.STRING, i, maxLengthString);
+        _printOptionInfo (EOptionType.STRING, i, nMaxLengthString);
       }
       PGPrinter.info ();
     }
   }
 
-  private static void _printOptionInfo (final EOptionType filter, final OptionInfo optionInfo, final int padLength)
+  private static void _printOptionInfo (final EOptionType eFilter,
+                                        @NonNull final OptionInfo aOptionInfo,
+                                        final int nPadLength)
   {
-    if (optionInfo.getType () == filter)
+    if (aOptionInfo.type () == eFilter)
     {
-      final Object default1 = optionInfo.getDefault ();
+      final Object aDefault = aOptionInfo.defaultValue ();
       PGPrinter.info ("    " +
-                      _padRight (optionInfo.getName (), padLength + 1) +
-                      (default1 == null ? "" : ("(default : " + (default1.toString ().length () == 0 ? "<<empty>>" : default1) + ")")));
+                      _padRight (aOptionInfo.name (), nPadLength + 1) +
+                      (aDefault == null ? ""
+                                        : ("(default : " +
+                                           (aDefault.toString ().length () == 0 ? "<<empty>>" : aDefault) +
+                                           ")")));
     }
   }
 
-  private static String _padRight (final String name, final int maxLengthInt)
+  private static String _padRight (@NonNull final String sName, final int nMaxLengthInt)
   {
-    final int nameLength = name.length ();
-    if (nameLength == maxLengthInt)
-      return name;
-
-    final int charsToPad = maxLengthInt - nameLength;
-    final StringBuilder sb = new StringBuilder (charsToPad);
-    sb.append (name);
-    for (int i = 0; i < charsToPad; i++)
-      sb.append (" ");
-
-    return sb.toString ();
+    final int nCharsToPad = nMaxLengthInt - sName.length ();
+    return nCharsToPad <= 0 ? sName : sName + " ".repeat (nCharsToPad);
   }
 
   /**
-   * A main program that exercises the parser. Calls <code>System.exit</code>
-   * with return code 0 for success and 1 for error!
+   * A main program that exercises the parser. Calls <code>System.exit</code> with return code 0 for
+   * success and 1 for error!
    *
-   * @param args
+   * @param aArgs
    *        arguments to main
    * @throws IOException
    *         on IO error
-   * @see #mainProgram(String...) for a version that does NOT call
-   *      <code>System.exit</code>
+   * @see #mainProgram(String...) for a version that does NOT call <code>System.exit</code>
    */
-  public static void main (final String... args) throws IOException
+  public static void main (final String... aArgs) throws IOException
   {
-    final ESuccess eSuccess = mainProgram (args);
+    final ESuccess eSuccess = mainProgram (aArgs);
     System.exit (eSuccess.isSuccess () ? 0 : 1);
   }
 
   /**
-   * The method to call to exercise the parser from other Java programs. It
-   * returns an error code. See how the main program above uses this method.
+   * The method to call to exercise the parser from other Java programs. It returns an error code.
+   * See how the main program above uses this method.
    *
-   * @param args
+   * @param aArgs
    *        main arguments
    * @return {@link ESuccess}
    * @throws IOException
    *         on IO error
    */
   @NonNull
-  public static ESuccess mainProgram (final String... args) throws IOException
+  public static ESuccess mainProgram (@NonNull final String... aArgs) throws IOException
   {
     // Initialize all static state
     reInitAll ();
 
     JavaCCGlobals.bannerLine (CPG.APP_NAME, "");
 
-    if (args.length == 0)
+    if (aArgs.length == 0)
     {
       PGPrinter.info ();
       _showHelpMessage ();
@@ -247,58 +214,58 @@ public class Main
     }
     PGPrinter.info ("(type \"" + CPG.CMDLINE_NAME + "\" with no arguments for help)");
 
-    if (Options.isOption (args[args.length - 1]))
+    if (Options.isOption (aArgs[aArgs.length - 1]))
     {
-      PGPrinter.info ("Last argument \"" + args[args.length - 1] + "\" is not a filename.");
+      PGPrinter.info ("Last argument \"" + aArgs[aArgs.length - 1] + "\" is not a filename.");
       return ESuccess.FAILURE;
     }
-    for (int arg = 0; arg < args.length - 1; arg++)
+    for (int nArg = 0; nArg < aArgs.length - 1; nArg++)
     {
-      if (!Options.isOption (args[arg]))
+      if (!Options.isOption (aArgs[nArg]))
       {
-        PGPrinter.info ("Argument \"" + args[arg] + "\" must be an option setting.");
+        PGPrinter.info ("Argument \"" + aArgs[nArg] + "\" must be an option setting.");
         return ESuccess.FAILURE;
       }
-      Options.setCmdLineOption (args[arg]);
+      Options.setCmdLineOption (aArgs[nArg]);
     }
 
-    JavaCCParser parser = null;
+    JavaCCParser aParser = null;
     try
     {
-      final File fp = new File (args[args.length - 1]);
-      if (!fp.exists ())
+      final File aFp = new File (aArgs[aArgs.length - 1]);
+      if (!aFp.exists ())
       {
-        PGPrinter.info ("File " + args[args.length - 1] + " not found.");
+        PGPrinter.info ("File " + aArgs[aArgs.length - 1] + " not found.");
         return ESuccess.FAILURE;
       }
-      if (fp.isDirectory ())
+      if (aFp.isDirectory ())
       {
-        PGPrinter.info (args[args.length - 1] + " is a directory. Please use a valid file name.");
+        PGPrinter.info (aArgs[aArgs.length - 1] + " is a directory. Please use a valid file name.");
         return ESuccess.FAILURE;
       }
 
-      final Reader aReader = FileHelper.getBufferedReader (new File (args[args.length - 1]), Options.getGrammarEncoding ());
+      final Reader aReader = FileHelper.getBufferedReader (new File (aArgs[aArgs.length - 1]),
+                                                           Options.getGrammarEncoding ());
       if (aReader == null)
       {
-        PGPrinter.info ("File " + args[args.length - 1] + " not found.");
+        PGPrinter.info ("File " + aArgs[aArgs.length - 1] + " not found.");
         return ESuccess.FAILURE;
       }
-      parser = new JavaCCParser (new StreamProvider (aReader));
+      aParser = new JavaCCParser (new StreamProvider (aReader));
     }
-    catch (final SecurityException se)
+    catch (final SecurityException aSe)
     {
-      PGPrinter.info ("Security violation while trying to open " + args[args.length - 1]);
+      PGPrinter.info ("Security violation while trying to open " + aArgs[aArgs.length - 1]);
       return ESuccess.FAILURE;
     }
 
     try
     {
-      PGPrinter.info ("Reading from file " + args[args.length - 1] + " ...");
-      JavaCCGlobals.s_fileName = args[args.length - 1];
-      JavaCCGlobals.s_origFileName = JavaCCGlobals.s_fileName;
-      JavaCCGlobals.s_jjtreeGenerated = JavaCCGlobals.isGeneratedBy ("JJTree", args[args.length - 1]);
-      JavaCCGlobals.s_toolNames = JavaCCGlobals.getToolNames (args[args.length - 1]);
-      parser.javacc_input ();
+      PGPrinter.info ("Reading from file " + aArgs[aArgs.length - 1] + " ...");
+      grammar ().setFileName (aArgs[aArgs.length - 1]);
+      grammar ().setJJTreeGenerated (JavaCCGlobals.isGeneratedBy ("JJTree", aArgs[aArgs.length - 1]));
+      grammar ().setToolNameList (JavaCCGlobals.getToolNames (aArgs[aArgs.length - 1]));
+      aParser.javacc_input ();
 
       // 2012/05/02 - Moved this here as cannot evaluate output language
       // until the cc file has been processed. Was previously setting the 'lg'
@@ -307,19 +274,20 @@ public class Main
       final EOutputLanguage eOutputLanguage = Options.getOutputLanguage ();
 
       // 2013/07/22 Java Modern is a
-      final boolean isJavaModern = eOutputLanguage.isJava () && Options.getJavaTemplateType ().equals (Options.JAVA_TEMPLATE_TYPE_MODERN);
+      final boolean bIsJavaModern = eOutputLanguage.isJava () &&
+                                    Options.getJavaTemplateType ().equals (Options.JAVA_TEMPLATE_TYPE_MODERN);
 
       JavaCCGlobals.createOutputDir (Options.getOutputDirectory ());
 
       if (Options.isUnicodeInput ())
       {
-        NfaState.s_unicodeWarningGiven = true;
+        NfaState.nfa ().setUnicodeWarningGiven (true);
         JavaCCErrors.note ("UNICODE_INPUT option is specified. " +
                            "Please make sure you create the parser/lexer using a Reader with the correct character encoding.");
       }
 
       Semanticize.start ();
-      final boolean isBuildParser = Options.isBuildParser ();
+      final boolean bIsBuildParser = Options.isBuildParser ();
 
       // 2012/05/02 -- This is not the best way to add-in GWT support, really
       // the code needs to turn supported languages into enumerations
@@ -329,29 +297,26 @@ public class Main
       switch (eOutputLanguage)
       {
         case JAVA:
-          if (isBuildParser)
+          if (bIsBuildParser)
           {
-            new ParseGenJava ().start (isJavaModern);
+            new ParseGenJava ().start (bIsJavaModern);
           }
 
           // Must always create the lexer object even if not building a parser.
           new LexGenJava ().start ();
 
-          Options.setStringOption (Options.NONUSER_OPTION__PARSER_NAME, JavaCCGlobals.s_cu_name);
-          OtherFilesGenJava.start (isJavaModern);
+          Options.setStringOption (Options.NONUSER_OPTION__PARSER_NAME, grammar ().getParserName ());
+          OtherFilesGenJava.start (bIsJavaModern);
           break;
         case CPP:
           // C++ for now
-          if (isBuildParser)
+          if (bIsBuildParser)
           {
-            new ParseGenCPP ().start ();
-          }
-          if (isBuildParser)
-          {
+            new ParseGenCpp ().start ();
             new LexGenCpp ().start ();
           }
-          Options.setStringOption (Options.NONUSER_OPTION__PARSER_NAME, JavaCCGlobals.s_cu_name);
-          OtherFilesGenCPP.start ();
+          Options.setStringOption (Options.NONUSER_OPTION__PARSER_NAME, grammar ().getParserName ());
+          OtherFilesGenCpp.start ();
           break;
         default:
           throw new IllegalStateException ("Unhandled language!");
@@ -359,11 +324,11 @@ public class Main
 
       final int nErrors = JavaCCErrors.getErrorCount ();
       final int nWarnings = JavaCCErrors.getWarningCount ();
-      if (nErrors == 0 && (isBuildParser || Options.isBuildTokenManager ()))
+      if (nErrors == 0 && (bIsBuildParser || Options.isBuildTokenManager ()))
       {
         if (nWarnings == 0)
         {
-          if (isBuildParser)
+          if (bIsBuildParser)
             PGPrinter.info ("Parser generated successfully.");
         }
         else
@@ -379,30 +344,32 @@ public class Main
     }
     catch (final MetaParseException e)
     {
-      PGPrinter.error ("Detected " + JavaCCErrors.getErrorCount () + " errors and " + JavaCCErrors.getWarningCount () + " warnings.");
+      PGPrinter.error ("Detected " +
+                       JavaCCErrors.getErrorCount () +
+                       " errors and " +
+                       JavaCCErrors.getWarningCount () +
+                       " warnings.");
     }
     catch (final ParseException e)
     {
-      PGPrinter.error ("Detected " + (JavaCCErrors.getErrorCount () + 1) + " errors and " + JavaCCErrors.getWarningCount () + " warnings.",
+      PGPrinter.error ("Detected " +
+                       (JavaCCErrors.getErrorCount () + 1) +
+                       " errors and " +
+                       JavaCCErrors.getWarningCount () +
+                       " warnings.",
                        e);
     }
     return ESuccess.FAILURE;
   }
 
+  /**
+   * Start a fresh generator run on the current thread. Everything the generator knows lives in
+   * {@link com.helger.pgcc.context.PGCCContext} now, so this drops the whole context and refills
+   * the option defaults.
+   */
   public static void reInitAll ()
   {
-    com.helger.pgcc.parser.exp.Expansion.reInit ();
-    com.helger.pgcc.parser.JavaCCErrors.reInit ();
-    com.helger.pgcc.parser.JavaCCGlobals.reInitStatic ();
+    com.helger.pgcc.context.PGCCContext.reset ();
     com.helger.pgcc.parser.Options.init ();
-    com.helger.pgcc.parser.JavaCCParserInternals.reInit ();
-    com.helger.pgcc.parser.exp.ExpRStringLiteral.reInit ();
-    com.helger.pgcc.output.java.FilesJava.reInit ();
-    com.helger.pgcc.parser.NfaState.reInit ();
-    com.helger.pgcc.parser.MatchInfo.reInitStatic ();
-    com.helger.pgcc.parser.LookaheadWalk.reInit ();
-    com.helger.pgcc.parser.Semanticize.reInit ();
-    com.helger.pgcc.output.java.OtherFilesGenJava.reInit ();
-    com.helger.pgcc.parser.LexGenJava.reInit ();
   }
 }

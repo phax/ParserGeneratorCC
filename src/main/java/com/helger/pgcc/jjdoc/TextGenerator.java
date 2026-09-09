@@ -43,9 +43,10 @@ import org.jspecify.annotations.NonNull;
 import com.helger.base.string.StringHelper;
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.PGPrinter;
+import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.Options;
 import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
@@ -57,8 +58,32 @@ import com.helger.pgcc.parser.exp.Expansion;
  */
 public class TextGenerator implements IDocGenerator
 {
-  protected Writer m_aPW;
+  private Writer m_aPW;
 
+  /**
+   * The p w.
+   *
+   * @return The value of m_aPW.
+   */
+  public Writer getPW ()
+  {
+    return m_aPW;
+  }
+
+  /**
+   * The p w.
+   *
+   * @param aValue
+   *        The new value of m_aPW.
+   */
+  public void setPW (final Writer aValue)
+  {
+    m_aPW = aValue;
+  }
+
+  /**
+   * Create the generator.
+   */
   public TextGenerator ()
   {}
 
@@ -102,52 +127,52 @@ public class TextGenerator implements IDocGenerator
     text ("TOKENS\n");
   }
 
-  public void handleTokenProduction (final TokenProduction tp) throws IOException
+  public void handleTokenProduction (final TokenProduction aTp) throws IOException
   {
-    final String text = JJDoc.getStandardTokenProductionText (tp);
-    text (text);
+    final String sText = JJDoc.getStandardTokenProductionText (aTp);
+    text (sText);
   }
 
   public void tokensEnd () throws IOException
   {}
 
-  public void javacode (final CodeProductionJava jp) throws IOException
+  public void javacode (final CodeProductionJava aJp) throws IOException
   {
-    productionStart (jp);
+    productionStart (aJp);
     text ("java code");
-    productionEnd (jp);
+    productionEnd (aJp);
   }
 
-  public void cppcode (final CodeProductionCpp cp) throws IOException
+  public void cppcode (final CodeProductionCpp aCp) throws IOException
   {
-    productionStart (cp);
+    productionStart (aCp);
     text ("c++ code");
-    productionEnd (cp);
+    productionEnd (aCp);
   }
 
-  public void productionStart (final NormalProduction np) throws IOException
+  public void productionStart (@NonNull final AbstractNormalProduction aNp) throws IOException
   {
-    m_aPW.write ("\t" + np.getLhs () + "\t:=\t");
+    m_aPW.write ("\t" + aNp.getLhs () + "\t:=\t");
   }
 
-  public void productionEnd (final NormalProduction np) throws IOException
+  public void productionEnd (final AbstractNormalProduction aNp) throws IOException
   {
     m_aPW.write ("\n");
   }
 
-  public void expansionStart (final Expansion e, final boolean first) throws IOException
+  public void expansionStart (final Expansion e, final boolean bFirst) throws IOException
   {
-    if (!first)
+    if (!bFirst)
       m_aPW.write ("\n\t\t|\t");
   }
 
-  public void expansionEnd (final Expansion e, final boolean first) throws IOException
+  public void expansionEnd (final Expansion e, final boolean bFirst) throws IOException
   {}
 
-  public void nonTerminalStart (final ExpNonTerminal nt) throws IOException
+  public void nonTerminalStart (final ExpNonTerminal aNt) throws IOException
   {}
 
-  public void nonTerminalEnd (final ExpNonTerminal nt) throws IOException
+  public void nonTerminalEnd (final ExpNonTerminal aNt) throws IOException
   {}
 
   public void reStart (final AbstractExpRegularExpression r) throws IOException
@@ -157,67 +182,72 @@ public class TextGenerator implements IDocGenerator
   {}
 
   /**
-   * Create an output stream for the generated Jack code. Try to open a file
-   * based on the name of the parser, but if that fails use the standard output
-   * stream.
+   * Create an output stream for the generated Jack code. Try to open a file based on the name of
+   * the parser, but if that fails use the standard output stream.
    *
    * @return Never <code>null</code>.
    */
   @NonNull
   protected static Writer createPrintWriter ()
   {
-    String ext = ".html";
+    String sExt = ".html";
     if (JJDocOptions.isText ())
-      ext = ".txt";
+      sExt = ".txt";
     else
       if (JJDocOptions.isXText ())
-        ext = ".xtext";
+        sExt = ".xtext";
 
-    return createPrintWriter (ext);
+    return createPrintWriter (sExt);
   }
 
   /**
-   * Create an output stream for the generated Jack code. Try to open a file
-   * based on the name of the parser, but if that fails use the standard output
-   * stream.
+   * Create an output stream for the generated Jack code. Try to open a file based on the name of
+   * the parser, but if that fails use the standard output stream.
    *
+   * @param sExt
+   *        The file extension to use, dot included. May not be <code>null</code>.
    * @return Never <code>null</code>.
    */
   @NonNull
-  protected static Writer createPrintWriter (@NonNull final String ext)
+  protected static Writer createPrintWriter (@NonNull final String sExt)
   {
     if (StringHelper.isEmpty (JJDocOptions.getOutputFile ()))
     {
-      if (JJDocGlobals.s_input_file.equals (JJDocGlobals.STANDARD_INPUT))
+      if (PGCCContext.current ().jjdoc ().getInputFile ().equals (JJDocGlobals.STANDARD_INPUT))
         return PGPrinter.getOutWriter ();
 
-      final int i = JJDocGlobals.s_input_file.lastIndexOf ('.');
+      final int i = PGCCContext.current ().jjdoc ().getInputFile ().lastIndexOf ('.');
       if (i == -1)
       {
-        JJDocGlobals.s_output_file = JJDocGlobals.s_input_file + ext;
+        PGCCContext.current ().jjdoc ().setOutputFile (PGCCContext.current ().jjdoc ().getInputFile () + sExt);
       }
       else
       {
-        final String suffix = JJDocGlobals.s_input_file.substring (i);
-        if (suffix.equals (ext))
+        final String sSuffix = PGCCContext.current ().jjdoc ().getInputFile ().substring (i);
+        if (sSuffix.equals (sExt))
         {
-          JJDocGlobals.s_output_file = JJDocGlobals.s_input_file + ext;
+          PGCCContext.current ().jjdoc ().setOutputFile (PGCCContext.current ().jjdoc ().getInputFile () + sExt);
         }
         else
         {
-          JJDocGlobals.s_output_file = JJDocGlobals.s_input_file.substring (0, i) + ext;
+          PGCCContext.current ()
+                     .jjdoc ()
+                     .setOutputFile (PGCCContext.current ().jjdoc ().getInputFile ().substring (0, i) + sExt);
         }
       }
     }
     else
     {
-      JJDocGlobals.s_output_file = JJDocOptions.getOutputFile ();
+      PGCCContext.current ().jjdoc ().setOutputFile (JJDocOptions.getOutputFile ());
     }
 
-    final Writer aWriter = FileHelper.getBufferedWriter (new File (JJDocGlobals.s_output_file), Options.getOutputEncoding ());
+    final Writer aWriter = FileHelper.getBufferedWriter (new File (PGCCContext.current ().jjdoc ().getOutputFile ()),
+                                                         Options.getOutputEncoding ());
     if (aWriter != null)
       return new PrintWriter (aWriter);
-    PGPrinter.error ("JJDoc: can't open output stream on file " + JJDocGlobals.s_output_file + ".  Using standard output.");
+    PGPrinter.error ("JJDoc: can't open output stream on file " +
+                     PGCCContext.current ().jjdoc ().getOutputFile () +
+                     ".  Using standard output.");
     return PGPrinter.getOutWriter ();
   }
 }

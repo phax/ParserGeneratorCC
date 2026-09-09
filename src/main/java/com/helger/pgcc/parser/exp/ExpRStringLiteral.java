@@ -31,37 +31,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Copyright 2011 Google Inc. All Rights Reserved.
-// Author: sreeni@google.com (Sreeni Viswanadha)
-
-/* Copyright (c) 2006, Sun Microsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package com.helger.pgcc.parser.exp;
 
 import java.util.ArrayList;
@@ -76,12 +45,17 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.base.reflection.GenericReflection;
 import com.helger.base.string.StringHelper;
+import com.helger.pgcc.context.LexerState;
+import com.helger.pgcc.context.NfaBuildState;
+import com.helger.pgcc.context.StringLiteralBuildState;
+import com.helger.pgcc.output.AbstractLexGenJavaLike;
 import com.helger.pgcc.output.EOutputLanguage;
+import com.helger.pgcc.output.TokenManagerDebug;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
-import com.helger.pgcc.parser.CodeGenerator;
+import com.helger.pgcc.output.java.LexGenJava;
+import com.helger.pgcc.parser.AbstractCodeGenerator;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.JavaCCGlobals;
-import com.helger.pgcc.parser.LexGenJava;
 import com.helger.pgcc.parser.Nfa;
 import com.helger.pgcc.parser.NfaState;
 import com.helger.pgcc.parser.Options;
@@ -91,272 +65,314 @@ import com.helger.pgcc.parser.TokenizerData;
 /**
  * Describes string literals.
  */
-public class ExpRStringLiteral extends AbstractExpRegularExpression
+public final class ExpRStringLiteral extends AbstractExpRegularExpression
 {
-  private static final class KindInfo
+  /**
+   * {@return the build state of the lexical state that is currently being generated. Never
+   * <code>null</code>.}
+   */
+  public static StringLiteralBuildState strLit ()
   {
-    private final long [] m_validKinds;
-    private final long [] m_finalKinds;
-    private int m_validKindCnt = 0;
-    private int m_finalKindCnt = 0;
-    private final Set <Integer> m_finalKindSet = new HashSet <> ();
-    private final Set <Integer> m_validKindSet = new HashSet <> ();
+    return AbstractLexGenJavaLike.lexer ().stringLiterals ();
+  }
 
-    KindInfo (final int maxKind)
+  /**
+   * Which kinds can still match at one character position of the string literal trie. Public
+   * because {@link com.helger.pgcc.context.StringLiteralBuildState} holds a list of them.
+   */
+  public static final class KindInfo
+  {
+    private final long [] m_aValidKinds;
+    private final long [] m_aFinalKinds;
+    private int m_nValidKindCnt = 0;
+    private int m_nFinalKindCnt = 0;
+    private final Set <Integer> m_aFinalKindSet = new HashSet <> ();
+    private final Set <Integer> m_aValidKindSet = new HashSet <> ();
+
+    KindInfo (final int nMaxKind)
     {
-      m_validKinds = new long [maxKind / 64 + 1];
-      m_finalKinds = new long [maxKind / 64 + 1];
+      m_aValidKinds = new long [nMaxKind / 64 + 1];
+      m_aFinalKinds = new long [nMaxKind / 64 + 1];
     }
 
-    public void insertValidKind (final int kind)
+    /**
+     * Record that a kind can still match at this position of the trie.
+     *
+     * @param nKind
+     *        The token ordinal.
+     */
+    public void insertValidKind (final int nKind)
     {
-      m_validKinds[kind / 64] |= (1L << (kind % 64));
-      m_validKindCnt++;
-      m_validKindSet.add (Integer.valueOf (kind));
+      m_aValidKinds[nKind / 64] |= (1L << (nKind % 64));
+      m_nValidKindCnt++;
+      m_aValidKindSet.add (Integer.valueOf (nKind));
     }
 
-    public void insertFinalKind (final int kind)
+    /**
+     * Record that a kind is complete at this position of the trie, so a match can be accepted here.
+     *
+     * @param nKind
+     *        The token ordinal.
+     */
+    public void insertFinalKind (final int nKind)
     {
-      m_finalKinds[kind / 64] |= (1L << (kind % 64));
-      m_finalKindCnt++;
-      m_finalKindSet.add (Integer.valueOf (kind));
+      m_aFinalKinds[nKind / 64] |= (1L << (nKind % 64));
+      m_nFinalKindCnt++;
+      m_aFinalKindSet.add (Integer.valueOf (nKind));
     }
   }
 
   /**
    * The string image of the literal.
    */
-  public String m_image;
-
-  public ExpRStringLiteral (final Token t, final String image)
-  {
-    setLine (t.beginLine);
-    setColumn (t.beginColumn);
-    m_image = image;
-  }
-
-  private static int s_maxStrKind = 0;
-  private static int s_maxLen = 0;
-  private static int s_charCnt = 0;
-  private static List <Map <String, KindInfo>> s_charPosKind = new ArrayList <> ();
-
-  // with single char keys;
-  private static int [] s_maxLenForActive = new int [100]; // 6400 tokens
-  public static String [] s_allImages;
-  private static int [] [] s_aIntermediateKinds;
-  private static int [] [] s_intermediateMatchedPos;
-
-  private static boolean [] s_subString;
-  private static boolean [] s_subStringAtPos;
-
-  private static Map <String, long []> [] s_statesForPos;
+  private String m_sImage;
 
   /**
-   * Initialize all the static variables, so that there is no interference
-   * between the various states of the lexer. Need to call this method after
-   * generating code for each lexical state.
+   * Create a string literal expansion.
+   *
+   * @param t
+   *        The token it was declared at, for error messages. May not be <code>null</code>.
+   * @param sImage
+   *        The literal, with the quotes and escapes already resolved. May not be <code>null</code>.
+   */
+  public ExpRStringLiteral (@NonNull final Token t, final String sImage)
+  {
+    setLineNumber (t.beginLine);
+    setColumnNumber (t.beginColumn);
+    m_sImage = sImage;
+  }
+
+  /**
+   * The image.
+   *
+   * @return The value of m_sImage.
+   */
+  public String getImage ()
+  {
+    return m_sImage;
+  }
+
+  /**
+   * The image.
+   *
+   * @param aValue
+   *        The new value of m_sImage.
+   */
+  public void setImage (final String aValue)
+  {
+    m_sImage = aValue;
+  }
+
+  // with single char keys;
+
+  /**
+   * Initialize all the static variables, so that there is no interference between the various
+   * states of the lexer. Need to call this method after generating code for each lexical state.
    */
   public static void reInitStatic ()
   {
-    s_maxStrKind = 0;
-    s_maxLen = 0;
-    s_charPosKind = new ArrayList <> ();
-    s_maxLenForActive = new int [100]; // 6400 tokens
-    s_aIntermediateKinds = null;
-    s_intermediateMatchedPos = null;
-    s_subString = null;
-    s_subStringAtPos = null;
-    s_statesForPos = null;
+    strLit ().resetForLexicalState ();
   }
 
-  public static void dumpStrLiteralImages (final CodeGenerator codeGenerator)
+  /**
+   * Write the table of token images the generated token manager reports in its error messages.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
+  public static void dumpStrLiteralImages (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     switch (eOutputLanguage)
     {
       case JAVA:
-        dumpStrLiteralImagesForJava (codeGenerator);
+        dumpStrLiteralImagesForJava (aCodeGenerator);
         return;
       case CPP:
         // For C++
-        String image;
+        String sImage;
         int i;
-        s_charCnt = 0; // Set to zero in reInit() but just to be sure
+        // Set to zero in reInit() but just to be sure
+        strLit ().setCharCnt (0);
 
-        codeGenerator.genCodeNewLine ();
-        codeGenerator.genCodeLine ("/** Token literal values. */");
-        int literalCount = 0;
-        codeGenerator.switchToStaticsFile ();
+        aCodeGenerator.genCodeNewLine ();
+        aCodeGenerator.genCodeLine ("/** Token literal values. */");
+        int nLiteralCount = 0;
+        aCodeGenerator.switchToStaticsFile ();
 
-        if (s_allImages == null || s_allImages.length == 0)
+        if (strLit ().getAllImages () == null || strLit ().getAllImages ().length == 0)
         {
-          codeGenerator.genCodeLine ("static const JJString jjstrLiteralImages[] = {};");
+          aCodeGenerator.genCodeLine ("static const JJString jjstrLiteralImages[] = {};");
           return;
         }
 
-        s_allImages[0] = "";
-        for (i = 0; i < s_allImages.length; i++)
+        strLit ().getAllImages ()[0] = "";
+        for (i = 0; i < strLit ().getAllImages ().length; i++)
         {
-          if ((image = s_allImages[i]) == null ||
-              ((LexGenJava.s_toSkip[i / 64] & (1L << (i % 64))) == 0L &&
-               (LexGenJava.s_toMore[i / 64] & (1L << (i % 64))) == 0L &&
-               (LexGenJava.s_toToken[i / 64] & (1L << (i % 64))) == 0L) ||
-              (LexGenJava.s_toSkip[i / 64] & (1L << (i % 64))) != 0L ||
-              (LexGenJava.s_toMore[i / 64] & (1L << (i % 64))) != 0L ||
-              LexGenJava.s_canReachOnMore[LexGenJava.s_lexStates[i]] ||
-              ((Options.isIgnoreCase () || LexGenJava.s_ignoreCase[i]) &&
-               (!image.equals (image.toLowerCase (Locale.US)) || !image.equals (image.toUpperCase (Locale.US)))))
+          sImage = strLit ().getAllImages ()[i];
+          if (sImage == null ||
+              ((AbstractLexGenJavaLike.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) == 0L &&
+               (AbstractLexGenJavaLike.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) == 0L &&
+               (AbstractLexGenJavaLike.lexer ().getToToken ()[i / 64] & (1L << (i % 64))) == 0L) ||
+              (AbstractLexGenJavaLike.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) != 0L ||
+              (AbstractLexGenJavaLike.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) != 0L ||
+              AbstractLexGenJavaLike.lexer ().getCanReachOnMore ()[AbstractLexGenJavaLike.lexer ()
+                                                                                         .getLexStates ()[i]] ||
+              ((Options.isIgnoreCase () || AbstractLexGenJavaLike.lexer ().getIgnoreCase ()[i]) &&
+               (!sImage.equals (sImage.toLowerCase (Locale.US)) || !sImage.equals (sImage.toUpperCase (Locale.US)))))
           {
-            s_allImages[i] = null;
-            if ((s_charCnt += 6) > 80)
+            strLit ().getAllImages ()[i] = null;
+            strLit ().setCharCnt (strLit ().getCharCnt () + 6);
+            if (strLit ().getCharCnt () > 80)
             {
-              codeGenerator.genCodeNewLine ();
-              s_charCnt = 0;
+              aCodeGenerator.genCodeNewLine ();
+              strLit ().setCharCnt (0);
             }
 
-            codeGenerator.genCodeLine ("static JJChar jjstrLiteralChars_" + literalCount++ + "[] = {0};");
+            aCodeGenerator.genCodeLine ("static JJChar jjstrLiteralChars_" + nLiteralCount++ + "[] = {0};");
             continue;
           }
 
-          String toPrint = "static JJChar jjstrLiteralChars_" + literalCount++ + "[] = {";
-          for (int j = 0; j < image.length (); j++)
+          String sToPrint = "static JJChar jjstrLiteralChars_" + nLiteralCount++ + "[] = {";
+          for (int j = 0; j < sImage.length (); j++)
           {
-            toPrint += "0x" + Integer.toHexString (image.charAt (j)) + ", ";
+            sToPrint += "0x" + Integer.toHexString (sImage.charAt (j)) + ", ";
           }
 
           // Null char
-          toPrint += "0 };";
+          sToPrint += "0 };";
 
-          if ((s_charCnt += toPrint.length ()) >= 80)
+          strLit ().setCharCnt (strLit ().getCharCnt () + sToPrint.length ());
+          if (strLit ().getCharCnt () >= 80)
           {
-            codeGenerator.genCodeNewLine ();
-            s_charCnt = 0;
+            aCodeGenerator.genCodeNewLine ();
+            strLit ().setCharCnt (0);
           }
 
-          codeGenerator.genCodeLine (toPrint);
+          aCodeGenerator.genCodeLine (sToPrint);
         }
 
-        while (++i < LexGenJava.s_maxOrdinal)
+        while (++i < AbstractLexGenJavaLike.lexer ().getMaxOrdinal ())
         {
-          if ((s_charCnt += 6) > 80)
+          strLit ().setCharCnt (strLit ().getCharCnt () + 6);
+          if (strLit ().getCharCnt () > 80)
           {
-            codeGenerator.genCodeNewLine ();
-            s_charCnt = 0;
+            aCodeGenerator.genCodeNewLine ();
+            strLit ().setCharCnt (0);
           }
 
-          codeGenerator.genCodeLine ("static JJChar jjstrLiteralChars_" + literalCount++ + "[] = {0};");
+          aCodeGenerator.genCodeLine ("static JJChar jjstrLiteralChars_" + nLiteralCount++ + "[] = {0};");
           continue;
         }
 
         // Generate the array here.
-        codeGenerator.genCodeLine ("static const JJString " + "jjstrLiteralImages[] = {");
-        for (int j = 0; j < literalCount; j++)
+        aCodeGenerator.genCodeLine ("static const JJString " + "jjstrLiteralImages[] = {");
+        for (int j = 0; j < nLiteralCount; j++)
         {
-          codeGenerator.genCodeLine ("jjstrLiteralChars_" + j + ", ");
+          aCodeGenerator.genCodeLine ("jjstrLiteralChars_" + j + ", ");
         }
-        codeGenerator.genCodeLine ("};");
+        aCodeGenerator.genCodeLine ("};");
         break;
       default:
         throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
   }
 
-  public static void dumpStrLiteralImagesForJava (final CodeGenerator codeGenerator)
+  /**
+   * The Java half of {@link #dumpStrLiteralImages(AbstractCodeGenerator)}, which writes an array of
+   * string literals where C++ writes arrays of character codes.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
+  public static void dumpStrLiteralImagesForJava (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
-    String image;
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
+    String sImage;
     int i;
-    s_charCnt = 0; // Set to zero in reInit() but just to be sure
+    // Set to zero in reInit() but just to be sure
+    strLit ().setCharCnt (0);
 
-    codeGenerator.genCodeNewLine ();
-    codeGenerator.genCodeLine ("/** Token literal values. */");
-    codeGenerator.genCodeLine ("public static final String[] jjstrLiteralImages = {");
+    aCodeGenerator.genCodeNewLine ();
+    aCodeGenerator.genCodeLine ("/** Token literal values. */");
+    aCodeGenerator.genCodeLine ("public static final String[] jjstrLiteralImages = {");
 
-    if (s_allImages == null || s_allImages.length == 0)
+    if (strLit ().getAllImages () == null || strLit ().getAllImages ().length == 0)
     {
-      codeGenerator.genCodeLine ("};");
+      aCodeGenerator.genCodeLine ("};");
       return;
     }
 
-    s_allImages[0] = "";
-    for (i = 0; i < s_allImages.length; i++)
+    strLit ().getAllImages ()[0] = "";
+    for (i = 0; i < strLit ().getAllImages ().length; i++)
     {
-      if ((image = s_allImages[i]) == null ||
-          ((LexGenJava.s_toSkip[i / 64] & (1L << (i % 64))) == 0L &&
-           (LexGenJava.s_toMore[i / 64] & (1L << (i % 64))) == 0L &&
-           (LexGenJava.s_toToken[i / 64] & (1L << (i % 64))) == 0L) ||
-          (LexGenJava.s_toSkip[i / 64] & (1L << (i % 64))) != 0L ||
-          (LexGenJava.s_toMore[i / 64] & (1L << (i % 64))) != 0L ||
-          LexGenJava.s_canReachOnMore[LexGenJava.s_lexStates[i]] ||
-          ((Options.isIgnoreCase () || LexGenJava.s_ignoreCase[i]) &&
-           (!image.equals (image.toLowerCase (Locale.US)) || !image.equals (image.toUpperCase (Locale.US)))))
+      sImage = strLit ().getAllImages ()[i];
+      if (sImage == null ||
+          ((AbstractLexGenJavaLike.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) == 0L &&
+           (AbstractLexGenJavaLike.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) == 0L &&
+           (AbstractLexGenJavaLike.lexer ().getToToken ()[i / 64] & (1L << (i % 64))) == 0L) ||
+          (AbstractLexGenJavaLike.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) != 0L ||
+          (AbstractLexGenJavaLike.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) != 0L ||
+          AbstractLexGenJavaLike.lexer ().getCanReachOnMore ()[AbstractLexGenJavaLike.lexer ().getLexStates ()[i]] ||
+          ((Options.isIgnoreCase () || AbstractLexGenJavaLike.lexer ().getIgnoreCase ()[i]) &&
+           (!sImage.equals (sImage.toLowerCase (Locale.US)) || !sImage.equals (sImage.toUpperCase (Locale.US)))))
       {
-        s_allImages[i] = null;
-        if ((s_charCnt += 6) > 80)
+        strLit ().getAllImages ()[i] = null;
+        strLit ().setCharCnt (strLit ().getCharCnt () + 6);
+        if (strLit ().getCharCnt () > 80)
         {
-          codeGenerator.genCodeNewLine ();
-          s_charCnt = 0;
+          aCodeGenerator.genCodeNewLine ();
+          strLit ().setCharCnt (0);
         }
 
-        codeGenerator.genCode ("null, ");
+        aCodeGenerator.genCode ("null, ");
         continue;
       }
 
-      final StringBuilder toPrint = new StringBuilder ("\"");
-      for (int j = 0; j < image.length (); j++)
+      final StringBuilder aToPrint = new StringBuilder ("\"");
+      for (int j = 0; j < sImage.length (); j++)
       {
-        final char c = image.charAt (j);
-        switch (eOutputLanguage)
+        final char c = sImage.charAt (j);
+        // Escape everything, printable or not - this is a generated array of token images, not
+        // something anybody reads
+        if (c <= 0xff)
+          aToPrint.append ('\\').append (Integer.toOctalString (c));
+        else
         {
-          case JAVA:
-            if (c <= 0xff)
-              toPrint.append ('\\').append (Integer.toOctalString (c));
-            else
-            {
-              String hexVal = Integer.toHexString (c);
-              if (hexVal.length () == 3)
-                hexVal = "0" + hexVal;
-              toPrint.append ("\\u").append (hexVal);
-            }
-            break;
-          case CPP:
-            String hexVal = Integer.toHexString (c);
-            if (hexVal.length () == 3)
-              hexVal = "0" + hexVal;
-            toPrint.append ("\\u").append (hexVal);
-            break;
-          default:
-            throw new UnsupportedOutputLanguageException (eOutputLanguage);
+          String sHexVal = Integer.toHexString (c);
+          if (sHexVal.length () == 3)
+            sHexVal = "0" + sHexVal;
+          aToPrint.append ("\\u").append (sHexVal);
         }
       }
 
-      toPrint.append ("\", ");
+      aToPrint.append ("\", ");
 
-      s_charCnt += toPrint.length ();
-      if (s_charCnt > 80)
+      strLit ().setCharCnt (strLit ().getCharCnt () + aToPrint.length ());
+      if (strLit ().getCharCnt () > 80)
       {
         // Break after 80 chars
-        codeGenerator.genCodeNewLine ();
-        s_charCnt = 0;
+        aCodeGenerator.genCodeNewLine ();
+        strLit ().setCharCnt (0);
       }
 
-      codeGenerator.genCode (toPrint.toString ());
+      aCodeGenerator.genCode (aToPrint.toString ());
     }
 
-    while (++i < LexGenJava.s_maxOrdinal)
+    while (++i < AbstractLexGenJavaLike.lexer ().getMaxOrdinal ())
     {
-      s_charCnt += 6;
-      if (s_charCnt > 80)
+      strLit ().setCharCnt (strLit ().getCharCnt () + 6);
+      if (strLit ().getCharCnt () > 80)
       {
         // Break after 80 chars
-        codeGenerator.genCodeNewLine ();
-        s_charCnt = 0;
+        aCodeGenerator.genCodeNewLine ();
+        strLit ().setCharCnt (0);
       }
 
-      codeGenerator.genCode ("null, ");
+      aCodeGenerator.genCode ("null, ");
     }
 
-    codeGenerator.genCodeLine ("};");
+    aCodeGenerator.genCodeLine ("};");
   }
 
   /**
@@ -365,156 +381,171 @@ public class ExpRStringLiteral extends AbstractExpRegularExpression
   public void generateDfa ()
   {
     String s;
-    Map <String, KindInfo> temp;
+    Map <String, KindInfo> aTemp;
 
-    if (s_maxStrKind <= getOrdinal ())
-      s_maxStrKind = getOrdinal () + 1;
+    if (strLit ().getMaxStrKind () <= getOrdinal ())
+      strLit ().setMaxStrKind (getOrdinal () + 1);
 
-    final int len = m_image.length ();
-    if (len > s_maxLen)
-      s_maxLen = len;
+    final int nLen = m_sImage.length ();
+    if (nLen > strLit ().getMaxLen ())
+      strLit ().setMaxLen (nLen);
 
-    for (int i = 0; i < len; i++)
+    for (int i = 0; i < nLen; i++)
     {
-      final char c = m_image.charAt (i);
+      final char c = m_sImage.charAt (i);
       if (Options.isIgnoreCase ())
         s = Character.toString (Character.toLowerCase (c));
       else
         s = Character.toString (c);
 
-      if (!NfaState.s_unicodeWarningGiven && c > 0xff && !Options.isJavaUnicodeEscape () && !Options.isJavaUserCharStream ())
+      if (!NfaState.nfa ().isUnicodeWarningGiven () &&
+          c > 0xff &&
+          !Options.isJavaUnicodeEscape () &&
+          !Options.isJavaUserCharStream ())
       {
-        NfaState.s_unicodeWarningGiven = true;
-        JavaCCErrors.warning (LexGenJava.s_curRE,
+        NfaState.nfa ().setUnicodeWarningGiven (true);
+        JavaCCErrors.warning (AbstractLexGenJavaLike.lexer ().getCurRE (),
                               "Non-ASCII characters used in regular expression." +
-                                                  "Please make sure you use the correct Reader when you create the parser, " +
-                                                  "one that can handle your character set.");
+                                                                           "Please make sure you use the correct Reader when you create the parser, " +
+                                                                           "one that can handle your character set.");
       }
 
-      if (i >= s_charPosKind.size ()) // Kludge, but OK
+      // Kludge, but OK
+      if (i >= strLit ().getCharPosKind ().size ())
       {
-        temp = new HashMap <> ();
-        s_charPosKind.add (temp);
+        aTemp = new HashMap <> ();
+        strLit ().getCharPosKind ().add (aTemp);
       }
       else
-        temp = s_charPosKind.get (i);
+        aTemp = strLit ().getCharPosKind ().get (i);
 
-      KindInfo info = temp.computeIfAbsent (s, k -> new KindInfo (LexGenJava.s_maxOrdinal));
+      KindInfo aInfo = aTemp.computeIfAbsent (s, k -> new KindInfo (AbstractLexGenJavaLike.lexer ().getMaxOrdinal ()));
 
-      if (i + 1 == len)
-        info.insertFinalKind (getOrdinal ());
+      if (i + 1 == nLen)
+        aInfo.insertFinalKind (getOrdinal ());
       else
-        info.insertValidKind (getOrdinal ());
+        aInfo.insertValidKind (getOrdinal ());
 
-      if (!Options.isIgnoreCase () && LexGenJava.s_ignoreCase[getOrdinal ()] && c != Character.toLowerCase (c))
+      if (!Options.isIgnoreCase () &&
+          AbstractLexGenJavaLike.lexer ().getIgnoreCase ()[getOrdinal ()] &&
+          c != Character.toLowerCase (c))
       {
         s = Character.toString (Character.toLowerCase (c));
 
-        if (i >= s_charPosKind.size ()) // Kludge, but OK
+        // Kludge, but OK
+        if (i >= strLit ().getCharPosKind ().size ())
         {
-          temp = new HashMap <> ();
-          s_charPosKind.add (temp);
+          aTemp = new HashMap <> ();
+          strLit ().getCharPosKind ().add (aTemp);
         }
         else
-          temp = s_charPosKind.get (i);
+          aTemp = strLit ().getCharPosKind ().get (i);
 
-        info = temp.computeIfAbsent (s, k -> new KindInfo (LexGenJava.s_maxOrdinal));
+        aInfo = aTemp.computeIfAbsent (s, k -> new KindInfo (AbstractLexGenJavaLike.lexer ().getMaxOrdinal ()));
 
-        if (i + 1 == len)
-          info.insertFinalKind (getOrdinal ());
+        if (i + 1 == nLen)
+          aInfo.insertFinalKind (getOrdinal ());
         else
-          info.insertValidKind (getOrdinal ());
+          aInfo.insertValidKind (getOrdinal ());
       }
 
-      if (!Options.isIgnoreCase () && LexGenJava.s_ignoreCase[getOrdinal ()] && c != Character.toUpperCase (c))
+      if (!Options.isIgnoreCase () &&
+          AbstractLexGenJavaLike.lexer ().getIgnoreCase ()[getOrdinal ()] &&
+          c != Character.toUpperCase (c))
       {
         s = Character.toString (Character.toUpperCase (c));
 
         // Kludge, but OK
-        if (i >= s_charPosKind.size ())
+        if (i >= strLit ().getCharPosKind ().size ())
         {
-          temp = new HashMap <> ();
-          s_charPosKind.add (temp);
+          aTemp = new HashMap <> ();
+          strLit ().getCharPosKind ().add (aTemp);
         }
         else
-          temp = s_charPosKind.get (i);
+          aTemp = strLit ().getCharPosKind ().get (i);
 
-        info = temp.computeIfAbsent (s, k -> new KindInfo (LexGenJava.s_maxOrdinal));
+        aInfo = aTemp.computeIfAbsent (s, k -> new KindInfo (AbstractLexGenJavaLike.lexer ().getMaxOrdinal ()));
 
-        if (i + 1 == len)
-          info.insertFinalKind (getOrdinal ());
+        if (i + 1 == nLen)
+          aInfo.insertFinalKind (getOrdinal ());
         else
-          info.insertValidKind (getOrdinal ());
+          aInfo.insertValidKind (getOrdinal ());
       }
     }
 
-    s_maxLenForActive[getOrdinal () / 64] = Math.max (s_maxLenForActive[getOrdinal () / 64], len - 1);
-    s_allImages[getOrdinal ()] = m_image;
+    strLit ().getMaxLenForActive ()[getOrdinal () / 64] = Math.max (strLit ().getMaxLenForActive ()[getOrdinal () / 64],
+                                                                    nLen - 1);
+    strLit ().getAllImages ()[getOrdinal ()] = m_sImage;
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    if (m_image.length () == 1)
+    if (m_sImage.length () == 1)
     {
-      final ExpRCharacterList temp = new ExpRCharacterList (m_image.charAt (0));
-      return temp.generateNfa (ignoreCase);
+      final ExpRCharacterList aTemp = new ExpRCharacterList (m_sImage.charAt (0));
+      return aTemp.generateNfa (bIgnoreCase);
     }
 
-    NfaState startState = new NfaState ();
-    final NfaState theStartState = startState;
-    NfaState finalState = null;
+    NfaState aStartState = new NfaState ();
+    final NfaState aTheStartState = aStartState;
+    NfaState aFinalState = null;
 
-    if (m_image.length () == 0)
-      return new Nfa (theStartState, theStartState);
+    if (m_sImage.length () == 0)
+      return new Nfa (aTheStartState, aTheStartState);
 
     int i;
 
-    for (i = 0; i < m_image.length (); i++)
+    for (i = 0; i < m_sImage.length (); i++)
     {
-      finalState = new NfaState ();
-      startState.m_charMoves = new char [1];
-      startState.addChar (m_image.charAt (i));
+      aFinalState = new NfaState ();
+      aStartState.setCharMoves (new char [1]);
+      aStartState.addChar (m_sImage.charAt (i));
 
-      if (Options.isIgnoreCase () || ignoreCase)
+      if (Options.isIgnoreCase () || bIgnoreCase)
       {
-        startState.addChar (Character.toLowerCase (m_image.charAt (i)));
-        startState.addChar (Character.toUpperCase (m_image.charAt (i)));
+        aStartState.addChar (Character.toLowerCase (m_sImage.charAt (i)));
+        aStartState.addChar (Character.toUpperCase (m_sImage.charAt (i)));
       }
 
-      startState.m_next = finalState;
-      startState = finalState;
+      aStartState.setNext (aFinalState);
+      aStartState = aFinalState;
     }
 
-    return new Nfa (theStartState, finalState);
+    return new Nfa (aTheStartState, aFinalState);
   }
 
-  static void dumpNullStrLiterals (final CodeGenerator codeGenerator)
+  static void dumpNullStrLiterals (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
-    codeGenerator.genCodeLine ("{");
+    aCodeGenerator.genCodeLine ("{");
 
-    if (NfaState.s_generatedStates != 0)
-      codeGenerator.genCodeLine ("   return jjMoveNfa" + LexGenJava.s_lexStateSuffix + "(" + NfaState.initStateName () + ", 0);");
+    if (NfaState.nfa ().getGeneratedStates () != 0)
+      aCodeGenerator.genCodeLine ("   return jjMoveNfa" +
+                                  AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                  "(" +
+                                  NfaState.initStateName () +
+                                  ", 0);");
     else
-      codeGenerator.genCodeLine ("   return 1;");
+      aCodeGenerator.genCodeLine ("   return 1;");
 
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeLine ("}");
   }
 
-  private static int _getStateSetForKind (final int pos, final int kind)
+  private static int _getStateSetForKind (final int nPos, final int nKind)
   {
-    if (LexGenJava.s_mixed[LexGenJava.s_lexStateIndex] || NfaState.s_generatedStates == 0)
+    if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] ||
+        NfaState.nfa ().getGeneratedStates () == 0)
       return -1;
 
-    final Map <String, long []> allStateSets = s_statesForPos[pos];
+    final Map <String, long []> aAllStateSets = strLit ().getStatesForPos ()[nPos];
 
-    if (allStateSets == null)
+    if (aAllStateSets == null)
       return -1;
 
-    for (final Map.Entry <String, long []> aEntry : allStateSets.entrySet ())
+    for (final Map.Entry <String, long []> aEntry : aAllStateSets.entrySet ())
     {
       String s = aEntry.getKey ();
-      final long [] actives = aEntry.getValue ();
+      final long [] aActives = aEntry.getValue ();
 
       s = s.substring (s.indexOf (", ") + 2);
       s = s.substring (s.indexOf (", ") + 2);
@@ -522,7 +553,7 @@ public class ExpRStringLiteral extends AbstractExpRegularExpression
       if (s.equals ("null;"))
         continue;
 
-      if (actives != null && (actives[kind / 64] & (1L << (kind % 64))) != 0L)
+      if (aActives != null && (aActives[nKind / 64] & (1L << (nKind % 64))) != 0L)
       {
         return NfaState.addStartStateSet (s);
       }
@@ -531,31 +562,31 @@ public class ExpRStringLiteral extends AbstractExpRegularExpression
     return -1;
   }
 
-  static String getLabel (final int kind)
+  static String getLabel (final int nKind)
   {
-    final AbstractExpRegularExpression re = LexGenJava.s_rexprs[kind];
+    final AbstractExpRegularExpression aRe = AbstractLexGenJavaLike.lexer ().getRexprs ()[nKind];
 
-    if (re instanceof ExpRStringLiteral)
-      return " \"" + JavaCCGlobals.addEscapes (((ExpRStringLiteral) re).m_image) + "\"";
-    if (re.hasLabel ())
-      return " <" + re.getLabel () + ">";
-    return " <token of kind " + kind + ">";
+    if (aRe instanceof ExpRStringLiteral)
+      return " \"" + JavaCCGlobals.addEscapes (((ExpRStringLiteral) aRe).m_sImage) + "\"";
+    if (aRe.hasLabel ())
+      return " <" + aRe.getLabel () + ">";
+    return " <token of kind " + nKind + ">";
   }
 
-  static int getLine (final int kind)
+  static int getLineNumber (final int nKind)
   {
-    return LexGenJava.s_rexprs[kind].getLine ();
+    return AbstractLexGenJavaLike.lexer ().getRexprs ()[nKind].getLineNumber ();
   }
 
-  static int getColumn (final int kind)
+  static int getColumnNumber (final int nKind)
   {
-    return LexGenJava.s_rexprs[kind].getColumn ();
+    return AbstractLexGenJavaLike.lexer ().getRexprs ()[nKind].getColumnNumber ();
   }
 
   /**
    * Returns true if s1 starts with s2 (ignoring case for each character).
    */
-  private static boolean _startsWithIgnoreCase (final String s1, final String s2)
+  private static boolean _startsWithIgnoreCase (@NonNull final String s1, @NonNull final String s2)
   {
     if (s1.length () < s2.length ())
       return false;
@@ -572,413 +603,384 @@ public class ExpRStringLiteral extends AbstractExpRegularExpression
     return true;
   }
 
+  /**
+   * Work out which string literals are prefixes of longer ones, which is what decides whether a
+   * match can be accepted the moment it is complete.
+   */
   public static void fillSubString ()
   {
-    s_subString = new boolean [s_maxStrKind + 1];
-    s_subStringAtPos = new boolean [s_maxLen];
+    strLit ().setSubString (new boolean [strLit ().getMaxStrKind () + 1]);
+    strLit ().setSubStringAtPos (new boolean [strLit ().getMaxLen ()]);
 
-    for (int i = 0; i < s_maxStrKind; i++)
+    for (int i = 0; i < strLit ().getMaxStrKind (); i++)
     {
-      s_subString[i] = false;
+      strLit ().getSubString ()[i] = false;
 
-      final String image = s_allImages[i];
-      if (image == null || LexGenJava.s_lexStates[i] != LexGenJava.s_lexStateIndex)
+      final String sImage = strLit ().getAllImages ()[i];
+      if (sImage == null ||
+          AbstractLexGenJavaLike.lexer ().getLexStates ()[i] != AbstractLexGenJavaLike.lexer ().getLexStateIndex ())
         continue;
 
-      if (LexGenJava.s_mixed[LexGenJava.s_lexStateIndex])
+      if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
       {
         // We will not optimize for mixed case
-        s_subString[i] = true;
-        s_subStringAtPos[image.length () - 1] = true;
+        strLit ().getSubString ()[i] = true;
+        strLit ().getSubStringAtPos ()[sImage.length () - 1] = true;
         continue;
       }
 
-      for (int j = 0; j < s_maxStrKind; j++)
+      for (int j = 0; j < strLit ().getMaxStrKind (); j++)
       {
-        if (j != i && LexGenJava.s_lexStates[j] == LexGenJava.s_lexStateIndex && (s_allImages[j]) != null)
+        if (j != i &&
+            AbstractLexGenJavaLike.lexer ().getLexStates ()[j] == AbstractLexGenJavaLike.lexer ().getLexStateIndex () &&
+            (strLit ().getAllImages ()[j]) != null)
         {
-          if (s_allImages[j].indexOf (image) == 0)
+          if (strLit ().getAllImages ()[j].indexOf (sImage) == 0)
           {
-            s_subString[i] = true;
-            s_subStringAtPos[image.length () - 1] = true;
+            strLit ().getSubString ()[i] = true;
+            strLit ().getSubStringAtPos ()[sImage.length () - 1] = true;
             break;
           }
-          else
-            if (Options.isIgnoreCase () && _startsWithIgnoreCase (s_allImages[j], image))
-            {
-              s_subString[i] = true;
-              s_subStringAtPos[image.length () - 1] = true;
-              break;
-            }
+          if (Options.isIgnoreCase () && _startsWithIgnoreCase (strLit ().getAllImages ()[j], sImage))
+          {
+            strLit ().getSubString ()[i] = true;
+            strLit ().getSubStringAtPos ()[sImage.length () - 1] = true;
+            break;
+          }
         }
       }
     }
   }
 
-  static void dumpStartWithStates (final CodeGenerator codeGenerator)
+  static void dumpStartWithStates (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
-    switch (eOutputLanguage)
-    {
-      case JAVA:
-        codeGenerator.genCodeLine ("private int jjStartNfaWithStates" + LexGenJava.s_lexStateSuffix + "(int pos, int kind, int state)");
-        break;
-      case CPP:
-        codeGenerator.generateMethodDefHeader ("int",
-                                               LexGenJava.s_tokMgrClassName,
-                                               "jjStartNfaWithStates" + LexGenJava.s_lexStateSuffix + "(int pos, int kind, int state)");
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
-    codeGenerator.genCodeLine ("{");
-    codeGenerator.genCodeLine ("   jjmatchedKind = kind;");
-    codeGenerator.genCodeLine ("   jjmatchedPos = pos;");
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
+    aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
+                                            AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
+                                            "jjStartNfaWithStates" +
+                                                                                                     AbstractLexGenJavaLike.lexer ()
+                                                                                                                           .getLexStateSuffix () +
+                                                                                                     "(int pos, int kind, int state)");
+    aCodeGenerator.genCodeLine ("{");
+    aCodeGenerator.genCodeLine ("   jjmatchedKind = kind;");
+    aCodeGenerator.genCodeLine ("   jjmatchedPos = pos;");
 
     if (Options.isDebugTokenManager ())
     {
-      switch (eOutputLanguage)
-      {
-        case JAVA:
-          codeGenerator.genCodeLine ("   debugStream.println(\"   No more string literal token matches are possible.\");");
-          codeGenerator.genCodeLine ("   debugStream.println(\"   Currently matched the first \" " +
-                                     "+ (jjmatchedPos + 1) + \" characters as a \" + tokenImage[jjmatchedKind] + \" token.\");");
-          break;
-        case CPP:
-          codeGenerator.genCodeLine ("   fprintf(debugStream, \"   No more string literal token matches are possible.\");");
-          codeGenerator.genCodeLine ("   fprintf(debugStream, \"   Currently matched the first %d characters as a \\\"%s\\\" token.\\n\",  (jjmatchedPos + 1),  addUnicodeEscapes(tokenImage[jjmatchedKind]).c_str());");
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      TokenManagerDebug.genMessage (aCodeGenerator, "   ", "   No more string literal token matches are possible.");
+      TokenManagerDebug.genCurrentlyMatched (aCodeGenerator, "   ");
     }
 
     switch (eOutputLanguage)
     {
-      case JAVA:
-        codeGenerator.genCodeLine ("   try { curChar = input_stream.readChar(); }");
-        codeGenerator.genCodeLine ("   catch(java.io.IOException e) { return pos + 1; }");
-        break;
-      case CPP:
-        codeGenerator.genCodeLine ("   if (input_stream->endOfInput()) { return pos + 1; }");
-        codeGenerator.genCodeLine ("   curChar = input_stream->readChar();");
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
+      case JAVA ->
+      {
+        aCodeGenerator.genCodeLine ("   try { curChar = input_stream.readChar(); }");
+        aCodeGenerator.genCodeLine ("   catch(java.io.IOException e) { return pos + 1; }");
+      }
+      case CPP ->
+      {
+        aCodeGenerator.genCodeLine ("   if (input_stream->endOfInput()) { return pos + 1; }");
+        aCodeGenerator.genCodeLine ("   curChar = input_stream->readChar();");
+      }
+      default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
     }
     if (Options.isDebugTokenManager ())
     {
       switch (eOutputLanguage)
       {
-        case JAVA:
-          codeGenerator.genCodeLine ("   debugStream.println(" +
-                                     (LexGenJava.s_maxLexStates > 1 ? "\"<\" + lexStateNames[curLexState] + \">\" + " : "") +
-                                     "\"Current character : \" + " +
-                                     Options.getTokenMgrErrorClass () +
-                                     ".addEscapes(String.valueOf(curChar)) + \" (\" + curChar + \") " +
-                                     "at line \" + input_stream.getEndLine() + \" column \" + input_stream.getEndColumn());");
-          break;
-        case CPP:
-          codeGenerator.genCodeLine ("   fprintf(debugStream, " +
-                                     "\"<%s>Current character : %c(%d) at line %d column %d\\n\"," +
-                                     "addUnicodeEscapes(lexStateNames[curLexState]).c_str(), curChar, curChar, " +
-                                     "input_stream->getEndLine(), input_stream->getEndColumn());");
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
+        case JAVA -> aCodeGenerator.genCodeLine ("   debugStream.println(" +
+                                                 (AbstractLexGenJavaLike.lexer ().getMaxLexStates () > 1
+                                                                                                         ? "\"<\" + lexStateNames[curLexState] + \">\" + "
+                                                                                                         : "") +
+                                                 "\"Current character : \" + " +
+                                                 Options.getTokenMgrErrorClass () +
+                                                 ".addEscapes(String.valueOf(curChar)) + \" (\" + curChar + \") " +
+                                                 "at line \" + input_stream.getEndLine() + \" column \" + input_stream.getEndColumn());");
+        case CPP -> aCodeGenerator.genCodeLine ("   fprintf(debugStream, " +
+                                                "\"<%s>Current character : %c(%d) at line %d column %d\\n\"," +
+                                                "addUnicodeEscapes(lexStateNames[curLexState]).c_str(), curChar, curChar, " +
+                                                "input_stream->getEndLine(), input_stream->getEndColumn());");
+        default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
       }
     }
 
-    codeGenerator.genCodeLine ("   return jjMoveNfa" + LexGenJava.s_lexStateSuffix + "(state, pos + 1);");
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeLine ("   return jjMoveNfa" +
+                                AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                "(state, pos + 1);");
+    aCodeGenerator.genCodeLine ("}");
   }
 
-  private static boolean boilerPlateDumped = false;
-
-  static void dumpBoilerPlate (final CodeGenerator codeGenerator)
+  static void dumpBoilerPlate (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
-    switch (eOutputLanguage)
-    {
-      case JAVA:
-        codeGenerator.genCodeLine ("private int jjStopAtPos(int pos, int kind)");
-        break;
-      case CPP:
-        codeGenerator.generateMethodDefHeader (" int ", LexGenJava.s_tokMgrClassName, "jjStopAtPos(int pos, int kind)");
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
-    codeGenerator.genCodeLine ("{");
-    codeGenerator.genCodeLine ("   jjmatchedKind = kind;");
-    codeGenerator.genCodeLine ("   jjmatchedPos = pos;");
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
+    aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
+                                            AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
+                                            "jjStopAtPos(int pos, int kind)");
+    aCodeGenerator.genCodeLine ("{");
+    aCodeGenerator.genCodeLine ("   jjmatchedKind = kind;");
+    aCodeGenerator.genCodeLine ("   jjmatchedPos = pos;");
 
     if (Options.isDebugTokenManager ())
     {
-      switch (eOutputLanguage)
-      {
-        case JAVA:
-          codeGenerator.genCodeLine ("   debugStream.println(\"   No more string literal token matches are possible.\");");
-          codeGenerator.genCodeLine ("   debugStream.println(\"   Currently matched the first \" + (jjmatchedPos + 1) + " +
-                                     "\" characters as a \" + tokenImage[jjmatchedKind] + \" token.\");");
-          break;
-        case CPP:
-          codeGenerator.genCodeLine ("   fprintf(debugStream, \"   No more string literal token matches are possible.\");");
-          codeGenerator.genCodeLine ("   fprintf(debugStream, \"   Currently matched the first %d characters as a \\\"%s\\\" token.\\n\",  (jjmatchedPos + 1),  addUnicodeEscapes(tokenImage[jjmatchedKind]).c_str());");
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      TokenManagerDebug.genMessage (aCodeGenerator, "   ", "   No more string literal token matches are possible.");
+      TokenManagerDebug.genCurrentlyMatched (aCodeGenerator, "   ");
     }
 
-    codeGenerator.genCodeLine ("   return pos + 1;");
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeLine ("   return pos + 1;");
+    aCodeGenerator.genCodeLine ("}");
   }
 
-  private static String [] _reArrange (final Map <String, KindInfo> tab)
+  private static String [] _reArrange (@NonNull final Map <String, KindInfo> aTab)
   {
-    final String [] ret = new String [tab.size ()];
-    int cnt = 0;
+    final String [] aRet = new String [aTab.size ()];
+    int nCnt = 0;
 
-    for (final String s : tab.keySet ())
+    for (final String s : aTab.keySet ())
     {
       final char c = s.charAt (0);
 
       int i = 0;
-      while (i < cnt && ret[i].charAt (0) < c)
+      while (i < nCnt && aRet[i].charAt (0) < c)
         i++;
 
-      if (i < cnt)
-        for (int j = cnt - 1; j >= i; j--)
-          ret[j + 1] = ret[j];
+      if (i < nCnt)
+        for (int j = nCnt - 1; j >= i; j--)
+          aRet[j + 1] = aRet[j];
 
-      ret[i] = s;
-      cnt++;
+      aRet[i] = s;
+      nCnt++;
     }
 
-    return ret;
+    return aRet;
   }
 
+  /**
+   * @param c
+   *        The character to use as a <code>switch</code> case label.
+   * @return The label, as a character literal where that is readable and as the plain code point
+   *         otherwise. Never <code>null</code>.
+   */
   @NonNull
-  private static String _getCaseChar (final char c, final EOutputLanguage eOutputLanguage)
+  private static String _getCaseChar (final char c)
   {
-    if (false)
-      return Integer.toString (c);
-
-    // Just for better readability
+    // Anything outside printable ASCII goes out as a number - a literal would only be harder to
+    // read
     if (c < 0x20 || c >= 0x7f)
       return Integer.toString (c);
 
-    if (eOutputLanguage.isJava ())
-      if (c == '\'' || c == '\\')
-        return "'\\" + c + "'";
+    // Java and C++ agree on both of these
+    if (c == '\'' || c == '\\')
+      return "'\\" + c + "'";
 
     return "'" + c + "'";
   }
 
-  public static void dumpDfaCode (final CodeGenerator codeGenerator)
+  /**
+   * Write the jjMoveStringLiteralDfa chain of the current lexical state, one method per character
+   * position, which is the fast path that matches keywords and operators without touching the NFA.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   */
+  public static void dumpDfaCode (@NonNull final AbstractCodeGenerator aCodeGenerator)
   {
-    Map <String, KindInfo> tab;
-    String key;
-    KindInfo info;
-    final int maxLongsReqd = s_maxStrKind / 64 + 1;
-    boolean ifGenerated;
-    LexGenJava.s_maxLongsReqd[LexGenJava.s_lexStateIndex] = maxLongsReqd;
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
+    Map <String, KindInfo> aTab;
+    String sKey;
+    KindInfo aInfo;
+    final int nMaxLongsReqd = strLit ().getMaxStrKind () / 64 + 1;
+    boolean bIfGenerated;
+    AbstractLexGenJavaLike.lexer ().getMaxLongsReqd ()[AbstractLexGenJavaLike.lexer ()
+                                                                             .getLexStateIndex ()] = nMaxLongsReqd;
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
+    final NfaBuildState aNfa = NfaState.nfa ();
 
-    if (s_maxLen == 0)
+    if (strLit ().getMaxLen () == 0)
     {
-      switch (eOutputLanguage)
-      {
-        case JAVA:
-          codeGenerator.genCodeLine ("private int jjMoveStringLiteralDfa0" + LexGenJava.s_lexStateSuffix + "()");
-          break;
-        case CPP:
-          codeGenerator.generateMethodDefHeader (" int ",
-                                                 LexGenJava.s_tokMgrClassName,
-                                                 "jjMoveStringLiteralDfa0" + LexGenJava.s_lexStateSuffix + "()");
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
-      dumpNullStrLiterals (codeGenerator);
+      aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
+                                              AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
+                                              "jjMoveStringLiteralDfa0" +
+                                                                                                       AbstractLexGenJavaLike.lexer ()
+                                                                                                                             .getLexStateSuffix () +
+                                                                                                       "()");
+      dumpNullStrLiterals (aCodeGenerator);
       return;
     }
 
-    if (!boilerPlateDumped)
+    if (!strLit ().isBoilerPlateDumped ())
     {
-      dumpBoilerPlate (codeGenerator);
-      boilerPlateDumped = true;
+      dumpBoilerPlate (aCodeGenerator);
+      strLit ().setBoilerPlateDumped (true);
     }
 
-    boolean createStartNfa = false;
-    for (int i = 0; i < s_maxLen; i++)
+    boolean bCreateStartNfa = false;
+    for (int i = 0; i < strLit ().getMaxLen (); i++)
     {
-      boolean atLeastOne = false;
-      boolean startNfaNeeded = false;
-      tab = s_charPosKind.get (i);
-      final String [] keys = _reArrange (tab);
+      boolean bAtLeastOne = false;
+      boolean bStartNfaNeeded = false;
+      aTab = strLit ().getCharPosKind ().get (i);
+      final String [] aKeys = _reArrange (aTab);
 
-      final StringBuilder params = new StringBuilder ();
-      params.append ("(");
+      final StringBuilder aParams = new StringBuilder ();
+      aParams.append ("(");
       if (i != 0)
       {
         if (i == 1)
         {
           int j = 0;
-          for (; j < maxLongsReqd - 1; j++)
-            if (i <= s_maxLenForActive[j])
+          for (; j < nMaxLongsReqd - 1; j++)
+            if (i <= strLit ().getMaxLenForActive ()[j])
             {
-              if (atLeastOne)
-                params.append (", ");
+              if (bAtLeastOne)
+                aParams.append (", ");
               else
-                atLeastOne = true;
-              params.append (eOutputLanguage.getTypeLong () + " active" + j);
+                bAtLeastOne = true;
+              aParams.append (eOutputLanguage.getTypeLong () + " active" + j);
             }
 
-          if (i <= s_maxLenForActive[j])
+          if (i <= strLit ().getMaxLenForActive ()[j])
           {
-            if (atLeastOne)
-              params.append (", ");
-            params.append (eOutputLanguage.getTypeLong () + " active" + j);
+            if (bAtLeastOne)
+              aParams.append (", ");
+            aParams.append (eOutputLanguage.getTypeLong () + " active" + j);
           }
         }
         else
         {
           int j = 0;
-          for (; j < maxLongsReqd - 1; j++)
-            if (i <= s_maxLenForActive[j] + 1)
+          for (; j < nMaxLongsReqd - 1; j++)
+            if (i <= strLit ().getMaxLenForActive ()[j] + 1)
             {
-              if (atLeastOne)
-                params.append (", ");
+              if (bAtLeastOne)
+                aParams.append (", ");
               else
-                atLeastOne = true;
-              params.append (eOutputLanguage.getTypeLong () + " old" + j + ", " + eOutputLanguage.getTypeLong () + " active" + j);
+                bAtLeastOne = true;
+              aParams.append (eOutputLanguage.getTypeLong () +
+                              " old" +
+                              j +
+                              ", " +
+                              eOutputLanguage.getTypeLong () +
+                              " active" +
+                              j);
             }
 
-          if (i <= s_maxLenForActive[j] + 1)
+          if (i <= strLit ().getMaxLenForActive ()[j] + 1)
           {
-            if (atLeastOne)
-              params.append (", ");
-            params.append (eOutputLanguage.getTypeLong () + " old" + j + ", " + eOutputLanguage.getTypeLong () + " active" + j);
+            if (bAtLeastOne)
+              aParams.append (", ");
+            aParams.append (eOutputLanguage.getTypeLong () +
+                            " old" +
+                            j +
+                            ", " +
+                            eOutputLanguage.getTypeLong () +
+                            " active" +
+                            j);
           }
         }
       }
-      params.append (")");
+      aParams.append (")");
 
-      switch (eOutputLanguage)
-      {
-        case JAVA:
-          codeGenerator.genCode ("private int jjMoveStringLiteralDfa" + i + LexGenJava.s_lexStateSuffix + params);
-          break;
-        case CPP:
-          codeGenerator.generateMethodDefHeader (" int ",
-                                                 LexGenJava.s_tokMgrClassName,
-                                                 "jjMoveStringLiteralDfa" + i + LexGenJava.s_lexStateSuffix + params);
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
+                                              AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
+                                              "jjMoveStringLiteralDfa" +
+                                                                                                       i +
+                                                                                                       AbstractLexGenJavaLike.lexer ()
+                                                                                                                             .getLexStateSuffix () +
+                                                                                                       aParams,
+                                              null,
+                                              false);
 
-      codeGenerator.genCodeLine ("{");
+      aCodeGenerator.genCodeLine ("{");
 
       if (i != 0)
       {
         if (i > 1)
         {
-          atLeastOne = false;
-          codeGenerator.genCode ("   if ((");
+          bAtLeastOne = false;
+          aCodeGenerator.genCode ("   if ((");
 
           int j = 0;
-          for (; j < maxLongsReqd - 1; j++)
-            if (i <= s_maxLenForActive[j] + 1)
+          for (; j < nMaxLongsReqd - 1; j++)
+            if (i <= strLit ().getMaxLenForActive ()[j] + 1)
             {
-              if (atLeastOne)
-                codeGenerator.genCode (" | ");
+              if (bAtLeastOne)
+                aCodeGenerator.genCode (" | ");
               else
-                atLeastOne = true;
-              codeGenerator.genCode ("(active" + j + " &= old" + j + ")");
+                bAtLeastOne = true;
+              aCodeGenerator.genCode ("(active" + j + " &= old" + j + ")");
             }
 
-          if (i <= s_maxLenForActive[j] + 1)
+          if (i <= strLit ().getMaxLenForActive ()[j] + 1)
           {
-            if (atLeastOne)
-              codeGenerator.genCode (" | ");
-            codeGenerator.genCode ("(active" + j + " &= old" + j + ")");
+            if (bAtLeastOne)
+              aCodeGenerator.genCode (" | ");
+            aCodeGenerator.genCode ("(active" + j + " &= old" + j + ")");
           }
 
-          codeGenerator.genCodeLine (") == 0L)");
-          if (!LexGenJava.s_mixed[LexGenJava.s_lexStateIndex] && NfaState.s_generatedStates != 0)
+          aCodeGenerator.genCodeLine (") == 0L)");
+          if (!AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] &&
+              aNfa.getGeneratedStates () != 0)
           {
-            codeGenerator.genCode ("      return jjStartNfa" + LexGenJava.s_lexStateSuffix + "(" + (i - 2) + ", ");
-            for (j = 0; j < maxLongsReqd - 1; j++)
-              if (i <= s_maxLenForActive[j] + 1)
-                codeGenerator.genCode ("old" + j + ", ");
+            aCodeGenerator.genCode ("      return jjStartNfa" +
+                                    AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                    "(" +
+                                    (i - 2) +
+                                    ", ");
+            for (j = 0; j < nMaxLongsReqd - 1; j++)
+              if (i <= strLit ().getMaxLenForActive ()[j] + 1)
+                aCodeGenerator.genCode ("old" + j + ", ");
               else
-                codeGenerator.genCode ("0L, ");
-            if (i <= s_maxLenForActive[j] + 1)
-              codeGenerator.genCodeLine ("old" + j + ");");
+                aCodeGenerator.genCode ("0L, ");
+            if (i <= strLit ().getMaxLenForActive ()[j] + 1)
+              aCodeGenerator.genCodeLine ("old" + j + ");");
             else
-              codeGenerator.genCodeLine ("0L);");
+              aCodeGenerator.genCodeLine ("0L);");
           }
           else
-            if (NfaState.s_generatedStates != 0)
-              codeGenerator.genCodeLine ("      return jjMoveNfa" +
-                                         LexGenJava.s_lexStateSuffix +
-                                         "(" +
-                                         NfaState.initStateName () +
-                                         ", " +
-                                         (i - 1) +
-                                         ");");
+            if (aNfa.getGeneratedStates () != 0)
+              aCodeGenerator.genCodeLine ("      return jjMoveNfa" +
+                                          AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                          "(" +
+                                          NfaState.initStateName () +
+                                          ", " +
+                                          (i - 1) +
+                                          ");");
             else
-              codeGenerator.genCodeLine ("      return " + i + ";");
+              aCodeGenerator.genCodeLine ("      return " + i + ";");
         }
 
         if (i != 0 && Options.isDebugTokenManager ())
         {
+          TokenManagerDebug.genCurrentlyMatchedIfAny (aCodeGenerator, "   ");
           switch (eOutputLanguage)
           {
-            case JAVA:
-              codeGenerator.genCodeLine ("   if (jjmatchedKind != 0 && jjmatchedKind != 0x" +
-                                         Integer.toHexString (Integer.MAX_VALUE) +
-                                         ")");
-              codeGenerator.genCodeLine ("      debugStream.println(\"   Currently matched the first \" + " +
-                                         "(jjmatchedPos + 1) + \" characters as a \" + tokenImage[jjmatchedKind] + \" token.\");");
-              codeGenerator.genCodeLine ("   debugStream.println(\"   Possible string literal matches : { \"");
-              break;
-            case CPP:
-              codeGenerator.genCodeLine ("   if (jjmatchedKind != 0 && jjmatchedKind != 0x" +
-                                         Integer.toHexString (Integer.MAX_VALUE) +
-                                         ")");
-              codeGenerator.genCodeLine ("      fprintf(debugStream, \"   Currently matched the first %d characters as a \\\"%s\\\" token.\\n\", (jjmatchedPos + 1), addUnicodeEscapes(tokenImage[jjmatchedKind]).c_str());");
-              codeGenerator.genCodeLine ("   fprintf(debugStream, \"   Possible string literal matches : { \");");
-              break;
-            default:
-              throw new UnsupportedOutputLanguageException (eOutputLanguage);
+            case JAVA -> aCodeGenerator.genCodeLine ("   debugStream.println(\"   Possible string literal matches : { \"");
+            case CPP -> aCodeGenerator.genCodeLine ("   fprintf(debugStream, \"   Possible string literal matches : { \");");
+            default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
           }
 
-          final StringBuilder fmt = new StringBuilder ();
-          final StringBuilder args = new StringBuilder ();
-          for (int vecs = 0; vecs < s_maxStrKind / 64 + 1; vecs++)
+          final StringBuilder aFmt = new StringBuilder ();
+          final StringBuilder aArgs = new StringBuilder ();
+          for (int nVecs = 0; nVecs < strLit ().getMaxStrKind () / 64 + 1; nVecs++)
           {
-            if (i <= s_maxLenForActive[vecs])
+            if (i <= strLit ().getMaxLenForActive ()[nVecs])
             {
               switch (eOutputLanguage)
               {
                 case JAVA:
-                  codeGenerator.genCodeLine (" +");
-                  codeGenerator.genCode ("         jjKindsForBitVector(" + vecs + ", ");
-                  codeGenerator.genCode ("active" + vecs + ") ");
+                  aCodeGenerator.genCodeLine (" +");
+                  aCodeGenerator.genCode ("         jjKindsForBitVector(" + nVecs + ", ");
+                  aCodeGenerator.genCode ("active" + nVecs + ") ");
                   break;
                 case CPP:
-                  if (fmt.length () > 0)
+                  if (aFmt.length () > 0)
                   {
-                    fmt.append (", ");
-                    args.append (", ");
+                    aFmt.append (", ");
+                    aArgs.append (", ");
                   }
-                  fmt.append ("%s");
-                  args.append ("         jjKindsForBitVector(" + vecs + ", ");
-                  args.append ("active" + vecs + ").c_str() ");
+                  aFmt.append ("%s");
+                  aArgs.append ("         jjKindsForBitVector(" + nVecs + ", ");
+                  aArgs.append ("active" + nVecs + ").c_str() ");
                   break;
                 default:
                   throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -988,94 +990,78 @@ public class ExpRStringLiteral extends AbstractExpRegularExpression
 
           switch (eOutputLanguage)
           {
-            case JAVA:
-              codeGenerator.genCodeLine (" + \" } \");");
-              break;
-            case CPP:
-              fmt.append ("}\\n");
-              codeGenerator.genCodeLine ("    fprintf(debugStream, \"" + fmt + "\"," + args + ");");
-              break;
-            default:
-              throw new UnsupportedOutputLanguageException (eOutputLanguage);
+            case JAVA -> aCodeGenerator.genCodeLine (" + \" } \");");
+            case CPP ->
+            {
+              aFmt.append ("}\\n");
+              aCodeGenerator.genCodeLine ("    fprintf(debugStream, \"" + aFmt + "\"," + aArgs + ");");
+            }
+            default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
           }
         }
 
         switch (eOutputLanguage)
         {
-          case JAVA:
-            codeGenerator.genCodeLine ("   try { curChar = input_stream.readChar(); }");
-            codeGenerator.genCodeLine ("   catch(java.io.IOException e) {");
-            break;
-          case CPP:
-            codeGenerator.genCodeLine ("   if (input_stream->endOfInput()) {");
-            break;
-          default:
-            throw new UnsupportedOutputLanguageException (eOutputLanguage);
+          case JAVA ->
+          {
+            aCodeGenerator.genCodeLine ("   try { curChar = input_stream.readChar(); }");
+            aCodeGenerator.genCodeLine ("   catch(java.io.IOException e) {");
+          }
+          case CPP -> aCodeGenerator.genCodeLine ("   if (input_stream->endOfInput()) {");
+          default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
         }
 
-        if (!LexGenJava.s_mixed[LexGenJava.s_lexStateIndex] && NfaState.s_generatedStates != 0)
+        if (!AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] &&
+            aNfa.getGeneratedStates () != 0)
         {
-          codeGenerator.genCode ("      jjStopStringLiteralDfa" + LexGenJava.s_lexStateSuffix + "(" + (i - 1) + ", ");
+          aCodeGenerator.genCode ("      jjStopStringLiteralDfa" +
+                                  AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                  "(" +
+                                  (i - 1) +
+                                  ", ");
 
           int k = 0;
-          for (; k < maxLongsReqd - 1; k++)
+          for (; k < nMaxLongsReqd - 1; k++)
           {
-            if (i <= s_maxLenForActive[k])
-              codeGenerator.genCode ("active" + k + ", ");
+            if (i <= strLit ().getMaxLenForActive ()[k])
+              aCodeGenerator.genCode ("active" + k + ", ");
             else
-              codeGenerator.genCode ("0L, ");
+              aCodeGenerator.genCode ("0L, ");
           }
 
-          if (i <= s_maxLenForActive[k])
+          if (i <= strLit ().getMaxLenForActive ()[k])
           {
-            codeGenerator.genCodeLine ("active" + k + ");");
+            aCodeGenerator.genCodeLine ("active" + k + ");");
           }
           else
           {
-            codeGenerator.genCodeLine ("0L);");
+            aCodeGenerator.genCodeLine ("0L);");
           }
 
           if (i != 0 && Options.isDebugTokenManager ())
           {
-            switch (eOutputLanguage)
-            {
-              case JAVA:
-                codeGenerator.genCodeLine ("      if (jjmatchedKind != 0 && jjmatchedKind != 0x" +
-                                           Integer.toHexString (Integer.MAX_VALUE) +
-                                           ")");
-                codeGenerator.genCodeLine ("         debugStream.println(\"   Currently matched the first \" + " +
-                                           "(jjmatchedPos + 1) + \" characters as a \" + tokenImage[jjmatchedKind] + \" token.\");");
-                break;
-              case CPP:
-                codeGenerator.genCodeLine ("      if (jjmatchedKind != 0 && jjmatchedKind != 0x" +
-                                           Integer.toHexString (Integer.MAX_VALUE) +
-                                           ")");
-                codeGenerator.genCodeLine ("      fprintf(debugStream, \"   Currently matched the first %d characters as a \\\"%s\\\" token.\\n\", (jjmatchedPos + 1),  addUnicodeEscapes(tokenImage[jjmatchedKind]).c_str());");
-                break;
-              default:
-                throw new UnsupportedOutputLanguageException (eOutputLanguage);
-            }
+            TokenManagerDebug.genCurrentlyMatchedIfAny (aCodeGenerator, "      ");
           }
 
-          codeGenerator.genCodeLine ("      return " + i + ";");
+          aCodeGenerator.genCodeLine ("      return " + i + ";");
         }
         else
-          if (NfaState.s_generatedStates != 0)
+          if (aNfa.getGeneratedStates () != 0)
           {
-            codeGenerator.genCodeLine ("   return jjMoveNfa" +
-                                       LexGenJava.s_lexStateSuffix +
-                                       "(" +
-                                       NfaState.initStateName () +
-                                       ", " +
-                                       (i - 1) +
-                                       ");");
+            aCodeGenerator.genCodeLine ("   return jjMoveNfa" +
+                                        AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                        "(" +
+                                        NfaState.initStateName () +
+                                        ", " +
+                                        (i - 1) +
+                                        ");");
           }
           else
           {
-            codeGenerator.genCodeLine ("      return " + i + ";");
+            aCodeGenerator.genCodeLine ("      return " + i + ";");
           }
 
-        codeGenerator.genCodeLine ("   }");
+        aCodeGenerator.genCodeLine ("   }");
       }
 
       if (i != 0)
@@ -1086,7 +1072,7 @@ public class ExpRStringLiteral extends AbstractExpRegularExpression
             // Nothing
             break;
           case CPP:
-            codeGenerator.genCodeLine ("   curChar = input_stream->readChar();");
+            aCodeGenerator.genCodeLine ("   curChar = input_stream->readChar();");
             break;
           default:
             throw new UnsupportedOutputLanguageException (eOutputLanguage);
@@ -1094,75 +1080,65 @@ public class ExpRStringLiteral extends AbstractExpRegularExpression
 
         if (Options.isDebugTokenManager ())
         {
-          switch (eOutputLanguage)
-          {
-            case JAVA:
-              codeGenerator.genCodeLine ("   debugStream.println(" +
-                                         (LexGenJava.s_maxLexStates > 1 ? "\"<\" + lexStateNames[curLexState] + \">\" + " : "") +
-                                         "\"Current character : \" + " +
-                                         Options.getTokenMgrErrorClass () +
-                                         ".addEscapes(String.valueOf(curChar)) + \" (\" + curChar + \") " +
-                                         "at line \" + input_stream.getEndLine() + \" column \" + input_stream.getEndColumn());");
-              break;
-            case CPP:
-              codeGenerator.genCodeLine ("   fprintf(debugStream, " +
-                                         "\"<%s>Current character : %c(%d) at line %d column %d\\n\"," +
-                                         "addUnicodeEscapes(lexStateNames[curLexState]).c_str(), curChar, curChar, " +
-                                         "input_stream->getEndLine(), input_stream->getEndColumn());");
-              break;
-            default:
-              throw new UnsupportedOutputLanguageException (eOutputLanguage);
-          }
+          TokenManagerDebug.genCurrentCharacter (aCodeGenerator,
+                                                 "   ",
+                                                 AbstractLexGenJavaLike.lexer ().getMaxLexStates () > 1);
         }
       }
 
-      codeGenerator.genCodeLine ("   switch(curChar)");
-      codeGenerator.genCodeLine ("   {");
+      aCodeGenerator.genCodeLine ("   switch(curChar)");
+      aCodeGenerator.genCodeLine ("   {");
 
-      CaseLoop: for (final String aKey : keys)
+      CaseLoop: for (final String aKey : aKeys)
       {
-        key = aKey;
-        info = tab.get (key);
-        ifGenerated = false;
-        final char c = key.charAt (0);
+        sKey = aKey;
+        aInfo = aTab.get (sKey);
+        bIfGenerated = false;
+        final char c = sKey.charAt (0);
 
-        if (i == 0 && c < 128 && info.m_finalKindCnt != 0 && (NfaState.s_generatedStates == 0 || !NfaState.canStartNfaUsingAscii (c)))
+        if (i == 0 &&
+            c < 128 &&
+            aInfo.m_nFinalKindCnt != 0 &&
+            (aNfa.getGeneratedStates () == 0 || !NfaState.canStartNfaUsingAscii (c)))
         {
-          int kind;
+          int nKind;
           int j = 0;
-          for (; j < maxLongsReqd; j++)
-            if (info.m_finalKinds[j] != 0L)
+          for (; j < nMaxLongsReqd; j++)
+            if (aInfo.m_aFinalKinds[j] != 0L)
               break;
 
           for (int k = 0; k < 64; k++)
-            if ((info.m_finalKinds[j] & (1L << k)) != 0L && !s_subString[kind = (j * 64 + k)])
+            if ((aInfo.m_aFinalKinds[j] & (1L << k)) != 0L && !strLit ().getSubString ()[nKind = (j * 64 + k)])
             {
-              if ((s_aIntermediateKinds != null &&
-                   s_aIntermediateKinds[(j * 64 + k)] != null &&
-                   s_aIntermediateKinds[(j * 64 + k)][i] < (j * 64 + k) &&
-                   s_intermediateMatchedPos != null &&
-                   s_intermediateMatchedPos[(j * 64 + k)][i] == i) ||
-                  (LexGenJava.s_canMatchAnyChar[LexGenJava.s_lexStateIndex] >= 0 &&
-                   LexGenJava.s_canMatchAnyChar[LexGenJava.s_lexStateIndex] < (j * 64 + k)))
+              if ((strLit ().getIntermediateKinds () != null &&
+                   strLit ().getIntermediateKinds ()[(j * 64 + k)] != null &&
+                   strLit ().getIntermediateKinds ()[(j * 64 + k)][i] < (j * 64 + k) &&
+                   strLit ().getIntermediateMatchedPos () != null &&
+                   strLit ().getIntermediateMatchedPos ()[(j * 64 + k)][i] == i) ||
+                  (AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                               .getLexStateIndex ()] >= 0 &&
+                   AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                               .getLexStateIndex ()] < (j *
+                                                                                                                        64 +
+                                                                                                                        k)))
                 break;
-              else
-                if ((LexGenJava.s_toSkip[kind / 64] & (1L << (kind % 64))) != 0L &&
-                    (LexGenJava.s_toSpecial[kind / 64] & (1L << (kind % 64))) == 0L &&
-                    LexGenJava.s_actions[kind] == null &&
-                    LexGenJava.s_newLexState[kind] == null)
+              if ((AbstractLexGenJavaLike.lexer ().getToSkip ()[nKind / 64] & (1L << (nKind % 64))) != 0L &&
+                  (AbstractLexGenJavaLike.lexer ().getToSpecial ()[nKind / 64] & (1L << (nKind % 64))) == 0L &&
+                  AbstractLexGenJavaLike.lexer ().getActions ()[nKind] == null &&
+                  AbstractLexGenJavaLike.lexer ().getNewLexState ()[nKind] == null)
+              {
+                LexGenJava.addCharToSkip (c, nKind);
+
+                if (Options.isIgnoreCase ())
                 {
-                  LexGenJava.addCharToSkip (c, kind);
+                  if (c != Character.toUpperCase (c))
+                    LexGenJava.addCharToSkip (Character.toUpperCase (c), nKind);
 
-                  if (Options.isIgnoreCase ())
-                  {
-                    if (c != Character.toUpperCase (c))
-                      LexGenJava.addCharToSkip (Character.toUpperCase (c), kind);
-
-                    if (c != Character.toLowerCase (c))
-                      LexGenJava.addCharToSkip (Character.toLowerCase (c), kind);
-                  }
-                  continue CaseLoop;
+                  if (c != Character.toLowerCase (c))
+                    LexGenJava.addCharToSkip (Character.toLowerCase (c), nKind);
                 }
+                continue CaseLoop;
+              }
             }
         }
 
@@ -1170,786 +1146,798 @@ public class ExpRStringLiteral extends AbstractExpRegularExpression
         if (Options.isIgnoreCase ())
         {
           if (c != Character.toUpperCase (c))
-            codeGenerator.genCodeLine ("      case " + _getCaseChar (Character.toUpperCase (c), eOutputLanguage) + ":");
+            aCodeGenerator.genCodeLine ("      case " + _getCaseChar (Character.toUpperCase (c)) + ":");
 
           if (c != Character.toLowerCase (c))
-            codeGenerator.genCodeLine ("      case " + _getCaseChar (Character.toLowerCase (c), eOutputLanguage) + ":");
+            aCodeGenerator.genCodeLine ("      case " + _getCaseChar (Character.toLowerCase (c)) + ":");
         }
 
-        codeGenerator.genCodeLine ("      case " + _getCaseChar (c, eOutputLanguage) + ":");
+        aCodeGenerator.genCodeLine ("      case " + _getCaseChar (c) + ":");
 
-        long matchedKind;
-        final String prefix = (i == 0) ? "         " : "            ";
+        long nMatchedKind;
+        final String sPrefix = (i == 0) ? "         " : "            ";
 
-        if (info.m_finalKindCnt != 0)
+        if (aInfo.m_nFinalKindCnt != 0)
         {
-          for (int j = 0; j < maxLongsReqd; j++)
+          for (int j = 0; j < nMaxLongsReqd; j++)
           {
-            if ((matchedKind = info.m_finalKinds[j]) == 0L)
+            nMatchedKind = aInfo.m_aFinalKinds[j];
+            if (nMatchedKind == 0L)
               continue;
 
             for (int k = 0; k < 64; k++)
             {
-              if ((matchedKind & (1L << k)) == 0L)
+              if ((nMatchedKind & (1L << k)) == 0L)
                 continue;
 
-              if (ifGenerated)
+              if (bIfGenerated)
               {
-                codeGenerator.genCode ("         else if ");
+                aCodeGenerator.genCode ("         else if ");
               }
               else
                 if (i != 0)
-                  codeGenerator.genCode ("         if ");
+                  aCodeGenerator.genCode ("         if ");
 
-              ifGenerated = true;
+              bIfGenerated = true;
 
-              int kindToPrint;
+              int nKindToPrint;
               if (i != 0)
               {
-                codeGenerator.genCodeLine ("((active" +
-                                           j +
-                                           " & " +
-                                           eOutputLanguage.getLongHex (1L << k) +
-                                           ") != " +
-                                           eOutputLanguage.getLongPlain (0) +
-                                           ")");
+                aCodeGenerator.genCodeLine ("((active" +
+                                            j +
+                                            " & " +
+                                            eOutputLanguage.getLongHex (1L << k) +
+                                            ") != " +
+                                            eOutputLanguage.getLongPlain (0) +
+                                            ")");
               }
 
-              if (s_aIntermediateKinds != null &&
-                  s_aIntermediateKinds[(j * 64 + k)] != null &&
-                  s_aIntermediateKinds[(j * 64 + k)][i] < (j * 64 + k) &&
-                  s_intermediateMatchedPos != null &&
-                  s_intermediateMatchedPos[(j * 64 + k)][i] == i)
+              if (strLit ().getIntermediateKinds () != null &&
+                  strLit ().getIntermediateKinds ()[(j * 64 + k)] != null &&
+                  strLit ().getIntermediateKinds ()[(j * 64 + k)][i] < (j * 64 + k) &&
+                  strLit ().getIntermediateMatchedPos () != null &&
+                  strLit ().getIntermediateMatchedPos ()[(j * 64 + k)][i] == i)
               {
                 JavaCCErrors.warning (" \"" +
-                                      JavaCCGlobals.addEscapes (s_allImages[j * 64 + k]) +
+                                      JavaCCGlobals.addEscapes (strLit ().getAllImages ()[j * 64 + k]) +
                                       "\" cannot be matched as a string literal token " +
                                       "at line " +
-                                      getLine (j * 64 + k) +
+                                      getLineNumber (j * 64 + k) +
                                       ", column " +
-                                      getColumn (j * 64 + k) +
+                                      getColumnNumber (j * 64 + k) +
                                       ". It will be matched as " +
-                                      getLabel (s_aIntermediateKinds[(j * 64 + k)][i]) +
+                                      getLabel (strLit ().getIntermediateKinds ()[(j * 64 + k)][i]) +
                                       ".");
-                kindToPrint = s_aIntermediateKinds[(j * 64 + k)][i];
+                nKindToPrint = strLit ().getIntermediateKinds ()[(j * 64 + k)][i];
               }
               else
                 if (i == 0 &&
-                    LexGenJava.s_canMatchAnyChar[LexGenJava.s_lexStateIndex] >= 0 &&
-                    LexGenJava.s_canMatchAnyChar[LexGenJava.s_lexStateIndex] < (j * 64 + k))
+                    AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                                .getLexStateIndex ()] >= 0 &&
+                    AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                                .getLexStateIndex ()] < (j *
+                                                                                                                         64 +
+                                                                                                                         k))
                 {
                   JavaCCErrors.warning (" \"" +
-                                        JavaCCGlobals.addEscapes (s_allImages[j * 64 + k]) +
+                                        JavaCCGlobals.addEscapes (strLit ().getAllImages ()[j * 64 + k]) +
                                         "\" cannot be matched as a string literal token " +
                                         "at line " +
-                                        getLine (j * 64 + k) +
+                                        getLineNumber (j * 64 + k) +
                                         ", column " +
-                                        getColumn (j * 64 + k) +
+                                        getColumnNumber (j * 64 + k) +
                                         ". It will be matched as " +
-                                        getLabel (LexGenJava.s_canMatchAnyChar[LexGenJava.s_lexStateIndex]) +
+                                        getLabel (AbstractLexGenJavaLike.lexer ()
+                                                                        .getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                                                     .getLexStateIndex ()]) +
                                         ".");
-                  kindToPrint = LexGenJava.s_canMatchAnyChar[LexGenJava.s_lexStateIndex];
+                  nKindToPrint = AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                                             .getLexStateIndex ()];
                 }
                 else
-                  kindToPrint = j * 64 + k;
+                  nKindToPrint = j * 64 + k;
 
-              if (!s_subString[(j * 64 + k)])
+              if (!strLit ().getSubString ()[(j * 64 + k)])
               {
-                final int stateSetName = _getStateSetForKind (i, j * 64 + k);
+                final int nStateSetName = _getStateSetForKind (i, j * 64 + k);
 
-                if (stateSetName != -1)
+                if (nStateSetName != -1)
                 {
-                  createStartNfa = true;
-                  codeGenerator.genCodeLine (prefix +
-                                             "return jjStartNfaWithStates" +
-                                             LexGenJava.s_lexStateSuffix +
-                                             "(" +
-                                             i +
-                                             ", " +
-                                             kindToPrint +
-                                             ", " +
-                                             stateSetName +
-                                             ");");
+                  bCreateStartNfa = true;
+                  aCodeGenerator.genCodeLine (sPrefix +
+                                              "return jjStartNfaWithStates" +
+                                              AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                              "(" +
+                                              i +
+                                              ", " +
+                                              nKindToPrint +
+                                              ", " +
+                                              nStateSetName +
+                                              ");");
                 }
                 else
-                  codeGenerator.genCodeLine (prefix + "return jjStopAtPos" + "(" + i + ", " + kindToPrint + ");");
+                  aCodeGenerator.genCodeLine (sPrefix + "return jjStopAtPos" + "(" + i + ", " + nKindToPrint + ");");
               }
               else
               {
-                if ((LexGenJava.s_initMatch[LexGenJava.s_lexStateIndex] != 0 &&
-                     LexGenJava.s_initMatch[LexGenJava.s_lexStateIndex] != Integer.MAX_VALUE) ||
+                if ((AbstractLexGenJavaLike.lexer ().getInitMatch ()[AbstractLexGenJavaLike.lexer ()
+                                                                                           .getLexStateIndex ()] != 0 &&
+                     AbstractLexGenJavaLike.lexer ().getInitMatch ()[AbstractLexGenJavaLike.lexer ()
+                                                                                           .getLexStateIndex ()] != Integer.MAX_VALUE) ||
                     i != 0)
                 {
-                  codeGenerator.genCodeLine ("         {");
-                  codeGenerator.genCodeLine (prefix + "jjmatchedKind = " + kindToPrint + ";");
-                  codeGenerator.genCodeLine (prefix + "jjmatchedPos = " + i + ";");
-                  codeGenerator.genCodeLine ("         }");
+                  aCodeGenerator.genCodeLine ("         {");
+                  aCodeGenerator.genCodeLine (sPrefix + "jjmatchedKind = " + nKindToPrint + ";");
+                  aCodeGenerator.genCodeLine (sPrefix + "jjmatchedPos = " + i + ";");
+                  aCodeGenerator.genCodeLine ("         }");
                 }
                 else
-                  codeGenerator.genCodeLine (prefix + "jjmatchedKind = " + kindToPrint + ";");
+                  aCodeGenerator.genCodeLine (sPrefix + "jjmatchedKind = " + nKindToPrint + ";");
               }
             }
           }
         }
 
-        if (info.m_validKindCnt != 0)
+        if (aInfo.m_nValidKindCnt != 0)
         {
-          atLeastOne = false;
+          bAtLeastOne = false;
 
           if (i == 0)
           {
-            codeGenerator.genCode ("         return ");
+            aCodeGenerator.genCode ("         return ");
 
-            codeGenerator.genCode ("jjMoveStringLiteralDfa" + (i + 1) + LexGenJava.s_lexStateSuffix + "(");
+            aCodeGenerator.genCode ("jjMoveStringLiteralDfa" +
+                                    (i + 1) +
+                                    AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                    "(");
             int j = 0;
-            for (; j < maxLongsReqd - 1; j++)
-              if ((i + 1) <= s_maxLenForActive[j])
+            for (; j < nMaxLongsReqd - 1; j++)
+              if ((i + 1) <= strLit ().getMaxLenForActive ()[j])
               {
-                if (atLeastOne)
-                  codeGenerator.genCode (", ");
+                if (bAtLeastOne)
+                  aCodeGenerator.genCode (", ");
                 else
-                  atLeastOne = true;
+                  bAtLeastOne = true;
 
-                codeGenerator.genCode (eOutputLanguage.getLongHex (info.m_validKinds[j]));
+                aCodeGenerator.genCode (eOutputLanguage.getLongHex (aInfo.m_aValidKinds[j]));
               }
 
-            if ((i + 1) <= s_maxLenForActive[j])
+            if ((i + 1) <= strLit ().getMaxLenForActive ()[j])
             {
-              if (atLeastOne)
-                codeGenerator.genCode (", ");
+              if (bAtLeastOne)
+                aCodeGenerator.genCode (", ");
 
-              codeGenerator.genCode (eOutputLanguage.getLongHex (info.m_validKinds[j]));
+              aCodeGenerator.genCode (eOutputLanguage.getLongHex (aInfo.m_aValidKinds[j]));
             }
-            codeGenerator.genCodeLine (");");
+            aCodeGenerator.genCodeLine (");");
           }
           else
           {
-            codeGenerator.genCode ("         return ");
+            aCodeGenerator.genCode ("         return ");
 
-            codeGenerator.genCode ("jjMoveStringLiteralDfa" + (i + 1) + LexGenJava.s_lexStateSuffix + "(");
+            aCodeGenerator.genCode ("jjMoveStringLiteralDfa" +
+                                    (i + 1) +
+                                    AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                    "(");
 
             int j = 0;
-            for (; j < maxLongsReqd - 1; j++)
-              if ((i + 1) <= s_maxLenForActive[j] + 1)
+            for (; j < nMaxLongsReqd - 1; j++)
+              if ((i + 1) <= strLit ().getMaxLenForActive ()[j] + 1)
               {
-                if (atLeastOne)
-                  codeGenerator.genCode (", ");
+                if (bAtLeastOne)
+                  aCodeGenerator.genCode (", ");
                 else
-                  atLeastOne = true;
+                  bAtLeastOne = true;
 
-                if (info.m_validKinds[j] != 0L)
-                  codeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongHex (info.m_validKinds[j]));
+                if (aInfo.m_aValidKinds[j] != 0L)
+                  aCodeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongHex (aInfo.m_aValidKinds[j]));
                 else
-                  codeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongPlain (0));
+                  aCodeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongPlain (0));
               }
 
-            if ((i + 1) <= s_maxLenForActive[j] + 1)
+            if ((i + 1) <= strLit ().getMaxLenForActive ()[j] + 1)
             {
-              if (atLeastOne)
-                codeGenerator.genCode (", ");
-              if (info.m_validKinds[j] != 0L)
-                codeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongHex (info.m_validKinds[j]));
+              if (bAtLeastOne)
+                aCodeGenerator.genCode (", ");
+              if (aInfo.m_aValidKinds[j] != 0L)
+                aCodeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongHex (aInfo.m_aValidKinds[j]));
               else
-                codeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongPlain (0));
+                aCodeGenerator.genCode ("active" + j + ", " + eOutputLanguage.getLongPlain (0));
             }
 
-            codeGenerator.genCodeLine (");");
+            aCodeGenerator.genCodeLine (");");
           }
         }
         else
         {
           // A very special case.
-          if (i == 0 && LexGenJava.s_mixed[LexGenJava.s_lexStateIndex])
+          if (i == 0 &&
+              AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
           {
-            if (NfaState.s_generatedStates != 0)
-              codeGenerator.genCodeLine ("         return jjMoveNfa" +
-                                         LexGenJava.s_lexStateSuffix +
-                                         "(" +
-                                         NfaState.initStateName () +
-                                         ", 0);");
+            if (aNfa.getGeneratedStates () != 0)
+              aCodeGenerator.genCodeLine ("         return jjMoveNfa" +
+                                          AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                          "(" +
+                                          NfaState.initStateName () +
+                                          ", 0);");
             else
-              codeGenerator.genCodeLine ("         return 1;");
+              aCodeGenerator.genCodeLine ("         return 1;");
           }
           else
-            if (i != 0) // No more str literals to look for
+            // No more str literals to look for
+            if (i != 0)
             {
-              codeGenerator.genCodeLine ("         break;");
-              startNfaNeeded = true;
+              aCodeGenerator.genCodeLine ("         break;");
+              bStartNfaNeeded = true;
             }
         }
       }
 
       /*
-       * default means that the current character is not in any of the strings
-       * at this position.
+       * default means that the current character is not in any of the strings at this position.
        */
-      codeGenerator.genCodeLine ("      default :");
+      aCodeGenerator.genCodeLine ("      default :");
 
       if (Options.isDebugTokenManager ())
       {
-        switch (eOutputLanguage)
-        {
-          case JAVA:
-            codeGenerator.genCodeLine ("      debugStream.println(\"   No string literal matches possible.\");");
-            break;
-          case CPP:
-            codeGenerator.genCodeLine ("      fprintf(debugStream, \"   No string literal matches possible.\\n\");");
-            break;
-          default:
-            throw new UnsupportedOutputLanguageException (eOutputLanguage);
-        }
+        TokenManagerDebug.genMessage (aCodeGenerator, "      ", "   No string literal matches possible.");
       }
 
-      if (NfaState.s_generatedStates != 0)
+      if (aNfa.getGeneratedStates () != 0)
       {
         if (i == 0)
         {
           /*
-           * This means no string literal is possible. Just move nfa with this
-           * guy and return.
+           * This means no string literal is possible. Just move nfa with this guy and return.
            */
-          codeGenerator.genCodeLine ("         return jjMoveNfa" + LexGenJava.s_lexStateSuffix + "(" + NfaState.initStateName () + ", 0);");
+          aCodeGenerator.genCodeLine ("         return jjMoveNfa" +
+                                      AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                      "(" +
+                                      NfaState.initStateName () +
+                                      ", 0);");
         }
         else
         {
-          codeGenerator.genCodeLine ("         break;");
-          startNfaNeeded = true;
+          aCodeGenerator.genCodeLine ("         break;");
+          bStartNfaNeeded = true;
         }
       }
       else
       {
-        codeGenerator.genCodeLine ("         return " + (i + 1) + ";");
+        aCodeGenerator.genCodeLine ("         return " + (i + 1) + ";");
       }
 
-      codeGenerator.genCodeLine ("   }");
+      aCodeGenerator.genCodeLine ("   }");
 
       if (i != 0)
       {
-        if (startNfaNeeded)
+        if (bStartNfaNeeded)
         {
-          if (!LexGenJava.s_mixed[LexGenJava.s_lexStateIndex] && NfaState.s_generatedStates != 0)
+          if (!AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] &&
+              aNfa.getGeneratedStates () != 0)
           {
             /*
-             * Here, a string literal is successfully matched and no more string
-             * literals are possible. So set the kind and state set upto and
-             * including this position for the matched string.
+             * Here, a string literal is successfully matched and no more string literals are
+             * possible. So set the kind and state set upto and including this position for the
+             * matched string.
              */
 
-            codeGenerator.genCode ("   return jjStartNfa" + LexGenJava.s_lexStateSuffix + "(" + (i - 1) + ", ");
+            aCodeGenerator.genCode ("   return jjStartNfa" +
+                                    AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                    "(" +
+                                    (i - 1) +
+                                    ", ");
 
             int k = 0;
-            for (; k < maxLongsReqd - 1; k++)
+            for (; k < nMaxLongsReqd - 1; k++)
             {
-              if (i <= s_maxLenForActive[k])
-                codeGenerator.genCode ("active" + k + ", ");
+              if (i <= strLit ().getMaxLenForActive ()[k])
+                aCodeGenerator.genCode ("active" + k + ", ");
               else
-                codeGenerator.genCode ("0L, ");
+                aCodeGenerator.genCode ("0L, ");
             }
-            if (i <= s_maxLenForActive[k])
-              codeGenerator.genCodeLine ("active" + k + ");");
+            if (i <= strLit ().getMaxLenForActive ()[k])
+              aCodeGenerator.genCodeLine ("active" + k + ");");
             else
-              codeGenerator.genCodeLine ("0L);");
+              aCodeGenerator.genCodeLine ("0L);");
           }
           else
-            if (NfaState.s_generatedStates != 0)
-              codeGenerator.genCodeLine ("   return jjMoveNfa" +
-                                         LexGenJava.s_lexStateSuffix +
-                                         "(" +
-                                         NfaState.initStateName () +
-                                         ", " +
-                                         i +
-                                         ");");
+            if (aNfa.getGeneratedStates () != 0)
+              aCodeGenerator.genCodeLine ("   return jjMoveNfa" +
+                                          AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                          "(" +
+                                          NfaState.initStateName () +
+                                          ", " +
+                                          i +
+                                          ");");
             else
-              codeGenerator.genCodeLine ("   return " + (i + 1) + ";");
+              aCodeGenerator.genCodeLine ("   return " + (i + 1) + ";");
         }
       }
 
-      codeGenerator.genCodeLine ("}");
+      aCodeGenerator.genCodeLine ("}");
     }
 
-    if (!LexGenJava.s_mixed[LexGenJava.s_lexStateIndex] && NfaState.s_generatedStates != 0 && createStartNfa)
-      dumpStartWithStates (codeGenerator);
+    if (!AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] &&
+        aNfa.getGeneratedStates () != 0 &&
+        bCreateStartNfa)
+      dumpStartWithStates (aCodeGenerator);
   }
 
-  static final int getStrKind (final String str)
+  static int getStrKind (final String sStr)
   {
-    for (int i = 0; i < s_maxStrKind; i++)
+    // Both of these walk a ThreadLocal, so resolve them once instead of four times per literal
+    final StringLiteralBuildState aStrLit = strLit ();
+    final LexerState aLexer = AbstractLexGenJavaLike.lexer ();
+    final int nMaxStrKind = aStrLit.getMaxStrKind ();
+    final int [] aLexStates = aLexer.getLexStates ();
+    final int nLexStateIndex = aLexer.getLexStateIndex ();
+    final String [] aAllImages = aStrLit.getAllImages ();
+
+    for (int i = 0; i < nMaxStrKind; i++)
     {
-      if (LexGenJava.s_lexStates[i] != LexGenJava.s_lexStateIndex)
+      if (aLexStates[i] != nLexStateIndex)
         continue;
 
-      final String image = s_allImages[i];
-      if (image != null && image.equals (str))
+      final String sImage = aAllImages[i];
+      if (sImage != null && sImage.equals (sStr))
         return i;
     }
 
     return Integer.MAX_VALUE;
   }
 
-  public static void generateNfaStartStates (final CodeGenerator codeGenerator, final NfaState initialState)
+  /**
+   * Work out, for each position in the literals, which NFA states a match can continue into, and
+   * write the jjStopStringLiteralDfa methods that hand them over.
+   *
+   * @param aCodeGenerator
+   *        The generator to write to. May not be <code>null</code>.
+   * @param aInitialState
+   *        The state a match starts in. May not be <code>null</code>.
+   */
+  public static void generateNfaStartStates (final AbstractCodeGenerator aCodeGenerator,
+                                             @NonNull final NfaState aInitialState)
   {
-    final boolean [] seen = new boolean [NfaState.s_generatedStates];
-    final Map <String, String> stateSets = new HashMap <> ();
-    String stateSetString = "";
+    final boolean [] aSeen = new boolean [NfaState.nfa ().getGeneratedStates ()];
+    final Map <String, String> aStateSets = new HashMap <> ();
+    String sStateSetString = "";
     int i, j, kind, jjmatchedPos = 0;
-    final int maxKindsReqd = s_maxStrKind / 64 + 1;
-    long [] actives;
-    List <NfaState> newStates = new ArrayList <> ();
-    List <NfaState> oldStates = null;
-    List <NfaState> jjtmpStates;
+    final int nMaxKindsReqd = strLit ().getMaxStrKind () / 64 + 1;
+    long [] aActives;
+    List <NfaState> aNewStates = new ArrayList <> ();
+    List <NfaState> aOldStates = null;
+    List <NfaState> aJjtmpStates;
 
-    s_statesForPos = GenericReflection.uncheckedCast (new Map [s_maxLen]);
-    s_aIntermediateKinds = new int [s_maxStrKind + 1] [];
-    s_intermediateMatchedPos = new int [s_maxStrKind + 1] [];
+    strLit ().setStatesForPos (GenericReflection.uncheckedCast (new Map [strLit ().getMaxLen ()]));
+    strLit ().setIntermediateKinds (new int [strLit ().getMaxStrKind () + 1] []);
+    strLit ().setIntermediateMatchedPos (new int [strLit ().getMaxStrKind () + 1] []);
 
-    for (i = 0; i < s_maxStrKind; i++)
+    for (i = 0; i < strLit ().getMaxStrKind (); i++)
     {
-      if (LexGenJava.s_lexStates[i] != LexGenJava.s_lexStateIndex)
+      if (AbstractLexGenJavaLike.lexer ().getLexStates ()[i] != AbstractLexGenJavaLike.lexer ().getLexStateIndex ())
         continue;
 
-      final String image = s_allImages[i];
+      final String sImage = strLit ().getAllImages ()[i];
 
-      if (image == null || image.length () < 1)
+      if (sImage == null || sImage.length () < 1)
         continue;
 
       try
       {
-        oldStates = new ArrayList <> (initialState.m_epsilonMoves);
-        if (oldStates.size () == 0)
+        aOldStates = new ArrayList <> (aInitialState.getEpsilonMoves ());
+        if (aOldStates.isEmpty ())
         {
-          dumpNfaStartStatesCode (s_statesForPos, codeGenerator);
+          dumpNfaStartStatesCode (strLit ().getStatesForPos (), aCodeGenerator);
           return;
         }
       }
       catch (final Exception e)
       {
-        JavaCCErrors.semantic_error ("Error cloning state vector");
+        JavaCCErrors.semanticError ("Error cloning state vector");
       }
 
-      s_aIntermediateKinds[i] = new int [image.length ()];
-      s_intermediateMatchedPos[i] = new int [image.length ()];
+      strLit ().getIntermediateKinds ()[i] = new int [sImage.length ()];
+      strLit ().getIntermediateMatchedPos ()[i] = new int [sImage.length ()];
       jjmatchedPos = 0;
       kind = Integer.MAX_VALUE;
 
-      for (j = 0; j < image.length (); j++)
+      for (j = 0; j < sImage.length (); j++)
       {
-        if (oldStates == null || oldStates.size () <= 0)
+        if (aOldStates == null || aOldStates.isEmpty ())
         {
           // Here, j > 0
-          kind = s_aIntermediateKinds[i][j] = s_aIntermediateKinds[i][j - 1];
-          jjmatchedPos = s_intermediateMatchedPos[i][j] = s_intermediateMatchedPos[i][j - 1];
+          kind = strLit ().getIntermediateKinds ()[i][j] = strLit ().getIntermediateKinds ()[i][j - 1];
+          jjmatchedPos = strLit ().getIntermediateMatchedPos ()[i][j] = strLit ().getIntermediateMatchedPos ()[i][j -
+                                                                                                                  1];
         }
         else
         {
-          kind = NfaState.moveFromSet (image.charAt (j), oldStates, newStates);
-          oldStates.clear ();
+          kind = NfaState.moveFromSet (sImage.charAt (j), aOldStates, aNewStates);
+          aOldStates.clear ();
 
           if (j == 0 &&
               kind != Integer.MAX_VALUE &&
-              LexGenJava.s_canMatchAnyChar[LexGenJava.s_lexStateIndex] != -1 &&
-              kind > LexGenJava.s_canMatchAnyChar[LexGenJava.s_lexStateIndex])
-            kind = LexGenJava.s_canMatchAnyChar[LexGenJava.s_lexStateIndex];
+              AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                          .getLexStateIndex ()] != -1 &&
+              kind > AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                                 .getLexStateIndex ()])
+            kind = AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                               .getLexStateIndex ()];
 
-          if (getStrKind (image.substring (0, j + 1)) < kind)
+          if (getStrKind (sImage.substring (0, j + 1)) < kind)
           {
-            s_aIntermediateKinds[i][j] = kind = Integer.MAX_VALUE;
+            strLit ().getIntermediateKinds ()[i][j] = kind = Integer.MAX_VALUE;
             jjmatchedPos = 0;
           }
           else
             if (kind != Integer.MAX_VALUE)
             {
-              s_aIntermediateKinds[i][j] = kind;
-              jjmatchedPos = s_intermediateMatchedPos[i][j] = j;
+              strLit ().getIntermediateKinds ()[i][j] = kind;
+              jjmatchedPos = strLit ().getIntermediateMatchedPos ()[i][j] = j;
             }
             else
               if (j == 0)
-                kind = s_aIntermediateKinds[i][j] = Integer.MAX_VALUE;
+                kind = strLit ().getIntermediateKinds ()[i][j] = Integer.MAX_VALUE;
               else
               {
-                kind = s_aIntermediateKinds[i][j] = s_aIntermediateKinds[i][j - 1];
-                jjmatchedPos = s_intermediateMatchedPos[i][j] = s_intermediateMatchedPos[i][j - 1];
+                kind = strLit ().getIntermediateKinds ()[i][j] = strLit ().getIntermediateKinds ()[i][j - 1];
+                jjmatchedPos = strLit ().getIntermediateMatchedPos ()[i][j] = strLit ().getIntermediateMatchedPos ()[i][j -
+                                                                                                                        1];
               }
 
-          stateSetString = NfaState.getStateSetString (newStates);
+          sStateSetString = NfaState.getStateSetString (aNewStates);
         }
 
-        if (kind == Integer.MAX_VALUE && (newStates == null || newStates.size () == 0))
+        if (kind == Integer.MAX_VALUE && (aNewStates == null || aNewStates.isEmpty ()))
           continue;
 
         int p;
-        if (stateSets.get (stateSetString) == null)
+        if (aStateSets.get (sStateSetString) == null)
         {
-          stateSets.put (stateSetString, stateSetString);
-          for (p = 0; p < newStates.size (); p++)
+          aStateSets.put (sStateSetString, sStateSetString);
+          for (p = 0; p < aNewStates.size (); p++)
           {
-            if (seen[newStates.get (p).m_stateName])
-              newStates.get (p).m_inNextOf++;
+            final NfaState aNewState = aNewStates.get (p);
+            if (aSeen[aNewState.getStateName ()])
+              aNewState.setInNextOf (aNewState.getInNextOf () + 1);
             else
-              seen[newStates.get (p).m_stateName] = true;
+              aSeen[aNewState.getStateName ()] = true;
           }
         }
         else
         {
-          for (p = 0; p < newStates.size (); p++)
-            seen[newStates.get (p).m_stateName] = true;
+          for (p = 0; p < aNewStates.size (); p++)
+            aSeen[aNewStates.get (p).getStateName ()] = true;
         }
 
-        jjtmpStates = oldStates;
-        oldStates = newStates;
-        (newStates = jjtmpStates).clear ();
+        aJjtmpStates = aOldStates;
+        aOldStates = aNewStates;
+        (aNewStates = aJjtmpStates).clear ();
 
-        if (s_statesForPos[j] == null)
-          s_statesForPos[j] = new HashMap <> ();
+        if (strLit ().getStatesForPos ()[j] == null)
+          strLit ().getStatesForPos ()[j] = new HashMap <> ();
 
-        actives = s_statesForPos[j].computeIfAbsent (kind + ", " + jjmatchedPos + ", " + stateSetString, k -> new long [maxKindsReqd]);
+        aActives = strLit ().getStatesForPos ()[j].computeIfAbsent (kind + ", " + jjmatchedPos + ", " + sStateSetString,
+                                                                    k -> new long [nMaxKindsReqd]);
 
-        actives[i / 64] |= 1L << (i % 64);
+        aActives[i / 64] |= 1L << (i % 64);
         // String name = NfaState.StoreStateSet(stateSetString);
       }
     }
 
-    // TODO(Sreeni) : Fix this mess.
-    if (Options.getTokenManagerCodeGenerator () == null)
-    {
-      dumpNfaStartStatesCode (s_statesForPos, codeGenerator);
-    }
+    dumpNfaStartStatesCode (strLit ().getStatesForPos (), aCodeGenerator);
   }
 
-  static void dumpNfaStartStatesCode (final Map <String, long []> [] statesForPos, final CodeGenerator codeGenerator)
+  static void dumpNfaStartStatesCode (@NonNull final Map <String, long []> [] aStatesForPos,
+                                      @NonNull final AbstractCodeGenerator aCodeGenerator)
   {
-    if (s_maxStrKind == 0)
-    { // No need to generate this function
+    if (strLit ().getMaxStrKind () == 0)
+    {
+      // No need to generate this function
       return;
     }
 
-    final EOutputLanguage eOutputLanguage = codeGenerator.getOutputLanguage ();
+    final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     int i;
-    final int maxKindsReqd = s_maxStrKind / 64 + 1;
-    boolean condGenerated = false;
-    int ind = 0;
+    final int nMaxKindsReqd = strLit ().getMaxStrKind () / 64 + 1;
+    boolean bCondGenerated = false;
+    int nInd = 0;
 
-    final StringBuilder params = new StringBuilder ();
-    for (i = 0; i < maxKindsReqd - 1; i++)
-      params.append (eOutputLanguage.getTypeLong () + " active" + i + ", ");
-    params.append (eOutputLanguage.getTypeLong () + " active" + i + ")");
+    final StringBuilder aParams = new StringBuilder ();
+    for (i = 0; i < nMaxKindsReqd - 1; i++)
+      aParams.append (eOutputLanguage.getTypeLong () + " active" + i + ", ");
+    aParams.append (eOutputLanguage.getTypeLong () + " active" + i + ")");
 
-    switch (eOutputLanguage)
-    {
-      case JAVA:
-        codeGenerator.genCode ("private final int jjStopStringLiteralDfa" + LexGenJava.s_lexStateSuffix + "(int pos, " + params);
-        break;
-      case CPP:
-        codeGenerator.generateMethodDefHeader (" int",
-                                               LexGenJava.s_tokMgrClassName,
-                                               "jjStopStringLiteralDfa" + LexGenJava.s_lexStateSuffix + "(int pos, " + params);
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
+    aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private final") + "int",
+                                            AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
+                                            "jjStopStringLiteralDfa" +
+                                                                                                     AbstractLexGenJavaLike.lexer ()
+                                                                                                                           .getLexStateSuffix () +
+                                                                                                     "(int pos, " +
+                                                                                                     aParams,
+                                            null,
+                                            false);
 
-    codeGenerator.genCodeLine ("{");
+    aCodeGenerator.genCodeLine ("{");
 
     if (Options.isDebugTokenManager ())
     {
-      switch (eOutputLanguage)
-      {
-        case JAVA:
-          codeGenerator.genCodeLine ("      debugStream.println(\"   No more string literal token matches are possible.\");");
-          break;
-        case CPP:
-          codeGenerator.genCodeLine ("      fprintf(debugStream, \"   No more string literal token matches are possible.\");");
-          break;
-        default:
-          throw new UnsupportedOutputLanguageException (eOutputLanguage);
-      }
+      TokenManagerDebug.genMessage (aCodeGenerator, "      ", "   No more string literal token matches are possible.");
     }
 
-    codeGenerator.genCodeLine ("   switch (pos)");
-    codeGenerator.genCodeLine ("   {");
+    aCodeGenerator.genCodeLine ("   switch (pos)");
+    aCodeGenerator.genCodeLine ("   {");
 
-    for (i = 0; i < s_maxLen - 1; i++)
+    for (i = 0; i < strLit ().getMaxLen () - 1; i++)
     {
-      if (statesForPos[i] == null)
+      if (aStatesForPos[i] == null)
         continue;
 
-      codeGenerator.genCodeLine ("      case " + i + ":");
+      aCodeGenerator.genCodeLine ("      case " + i + ":");
 
-      for (final Map.Entry <String, long []> aEntry : statesForPos[i].entrySet ())
+      for (final Map.Entry <String, long []> aEntry : aStatesForPos[i].entrySet ())
       {
-        String stateSetString = aEntry.getKey ();
-        final long [] actives = aEntry.getValue ();
+        String sStateSetString = aEntry.getKey ();
+        final long [] aActives = aEntry.getValue ();
 
-        for (int j = 0; j < maxKindsReqd; j++)
+        for (int j = 0; j < nMaxKindsReqd; j++)
         {
-          if (actives[j] == 0L)
+          if (aActives[j] == 0L)
             continue;
 
-          if (condGenerated)
-            codeGenerator.genCode (" || ");
+          if (bCondGenerated)
+            aCodeGenerator.genCode (" || ");
           else
-            codeGenerator.genCode ("         if (");
+            aCodeGenerator.genCode ("         if (");
 
-          condGenerated = true;
+          bCondGenerated = true;
 
-          codeGenerator.genCode ("(active" +
-                                 j +
-                                 " & " +
-                                 eOutputLanguage.getLongHex (actives[j]) +
-                                 ") != " +
-                                 eOutputLanguage.getLongPlain (0));
+          aCodeGenerator.genCode ("(active" +
+                                  j +
+                                  " & " +
+                                  eOutputLanguage.getLongHex (aActives[j]) +
+                                  ") != " +
+                                  eOutputLanguage.getLongPlain (0));
         }
 
-        if (condGenerated)
+        if (bCondGenerated)
         {
-          codeGenerator.genCodeLine (")");
+          aCodeGenerator.genCodeLine (")");
 
-          String kindStr = stateSetString.substring (0, ind = stateSetString.indexOf (", "));
-          String afterKind = stateSetString.substring (ind + 2);
-          final int jjmatchedPos = Integer.parseInt (afterKind.substring (0, afterKind.indexOf (", ")));
+          String sKindStr = sStateSetString.substring (0, nInd = sStateSetString.indexOf (", "));
+          String sAfterKind = sStateSetString.substring (nInd + 2);
+          final int nJjmatchedPos = Integer.parseInt (sAfterKind.substring (0, sAfterKind.indexOf (", ")));
 
-          if (!kindStr.equals (String.valueOf (Integer.MAX_VALUE)))
-            codeGenerator.genCodeLine ("         {");
+          if (!sKindStr.equals (String.valueOf (Integer.MAX_VALUE)))
+            aCodeGenerator.genCodeLine ("         {");
 
-          if (!kindStr.equals (String.valueOf (Integer.MAX_VALUE)))
+          if (!sKindStr.equals (String.valueOf (Integer.MAX_VALUE)))
           {
             if (i == 0)
             {
-              codeGenerator.genCodeLine ("            jjmatchedKind = " + kindStr + ";");
+              aCodeGenerator.genCodeLine ("            jjmatchedKind = " + sKindStr + ";");
 
-              if ((LexGenJava.s_initMatch[LexGenJava.s_lexStateIndex] != 0 &&
-                   LexGenJava.s_initMatch[LexGenJava.s_lexStateIndex] != Integer.MAX_VALUE))
-                codeGenerator.genCodeLine ("            jjmatchedPos = 0;");
+              if ((AbstractLexGenJavaLike.lexer ().getInitMatch ()[AbstractLexGenJavaLike.lexer ()
+                                                                                         .getLexStateIndex ()] != 0 &&
+                   AbstractLexGenJavaLike.lexer ().getInitMatch ()[AbstractLexGenJavaLike.lexer ()
+                                                                                         .getLexStateIndex ()] != Integer.MAX_VALUE))
+                aCodeGenerator.genCodeLine ("            jjmatchedPos = 0;");
             }
             else
-              if (i == jjmatchedPos)
+              if (i == nJjmatchedPos)
               {
-                if (s_subStringAtPos[i])
+                if (strLit ().getSubStringAtPos ()[i])
                 {
-                  codeGenerator.genCodeLine ("            if (jjmatchedPos != " + i + ")");
-                  codeGenerator.genCodeLine ("            {");
-                  codeGenerator.genCodeLine ("               jjmatchedKind = " + kindStr + ";");
-                  codeGenerator.genCodeLine ("               jjmatchedPos = " + i + ";");
-                  codeGenerator.genCodeLine ("            }");
+                  aCodeGenerator.genCodeLine ("            if (jjmatchedPos != " + i + ")");
+                  aCodeGenerator.genCodeLine ("            {");
+                  aCodeGenerator.genCodeLine ("               jjmatchedKind = " + sKindStr + ";");
+                  aCodeGenerator.genCodeLine ("               jjmatchedPos = " + i + ";");
+                  aCodeGenerator.genCodeLine ("            }");
                 }
                 else
                 {
-                  codeGenerator.genCodeLine ("            jjmatchedKind = " + kindStr + ";");
-                  codeGenerator.genCodeLine ("            jjmatchedPos = " + i + ";");
+                  aCodeGenerator.genCodeLine ("            jjmatchedKind = " + sKindStr + ";");
+                  aCodeGenerator.genCodeLine ("            jjmatchedPos = " + i + ";");
                 }
               }
               else
               {
-                if (jjmatchedPos > 0)
-                  codeGenerator.genCodeLine ("            if (jjmatchedPos < " + jjmatchedPos + ")");
+                if (nJjmatchedPos > 0)
+                  aCodeGenerator.genCodeLine ("            if (jjmatchedPos < " + nJjmatchedPos + ")");
                 else
-                  codeGenerator.genCodeLine ("            if (jjmatchedPos == 0)");
-                codeGenerator.genCodeLine ("            {");
-                codeGenerator.genCodeLine ("               jjmatchedKind = " + kindStr + ";");
-                codeGenerator.genCodeLine ("               jjmatchedPos = " + jjmatchedPos + ";");
-                codeGenerator.genCodeLine ("            }");
+                  aCodeGenerator.genCodeLine ("            if (jjmatchedPos == 0)");
+                aCodeGenerator.genCodeLine ("            {");
+                aCodeGenerator.genCodeLine ("               jjmatchedKind = " + sKindStr + ";");
+                aCodeGenerator.genCodeLine ("               jjmatchedPos = " + nJjmatchedPos + ";");
+                aCodeGenerator.genCodeLine ("            }");
               }
           }
 
-          kindStr = stateSetString.substring (0, ind = stateSetString.indexOf (", "));
-          afterKind = stateSetString.substring (ind + 2);
-          stateSetString = afterKind.substring (afterKind.indexOf (", ") + 2);
+          sKindStr = sStateSetString.substring (0, nInd = sStateSetString.indexOf (", "));
+          sAfterKind = sStateSetString.substring (nInd + 2);
+          sStateSetString = sAfterKind.substring (sAfterKind.indexOf (", ") + 2);
 
-          if (stateSetString.equals ("null;"))
-            codeGenerator.genCodeLine ("            return -1;");
+          if (sStateSetString.equals ("null;"))
+            aCodeGenerator.genCodeLine ("            return -1;");
           else
-            codeGenerator.genCodeLine ("            return " + NfaState.addStartStateSet (stateSetString) + ";");
+            aCodeGenerator.genCodeLine ("            return " + NfaState.addStartStateSet (sStateSetString) + ";");
 
-          if (!kindStr.equals (String.valueOf (Integer.MAX_VALUE)))
-            codeGenerator.genCodeLine ("         }");
-          condGenerated = false;
+          if (!sKindStr.equals (String.valueOf (Integer.MAX_VALUE)))
+            aCodeGenerator.genCodeLine ("         }");
+          bCondGenerated = false;
         }
       }
 
-      codeGenerator.genCodeLine ("         return -1;");
+      aCodeGenerator.genCodeLine ("         return -1;");
     }
 
-    codeGenerator.genCodeLine ("      default :");
-    codeGenerator.genCodeLine ("         return -1;");
-    codeGenerator.genCodeLine ("   }");
-    codeGenerator.genCodeLine ("}");
+    aCodeGenerator.genCodeLine ("      default :");
+    aCodeGenerator.genCodeLine ("         return -1;");
+    aCodeGenerator.genCodeLine ("   }");
+    aCodeGenerator.genCodeLine ("}");
 
-    params.setLength (0);
-    params.append ("(int pos, ");
-    for (i = 0; i < maxKindsReqd - 1; i++)
-      params.append (eOutputLanguage.getTypeLong () + " active" + i + ", ");
-    params.append (eOutputLanguage.getTypeLong () + " active" + i + ")");
+    aParams.setLength (0);
+    aParams.append ("(int pos, ");
+    for (i = 0; i < nMaxKindsReqd - 1; i++)
+      aParams.append (eOutputLanguage.getTypeLong () + " active" + i + ", ");
+    aParams.append (eOutputLanguage.getTypeLong () + " active" + i + ")");
 
-    switch (eOutputLanguage)
+    aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private final") + "int",
+                                            AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
+                                            "jjStartNfa" +
+                                                                                                     AbstractLexGenJavaLike.lexer ()
+                                                                                                                           .getLexStateSuffix () +
+                                                                                                     aParams,
+                                            null,
+                                            false);
+    aCodeGenerator.genCodeLine ("{");
+
+    if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
     {
-      case JAVA:
-        codeGenerator.genCode ("private final int jjStartNfa" + LexGenJava.s_lexStateSuffix + params);
-        break;
-      case CPP:
-        codeGenerator.generateMethodDefHeader ("int ", LexGenJava.s_tokMgrClassName, "jjStartNfa" + LexGenJava.s_lexStateSuffix + params);
-        break;
-      default:
-        throw new UnsupportedOutputLanguageException (eOutputLanguage);
-    }
-    codeGenerator.genCodeLine ("{");
-
-    if (LexGenJava.s_mixed[LexGenJava.s_lexStateIndex])
-    {
-      if (NfaState.s_generatedStates != 0)
-        codeGenerator.genCodeLine ("   return jjMoveNfa" + LexGenJava.s_lexStateSuffix + "(" + NfaState.initStateName () + ", pos + 1);");
+      if (NfaState.nfa ().getGeneratedStates () != 0)
+        aCodeGenerator.genCodeLine ("   return jjMoveNfa" +
+                                    AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                    "(" +
+                                    NfaState.initStateName () +
+                                    ", pos + 1);");
       else
-        codeGenerator.genCodeLine ("   return pos + 1;");
+        aCodeGenerator.genCodeLine ("   return pos + 1;");
 
-      codeGenerator.genCodeLine ("}");
+      aCodeGenerator.genCodeLine ("}");
       return;
     }
 
-    codeGenerator.genCode ("   return jjMoveNfa" +
-                           LexGenJava.s_lexStateSuffix +
-                           "(" +
-                           "jjStopStringLiteralDfa" +
-                           LexGenJava.s_lexStateSuffix +
-                           "(pos, ");
-    for (i = 0; i < maxKindsReqd - 1; i++)
-      codeGenerator.genCode ("active" + i + ", ");
-    codeGenerator.genCode ("active" + i + ")");
-    codeGenerator.genCodeLine (", pos + 1);");
-    codeGenerator.genCodeLine ("}");
-  }
-
-  /**
-   * Return to original state.
-   */
-  public static void reInit ()
-  {
-    reInitStatic ();
-
-    s_charCnt = 0;
-    s_allImages = null;
-    boilerPlateDumped = false;
+    aCodeGenerator.genCode ("   return jjMoveNfa" +
+                            AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                            "(" +
+                            "jjStopStringLiteralDfa" +
+                            AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                            "(pos, ");
+    for (i = 0; i < nMaxKindsReqd - 1; i++)
+      aCodeGenerator.genCode ("active" + i + ", ");
+    aCodeGenerator.genCode ("active" + i + ")");
+    aCodeGenerator.genCodeLine (", pos + 1);");
+    aCodeGenerator.genCodeLine ("}");
   }
 
   @Override
-  public StringBuilder dump (final int indent, final Set <? super Expansion> alreadyDumped)
+  public StringBuilder dump (final int nIndent, final Set <? super Expansion> aAlreadyDumped)
   {
-    final StringBuilder sb = super.dump (indent, alreadyDumped).append (' ').append (m_image);
-    return sb;
+    final StringBuilder aSB = super.dump (nIndent, aAlreadyDumped).append (' ').append (m_sImage);
+    return aSB;
   }
 
   @Override
   public String toString ()
   {
-    return super.toString () + " - " + m_image;
+    return super.toString () + " - " + m_sImage;
   }
 
   /*
-   * static void GenerateData(TokenizerData tokenizerData) { Map tab; String
-   * key; KindInfo info; for (int i = 0; i < maxLen; i++) { tab =
-   * (Map)charPosKind.get(i); String[] keys = ReArrange(tab); if
-   * (Options.getIgnoreCase()) { for (String s : keys) { char c = s.charAt(0);
-   * tab.put(Character.toLowerCase(c), tab.get(c));
-   * tab.put(Character.toUpperCase(c), tab.get(c)); } } for (int q = 0; q <
-   * keys.length; q++) { key = keys[q]; info = (KindInfo)tab.get(key); char c =
-   * key.charAt(0); for (int kind : info.finalKindSet) {
-   * tokenizerData.addDfaFinalKindAndState( i, c, kind, GetStateSetForKind(i,
-   * kind)); } for (int kind : info.validKindSet) {
-   * tokenizerData.addDfaValidKind(i, c, kind); } } } for (int i = 0; i <
-   * maxLen; i++) { Enumeration e = statesForPos[i].keys(); while
-   * (e.hasMoreElements()) { String stateSetString = (String)e.nextElement();
-   * long[] actives = (long[])statesForPos[i].get(stateSetString); int ind =
-   * stateSetString.indexOf(", "); String kindStr = stateSetString.substring(0,
-   * ind); String afterKind = stateSetString.substring(ind + 2); stateSetString
-   * = afterKind.substring(afterKind.indexOf(", ") + 2); BitSet bits =
-   * BitSet.valueOf(actives); for (int j = 0; j < bits.length(); j++) { if
-   * (bits.get(j)) tokenizerData.addFinalDfaKind(j); } // Pos
-   * codeGenerator.genCode( ", " + afterKind.substring(0,
-   * afterKind.indexOf(", "))); // Kind codeGenerator.genCode(", " + kindStr);
-   * // State if (stateSetString.equals("null;")) {
-   * codeGenerator.genCodeLine(", -1"); } else { codeGenerator.genCodeLine( ", "
-   * + NfaState.AddStartStateSet(stateSetString)); } }
-   * codeGenerator.genCode("}"); } codeGenerator.genCodeLine("};"); }
+   * static void GenerateData(TokenizerData tokenizerData) { Map tab; String key; KindInfo info; for
+   * (int i = 0; i < maxLen; i++) { tab = (Map)charPosKind.get(i); String[] keys = ReArrange(tab);
+   * if (Options.getIgnoreCase()) { for (String s : keys) { char c = s.charAt(0);
+   * tab.put(Character.toLowerCase(c), tab.get(c)); tab.put(Character.toUpperCase(c), tab.get(c)); }
+   * } for (int q = 0; q < keys.length; q++) { key = keys[q]; info = (KindInfo)tab.get(key); char c
+   * = key.charAt(0); for (int kind : info.finalKindSet) { tokenizerData.addDfaFinalKindAndState( i,
+   * c, kind, GetStateSetForKind(i, kind)); } for (int kind : info.validKindSet) {
+   * tokenizerData.addDfaValidKind(i, c, kind); } } } for (int i = 0; i < maxLen; i++) { Enumeration
+   * e = statesForPos[i].keys(); while (e.hasMoreElements()) { String stateSetString =
+   * (String)e.nextElement(); long[] actives = (long[])statesForPos[i].get(stateSetString); int ind
+   * = stateSetString.indexOf(", "); String kindStr = stateSetString.substring(0, ind); String
+   * afterKind = stateSetString.substring(ind + 2); stateSetString =
+   * afterKind.substring(afterKind.indexOf(", ") + 2); BitSet bits = BitSet.valueOf(actives); for
+   * (int j = 0; j < bits.length(); j++) { if (bits.get(j)) tokenizerData.addFinalDfaKind(j); } //
+   * Pos codeGenerator.genCode( ", " + afterKind.substring(0, afterKind.indexOf(", "))); // Kind
+   * codeGenerator.genCode(", " + kindStr); // State if (stateSetString.equals("null;")) {
+   * codeGenerator.genCodeLine(", -1"); } else { codeGenerator.genCodeLine( ", " +
+   * NfaState.AddStartStateSet(stateSetString)); } } codeGenerator.genCode("}"); }
+   * codeGenerator.genCodeLine("};"); }
    */
 
-  static final Map <Integer, List <String>> literalsByLength = new HashMap <> ();
-  static final Map <Integer, List <Integer>> literalKinds = new HashMap <> ();
-  static final Map <Integer, Integer> kindToLexicalState = new HashMap <> ();
-  static final Map <Integer, NfaState> nfaStateMap = new HashMap <> ();
-
-  public static void updateStringLiteralData (final int lexStateIndex)
+  /**
+   * Hand the string literals of one lexical state over to the TokenizerData that JavaCCInterpreter
+   * runs.
+   *
+   * @param nLexStateIndex
+   *        The lexical state.
+   */
+  public static void updateStringLiteralData (final int nLexStateIndex)
   {
-    for (int kind = 0; kind < s_allImages.length; kind++)
+    for (int nKind = 0; nKind < strLit ().getAllImages ().length; nKind++)
     {
-      if (StringHelper.isEmpty (s_allImages[kind]) || LexGenJava.s_lexStates[kind] != lexStateIndex)
+      if (StringHelper.isEmpty (strLit ().getAllImages ()[nKind]) ||
+          AbstractLexGenJavaLike.lexer ().getLexStates ()[nKind] != nLexStateIndex)
       {
         continue;
       }
-      String s = s_allImages[kind];
-      int actualKind;
-      if (s_aIntermediateKinds != null &&
-          s_aIntermediateKinds[kind][s.length () - 1] != Integer.MAX_VALUE &&
-          s_aIntermediateKinds[kind][s.length () - 1] < kind)
+      String s = strLit ().getAllImages ()[nKind];
+      int nActualKind;
+      if (strLit ().getIntermediateKinds () != null &&
+          strLit ().getIntermediateKinds ()[nKind][s.length () - 1] != Integer.MAX_VALUE &&
+          strLit ().getIntermediateKinds ()[nKind][s.length () - 1] < nKind)
       {
         JavaCCErrors.warning ("Token: " +
                               s +
                               " will not be matched as " +
                               "specified. It will be matched as token " +
                               "of kind: " +
-                              s_aIntermediateKinds[kind][s.length () - 1] +
+                              strLit ().getIntermediateKinds ()[nKind][s.length () - 1] +
                               " instead.");
-        actualKind = s_aIntermediateKinds[kind][s.length () - 1];
+        nActualKind = strLit ().getIntermediateKinds ()[nKind][s.length () - 1];
       }
       else
       {
-        actualKind = kind;
+        nActualKind = nKind;
       }
-      kindToLexicalState.put (Integer.valueOf (actualKind), Integer.valueOf (lexStateIndex));
+      NfaState.tokenizerBuild ()
+              .kindToLexicalState ()
+              .put (Integer.valueOf (nActualKind), Integer.valueOf (nLexStateIndex));
       if (Options.isIgnoreCase ())
       {
         s = s.toLowerCase (Locale.US);
       }
       final char c = s.charAt (0);
-      final int key = LexGenJava.s_lexStateIndex << 16 | c;
-      List <String> l = literalsByLength.get (Integer.valueOf (key));
-      List <Integer> kinds = literalKinds.get (Integer.valueOf (key));
+      final int nKey = AbstractLexGenJavaLike.lexer ().getLexStateIndex () << 16 | c;
+      List <String> l = NfaState.tokenizerBuild ().literalsByLength ().get (Integer.valueOf (nKey));
+      List <Integer> aKinds = NfaState.tokenizerBuild ().literalKinds ().get (Integer.valueOf (nKey));
       int j = 0;
       if (l == null)
       {
-        literalsByLength.put (Integer.valueOf (key), l = new ArrayList <> ());
-        assert (kinds == null);
-        kinds = new ArrayList <> ();
-        literalKinds.put (Integer.valueOf (key), kinds = new ArrayList <> ());
+        NfaState.tokenizerBuild ().literalsByLength ().put (Integer.valueOf (nKey), l = new ArrayList <> ());
+        assert (aKinds == null);
+        aKinds = new ArrayList <> ();
+        NfaState.tokenizerBuild ().literalKinds ().put (Integer.valueOf (nKey), aKinds = new ArrayList <> ());
       }
       while (j < l.size () && l.get (j).length () > s.length ())
         j++;
       l.add (j, s);
-      kinds.add (j, Integer.valueOf (actualKind));
-      final int stateIndex = _getStateSetForKind (s.length () - 1, kind);
-      if (stateIndex != -1)
-      {
-        nfaStateMap.put (Integer.valueOf (actualKind), NfaState.getNfaState (stateIndex));
-      }
-      else
-      {
-        nfaStateMap.put (Integer.valueOf (actualKind), null);
-      }
+      aKinds.add (j, Integer.valueOf (nActualKind));
+      final int nStateIndex = _getStateSetForKind (s.length () - 1, nKind);
+      NfaState.tokenizerBuild ()
+              .nfaStateMap ()
+              .put (Integer.valueOf (nActualKind), nStateIndex == -1 ? null : NfaState.getNfaState (nStateIndex));
     }
   }
 
-  public static void BuildTokenizerData (final TokenizerData tokenizerData)
+  /**
+   * Copy the collected literals into the tokenizer description, keyed the way the interpreter looks
+   * them up.
+   *
+   * @param aTokenizerData
+   *        Where to put them. May not be <code>null</code>.
+   */
+  public static void BuildTokenizerData (@NonNull final TokenizerData aTokenizerData)
   {
-    final Map <Integer, Integer> nfaStateIndices = new HashMap <> ();
-    for (final int kind : nfaStateMap.keySet ())
+    final Map <Integer, Integer> aNfaStateIndices = new HashMap <> ();
+    for (final int kind : NfaState.tokenizerBuild ().nfaStateMap ().keySet ())
     {
-      if (nfaStateMap.get (Integer.valueOf (kind)) != null)
-      {
-        nfaStateIndices.put (Integer.valueOf (kind), Integer.valueOf (nfaStateMap.get (Integer.valueOf (kind)).m_stateName));
-      }
-      else
-      {
-        nfaStateIndices.put (Integer.valueOf (kind), Integer.valueOf (-1));
-      }
+      final NfaState aState = NfaState.tokenizerBuild ().nfaStateMap ().get (Integer.valueOf (kind));
+      aNfaStateIndices.put (Integer.valueOf (kind), Integer.valueOf (aState == null ? -1 : aState.getStateName ()));
     }
-    tokenizerData.setLiteralSequence (literalsByLength);
-    tokenizerData.setLiteralKinds (literalKinds);
-    tokenizerData.setKindToNfaStartState (nfaStateIndices);
+    aTokenizerData.setLiteralSequence (NfaState.tokenizerBuild ().literalsByLength ());
+    aTokenizerData.setLiteralKinds (NfaState.tokenizerBuild ().literalKinds ());
+    aTokenizerData.setKindToNfaStartState (aNfaStateIndices);
   }
 }

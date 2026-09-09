@@ -73,11 +73,11 @@ public final class CharSequenceCharStreamTest
   @Parameters (name = "{0}, lineColumn={1}")
   public static Collection <Object []> parameters ()
   {
-    final List <Object []> ret = new ArrayList <> ();
+    final List <Object []> aRet = new ArrayList <> ();
     for (final String sTemplate : new String [] { "classic", "modern" })
       for (final boolean bLineColumn : new boolean [] { true, false })
-        ret.add (new Object [] { sTemplate, Boolean.valueOf (bLineColumn) });
-    return ret;
+        aRet.add (new Object [] { sTemplate, Boolean.valueOf (bLineColumn) });
+    return aRet;
   }
 
   private final String m_sTemplate;
@@ -116,7 +116,8 @@ public final class CharSequenceCharStreamTest
 
   private static void _compile (final File aDir, final File... aExtraSources) throws Exception
   {
-    final List <File> aSources = new ArrayList <> (Arrays.asList (aDir.listFiles (f -> f.getName ().endsWith (".java"))));
+    final List <File> aSources = new ArrayList <> (Arrays.asList (aDir.listFiles (f -> f.getName ()
+                                                                                        .endsWith (".java"))));
     aSources.addAll (Arrays.asList (aExtraSources));
     final JavaCompiler aCompiler = ToolProvider.getSystemJavaCompiler ();
     assertNotNull ("A JDK is required to compile the generated streams", aCompiler);
@@ -126,8 +127,10 @@ public final class CharSequenceCharStreamTest
                   aCompiler.getTask (null,
                                      aManager,
                                      null,
-                                     Arrays.asList ("-d", aDir.getAbsolutePath (),
-                                                    "-classpath", System.getProperty ("java.class.path")),
+                                     Arrays.asList ("-d",
+                                                    aDir.getAbsolutePath (),
+                                                    "-classpath",
+                                                    System.getProperty ("java.class.path")),
                                      null,
                                      aManager.getJavaFileObjectsFromFiles (aSources)).call ().booleanValue ());
     }
@@ -146,14 +149,21 @@ public final class CharSequenceCharStreamTest
     // Adapt only the Reader/Provider constructors; everything else is generated code.
     final String sInput = "modern".equals (m_sTemplate) ? "new StreamProvider(r)" : "r";
     final String sAdapter = "class BufferTestStream extends CharSequenceCharStream {\n" +
-                            "  static final boolean LINE_COLUMN = " + m_bLineColumn + ";\n" +
-                            "  BufferTestStream(java.io.Reader r) { super(" + sInput + ", 1, 1, 4096); }\n" +
-                            "  void reset(java.io.Reader r, int size) { reInit(" + sInput + ", 3, 7, size); }\n" +
+                            "  static final boolean LINE_COLUMN = " +
+                            m_bLineColumn +
+                            ";\n" +
+                            "  BufferTestStream(java.io.Reader r) { super(" +
+                            sInput +
+                            ", 1, 1, 4096); }\n" +
+                            "  void reset(java.io.Reader r, int size) { reInit(" +
+                            sInput +
+                            ", 3, 7, size); }\n" +
                             "}\n";
     Files.write (new File (aDir, "BufferTestStream.java").toPath (), sAdapter.getBytes (StandardCharsets.UTF_8));
     _compile (aDir, new File ("src/test/resources/charstream/CharSequenceChecks.java"));
 
-    try (final URLClassLoader aLoader = new URLClassLoader (new URL [] { aDir.toURI ().toURL () }, getClass ().getClassLoader ()))
+    try (final URLClassLoader aLoader = new URLClassLoader (new URL [] { aDir.toURI ().toURL () },
+                                                            getClass ().getClassLoader ()))
     {
       final Result aResult = JUnitCore.runClasses (Class.forName ("CharSequenceChecks", true, aLoader));
       final StringBuilder aFailures = new StringBuilder ();
@@ -185,7 +195,7 @@ public final class CharSequenceCharStreamTest
       final Method aNext = aTMClass.getMethod ("getNextToken");
       final Class <?> aTokenClass = Class.forName ("Token", true, aLoader);
 
-      final List <String> ret = new ArrayList <> ();
+      final List <String> aRet = new ArrayList <> ();
       while (true)
       {
         final Object aToken = aNext.invoke (aTM);
@@ -202,11 +212,11 @@ public final class CharSequenceCharStreamTest
                .append (aTokenClass.getField ("endLine").getInt (aToken))
                .append (':')
                .append (aTokenClass.getField ("endColumn").getInt (aToken));
-        ret.add (aLine.toString ());
+        aRet.add (aLine.toString ());
         if (nKind == 0)
           break;
       }
-      return ret;
+      return aRet;
     }
   }
 
@@ -227,12 +237,10 @@ public final class CharSequenceCharStreamTest
 
     // Note: an empty input is not part of this - SimpleCharStream reports the EOF token at 0:0
     // because it reads back an untouched buffer slot
-    for (final String sInput : new String [] { "abc",
-                                               "abc;\r\ndef;\rghi;\njkl",
-                                               "\t\tabc\t;\tdef",
-                                               "\"a string\";\r\n\"another\"",
-                                               aLong.toString (),
-                                               _letters (4093) + ";" + _letters (8193),
+    for (final String sInput : new String [] { "abc", "abc;\r\ndef;\rghi;\njkl", "\t\tabc\t;\tdef",
+                                               "\"a string\";\r\n\"another\"", aLong.toString (), _letters (4093) +
+                                                                                                  ";" +
+                                                                                                  _letters (8193),
                                                "\"" + _letters (12345) + "\";" + _letters (4096) })
     {
       assertEquals ("Token stream differs for an input of length " + sInput.length (),
@@ -243,9 +251,9 @@ public final class CharSequenceCharStreamTest
 
   private static String _letters (final int nLength)
   {
-    final StringBuilder ret = new StringBuilder (nLength);
+    final StringBuilder aRet = new StringBuilder (nLength);
     for (int i = 0; i < nLength; ++i)
-      ret.append ((char) ('a' + i % 26));
-    return ret.toString ();
+      aRet.append ((char) ('a' + i % 26));
+    return aRet.toString ();
   }
 }

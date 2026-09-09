@@ -53,8 +53,8 @@ import com.helger.io.file.IFileFilter;
 import com.helger.pgcc.parser.Options;
 
 /**
- * Test class that creates the Java template files to disk and tries to parse
- * them with the JavaParser
+ * Test class that creates the Java template files to disk and tries to parse them with the
+ * JavaParser
  *
  * @author Philip Helger
  */
@@ -101,17 +101,17 @@ public final class JavaTemplateValidityFuncTest
         FileOperationManager.INSTANCE.createDirRecursive (aTargetDir);
 
         if (bIsModern)
-          FilesJava.gen_JavaModernFiles ();
+          FilesJava.genJavaModernFiles ();
 
-        FilesJava.gen_ParseException (aLocation);
-        FilesJava.gen_Token (aLocation);
-        FilesJava.gen_TokenManager (aLocation);
-        FilesJava.gen_TokenMgrError (aLocation);
+        FilesJava.genParseException (aLocation);
+        FilesJava.genToken (aLocation);
+        FilesJava.genTokenManager (aLocation);
+        FilesJava.genTokenMgrError (aLocation);
 
-        FilesJava.gen_CharStream (aLocation);
-        FilesJava.gen_AbstractCharStream (aLocation);
-        FilesJava.gen_JavaCharStream (aLocation);
-        FilesJava.gen_SimpleCharStream (aLocation);
+        FilesJava.genCharStream (aLocation);
+        FilesJava.genAbstractCharStream (aLocation);
+        FilesJava.genJavaCharStream (aLocation);
+        FilesJava.genSimpleCharStream (aLocation);
 
         // Now try compiling the files
         for (final File aFile : new FileSystemIterator (aTargetDir).withFilter (IFileFilter.fileOnly ()
@@ -124,6 +124,5 @@ public final class JavaTemplateValidityFuncTest
         }
       }
     }
-
   }
 }

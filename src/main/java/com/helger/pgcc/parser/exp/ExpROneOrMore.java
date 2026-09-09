@@ -42,44 +42,61 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes one-or-more regular expressions (&lt;foo+&gt;).
  */
-public class ExpROneOrMore extends AbstractExpRegularExpression
+public final class ExpROneOrMore extends AbstractExpRegularExpression
 {
   /**
    * The regular expression which is repeated one or more times.
    */
-  private final AbstractExpRegularExpression m_regexpr;
+  private final AbstractExpRegularExpression m_aRegexpr;
 
-  public ExpROneOrMore (final AbstractExpRegularExpression re)
+  /**
+   * Create a one-or-more repetition without a position in the grammar.
+   *
+   * @param aRe
+   *        The expression being repeated. May not be <code>null</code>.
+   */
+  public ExpROneOrMore (final AbstractExpRegularExpression aRe)
   {
-    m_regexpr = re;
+    m_aRegexpr = aRe;
   }
 
-  public ExpROneOrMore (final Token t, final AbstractExpRegularExpression re)
+  /**
+   * Create a one-or-more repetition at the position of a token.
+   *
+   * @param t
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param aRe
+   *        The expression being repeated. May not be <code>null</code>.
+   */
+  public ExpROneOrMore (@NonNull final Token t, final AbstractExpRegularExpression aRe)
   {
-    this (re);
-    setLine (t.beginLine);
-    setColumn (t.beginColumn);
+    this (aRe);
+    setLineNumber (t.beginLine);
+    setColumnNumber (t.beginColumn);
   }
 
+  /**
+   * {@return the expression this one repeats}
+   */
   @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {
-    return m_regexpr;
+    return m_aRegexpr;
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    final Nfa retVal = new Nfa ();
-    final NfaState startState = retVal.start ();
-    final NfaState finalState = retVal.end ();
+    final Nfa aRetVal = new Nfa ();
+    final NfaState aStartState = aRetVal.start ();
+    final NfaState aFinalState = aRetVal.end ();
 
-    final Nfa temp = m_regexpr.generateNfa (ignoreCase);
+    final Nfa aTemp = m_aRegexpr.generateNfa (bIgnoreCase);
 
-    startState.addMove (temp.start ());
-    temp.end ().addMove (temp.start ());
-    temp.end ().addMove (finalState);
+    aStartState.addMove (aTemp.start ());
+    aTemp.end ().addMove (aTemp.start ());
+    aTemp.end ().addMove (aFinalState);
 
-    return retVal;
+    return aRetVal;
   }
 }

@@ -69,12 +69,12 @@ public final class CharStreamBufferTest
   @Parameters (name = "{0}, unicode={1}, lineColumn={2}")
   public static Collection <Object []> parameters ()
   {
-    final List <Object []> ret = new ArrayList <> ();
+    final List <Object []> aRet = new ArrayList <> ();
     for (final String sTemplate : new String [] { "classic", "modern" })
       for (final boolean bUnicode : new boolean [] { true, false })
         for (final boolean bLineColumn : new boolean [] { true, false })
-          ret.add (new Object [] { sTemplate, Boolean.valueOf (bUnicode), Boolean.valueOf (bLineColumn) });
-    return ret;
+          aRet.add (new Object [] { sTemplate, Boolean.valueOf (bUnicode), Boolean.valueOf (bLineColumn) });
+    return aRet;
   }
 
   private final String m_sTemplate;
@@ -114,14 +114,25 @@ public final class CharStreamBufferTest
 
     // Adapt only the Reader/Provider constructors; all buffering is generated code.
     final String sInput = "modern".equals (m_sTemplate) ? "new StreamProvider(r)" : "r";
-    final String sAdapter = "class BufferTestStream extends " + (m_bUnicode ? "Java" : "Simple") + "CharStream {\n" +
-                            "  static final boolean UNICODE = " + m_bUnicode + ";\n" +
-                            "  static final boolean LINE_COLUMN = " + m_bLineColumn + ";\n" +
-                            "  BufferTestStream(java.io.Reader r) { super(" + sInput + ", 1, 1, 4096); }\n" +
-                            "  void reset(java.io.Reader r, int size) { reInit(" + sInput + ", 3, 7, size); }\n" +
+    final String sAdapter = "class BufferTestStream extends " +
+                            (m_bUnicode ? "Java" : "Simple") +
+                            "CharStream {\n" +
+                            "  static final boolean UNICODE = " +
+                            m_bUnicode +
+                            ";\n" +
+                            "  static final boolean LINE_COLUMN = " +
+                            m_bLineColumn +
+                            ";\n" +
+                            "  BufferTestStream(java.io.Reader r) { super(" +
+                            sInput +
+                            ", 1, 1, 4096); }\n" +
+                            "  void reset(java.io.Reader r, int size) { reInit(" +
+                            sInput +
+                            ", 3, 7, size); }\n" +
                             "}\n";
     Files.write (new File (aDir, "BufferTestStream.java").toPath (), sAdapter.getBytes (StandardCharsets.UTF_8));
-    final List <File> aSources = new ArrayList <> (Arrays.asList (aDir.listFiles (f -> f.getName ().endsWith (".java"))));
+    final List <File> aSources = new ArrayList <> (Arrays.asList (aDir.listFiles (f -> f.getName ()
+                                                                                        .endsWith (".java"))));
     aSources.add (new File ("src/test/resources/charstream/BufferChecks.java"));
     final JavaCompiler aCompiler = ToolProvider.getSystemJavaCompiler ();
     assertNotNull ("A JDK is required to compile the generated streams", aCompiler);
@@ -131,12 +142,15 @@ public final class CharStreamBufferTest
                   aCompiler.getTask (null,
                                      aManager,
                                      null,
-                                     Arrays.asList ("-d", aDir.getAbsolutePath (),
-                                                    "-classpath", System.getProperty ("java.class.path")),
+                                     Arrays.asList ("-d",
+                                                    aDir.getAbsolutePath (),
+                                                    "-classpath",
+                                                    System.getProperty ("java.class.path")),
                                      null,
                                      aManager.getJavaFileObjectsFromFiles (aSources)).call ().booleanValue ());
     }
-    try (final URLClassLoader aLoader = new URLClassLoader (new URL [] { aDir.toURI ().toURL () }, getClass ().getClassLoader ()))
+    try (final URLClassLoader aLoader = new URLClassLoader (new URL [] { aDir.toURI ().toURL () },
+                                                            getClass ().getClassLoader ()))
     {
       final Result aResult = JUnitCore.runClasses (Class.forName ("BufferChecks", true, aLoader));
       final StringBuilder aFailures = new StringBuilder ();

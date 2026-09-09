@@ -44,69 +44,100 @@ import com.helger.pgcc.parser.Token;
 /**
  * Describes one-or-more regular expressions (&lt;foo+&gt;).
  */
-public class ExpRRepetitionRange extends AbstractExpRegularExpression
+public final class ExpRRepetitionRange extends AbstractExpRegularExpression
 {
   /**
    * The regular expression which is repeated one or more times.
    */
-  private final AbstractExpRegularExpression m_regexpr;
-  private int m_min = 0;
-  private int m_max = -1;
-  private final boolean m_hasMax;
+  private final AbstractExpRegularExpression m_aRegexpr;
+  private int m_nMin = 0;
+  private int m_nMax = -1;
+  private final boolean m_bHasMax;
 
-  public ExpRRepetitionRange (final Token t, final int r1, final int r2, final boolean hasMax, final AbstractExpRegularExpression r)
+  /**
+   * Create a repetition range.
+   *
+   * @param t
+   *        The token it was written at, for error messages. May not be <code>null</code>.
+   * @param nR1
+   *        The smallest number of repetitions.
+   * @param nR2
+   *        The largest number, ignored unless bHasMax is set.
+   * @param bHasMax
+   *        <code>false</code> if the range has no upper bound.
+   * @param r
+   *        The expression being repeated. May not be <code>null</code>.
+   */
+  public ExpRRepetitionRange (@NonNull final Token t,
+                              final int nR1,
+                              final int nR2,
+                              final boolean bHasMax,
+                              final AbstractExpRegularExpression r)
   {
-    setLine (t.beginLine);
-    setColumn (t.beginColumn);
-    m_min = r1;
-    m_max = r2;
-    m_hasMax = hasMax;
-    m_regexpr = r;
+    setLineNumber (t.beginLine);
+    setColumnNumber (t.beginColumn);
+    m_nMin = nR1;
+    m_nMax = nR2;
+    m_bHasMax = bHasMax;
+    m_aRegexpr = r;
   }
 
+  /**
+   * {@return the expression this one repeats}
+   */
   @NonNull
   public final AbstractExpRegularExpression getRegExpr ()
   {
-    return m_regexpr;
+    return m_aRegexpr;
   }
 
+  /**
+   * {@return the smallest number of repetitions}
+   */
   public final int getMin ()
   {
-    return m_min;
+    return m_nMin;
   }
 
+  /**
+   * {@return <code>true</code> if the range has an upper bound}
+   */
   public final boolean hasMax ()
   {
-    return m_hasMax;
+    return m_bHasMax;
   }
 
+  /**
+   * {@return the largest number of repetitions, meaningless unless {@link #hasMax()}}
+   */
   public final int getMax ()
   {
-    return m_max;
+    return m_nMax;
   }
 
   @Override
-  public Nfa generateNfa (final boolean ignoreCase)
+  public Nfa generateNfa (final boolean bIgnoreCase)
   {
-    final List <AbstractExpRegularExpression> units = new ArrayList <> ();
-    ExpRSequence seq;
+    final List <AbstractExpRegularExpression> aUnits = new ArrayList <> ();
+    ExpRSequence aSeq;
     int i;
 
-    for (i = 0; i < m_min; i++)
+    for (i = 0; i < m_nMin; i++)
     {
-      units.add (m_regexpr);
+      aUnits.add (m_aRegexpr);
     }
 
-    if (m_hasMax && m_max == -1) // Unlimited
+    // Unlimited
+    if (m_bHasMax && m_nMax == -1)
     {
-      units.add (new ExpRZeroOrMore (m_regexpr));
+      aUnits.add (new ExpRZeroOrMore (m_aRegexpr));
     }
 
-    while (i++ < m_max)
+    while (i++ < m_nMax)
     {
-      units.add (new ExpRZeroOrOne (m_regexpr));
+      aUnits.add (new ExpRZeroOrOne (m_aRegexpr));
     }
-    seq = new ExpRSequence (units);
-    return seq.generateNfa (ignoreCase);
+    aSeq = new ExpRSequence (aUnits);
+    return aSeq.generateNfa (bIgnoreCase);
   }
 }

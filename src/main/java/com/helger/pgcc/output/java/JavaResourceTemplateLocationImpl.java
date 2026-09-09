@@ -37,52 +37,59 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonempty;
 
+/**
+ * Where the classic Java templates live.
+ */
 public class JavaResourceTemplateLocationImpl implements IJavaResourceTemplateLocations
 {
+  /** Default constructor. */
+  public JavaResourceTemplateLocationImpl ()
+  {}
+
   @NonNull
   @Nonempty
   public String getTokenTemplateResourceUrl ()
   {
-    return "/templates/Token.template";
+    return "/templates/java/Token.template";
   }
 
   public String getTokenManagerTemplateResourceUrl ()
   {
-    return "/templates/TokenManager.template";
+    return "/templates/java/TokenManager.template";
   }
 
   public String getTokenMgrErrorTemplateResourceUrl ()
   {
-    return "/templates/TokenMgrError.template";
+    return "/templates/java/TokenMgrError.template";
   }
 
   public String getCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/CharStream.template";
+    return "/templates/java/stream/CharStream.template";
   }
 
   public String getAbstractCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/AbstractCharStream.template";
+    return "/templates/java/stream/AbstractCharStream.template";
   }
 
   public String getJavaCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/JavaCharStream.template";
+    return "/templates/java/stream/JavaCharStream.template";
   }
 
   public String getSimpleCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/SimpleCharStream.template";
+    return "/templates/java/stream/SimpleCharStream.template";
   }
 
   public String getCharSequenceCharStreamTemplateResourceUrl ()
   {
-    return "/templates/stream/java/CharSequenceCharStream.template";
+    return "/templates/java/stream/CharSequenceCharStream.template";
   }
 
   public String getParseExceptionTemplateResourceUrl ()
   {
-    return "/templates/ParseException.template";
+    return "/templates/java/ParseException.template";
   }
 }

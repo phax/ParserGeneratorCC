@@ -33,108 +33,68 @@
  */
 package com.helger.pgcc.jjtree;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.pgcc.context.PGCCContext;
+
+/**
+ * The static facade over the JJTree part of the run state.
+ */
 public class JJTreeGlobals
 {
+  /** Default constructor. */
+  public JJTreeGlobals ()
+  {}
+
   /**
-   * This set stores the JJTree-specific options that should not be passed down
-   * to JavaCC
+   * This set stores the JJTree-specific options that should not be passed down to JavaCC
    */
-  private static final Set <String> s_jjtreeOptions = new HashSet <> ();
-
-  static final List <String> toolList = new ArrayList <> ();
-
   /**
-   * Use this like className.
-   **/
-  public static String s_parserName;
-
-  /**
-   * The package that the parser lives in. If the grammar doesn't specify a
-   * package it is the empty string.
-   **/
-  public static String s_packageName = "";
-
-  /**
-   * The package the node files live in. If the NODE_PACKAGE option is not set,
-   * then this defaults to packageName.
-   **/
-  public static String s_nodePackageName = "";
-
-  /**
-   * The <code>implements</code> token of the parser class. If the parser
-   * doesn't have one then it is the first "{" of the parser class body.
-   **/
-  public static Token s_parserImplements;
-
-  /**
-   * The first token of the parser class body (the <code>{</code>). The JJTree
-   * state is inserted after this token.
-   **/
-  public static Token s_parserClassBodyStart;
-
-  /**
-   * The first token of the <code>import</code> list, or the position where such
-   * a list should be inserted. The import for the Node Package is inserted
-   * after this token.
-   **/
-  public static Token s_parserImports;
-
-  /**
-   * This is mapping from production names to ASTProduction objects.
-   **/
-  static final Map <String, ASTProduction> s_productions = new HashMap <> ();
+   * The JJTree specific options, which must not be passed down to JavaCC.
+   * <p>
+   * <code>NODE_STACK_SIZE</code> is in here so that setting it does not draw a complaint from
+   * JavaCC, but nothing reads it: the generated node stack is a {@code java.util.List} that grows
+   * as needed, so there is no size to configure. It is kept for grammars that still set it.
+   */
+  private static final Set <String> JJTREE_OPTIONS = Set.of ("JJTREE_OUTPUT_DIRECTORY",
+                                                             "MULTI",
+                                                             "NODE_PREFIX",
+                                                             "NODE_PACKAGE",
+                                                             "NODE_EXTENDS",
+                                                             "NODE_CLASS",
+                                                             "NODE_STACK_SIZE",
+                                                             "NODE_DEFAULT_VOID",
+                                                             "OUTPUT_FILE",
+                                                             "CHECK_DEFINITE_NODE",
+                                                             "NODE_SCOPE_HOOK",
+                                                             "TRACK_TOKENS",
+                                                             "NODE_FACTORY",
+                                                             "NODE_USES_PARSER",
+                                                             "BUILD_NODE_FILES",
+                                                             "VISITOR",
+                                                             "VISITOR_EXCEPTION",
+                                                             "VISITOR_DATA_TYPE",
+                                                             "VISITOR_RETURN_TYPE",
+                                                             "VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME",
+                                                             "NODE_INCLUDES");
 
   static void initialize ()
   {
-    toolList.clear ();
-    s_parserName = null;
-    s_packageName = "";
-    s_parserImplements = null;
-    s_parserClassBodyStart = null;
-    s_parserImports = null;
-    s_productions.clear ();
-
-    s_jjtreeOptions.clear ();
-    s_jjtreeOptions.add ("JJTREE_OUTPUT_DIRECTORY");
-    s_jjtreeOptions.add ("MULTI");
-    s_jjtreeOptions.add ("NODE_PREFIX");
-    s_jjtreeOptions.add ("NODE_PACKAGE");
-    s_jjtreeOptions.add ("NODE_EXTENDS");
-    s_jjtreeOptions.add ("NODE_CLASS");
-    s_jjtreeOptions.add ("NODE_STACK_SIZE");
-    s_jjtreeOptions.add ("NODE_DEFAULT_VOID");
-    s_jjtreeOptions.add ("OUTPUT_FILE");
-    s_jjtreeOptions.add ("CHECK_DEFINITE_NODE");
-    s_jjtreeOptions.add ("NODE_SCOPE_HOOK");
-    s_jjtreeOptions.add ("TRACK_TOKENS");
-    s_jjtreeOptions.add ("NODE_FACTORY");
-    s_jjtreeOptions.add ("NODE_USES_PARSER");
-    s_jjtreeOptions.add ("BUILD_NODE_FILES");
-    s_jjtreeOptions.add ("VISITOR");
-    s_jjtreeOptions.add ("VISITOR_EXCEPTION");
-    s_jjtreeOptions.add ("VISITOR_DATA_TYPE");
-    s_jjtreeOptions.add ("VISITOR_RETURN_TYPE");
-    s_jjtreeOptions.add ("VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME");
-    s_jjtreeOptions.add ("NODE_INCLUDES");
+    PGCCContext.current ().jjtree ().reset ();
   }
 
-  static
+  /**
+   * Whether an option is one JJTree handles itself rather than passing on to the parser generator.
+   *
+   * @param sOptionName
+   *        The option name. May not be <code>null</code>.
+   * @return <code>true</code> if JJTree keeps it.
+   */
+  public static boolean isOptionJJTreeOnly (@NonNull final String sOptionName)
   {
-    initialize ();
-  }
-
-  public static boolean isOptionJJTreeOnly (@NonNull final String optionName)
-  {
-    return s_jjtreeOptions.contains (optionName.toUpperCase (Locale.US));
+    return JJTREE_OPTIONS.contains (sOptionName.toUpperCase (Locale.US));
   }
 }

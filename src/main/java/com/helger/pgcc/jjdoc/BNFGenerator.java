@@ -33,6 +33,8 @@
  */
 package com.helger.pgcc.jjdoc;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
@@ -40,32 +42,51 @@ import java.util.Map;
 
 import com.helger.pgcc.parser.CodeProductionCpp;
 import com.helger.pgcc.parser.CodeProductionJava;
-import com.helger.pgcc.parser.NormalProduction;
+import com.helger.pgcc.parser.AbstractNormalProduction;
 import com.helger.pgcc.parser.TokenProduction;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpNonTerminal;
-import com.helger.pgcc.parser.exp.ExpRCharacterList;
-import com.helger.pgcc.parser.exp.ExpRJustName;
 import com.helger.pgcc.parser.exp.Expansion;
 
+/**
+ * Writes the grammar back out as plain BNF, without any of the documentation JJDoc otherwise
+ * produces.
+ */
 public class BNFGenerator implements IDocGenerator
 {
+  /** Default constructor. */
+  public BNFGenerator ()
+  {}
+
   private final Map <String, String> m_aIDMap = new HashMap <> ();
   private int m_nID = 1;
-  protected Writer m_aPW;
+  private Writer m_aPW;
   private boolean m_bPrinting = true;
 
-  protected String get_id (final String nt)
+  /**
+   * The identifier a non-terminal carries in the output, invented on first use and remembered
+   * afterwards so that the same production always gets the same one.
+   *
+   * @param sNt
+   *        The production name. May not be <code>null</code>.
+   * @return The identifier. Never <code>null</code>.
+   */
+  protected String getID (final String sNt)
   {
-    return m_aIDMap.computeIfAbsent (nt, k -> "prod" + m_nID++);
+    return m_aIDMap.computeIfAbsent (sNt, k -> "prod" + m_nID++);
   }
 
-  protected static Writer create_output_stream ()
+  /**
+   * Open the file JJDoc is writing, or standard output if that is where it goes.
+   *
+   * @return The writer. Never <code>null</code>.
+   */
+  protected static Writer createOutputStream ()
   {
     return TextGenerator.createPrintWriter (".bnf");
   }
 
-  public void text (final String s) throws IOException
+  public void text (@NonNull final String s) throws IOException
   {
     if (m_bPrinting && !(s.length () == 1 && (s.charAt (0) == '\n' || s.charAt (0) == '\r')))
     {
@@ -80,7 +101,7 @@ public class BNFGenerator implements IDocGenerator
 
   public void documentStart ()
   {
-    m_aPW = create_output_stream ();
+    m_aPW = createOutputStream ();
   }
 
   public void documentEnd () throws IOException
@@ -105,28 +126,28 @@ public class BNFGenerator implements IDocGenerator
   public void tokensEnd ()
   {}
 
-  public void javacode (final CodeProductionJava jp)
+  public void javacode (final CodeProductionJava aJp)
   {}
 
-  public void cppcode (final CodeProductionCpp cp)
+  public void cppcode (final CodeProductionCpp aCp)
   {}
 
-  public void expansionEnd (final Expansion e, final boolean first)
+  public void expansionEnd (final Expansion e, final boolean bFirst)
   {}
 
-  public void nonTerminalStart (final ExpNonTerminal nt)
+  public void nonTerminalStart (final ExpNonTerminal aNt)
   {}
 
-  public void nonTerminalEnd (final ExpNonTerminal nt)
+  public void nonTerminalEnd (final ExpNonTerminal aNt)
   {}
 
-  public void productionStart (final NormalProduction np) throws IOException
+  public void productionStart (@NonNull final AbstractNormalProduction aNp) throws IOException
   {
     print ("\n");
-    print (np.getLhs () + " ::= ");
+    print (aNp.getLhs () + " ::= ");
   }
 
-  public void productionEnd (final NormalProduction np) throws IOException
+  public void productionEnd (final AbstractNormalProduction aNp) throws IOException
   {
     print ("\n");
   }
@@ -141,22 +162,24 @@ public class BNFGenerator implements IDocGenerator
 
   public void reStart (final AbstractExpRegularExpression r)
   {
-    if (r.getClass ().equals (ExpRJustName.class) || r.getClass ().equals (ExpRCharacterList.class))
-    {
-      m_bPrinting = false;
-    }
+    // Nothing to do. Upstream switched printing off here for ExpRJustName and ExpRCharacterList,
+    // which are exactly the two shapes a terminal takes inside a BNF production - a reference to a
+    // named token and an inline character class. The result was a BNF with no terminals in it at
+    // all: "sum ::= ( )* <EOF>" for a production reading "<NUMBER> ( <PLUS> <NUMBER> )* <EOF>".
+    // Token productions are suppressed by handleTokenProduction, which is a separate path, so
+    // nothing here needs to switch printing off.
   }
 
   public void reEnd (final AbstractExpRegularExpression r)
   {
-    m_bPrinting = true;
+    // Nothing to do
   }
 
   @Override
-  public void handleTokenProduction (final TokenProduction tp) throws IOException
+  public void handleTokenProduction (final TokenProduction aTp) throws IOException
   {
     m_bPrinting = false;
-    final String sText = JJDoc.getStandardTokenProductionText (tp);
+    final String sText = JJDoc.getStandardTokenProductionText (aTp);
     text (sText);
     m_bPrinting = true;
   }

@@ -31,6 +31,11 @@ Add the following to your pom.xml to use this artifact (replacing `x.y.z` with t
 </dependency>
 ```
 
+## Documentation
+
+* [`docs/internals/`](docs/internals/) - how the generator works: the pipeline, the generator state, the template language and the bootstrap loop
+* [`www/doc/`](www/doc/) - the JavaCC language reference
+
 ## Option `JAVA_CHAR_STREAM_TYPE`
 
 Controls which `CharStream` implementation is generated for Java:
@@ -54,6 +59,77 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
   character.
 
 # News and noteworthy
+
+v3.0.0 - 2026-06-09
+* Generating a large lexer is around 3x faster.
+  The epsilon closure walked the whole state list twice per call purely to record which states a pass had visited, which is quadratic in the token count; the passes are numbered now and the walks are gone.
+  On a synthetic 1280 token grammar that loop ran 690 million times and was 70% of the run, and generation drops from 1344 ms to 413 ms.
+  Generated output is unchanged
+* Every public and protected member of the generator carries javadoc now, and `mvn javadoc:javadoc` reports no warnings.
+  Writing it up turned up 16 members with no caller left and two option constants that were never registered, all removed.
+  `TOKEN_MANAGER_SUPERCLASS` is documented as accepted and ignored - the option that works is `TOKEN_MANAGER_SUPER_CLASS`
+* Fixed the generated C++ token manager not compiling for a grammar with `'` or `\` in a string literal.
+  The switch over the current character got `case ''':` and `case '\':`, because only the Java backend escaped those two characters in a case label
+* Fixed two token manager debug messages in the generated C++ running into the following line, and one being indented outside the `if` that guards it.
+  `DEBUG_TOKEN_MANAGER` only
+* **Breaking API change** Replaced the internal `EJDKVersion` enum with `EJavaVersion` from ph-commons, so that `JDK_VERSION` values above 14 are supported.
+  `Options.getJdkVersion ()` returns `com.helger.base.system.EJavaVersion` now
+* **Potentially breaking** The default value of `JDK_VERSION` moved from `1.5` to `1.8`, so that generated code uses the `Charset` based constructors and the diamond operator unless configured otherwise
+* **Breaking API change** `LexGenJava`, `ParseGenJava`, `LexGenCpp` and `ParseGenCPP` moved from `com.helger.pgcc.parser` to `com.helger.pgcc.output.java` and `com.helger.pgcc.output.cpp`, so that the package says which target language a class writes.
+  `com.helger.pgcc.parser` no longer contains anything that writes a file
+* **Breaking API change** The generator state moved from static fields into `com.helger.pgcc.context.PGCCContext`, one instance per run and per thread.
+  The old classes remain as facades, so `Options`, `JavaCCErrors` and `JavaCCGlobals` are used exactly as before, but `JavaCCGlobals` exposes the grammar through `grammar ()` instead of public static fields.
+  Two generator runs can now happen at the same time in one JVM
+* Added `JavaCCLauncher`, `JJTreeLauncher` and `JJDocLauncher` as properly named command line entry points; the lower case `javacc`, `jjtree` and `jjdoc` classes remain as deprecated aliases
+* Fixed generated files never being rebuilt when regenerating into a directory that already contains them.
+  The checksum that decides this was computed before the writer had been flushed, so for anything but a very large file it was the checksum of nothing and never matched.
+  Hand edited files are still protected, as intended
+* Fixed `JavaCCGlobals.getToolNames` throwing a `NullPointerException` instead of returning an empty list when the file does not exist
+* Fixed `JDK_VERSION` values above 14 silently falling back to the default
+* **Breaking** Removed the undocumented and untested `TOKEN_MANAGER_CODE_GENERATOR` and `PARSER_CODE_GENERATOR` options together with the table driven token manager behind them
+* Removed the dead `test/` (upstream Ant build) and `docs/` directories, and trimmed `www/doc/` to the reference pages
+* Fixed `OUTPUT_LANGUAGE` (and every other option with an indirect effect) being ignored when set on the command line instead of in the grammar file
+* Fixed the JJDoc `-BNF` output dropping every terminal from the productions, so that `<NUMBER> ( <PLUS> <NUMBER> )* <EOF>` was written as `( )* <EOF>`
+* Fixed JJTree carrying node types from one run into the next when several grammars are processed in the same JVM, so that the second grammar's output contained the first grammar's node classes.
+  The C++ node files were affected most visibly
+* Fixed `JavaCCInterpreter` failing on the first character of any input for grammars with more than one character class token.
+  The composite state the tokenizer starts in had no entry in the `TokenizerData`, so the NFA was skipped entirely.
+  Only the interpreter is affected; generated code never used this path
+* Fixed `JavaCCInterpreter` losing the characters a `MORE` production consumed, so that a token assembled across a lexical state switch reported only its last piece - a string literal came out as its closing quote
+* **Breaking API change** No `static` non final field is left in the code base.
+  The last per run collections - `ASTNodeDescriptor`'s node tables and `JJTreeGlobals.TOOL_LIST` - moved into `PGCCContext`, and the two genuinely process wide settings moved to the new `com.helger.pgcc.context.ProcessState`.
+  `PGPrinter.init` and `FilesJava.setReadFromClassPath` are unchanged
+* Fixed a `NullPointerException` when setting `PARSER_SUPER_CLASS` or `TOKEN_MANAGER_SUPER_CLASS` on the command line.
+  They are the only two options with a `null` default, so there was no existing value to take the expected type from.
+  Setting them in the grammar file always worked
+* `PARSER_SUPER_CLASS` and `TOKEN_MANAGER_SUPER_CLASS` now warn when set with a Java target.
+  Both are read by the C++ backend only and were silently ignored otherwise
+* Fixed the `jjtree` help output advertising `JDK_VERSION (default "1.5")` and `OUTPUT_DIRECTORY (default "")`, neither of which was the actual default
+* Removed a leftover debug line that made `jjtree` print `opt:java` on every run
+* Local variables and parameters throughout the code base now use the project's Hungarian notation.
+  The public fields of `Token` keep their names - generated parsers and grammar action code read `token.kind` and `t.image`
+* **Breaking API change** `JavaCCErrors.parse_error`, `semantic_error` and `warning` take a `com.helger.pgcc.parser.IGrammarLocation` instead of an `Object`.
+  The new interface extends `com.helger.base.location.ILocation` and is implemented by `NormalProduction`, `TokenProduction`, `Expansion`, `ICCCharacter` and both `Token` classes - the six types the old `instanceof` cascade tested for.
+  `Options.setInputFileOption` takes it too
+* **Breaking API change** The grammar model spells its position the ph-commons way: `getLineNumber ()` / `getColumnNumber ()` and `setLineNumber ()` / `setColumnNumber ()` on `NormalProduction`, `TokenProduction`, `Expansion`, `ICCCharacter` and both `Token` classes. `IGrammarLocation` is now `ILocation` plus the resource id
+* **Breaking API change** Renamed the two abstract classes that did not say so: `NormalProduction` is `AbstractNormalProduction` and `JavaCCParserInternals` is `AbstractJavaCCParserInternals`
+* **Breaking API change** `Nfa` and the two carriers inside `TokenizerData` are records.
+  `TokenizerData.NfaState.m_aCharacters` and friends are accessors now, so they read `characters ()`
+* JJDoc's HTML output is HTML5 instead of HTML 3.2.
+  Lower case tags, `<meta charset>`, `id` anchors instead of `<a name>`, and a small default stylesheet in place of the `ALIGN` and `VALIGN` attributes - a stylesheet given with the `CSS` option is linked after it and still wins.
+  Token productions with nothing to show no longer leave an empty table row behind
+* The generated `CharStream` and `AbstractCharStream` are fully documented.
+  `javadoc` reported 28 warnings on them and now reports none, so a project that runs `javadoc` over its generated parser no longer inherits them.
+  The parameter `newCol` of `adjustBeginLineColumn` is `nNewCol`
+* Generation of grammars whose tokens are built from character classes is about three times faster.
+  The NFA construction was resolving the `ThreadLocal` that holds the run's state once per element rather than once per call - in one case for every state, for every state
+* **Breaking API change** Method names use camel case throughout: `JavaCCErrors.parse_error` is `parseError`, `semantic_error` is `semanticError`, `FilesJava.gen_Token` is `genToken` and so on for 27 names.
+  The `jj_` and `trace_` methods of *generated* parsers keep their names - grammar action code calls them
+* **Breaking API change** `CodeGenerator` is `AbstractCodeGenerator` and is abstract - nothing outside the tests ever instantiated it.
+  The two C++ only methods it carried, `genStringLiteralArrayCPP` and `genStringLiteralInCPP`, moved into `LexGenCpp` where the only caller is
+* **Breaking API change** The C++ generators no longer extend the Java ones.
+  `LexGenCpp` and `LexGenJava` share the new `com.helger.pgcc.output.AbstractLexGenJavaLike`, and `ParseGenCpp` extends `AbstractCodeGenerator` directly - it inherited nothing from `ParseGenJava` at all
+* **Breaking API change** Removed `JavaCCErrors.reInit ()`, deprecated since the error counters moved into `PGCCContext`
 
 v2.0.3 - 2026-09-08
 * Added the new option `JAVA_CHAR_STREAM_TYPE` that allows to generate a `CharSequenceCharStream` that needs no internal buffer at all ([issue #21](https://github.com/tulipcc/ParserGeneratorCC/issues/21))

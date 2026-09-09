@@ -33,6 +33,7 @@
  */
 package com.helger.pgcc.parser.test;
 
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -44,10 +45,10 @@ import org.junit.Test;
 import com.helger.base.exception.InitializationException;
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.AbstractJavaCCTestCase;
-import com.helger.pgcc.parser.CodeGenerator;
+import com.helger.pgcc.output.java.LexGenJava;
+import com.helger.pgcc.parser.AbstractCodeGenerator;
 import com.helger.pgcc.parser.JavaCCGlobals;
 import com.helger.pgcc.parser.JavaCCParser;
-import com.helger.pgcc.parser.LexGenJava;
 import com.helger.pgcc.parser.Main;
 import com.helger.pgcc.parser.NfaState;
 import com.helger.pgcc.parser.Options;
@@ -62,6 +63,13 @@ import com.helger.pgcc.parser.StreamProvider;
  */
 public class NfaStateTest extends AbstractJavaCCTestCase
 {
+  /**
+   * A concrete code sink. AbstractCodeGenerator carries the buffers and the emitting, and exists to
+   * be extended by the four generators; the tests only need somewhere for the output to land.
+   */
+  private static final class TestCodeGenerator extends AbstractCodeGenerator
+  {}
+
   private final String sParserInputFile = getJJInputDirectory () + "JavaCC.jj";
 
   @Before
@@ -69,45 +77,51 @@ public class NfaStateTest extends AbstractJavaCCTestCase
   {
     Options.init ();
     Main.reInitAll ();
+
+    // LexGenJava.start writes the token manager to the output directory, which defaults to the
+    // current directory - keep that out of the repository
+    final File aOutDir = new File ("target/nfastate");
+    aOutDir.mkdirs ();
+    Options.setCmdLineOption ("-OUTPUT_DIRECTORY=" + aOutDir.getAbsolutePath ());
   }
 
   private void _setupState ()
   {
     try
     {
-      final JavaCCParser parser = new JavaCCParser (new StreamProvider (FileHelper.getBufferedReader (new File (sParserInputFile),
-                                                                                                      Options.getGrammarEncoding ())));
-      parser.javacc_input ();
-      JavaCCGlobals.s_fileName = JavaCCGlobals.s_origFileName = sParserInputFile;
-      JavaCCGlobals.s_jjtreeGenerated = JavaCCGlobals.isGeneratedBy ("JJTree", sParserInputFile);
-      JavaCCGlobals.s_toolNames = JavaCCGlobals.getToolNames (sParserInputFile);
+      final JavaCCParser aParser = new JavaCCParser (new StreamProvider (FileHelper.getBufferedReader (new File (sParserInputFile),
+                                                                                                       Options.getGrammarEncoding ())));
+      aParser.javacc_input ();
+      grammar ().setFileName (sParserInputFile);
+      grammar ().setJJTreeGenerated (JavaCCGlobals.isGeneratedBy ("JJTree", sParserInputFile));
+      grammar ().setToolNameList (JavaCCGlobals.getToolNames (sParserInputFile));
       Semanticize.start ();
       new LexGenJava ().start ();
     }
-    catch (final Exception ex)
+    catch (final Exception aEx)
     {
-      throw new InitializationException (ex);
+      throw new InitializationException (aEx);
     }
   }
 
   @Test
   public void testDumpStateSets ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
-    NfaState.dumpStateSets (cg);
-    final String result = cg.getGeneratedCode ().replaceAll ("\r", "");
-    assertEquals ("static final int[] jjnextStates = {0\n};\n\n", result);
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
+    NfaState.dumpStateSets (aCg);
+    final String sResult = aCg.getGeneratedCode ().replaceAll ("\r", "");
+    assertEquals ("static final int[] jjnextStates = {0\n};\n\n", sResult);
   }
 
   /**
-   * Test method for {@link NfaState#dumpStateSets(CodeGenerator)}
+   * Test method for {@link NfaState#dumpStateSets(AbstractCodeGenerator)}
    */
   @Test
   public void testDumpStateSetsInitialised ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
     _setupState ();
-    NfaState.dumpStateSets (cg);
+    NfaState.dumpStateSets (aCg);
     assertEquals ("static final int[] jjnextStates = {\n" +
                   "   37, 38, 39, 15, 43, 44, 45, 49, 50, 51, 26, 27, 29, 17, 19, 5, \n" +
                   "   6, 7, 59, 62, 63, 7, 64, 67, 77, 10, 9, 11, 15, 14, 13, 15, \n" +
@@ -117,18 +131,18 @@ public class NfaStateTest extends AbstractJavaCCTestCase
                   "   79, 78, 80, 81, 84, 83, 15, 5, 6, 10, 9, 20, 21, 23, 28, 30, \n" +
                   "   32, 37, 38, 43, 44, 49, 50, 53, 52, 62, 63, \n" +
                   "};",
-                  cg.getGeneratedCode ().replaceAll ("\r", "").trim ());
+                  aCg.getGeneratedCode ().replaceAll ("\r", "").trim ());
   }
 
   /**
-   * Test method for {@link NfaState#dumpCharAndRangeMoves(CodeGenerator)}
+   * Test method for {@link NfaState#dumpCharAndRangeMoves(AbstractCodeGenerator)}
    */
   @Test
   public void testDumpCharAndRangeMoves ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
-    NfaState.dumpCharAndRangeMoves (cg);
-    final String result = cg.getGeneratedCode ().replaceAll ("\r", "");
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
+    NfaState.dumpCharAndRangeMoves (aCg);
+    final String sResult = aCg.getGeneratedCode ().replaceAll ("\r", "");
     assertEquals ("         int i2 = (curChar & 0xff) >> 6;\n" +
                   "         long l2 = 1L << (curChar & 077);\n" +
                   "         do\n" +
@@ -138,18 +152,18 @@ public class NfaStateTest extends AbstractJavaCCTestCase
                   "               default : break;\n" +
                   "            }\n" +
                   "         } while(i != startsAt);\n\n",
-                  result);
+                  sResult);
   }
 
   /**
-   * Test method for {@link NfaState#dumpCharAndRangeMoves(CodeGenerator)}
+   * Test method for {@link NfaState#dumpCharAndRangeMoves(AbstractCodeGenerator)}
    */
   @Test
   public void testDumpCharAndRangeMovesInitialised ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
     _setupState ();
-    NfaState.dumpCharAndRangeMoves (cg);
+    NfaState.dumpCharAndRangeMoves (aCg);
     assertEquals (("         int hiByte = (curChar >> 8);\n" +
                    "         int i1 = hiByte >> 6;\n" +
                    "         long l1 = 1L << (hiByte & 077);\n" +
@@ -162,30 +176,30 @@ public class NfaStateTest extends AbstractJavaCCTestCase
                    "               default : if (i1 == 0 || l1 == 0 || i2 == 0 ||  l2 == 0) break; else break;\n" +
                    "            }\n" +
                    "         } while(i != startsAt);\n").trim (),
-                  cg.getGeneratedCode ().replaceAll ("\r", "").trim ());
+                  aCg.getGeneratedCode ().replaceAll ("\r", "").trim ());
   }
 
   /**
-   * Test method for {@link NfaState#dumpNonAsciiMoveMethods(CodeGenerator)}
+   * Test method for {@link NfaState#dumpNonAsciiMoveMethods(AbstractCodeGenerator)}
    */
   @Test
   public void testDumpNonAsciiMoveMethods ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
-    NfaState.dumpNonAsciiMoveMethods (cg);
-    final String result = cg.getGeneratedCode ();
-    assertEquals ("", result.trim ());
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
+    NfaState.dumpNonAsciiMoveMethods (aCg);
+    final String sResult = aCg.getGeneratedCode ();
+    assertEquals ("", sResult.trim ());
   }
 
   /**
-   * Test method for {@link NfaState#dumpNonAsciiMoveMethods(CodeGenerator)}
+   * Test method for {@link NfaState#dumpNonAsciiMoveMethods(AbstractCodeGenerator)}
    */
   @Test
   public void testDumpNonAsciiMoveMethodsInitialised ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
     _setupState ();
-    NfaState.dumpNonAsciiMoveMethods (cg);
+    NfaState.dumpNonAsciiMoveMethods (aCg);
     assertEquals ("private static final boolean jjCanMove_0(int hiByte, int i1, int i2, long l1, long l2)\n" +
                   "{\n" +
                   "   switch(hiByte)\n" +
@@ -366,27 +380,27 @@ public class NfaStateTest extends AbstractJavaCCTestCase
                   "         return false;\n" +
                   "   }\n" +
                   "}",
-                  cg.getGeneratedCode ().replaceAll ("\r", "").trim ());
+                  aCg.getGeneratedCode ().replaceAll ("\r", "").trim ());
   }
 
   /**
-   * Test method for {@link NfaState#dumpMoveNfa(CodeGenerator)}
+   * Test method for {@link NfaState#dumpMoveNfa(AbstractCodeGenerator)}
    */
   @Test
   public void testDumpMoveNfa ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
     try
     {
-      NfaState.dumpMoveNfa (cg);
+      NfaState.dumpMoveNfa (aCg);
       fail ("Should have bombed");
     }
     catch (ArrayIndexOutOfBoundsException e)
     {
       e = null;
     }
-    final String result = cg.getGeneratedCode ();
-    assertEquals ("", result.trim ());
+    final String sResult = aCg.getGeneratedCode ();
+    assertEquals ("", sResult.trim ());
 
     if (false)
     {
@@ -422,46 +436,48 @@ public class NfaStateTest extends AbstractJavaCCTestCase
                     "   jjCheckNAdd(jjnextStates[start + 1]);\n" +
                     "}\n" +
                     "",
-                    cg.getGeneratedCode ().trim ());
+                    aCg.getGeneratedCode ().trim ());
     }
   }
 
   /**
-   * Test method for {@link NfaState#dumpMoveNfa(CodeGenerator)}.
+   * Test method for {@link NfaState#dumpMoveNfa(AbstractCodeGenerator)}.
    */
   @Test
   public void testDumpMoveNfaInitialised ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
     _setupState ();
-    NfaState.dumpMoveNfa (cg);
+    NfaState.dumpMoveNfa (aCg);
     assertEquals ("private int jjMoveNfa_4(int startState, int curPos)\n" + "{\n" + "   return curPos;\n" + "}",
-                  cg.getGeneratedCode ().replaceAll ("\r", "").trim ());
+                  aCg.getGeneratedCode ().replaceAll ("\r", "").trim ());
   }
 
   /**
-   * Test method for {@link NfaState#dumpStatesForStateJava(CodeGenerator)}.
+   * Test method for {@link NfaState#dumpStatesForStateJava(AbstractCodeGenerator)}.
    */
   @Test
   public void testDumpStatesForState ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
-    NfaState.dumpStatesForStateJava (cg);
-    final String result = cg.getGeneratedCode ().replaceAll ("\r", "");
-    assertEquals ("protected static final class States {\n" + "  protected static final int[][][] statesForState = null;\n" + "}",
-                  result.trim ());
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
+    NfaState.dumpStatesForStateJava (aCg);
+    final String sResult = aCg.getGeneratedCode ().replaceAll ("\r", "");
+    assertEquals ("protected static final class States {\n" +
+                  "  protected static final int[][][] statesForState = null;\n" +
+                  "}",
+                  sResult.trim ());
   }
 
   /**
-   * Test method for {@link NfaState#dumpStatesForStateJava(CodeGenerator)}.
+   * Test method for {@link NfaState#dumpStatesForStateJava(AbstractCodeGenerator)}.
    */
   @Test
   public void testDumpStatesForStateInitialised ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
     _setupState ();
-    NfaState.dumpStatesForStateJava (cg);
-    final String result = cg.getGeneratedCode ();
+    NfaState.dumpStatesForStateJava (aCg);
+    final String sResult = aCg.getGeneratedCode ();
     assertEquals ("protected static final class States {\n" +
                   "  protected static final int[][][] statesForState = {\n" +
                   " {\n" +
@@ -562,37 +578,37 @@ public class NfaStateTest extends AbstractJavaCCTestCase
                   "\n" +
                   "};\n" +
                   "}",
-                  result.replaceAll ("\r", "").trim ());
+                  sResult.replaceAll ("\r", "").trim ());
   }
 
   /**
-   * Test method for {@link NfaState#dumpStatesForKind(CodeGenerator)}.
+   * Test method for {@link NfaState#dumpStatesForKind(AbstractCodeGenerator)}.
    */
   @Test
   public void testDumpStatesForKind ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
-    NfaState.dumpStatesForKind (cg);
-    final String result = cg.getGeneratedCode ().replaceAll ("\r", "");
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
+    NfaState.dumpStatesForKind (aCg);
+    final String sResult = aCg.getGeneratedCode ().replaceAll ("\r", "");
     assertEquals ("protected static final class States {\n" +
                   "  protected static final int[][][] statesForState = null;\n" +
                   "}\n" +
                   "protected static final class Kinds {\n" +
                   "  protected static final int[][] kindForState = null;\n" +
                   "}",
-                  result.trim ());
+                  sResult.trim ());
   }
 
   /**
-   * Test method for {@link NfaState#dumpStatesForKind(CodeGenerator)}.
+   * Test method for {@link NfaState#dumpStatesForKind(AbstractCodeGenerator)}.
    */
   @Test
   public void testDumpStatesForKindInitialised ()
   {
-    final CodeGenerator cg = new CodeGenerator ();
+    final AbstractCodeGenerator aCg = new TestCodeGenerator ();
     _setupState ();
-    NfaState.dumpStatesForKind (cg);
-    final String result = cg.getGeneratedCode ();
+    NfaState.dumpStatesForKind (aCg);
+    final String sResult = aCg.getGeneratedCode ();
     assertEquals ("protected static final class States {\n" +
                   "  protected static final int[][][] statesForState = {\n" +
                   " {\n" +
@@ -793,6 +809,6 @@ public class NfaStateTest extends AbstractJavaCCTestCase
                   "\n" +
                   "};\n" +
                   "}",
-                  result.replaceAll ("\r", "").trim ());
+                  sResult.replaceAll ("\r", "").trim ());
   }
 }

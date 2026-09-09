@@ -36,14 +36,13 @@ package com.helger.pgcc.parser;
 import com.helger.pgcc.parser.exp.Expansion;
 
 /**
- * Objects of this type are passed to the tree walker routines in
- * ExpansionTreeWalker.
+ * Objects of this type are passed to the tree walker routines in ExpansionTreeWalker.
  */
 public interface ITreeWalkerOperation
 {
   /**
-   * When called at a particular node, this specifies to the tree walker if it
-   * should visit more nodes under this node.
+   * When called at a particular node, this specifies to the tree walker if it should visit more
+   * nodes under this node.
    *
    * @param e
    *        Expansion
