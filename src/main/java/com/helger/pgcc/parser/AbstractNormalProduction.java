@@ -33,12 +33,12 @@
  */
 package com.helger.pgcc.parser;
 
-import org.jspecify.annotations.NonNull;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.jspecify.annotations.NonNull;
 
 import com.helger.pgcc.parser.exp.Expansion;
 
@@ -47,10 +47,6 @@ import com.helger.pgcc.parser.exp.Expansion;
  */
 public abstract class AbstractNormalProduction implements IGrammarLocation
 {
-  /** Default constructor. */
-  protected AbstractNormalProduction ()
-  {}
-
   /** The platform line separator, used when dumping a production. */
   protected static final String EOL = System.getProperty ("line.separator", "\n");
 
@@ -108,6 +104,10 @@ public abstract class AbstractNormalProduction implements IGrammarLocation
    */
   private AbstractNormalProduction [] m_aLeftExpansions = new AbstractNormalProduction [10];
   private int m_nLeIndex = 0;
+
+  /** Default constructor. */
+  protected AbstractNormalProduction ()
+  {}
 
   /**
    * How many entries of the left expansion array are in use. Left recursion detection fills it.

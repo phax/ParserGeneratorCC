@@ -33,8 +33,6 @@
  */
 package com.helger.pgcc.parser;
 
-import org.jspecify.annotations.NonNull;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 import java.util.HashMap;
@@ -42,8 +40,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.pgcc.context.GrammarState;
 import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.exp.*;
 
@@ -84,12 +84,13 @@ public class Semanticize
                             "is more than 1.  Set option FORCE_LA_CHECK to true to force checking.");
     }
 
+    final GrammarState grammar = grammar ();
     /*
      * The following walks the entire parse tree to convert all LOOKAHEAD's that are not at choice
      * points (but at beginning of sequences) and converts them to trivial choices. This way, their
      * semantic lookahead specification can be evaluated during other lookahead evaluations.
      */
-    for (final AbstractNormalProduction aNormalProduction : grammar ().bnfProductions ())
+    for (final AbstractNormalProduction aNormalProduction : grammar.bnfProductions ())
     {
       ExpansionTreeWalker.postOrderWalk (aNormalProduction.getExpansion (), new LookaheadFixer ());
     }
@@ -97,9 +98,9 @@ public class Semanticize
     /*
      * The following loop populates "production_table"
      */
-    for (final AbstractNormalProduction p : grammar ().bnfProductions ())
+    for (final AbstractNormalProduction p : grammar.bnfProductions ())
     {
-      if (grammar ().productionTable ().put (p.getLhs (), p) != null)
+      if (grammar.productionTable ().put (p.getLhs (), p) != null)
       {
         JavaCCErrors.semanticError (p, p.getLhs () + " occurs on the left hand side of more than one production.");
       }
@@ -109,7 +110,7 @@ public class Semanticize
      * The following walks the entire parse tree to make sure that all non-terminals on RHS's are
      * defined on the LHS.
      */
-    for (final AbstractNormalProduction aNormalProduction : grammar ().bnfProductions ())
+    for (final AbstractNormalProduction aNormalProduction : grammar.bnfProductions ())
     {
       ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new ProductionDefinedChecker ());
     }
@@ -121,7 +122,7 @@ public class Semanticize
      * expressions. This loop works slightly differently when USER_TOKEN_MANAGER is set to true. In
      * this case, <name> occurrences are OK, while regular expression specs generate a warning.
      */
-    for (final TokenProduction aTokenProduction : grammar ().rexprList ())
+    for (final TokenProduction aTokenProduction : grammar.rexprList ())
     {
       final TokenProduction aTp = (aTokenProduction);
       final List <RegExprSpec> aRespecs = aTp.getRespecs ();
@@ -130,7 +131,7 @@ public class Semanticize
         final RegExprSpec aRes = (aRegExprSpec);
         if (aRes.getNextState () != null)
         {
-          if (grammar ().lexStateS2I ().get (aRes.getNextState ()) == null)
+          if (grammar.lexStateS2I ().get (aRes.getNextState ()) == null)
           {
             JavaCCErrors.semanticError (aRes.getNsTok (),
                                         "Lexical state \"" + aRes.getNextState () + "\" has not been defined.");
@@ -146,10 +147,10 @@ public class Semanticize
           if (aTp.getKind () != ETokenKind.TOKEN)
             JavaCCErrors.semanticError (aRes.getRexp (),
                                         "EOF action/state change can be specified only in a " + "TOKEN specification.");
-          if (grammar ().getNextStateForEof () != null || grammar ().getActionForEof () != null)
+          if (grammar.getNextStateForEof () != null || grammar.getActionForEof () != null)
             JavaCCErrors.semanticError (aRes.getRexp (), "Duplicate action/state change specification for <EOF>.");
-          grammar ().setActionForEof (aRes.getAct ());
-          grammar ().setNextStateForEof (aRes.getNextState ());
+          grammar.setActionForEof (aRes.getAct ());
+          grammar.setNextStateForEof (aRes.getNextState ());
           prepareToRemove (aRespecs, aRes);
         }
         else
@@ -185,7 +186,7 @@ public class Semanticize
      * The following loop inserts all names of regular expressions into "named_tokens_table" and
      * "ordered_named_tokens". Duplications are flagged as errors.
      */
-    for (final TokenProduction aTokenProduction : grammar ().rexprList ())
+    for (final TokenProduction aTokenProduction : grammar.rexprList ())
     {
       final TokenProduction aTp = (aTokenProduction);
       final List <RegExprSpec> aRespecs = aTp.getRespecs ();
@@ -195,16 +196,16 @@ public class Semanticize
         if (!(aRes.getRexp () instanceof ExpRJustName) && aRes.getRexp ().hasLabel ())
         {
           final String s = aRes.getRexp ().getLabel ();
-          final AbstractExpRegularExpression aObj = grammar ().namedTokensTable ().put (s, aRes.getRexp ());
+          final AbstractExpRegularExpression aObj = grammar.namedTokensTable ().put (s, aRes.getRexp ());
           if (aObj != null)
           {
             JavaCCErrors.semanticError (aRes.getRexp (), "Multiply defined lexical token name \"" + s + "\".");
           }
           else
           {
-            grammar ().orderedNameTokens ().add (aRes.getRexp ());
+            grammar.orderedNameTokens ().add (aRes.getRexp ());
           }
-          if (grammar ().lexStateS2I ().get (s) != null)
+          if (grammar.lexStateS2I ().get (s) != null)
           {
             JavaCCErrors.semanticError (aRes.getRexp (),
                                         "Lexical token name \"" +
@@ -225,21 +226,21 @@ public class Semanticize
      * their ordinal values), and populates the table "names_of_tokens".
      */
 
-    grammar ().setTokenCount (1);
-    for (final TokenProduction tp : grammar ().rexprList ())
+    grammar.setTokenCount (1);
+    for (final TokenProduction tp : grammar.rexprList ())
     {
       final List <RegExprSpec> aRespecs = tp.getRespecs ();
       if (tp.getLexStates () == null)
       {
-        tp.setLexStates (new String [grammar ().lexStateI2S ().size ()]);
-        grammar ().lexStateI2S ().values ().toArray (tp.getLexStates ());
+        tp.setLexStates (new String [grammar.lexStateI2S ().size ()]);
+        grammar.lexStateI2S ().values ().toArray (tp.getLexStates ());
       }
 
       @SuppressWarnings ("unchecked")
       final Map <String, Map <String, AbstractExpRegularExpression>> table[] = new Map [tp.getLexStates ().length];
       for (int i = 0; i < tp.getLexStates ().length; i++)
       {
-        table[i] = grammar ().simpleTokensTable ().get (tp.getLexStates ()[i]);
+        table[i] = grammar.simpleTokensTable ().get (tp.getLexStates ()[i]);
       }
 
       for (final RegExprSpec aRegExprSpec : aRespecs)
@@ -260,7 +261,7 @@ public class Semanticize
               // So go ahead and insert this item.
               if (sl.getOrdinal () == 0)
               {
-                sl.setOrdinal (grammar ().getAndIncTokenCount ());
+                sl.setOrdinal (grammar.getAndIncTokenCount ());
               }
               aTable2 = new HashMap <> ();
               aTable2.put (sl.getImage (), sl);
@@ -324,7 +325,7 @@ public class Semanticize
                   // This entry is legitimate. So insert it.
                   if (sl.getOrdinal () == 0)
                   {
-                    sl.setOrdinal (grammar ().getAndIncTokenCount ());
+                    sl.setOrdinal (grammar.getAndIncTokenCount ());
                   }
                   aTable2.put (sl.getImage (), sl);
                   // The above "put" may override an existing entry (that is not
@@ -339,7 +340,7 @@ public class Semanticize
                   {
                     if (sl.getOrdinal () == 0)
                     {
-                      sl.setOrdinal (grammar ().getAndIncTokenCount ());
+                      sl.setOrdinal (grammar.getAndIncTokenCount ());
                     }
                     aTable2.put (sl.getImage (), sl);
                   }
@@ -404,16 +405,15 @@ public class Semanticize
         else
           if (!(aRes.getRexp () instanceof ExpRJustName))
           {
-            aRes.getRexp ().setOrdinal (grammar ().getAndIncTokenCount ());
+            aRes.getRexp ().setOrdinal (grammar.getAndIncTokenCount ());
           }
         if (!(aRes.getRexp () instanceof ExpRJustName) && aRes.getRexp ().hasLabel ())
         {
-          grammar ().namesOfTokens ()
-                    .put (Integer.valueOf (aRes.getRexp ().getOrdinal ()), aRes.getRexp ().getLabel ());
+          grammar.namesOfTokens ().put (Integer.valueOf (aRes.getRexp ().getOrdinal ()), aRes.getRexp ().getLabel ());
         }
         if (!(aRes.getRexp () instanceof ExpRJustName))
         {
-          grammar ().rexpsOfTokens ().put (Integer.valueOf (aRes.getRexp ().getOrdinal ()), aRes.getRexp ());
+          grammar.rexpsOfTokens ().put (Integer.valueOf (aRes.getRexp ().getOrdinal ()), aRes.getRexp ());
         }
       }
     }
@@ -808,29 +808,28 @@ public class Semanticize
         aProd.setWalkStatus (1);
         return true;
       }
-      else
-        if (aProd.getLeftExpansions ()[i].getWalkStatus () == 0)
+      if (aProd.getLeftExpansions ()[i].getWalkStatus () == 0)
+      {
+        if (_prodWalk (aProd.getLeftExpansions ()[i]))
         {
-          if (_prodWalk (aProd.getLeftExpansions ()[i]))
+          PGCCContext.current ()
+                     .semanticize ()
+                     .setLoopString (aProd.getLhs () +
+                                     "... --> " +
+                                     PGCCContext.current ().semanticize ().getLoopString ());
+          if (aProd.getWalkStatus () == -2)
           {
-            PGCCContext.current ()
-                       .semanticize ()
-                       .setLoopString (aProd.getLhs () +
-                                       "... --> " +
-                                       PGCCContext.current ().semanticize ().getLoopString ());
-            if (aProd.getWalkStatus () == -2)
-            {
-              aProd.setWalkStatus (1);
-              JavaCCErrors.semanticError (aProd,
-                                          "Left recursion detected: \"" +
-                                                 PGCCContext.current ().semanticize ().getLoopString () +
-                                                 "\"");
-              return false;
-            }
             aProd.setWalkStatus (1);
-            return true;
+            JavaCCErrors.semanticError (aProd,
+                                        "Left recursion detected: \"" +
+                                               PGCCContext.current ().semanticize ().getLoopString () +
+                                               "\"");
+            return false;
           }
+          aProd.setWalkStatus (1);
+          return true;
         }
+      }
     }
     aProd.setWalkStatus (1);
     return false;
@@ -851,33 +850,32 @@ public class Semanticize
         // the labels are checked for to be added to the loopString.
         return true;
       }
-      else
-        if (jn.getRegexpr ().getWalkStatus () == 0)
+      if (jn.getRegexpr ().getWalkStatus () == 0)
+      {
+        jn.getRegexpr ().setWalkStatus (-1);
+        if (_rexpWalk (jn.getRegexpr ()))
         {
-          jn.getRegexpr ().setWalkStatus (-1);
-          if (_rexpWalk (jn.getRegexpr ()))
+          PGCCContext.current ()
+                     .semanticize ()
+                     .setLoopString ("..." +
+                                     jn.getRegexpr ().getLabel () +
+                                     "... --> " +
+                                     PGCCContext.current ().semanticize ().getLoopString ());
+          if (jn.getRegexpr ().getWalkStatus () == -2)
           {
-            PGCCContext.current ()
-                       .semanticize ()
-                       .setLoopString ("..." +
-                                       jn.getRegexpr ().getLabel () +
-                                       "... --> " +
-                                       PGCCContext.current ().semanticize ().getLoopString ());
-            if (jn.getRegexpr ().getWalkStatus () == -2)
-            {
-              jn.getRegexpr ().setWalkStatus (1);
-              JavaCCErrors.semanticError (jn.getRegexpr (),
-                                          "Loop in regular expression detected: \"" +
-                                                            PGCCContext.current ().semanticize ().getLoopString () +
-                                                            "\"");
-              return false;
-            }
             jn.getRegexpr ().setWalkStatus (1);
-            return true;
+            JavaCCErrors.semanticError (jn.getRegexpr (),
+                                        "Loop in regular expression detected: \"" +
+                                                          PGCCContext.current ().semanticize ().getLoopString () +
+                                                          "\"");
+            return false;
           }
           jn.getRegexpr ().setWalkStatus (1);
-          return false;
+          return true;
         }
+        jn.getRegexpr ().setWalkStatus (1);
+        return false;
+      }
     }
 
     if (aRexp instanceof final ExpRChoice aRChoice)
@@ -1178,15 +1176,13 @@ public class Semanticize
 
     static boolean implicitLA (final Expansion aExp)
     {
-      if (!(aExp instanceof ExpSequence))
+      if (!(aExp instanceof final ExpSequence aSeq))
         return true;
 
-      final ExpSequence aSeq = (ExpSequence) aExp;
       final Object aObj = aSeq.getUnitAt (0);
-      if (!(aObj instanceof ExpLookahead))
+      if (!(aObj instanceof final ExpLookahead aLa))
         return true;
 
-      final ExpLookahead aLa = (ExpLookahead) aObj;
       return !aLa.isExplicit ();
     }
   }

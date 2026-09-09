@@ -45,10 +45,6 @@ import com.helger.annotation.style.ReturnsMutableObject;
  */
 public class BNFProduction extends AbstractNormalProduction
 {
-  /** Default constructor. */
-  public BNFProduction ()
-  {}
-
   /**
    * The declarations of this production.
    */
@@ -59,6 +55,10 @@ public class BNFProduction extends AbstractNormalProduction
    * this production's actions to include a preceding "if (true)".
    */
   private boolean m_bJumpPatched = false;
+
+  /** Default constructor. */
+  public BNFProduction ()
+  {}
 
   /**
    * {@return the declaration_tokens}

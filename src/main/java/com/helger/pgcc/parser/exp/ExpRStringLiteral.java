@@ -48,6 +48,7 @@ import com.helger.base.string.StringHelper;
 import com.helger.pgcc.context.LexerState;
 import com.helger.pgcc.context.NfaBuildState;
 import com.helger.pgcc.context.StringLiteralBuildState;
+import com.helger.pgcc.output.AbstractLexGenJavaLike;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.TokenManagerDebug;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
@@ -67,17 +68,12 @@ import com.helger.pgcc.parser.TokenizerData;
 public final class ExpRStringLiteral extends AbstractExpRegularExpression
 {
   /**
-   * The string image of the literal.
-   */
-  private String m_sImage;
-
-  /**
    * {@return the build state of the lexical state that is currently being generated. Never
    * <code>null</code>.}
    */
   public static StringLiteralBuildState strLit ()
   {
-    return LexGenJava.lexer ().stringLiterals ();
+    return AbstractLexGenJavaLike.lexer ().stringLiterals ();
   }
 
   /**
@@ -127,6 +123,26 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   }
 
   /**
+   * The string image of the literal.
+   */
+  private String m_sImage;
+
+  /**
+   * Create a string literal expansion.
+   *
+   * @param t
+   *        The token it was declared at, for error messages. May not be <code>null</code>.
+   * @param sImage
+   *        The literal, with the quotes and escapes already resolved. May not be <code>null</code>.
+   */
+  public ExpRStringLiteral (@NonNull final Token t, final String sImage)
+  {
+    setLineNumber (t.beginLine);
+    setColumnNumber (t.beginColumn);
+    m_sImage = sImage;
+  }
+
+  /**
    * The image.
    *
    * @return The value of m_sImage.
@@ -147,20 +163,6 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     m_sImage = aValue;
   }
 
-  /**
-   * Create a string literal expansion.
-   *
-   * @param t
-   *        The token it was declared at, for error messages. May not be <code>null</code>.
-   * @param sImage
-   *        The literal, with the quotes and escapes already resolved. May not be <code>null</code>.
-   */
-  public ExpRStringLiteral (@NonNull final Token t, final String sImage)
-  {
-    setLineNumber (t.beginLine);
-    setColumnNumber (t.beginColumn);
-    m_sImage = sImage;
-  }
   // with single char keys;
 
   /**
@@ -209,13 +211,14 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         {
           sImage = strLit ().getAllImages ()[i];
           if (sImage == null ||
-              ((LexGenJava.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) == 0L &&
-               (LexGenJava.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) == 0L &&
-               (LexGenJava.lexer ().getToToken ()[i / 64] & (1L << (i % 64))) == 0L) ||
-              (LexGenJava.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) != 0L ||
-              (LexGenJava.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) != 0L ||
-              LexGenJava.lexer ().getCanReachOnMore ()[LexGenJava.lexer ().getLexStates ()[i]] ||
-              ((Options.isIgnoreCase () || LexGenJava.lexer ().getIgnoreCase ()[i]) &&
+              ((AbstractLexGenJavaLike.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) == 0L &&
+               (AbstractLexGenJavaLike.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) == 0L &&
+               (AbstractLexGenJavaLike.lexer ().getToToken ()[i / 64] & (1L << (i % 64))) == 0L) ||
+              (AbstractLexGenJavaLike.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) != 0L ||
+              (AbstractLexGenJavaLike.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) != 0L ||
+              AbstractLexGenJavaLike.lexer ().getCanReachOnMore ()[AbstractLexGenJavaLike.lexer ()
+                                                                                         .getLexStates ()[i]] ||
+              ((Options.isIgnoreCase () || AbstractLexGenJavaLike.lexer ().getIgnoreCase ()[i]) &&
                (!sImage.equals (sImage.toLowerCase (Locale.US)) || !sImage.equals (sImage.toUpperCase (Locale.US)))))
           {
             strLit ().getAllImages ()[i] = null;
@@ -249,7 +252,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           aCodeGenerator.genCodeLine (sToPrint);
         }
 
-        while (++i < LexGenJava.lexer ().getMaxOrdinal ())
+        while (++i < AbstractLexGenJavaLike.lexer ().getMaxOrdinal ())
         {
           strLit ().setCharCnt (strLit ().getCharCnt () + 6);
           if (strLit ().getCharCnt () > 80)
@@ -305,13 +308,13 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     {
       sImage = strLit ().getAllImages ()[i];
       if (sImage == null ||
-          ((LexGenJava.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) == 0L &&
-           (LexGenJava.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) == 0L &&
-           (LexGenJava.lexer ().getToToken ()[i / 64] & (1L << (i % 64))) == 0L) ||
-          (LexGenJava.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) != 0L ||
-          (LexGenJava.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) != 0L ||
-          LexGenJava.lexer ().getCanReachOnMore ()[LexGenJava.lexer ().getLexStates ()[i]] ||
-          ((Options.isIgnoreCase () || LexGenJava.lexer ().getIgnoreCase ()[i]) &&
+          ((AbstractLexGenJavaLike.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) == 0L &&
+           (AbstractLexGenJavaLike.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) == 0L &&
+           (AbstractLexGenJavaLike.lexer ().getToToken ()[i / 64] & (1L << (i % 64))) == 0L) ||
+          (AbstractLexGenJavaLike.lexer ().getToSkip ()[i / 64] & (1L << (i % 64))) != 0L ||
+          (AbstractLexGenJavaLike.lexer ().getToMore ()[i / 64] & (1L << (i % 64))) != 0L ||
+          AbstractLexGenJavaLike.lexer ().getCanReachOnMore ()[AbstractLexGenJavaLike.lexer ().getLexStates ()[i]] ||
+          ((Options.isIgnoreCase () || AbstractLexGenJavaLike.lexer ().getIgnoreCase ()[i]) &&
            (!sImage.equals (sImage.toLowerCase (Locale.US)) || !sImage.equals (sImage.toUpperCase (Locale.US)))))
       {
         strLit ().getAllImages ()[i] = null;
@@ -356,7 +359,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       aCodeGenerator.genCode (aToPrint.toString ());
     }
 
-    while (++i < LexGenJava.lexer ().getMaxOrdinal ())
+    while (++i < AbstractLexGenJavaLike.lexer ().getMaxOrdinal ())
     {
       strLit ().setCharCnt (strLit ().getCharCnt () + 6);
       if (strLit ().getCharCnt () > 80)
@@ -401,10 +404,10 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           !Options.isJavaUserCharStream ())
       {
         NfaState.nfa ().setUnicodeWarningGiven (true);
-        JavaCCErrors.warning (LexGenJava.lexer ().getCurRE (),
+        JavaCCErrors.warning (AbstractLexGenJavaLike.lexer ().getCurRE (),
                               "Non-ASCII characters used in regular expression." +
-                                                               "Please make sure you use the correct Reader when you create the parser, " +
-                                                               "one that can handle your character set.");
+                                                                           "Please make sure you use the correct Reader when you create the parser, " +
+                                                                           "one that can handle your character set.");
       }
 
       // Kludge, but OK
@@ -416,7 +419,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       else
         aTemp = strLit ().getCharPosKind ().get (i);
 
-      KindInfo aInfo = aTemp.computeIfAbsent (s, k -> new KindInfo (LexGenJava.lexer ().getMaxOrdinal ()));
+      KindInfo aInfo = aTemp.computeIfAbsent (s, k -> new KindInfo (AbstractLexGenJavaLike.lexer ().getMaxOrdinal ()));
 
       if (i + 1 == nLen)
         aInfo.insertFinalKind (getOrdinal ());
@@ -424,7 +427,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         aInfo.insertValidKind (getOrdinal ());
 
       if (!Options.isIgnoreCase () &&
-          LexGenJava.lexer ().getIgnoreCase ()[getOrdinal ()] &&
+          AbstractLexGenJavaLike.lexer ().getIgnoreCase ()[getOrdinal ()] &&
           c != Character.toLowerCase (c))
       {
         s = Character.toString (Character.toLowerCase (c));
@@ -438,7 +441,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         else
           aTemp = strLit ().getCharPosKind ().get (i);
 
-        aInfo = aTemp.computeIfAbsent (s, k -> new KindInfo (LexGenJava.lexer ().getMaxOrdinal ()));
+        aInfo = aTemp.computeIfAbsent (s, k -> new KindInfo (AbstractLexGenJavaLike.lexer ().getMaxOrdinal ()));
 
         if (i + 1 == nLen)
           aInfo.insertFinalKind (getOrdinal ());
@@ -447,7 +450,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       }
 
       if (!Options.isIgnoreCase () &&
-          LexGenJava.lexer ().getIgnoreCase ()[getOrdinal ()] &&
+          AbstractLexGenJavaLike.lexer ().getIgnoreCase ()[getOrdinal ()] &&
           c != Character.toUpperCase (c))
       {
         s = Character.toString (Character.toUpperCase (c));
@@ -461,7 +464,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         else
           aTemp = strLit ().getCharPosKind ().get (i);
 
-        aInfo = aTemp.computeIfAbsent (s, k -> new KindInfo (LexGenJava.lexer ().getMaxOrdinal ()));
+        aInfo = aTemp.computeIfAbsent (s, k -> new KindInfo (AbstractLexGenJavaLike.lexer ().getMaxOrdinal ()));
 
         if (i + 1 == nLen)
           aInfo.insertFinalKind (getOrdinal ());
@@ -518,7 +521,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
     if (NfaState.nfa ().getGeneratedStates () != 0)
       aCodeGenerator.genCodeLine ("   return jjMoveNfa" +
-                                  LexGenJava.lexer ().getLexStateSuffix () +
+                                  AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                   "(" +
                                   NfaState.initStateName () +
                                   ", 0);");
@@ -530,7 +533,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
   private static int _getStateSetForKind (final int nPos, final int nKind)
   {
-    if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()] ||
+    if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] ||
         NfaState.nfa ().getGeneratedStates () == 0)
       return -1;
 
@@ -561,7 +564,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
   static String getLabel (final int nKind)
   {
-    final AbstractExpRegularExpression aRe = LexGenJava.lexer ().getRexprs ()[nKind];
+    final AbstractExpRegularExpression aRe = AbstractLexGenJavaLike.lexer ().getRexprs ()[nKind];
 
     if (aRe instanceof ExpRStringLiteral)
       return " \"" + JavaCCGlobals.addEscapes (((ExpRStringLiteral) aRe).m_sImage) + "\"";
@@ -572,12 +575,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
   static int getLineNumber (final int nKind)
   {
-    return LexGenJava.lexer ().getRexprs ()[nKind].getLineNumber ();
+    return AbstractLexGenJavaLike.lexer ().getRexprs ()[nKind].getLineNumber ();
   }
 
   static int getColumnNumber (final int nKind)
   {
-    return LexGenJava.lexer ().getRexprs ()[nKind].getColumnNumber ();
+    return AbstractLexGenJavaLike.lexer ().getRexprs ()[nKind].getColumnNumber ();
   }
 
   /**
@@ -614,10 +617,11 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       strLit ().getSubString ()[i] = false;
 
       final String sImage = strLit ().getAllImages ()[i];
-      if (sImage == null || LexGenJava.lexer ().getLexStates ()[i] != LexGenJava.lexer ().getLexStateIndex ())
+      if (sImage == null ||
+          AbstractLexGenJavaLike.lexer ().getLexStates ()[i] != AbstractLexGenJavaLike.lexer ().getLexStateIndex ())
         continue;
 
-      if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
+      if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
       {
         // We will not optimize for mixed case
         strLit ().getSubString ()[i] = true;
@@ -628,7 +632,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       for (int j = 0; j < strLit ().getMaxStrKind (); j++)
       {
         if (j != i &&
-            LexGenJava.lexer ().getLexStates ()[j] == LexGenJava.lexer ().getLexStateIndex () &&
+            AbstractLexGenJavaLike.lexer ().getLexStates ()[j] == AbstractLexGenJavaLike.lexer ().getLexStateIndex () &&
             (strLit ().getAllImages ()[j]) != null)
         {
           if (strLit ().getAllImages ()[j].indexOf (sImage) == 0)
@@ -652,11 +656,11 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
-                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
                                             "jjStartNfaWithStates" +
-                                                                                         LexGenJava.lexer ()
-                                                                                                   .getLexStateSuffix () +
-                                                                                         "(int pos, int kind, int state)");
+                                                                                                     AbstractLexGenJavaLike.lexer ()
+                                                                                                                           .getLexStateSuffix () +
+                                                                                                     "(int pos, int kind, int state)");
     aCodeGenerator.genCodeLine ("{");
     aCodeGenerator.genCodeLine ("   jjmatchedKind = kind;");
     aCodeGenerator.genCodeLine ("   jjmatchedPos = pos;");
@@ -686,9 +690,9 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       switch (eOutputLanguage)
       {
         case JAVA -> aCodeGenerator.genCodeLine ("   debugStream.println(" +
-                                                 (LexGenJava.lexer ().getMaxLexStates () > 1
-                                                                                             ? "\"<\" + lexStateNames[curLexState] + \">\" + "
-                                                                                             : "") +
+                                                 (AbstractLexGenJavaLike.lexer ().getMaxLexStates () > 1
+                                                                                                         ? "\"<\" + lexStateNames[curLexState] + \">\" + "
+                                                                                                         : "") +
                                                  "\"Current character : \" + " +
                                                  Options.getTokenMgrErrorClass () +
                                                  ".addEscapes(String.valueOf(curChar)) + \" (\" + curChar + \") " +
@@ -701,7 +705,9 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       }
     }
 
-    aCodeGenerator.genCodeLine ("   return jjMoveNfa" + LexGenJava.lexer ().getLexStateSuffix () + "(state, pos + 1);");
+    aCodeGenerator.genCodeLine ("   return jjMoveNfa" +
+                                AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
+                                "(state, pos + 1);");
     aCodeGenerator.genCodeLine ("}");
   }
 
@@ -709,7 +715,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   {
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
-                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
                                             "jjStopAtPos(int pos, int kind)");
     aCodeGenerator.genCodeLine ("{");
     aCodeGenerator.genCodeLine ("   jjmatchedKind = kind;");
@@ -784,18 +790,19 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     KindInfo aInfo;
     final int nMaxLongsReqd = strLit ().getMaxStrKind () / 64 + 1;
     boolean bIfGenerated;
-    LexGenJava.lexer ().getMaxLongsReqd ()[LexGenJava.lexer ().getLexStateIndex ()] = nMaxLongsReqd;
+    AbstractLexGenJavaLike.lexer ().getMaxLongsReqd ()[AbstractLexGenJavaLike.lexer ()
+                                                                             .getLexStateIndex ()] = nMaxLongsReqd;
     final EOutputLanguage eOutputLanguage = aCodeGenerator.getOutputLanguage ();
     final NfaBuildState aNfa = NfaState.nfa ();
 
     if (strLit ().getMaxLen () == 0)
     {
       aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
-                                              LexGenJava.lexer ().getTokenMgrClassName (),
+                                              AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
                                               "jjMoveStringLiteralDfa0" +
-                                                                                           LexGenJava.lexer ()
-                                                                                                     .getLexStateSuffix () +
-                                                                                           "()");
+                                                                                                       AbstractLexGenJavaLike.lexer ()
+                                                                                                                             .getLexStateSuffix () +
+                                                                                                       "()");
       dumpNullStrLiterals (aCodeGenerator);
       return;
     }
@@ -874,12 +881,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       aParams.append (")");
 
       aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private") + "int",
-                                              LexGenJava.lexer ().getTokenMgrClassName (),
+                                              AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
                                               "jjMoveStringLiteralDfa" +
-                                                                                           i +
-                                                                                           LexGenJava.lexer ()
-                                                                                                     .getLexStateSuffix () +
-                                                                                           aParams,
+                                                                                                       i +
+                                                                                                       AbstractLexGenJavaLike.lexer ()
+                                                                                                                             .getLexStateSuffix () +
+                                                                                                       aParams,
                                               null,
                                               false);
 
@@ -911,11 +918,11 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           }
 
           aCodeGenerator.genCodeLine (") == 0L)");
-          if (!LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()] &&
+          if (!AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] &&
               aNfa.getGeneratedStates () != 0)
           {
             aCodeGenerator.genCode ("      return jjStartNfa" +
-                                    LexGenJava.lexer ().getLexStateSuffix () +
+                                    AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                     "(" +
                                     (i - 2) +
                                     ", ");
@@ -932,7 +939,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           else
             if (aNfa.getGeneratedStates () != 0)
               aCodeGenerator.genCodeLine ("      return jjMoveNfa" +
-                                          LexGenJava.lexer ().getLexStateSuffix () +
+                                          AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                           "(" +
                                           NfaState.initStateName () +
                                           ", " +
@@ -1004,11 +1011,11 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           default -> throw new UnsupportedOutputLanguageException (eOutputLanguage);
         }
 
-        if (!LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()] &&
+        if (!AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] &&
             aNfa.getGeneratedStates () != 0)
         {
           aCodeGenerator.genCode ("      jjStopStringLiteralDfa" +
-                                  LexGenJava.lexer ().getLexStateSuffix () +
+                                  AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                   "(" +
                                   (i - 1) +
                                   ", ");
@@ -1042,7 +1049,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           if (aNfa.getGeneratedStates () != 0)
           {
             aCodeGenerator.genCodeLine ("   return jjMoveNfa" +
-                                        LexGenJava.lexer ().getLexStateSuffix () +
+                                        AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                         "(" +
                                         NfaState.initStateName () +
                                         ", " +
@@ -1073,7 +1080,9 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
         if (Options.isDebugTokenManager ())
         {
-          TokenManagerDebug.genCurrentCharacter (aCodeGenerator, "   ", LexGenJava.lexer ().getMaxLexStates () > 1);
+          TokenManagerDebug.genCurrentCharacter (aCodeGenerator,
+                                                 "   ",
+                                                 AbstractLexGenJavaLike.lexer ().getMaxLexStates () > 1);
         }
       }
 
@@ -1106,13 +1115,17 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
                    strLit ().getIntermediateKinds ()[(j * 64 + k)][i] < (j * 64 + k) &&
                    strLit ().getIntermediateMatchedPos () != null &&
                    strLit ().getIntermediateMatchedPos ()[(j * 64 + k)][i] == i) ||
-                  (LexGenJava.lexer ().getCanMatchAnyChar ()[LexGenJava.lexer ().getLexStateIndex ()] >= 0 &&
-                   LexGenJava.lexer ().getCanMatchAnyChar ()[LexGenJava.lexer ().getLexStateIndex ()] < (j * 64 + k)))
+                  (AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                               .getLexStateIndex ()] >= 0 &&
+                   AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                               .getLexStateIndex ()] < (j *
+                                                                                                                        64 +
+                                                                                                                        k)))
                 break;
-              if ((LexGenJava.lexer ().getToSkip ()[nKind / 64] & (1L << (nKind % 64))) != 0L &&
-                  (LexGenJava.lexer ().getToSpecial ()[nKind / 64] & (1L << (nKind % 64))) == 0L &&
-                  LexGenJava.lexer ().getActions ()[nKind] == null &&
-                  LexGenJava.lexer ().getNewLexState ()[nKind] == null)
+              if ((AbstractLexGenJavaLike.lexer ().getToSkip ()[nKind / 64] & (1L << (nKind % 64))) != 0L &&
+                  (AbstractLexGenJavaLike.lexer ().getToSpecial ()[nKind / 64] & (1L << (nKind % 64))) == 0L &&
+                  AbstractLexGenJavaLike.lexer ().getActions ()[nKind] == null &&
+                  AbstractLexGenJavaLike.lexer ().getNewLexState ()[nKind] == null)
               {
                 LexGenJava.addCharToSkip (c, nKind);
 
@@ -1199,8 +1212,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
               }
               else
                 if (i == 0 &&
-                    LexGenJava.lexer ().getCanMatchAnyChar ()[LexGenJava.lexer ().getLexStateIndex ()] >= 0 &&
-                    LexGenJava.lexer ().getCanMatchAnyChar ()[LexGenJava.lexer ().getLexStateIndex ()] < (j * 64 + k))
+                    AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                                .getLexStateIndex ()] >= 0 &&
+                    AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                                .getLexStateIndex ()] < (j *
+                                                                                                                         64 +
+                                                                                                                         k))
                 {
                   JavaCCErrors.warning (" \"" +
                                         JavaCCGlobals.addEscapes (strLit ().getAllImages ()[j * 64 + k]) +
@@ -1210,10 +1227,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
                                         ", column " +
                                         getColumnNumber (j * 64 + k) +
                                         ". It will be matched as " +
-                                        getLabel (LexGenJava.lexer ().getCanMatchAnyChar ()[LexGenJava.lexer ()
-                                                                                                      .getLexStateIndex ()]) +
+                                        getLabel (AbstractLexGenJavaLike.lexer ()
+                                                                        .getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                                                     .getLexStateIndex ()]) +
                                         ".");
-                  nKindToPrint = LexGenJava.lexer ().getCanMatchAnyChar ()[LexGenJava.lexer ().getLexStateIndex ()];
+                  nKindToPrint = AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                                             .getLexStateIndex ()];
                 }
                 else
                   nKindToPrint = j * 64 + k;
@@ -1227,7 +1246,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
                   bCreateStartNfa = true;
                   aCodeGenerator.genCodeLine (sPrefix +
                                               "return jjStartNfaWithStates" +
-                                              LexGenJava.lexer ().getLexStateSuffix () +
+                                              AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                               "(" +
                                               i +
                                               ", " +
@@ -1241,9 +1260,10 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
               }
               else
               {
-                if ((LexGenJava.lexer ().getInitMatch ()[LexGenJava.lexer ().getLexStateIndex ()] != 0 &&
-                     LexGenJava.lexer ().getInitMatch ()[LexGenJava.lexer ()
-                                                                   .getLexStateIndex ()] != Integer.MAX_VALUE) ||
+                if ((AbstractLexGenJavaLike.lexer ().getInitMatch ()[AbstractLexGenJavaLike.lexer ()
+                                                                                           .getLexStateIndex ()] != 0 &&
+                     AbstractLexGenJavaLike.lexer ().getInitMatch ()[AbstractLexGenJavaLike.lexer ()
+                                                                                           .getLexStateIndex ()] != Integer.MAX_VALUE) ||
                     i != 0)
                 {
                   aCodeGenerator.genCodeLine ("         {");
@@ -1268,7 +1288,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
             aCodeGenerator.genCode ("jjMoveStringLiteralDfa" +
                                     (i + 1) +
-                                    LexGenJava.lexer ().getLexStateSuffix () +
+                                    AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                     "(");
             int j = 0;
             for (; j < nMaxLongsReqd - 1; j++)
@@ -1297,7 +1317,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
             aCodeGenerator.genCode ("jjMoveStringLiteralDfa" +
                                     (i + 1) +
-                                    LexGenJava.lexer ().getLexStateSuffix () +
+                                    AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                     "(");
 
             int j = 0;
@@ -1331,11 +1351,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         else
         {
           // A very special case.
-          if (i == 0 && LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
+          if (i == 0 &&
+              AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
           {
             if (aNfa.getGeneratedStates () != 0)
               aCodeGenerator.genCodeLine ("         return jjMoveNfa" +
-                                          LexGenJava.lexer ().getLexStateSuffix () +
+                                          AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                           "(" +
                                           NfaState.initStateName () +
                                           ", 0);");
@@ -1370,7 +1391,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
            * This means no string literal is possible. Just move nfa with this guy and return.
            */
           aCodeGenerator.genCodeLine ("         return jjMoveNfa" +
-                                      LexGenJava.lexer ().getLexStateSuffix () +
+                                      AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                       "(" +
                                       NfaState.initStateName () +
                                       ", 0);");
@@ -1392,7 +1413,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       {
         if (bStartNfaNeeded)
         {
-          if (!LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()] &&
+          if (!AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] &&
               aNfa.getGeneratedStates () != 0)
           {
             /*
@@ -1402,7 +1423,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
              */
 
             aCodeGenerator.genCode ("   return jjStartNfa" +
-                                    LexGenJava.lexer ().getLexStateSuffix () +
+                                    AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                     "(" +
                                     (i - 1) +
                                     ", ");
@@ -1423,7 +1444,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
           else
             if (aNfa.getGeneratedStates () != 0)
               aCodeGenerator.genCodeLine ("   return jjMoveNfa" +
-                                          LexGenJava.lexer ().getLexStateSuffix () +
+                                          AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                           "(" +
                                           NfaState.initStateName () +
                                           ", " +
@@ -1437,7 +1458,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
       aCodeGenerator.genCodeLine ("}");
     }
 
-    if (!LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()] &&
+    if (!AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()] &&
         aNfa.getGeneratedStates () != 0 &&
         bCreateStartNfa)
       dumpStartWithStates (aCodeGenerator);
@@ -1447,7 +1468,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
   {
     // Both of these walk a ThreadLocal, so resolve them once instead of four times per literal
     final StringLiteralBuildState aStrLit = strLit ();
-    final LexerState aLexer = LexGenJava.lexer ();
+    final LexerState aLexer = AbstractLexGenJavaLike.lexer ();
     final int nMaxStrKind = aStrLit.getMaxStrKind ();
     final int [] aLexStates = aLexer.getLexStates ();
     final int nLexStateIndex = aLexer.getLexStateIndex ();
@@ -1494,7 +1515,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
     for (i = 0; i < strLit ().getMaxStrKind (); i++)
     {
-      if (LexGenJava.lexer ().getLexStates ()[i] != LexGenJava.lexer ().getLexStateIndex ())
+      if (AbstractLexGenJavaLike.lexer ().getLexStates ()[i] != AbstractLexGenJavaLike.lexer ().getLexStateIndex ())
         continue;
 
       final String sImage = strLit ().getAllImages ()[i];
@@ -1537,9 +1558,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
 
           if (j == 0 &&
               kind != Integer.MAX_VALUE &&
-              LexGenJava.lexer ().getCanMatchAnyChar ()[LexGenJava.lexer ().getLexStateIndex ()] != -1 &&
-              kind > LexGenJava.lexer ().getCanMatchAnyChar ()[LexGenJava.lexer ().getLexStateIndex ()])
-            kind = LexGenJava.lexer ().getCanMatchAnyChar ()[LexGenJava.lexer ().getLexStateIndex ()];
+              AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                          .getLexStateIndex ()] != -1 &&
+              kind > AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                                 .getLexStateIndex ()])
+            kind = AbstractLexGenJavaLike.lexer ().getCanMatchAnyChar ()[AbstractLexGenJavaLike.lexer ()
+                                                                                               .getLexStateIndex ()];
 
           if (getStrKind (sImage.substring (0, j + 1)) < kind)
           {
@@ -1626,12 +1650,12 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     aParams.append (eOutputLanguage.getTypeLong () + " active" + i + ")");
 
     aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private final") + "int",
-                                            LexGenJava.lexer ().getTokenMgrClassName (),
+                                            AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
                                             "jjStopStringLiteralDfa" +
-                                                                                         LexGenJava.lexer ()
-                                                                                                   .getLexStateSuffix () +
-                                                                                         "(int pos, " +
-                                                                                         aParams,
+                                                                                                     AbstractLexGenJavaLike.lexer ()
+                                                                                                                           .getLexStateSuffix () +
+                                                                                                     "(int pos, " +
+                                                                                                     aParams,
                                             null,
                                             false);
 
@@ -1694,8 +1718,10 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
             {
               aCodeGenerator.genCodeLine ("            jjmatchedKind = " + sKindStr + ";");
 
-              if ((LexGenJava.lexer ().getInitMatch ()[LexGenJava.lexer ().getLexStateIndex ()] != 0 &&
-                   LexGenJava.lexer ().getInitMatch ()[LexGenJava.lexer ().getLexStateIndex ()] != Integer.MAX_VALUE))
+              if ((AbstractLexGenJavaLike.lexer ().getInitMatch ()[AbstractLexGenJavaLike.lexer ()
+                                                                                         .getLexStateIndex ()] != 0 &&
+                   AbstractLexGenJavaLike.lexer ().getInitMatch ()[AbstractLexGenJavaLike.lexer ()
+                                                                                         .getLexStateIndex ()] != Integer.MAX_VALUE))
                 aCodeGenerator.genCodeLine ("            jjmatchedPos = 0;");
             }
             else
@@ -1758,17 +1784,20 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     aParams.append (eOutputLanguage.getTypeLong () + " active" + i + ")");
 
     aCodeGenerator.generateMethodDefHeader (eOutputLanguage.getMethodModifiers ("private final") + "int",
-                                            LexGenJava.lexer ().getTokenMgrClassName (),
-                                            "jjStartNfa" + LexGenJava.lexer ().getLexStateSuffix () + aParams,
+                                            AbstractLexGenJavaLike.lexer ().getTokenMgrClassName (),
+                                            "jjStartNfa" +
+                                                                                                     AbstractLexGenJavaLike.lexer ()
+                                                                                                                           .getLexStateSuffix () +
+                                                                                                     aParams,
                                             null,
                                             false);
     aCodeGenerator.genCodeLine ("{");
 
-    if (LexGenJava.lexer ().getMixed ()[LexGenJava.lexer ().getLexStateIndex ()])
+    if (AbstractLexGenJavaLike.lexer ().getMixed ()[AbstractLexGenJavaLike.lexer ().getLexStateIndex ()])
     {
       if (NfaState.nfa ().getGeneratedStates () != 0)
         aCodeGenerator.genCodeLine ("   return jjMoveNfa" +
-                                    LexGenJava.lexer ().getLexStateSuffix () +
+                                    AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                                     "(" +
                                     NfaState.initStateName () +
                                     ", pos + 1);");
@@ -1780,10 +1809,10 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     }
 
     aCodeGenerator.genCode ("   return jjMoveNfa" +
-                            LexGenJava.lexer ().getLexStateSuffix () +
+                            AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                             "(" +
                             "jjStopStringLiteralDfa" +
-                            LexGenJava.lexer ().getLexStateSuffix () +
+                            AbstractLexGenJavaLike.lexer ().getLexStateSuffix () +
                             "(pos, ");
     for (i = 0; i < nMaxKindsReqd - 1; i++)
       aCodeGenerator.genCode ("active" + i + ", ");
@@ -1839,7 +1868,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
     for (int nKind = 0; nKind < strLit ().getAllImages ().length; nKind++)
     {
       if (StringHelper.isEmpty (strLit ().getAllImages ()[nKind]) ||
-          LexGenJava.lexer ().getLexStates ()[nKind] != nLexStateIndex)
+          AbstractLexGenJavaLike.lexer ().getLexStates ()[nKind] != nLexStateIndex)
       {
         continue;
       }
@@ -1870,7 +1899,7 @@ public final class ExpRStringLiteral extends AbstractExpRegularExpression
         s = s.toLowerCase (Locale.US);
       }
       final char c = s.charAt (0);
-      final int nKey = LexGenJava.lexer ().getLexStateIndex () << 16 | c;
+      final int nKey = AbstractLexGenJavaLike.lexer ().getLexStateIndex () << 16 | c;
       List <String> l = NfaState.tokenizerBuild ().literalsByLength ().get (Integer.valueOf (nKey));
       List <Integer> aKinds = NfaState.tokenizerBuild ().literalKinds ().get (Integer.valueOf (nKey));
       int j = 0;
