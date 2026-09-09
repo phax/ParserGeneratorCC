@@ -50,6 +50,7 @@ import java.util.List;
 
 import com.helger.io.file.FileHelper;
 import com.helger.pgcc.CPG;
+import com.helger.pgcc.context.GrammarState;
 import com.helger.pgcc.parser.ETokenKind;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.MetaParseException;
@@ -134,13 +135,14 @@ public class OtherFilesGenJava
         }
       }
 
+    final GrammarState aGrammar = grammar ();
     final Writer w = FileHelper.getBufferedWriter (new File (Options.getOutputDirectory (),
-                                                             grammar ().getParserName () + CONSTANTS_FILENAME_SUFFIX),
+                                                             aGrammar.getParserName () + CONSTANTS_FILENAME_SUFFIX),
                                                    Options.getOutputEncoding ());
     if (w == null)
     {
       JavaCCErrors.semanticError ("Could not open file " +
-                                  grammar ().getParserName () +
+                                  aGrammar.getParserName () +
                                   CONSTANTS_FILENAME_SUFFIX +
                                   " for writing.");
       return;
@@ -148,22 +150,22 @@ public class OtherFilesGenJava
 
     try (final PrintWriter aOstr = new PrintWriter (w))
     {
-      final List <String> aTn = new ArrayList <> (grammar ().getToolNameList ());
+      final List <String> aTn = new ArrayList <> (aGrammar.getToolNameList ());
       aTn.add (CPG.APP_NAME);
 
-      aOstr.println ("/* " + getIdString (aTn, grammar ().getParserName () + CONSTANTS_FILENAME_SUFFIX) + " */");
+      aOstr.println ("/* " + getIdString (aTn, aGrammar.getParserName () + CONSTANTS_FILENAME_SUFFIX) + " */");
 
-      if (grammar ().cuToInsertionPoint1 ().isNotEmpty () && grammar ().cuToInsertionPoint1 ().get (0).kind == PACKAGE)
+      if (aGrammar.cuToInsertionPoint1 ().isNotEmpty () && aGrammar.cuToInsertionPoint1 ().get (0).kind == PACKAGE)
       {
-        for (int i = 1; i < grammar ().cuToInsertionPoint1 ().size (); i++)
+        for (int i = 1; i < aGrammar.cuToInsertionPoint1 ().size (); i++)
         {
-          if (grammar ().cuToInsertionPoint1 ().get (i).kind == SEMICOLON)
+          if (aGrammar.cuToInsertionPoint1 ().get (i).kind == SEMICOLON)
           {
-            t = grammar ().cuToInsertionPoint1 ().get (0);
+            t = aGrammar.cuToInsertionPoint1 ().get (0);
             printTokenSetup (t);
             for (int j = 0; j <= i; j++)
             {
-              t = grammar ().cuToInsertionPoint1 ().get (j);
+              t = aGrammar.cuToInsertionPoint1 ().get (j);
               printToken (t, aOstr);
             }
             printTrailingComments (t);
@@ -183,12 +185,12 @@ public class OtherFilesGenJava
       {
         aOstr.print ("public ");
       }
-      aOstr.println ("interface " + grammar ().getParserName () + "Constants {");
+      aOstr.println ("interface " + aGrammar.getParserName () + "Constants {");
       aOstr.println ();
 
       aOstr.println ("  /** End of File. */");
       aOstr.println ("  int EOF = 0;");
-      for (final AbstractExpRegularExpression re : grammar ().orderedNameTokens ())
+      for (final AbstractExpRegularExpression re : aGrammar.orderedNameTokens ())
       {
         aOstr.println ("  /** RegularExpression Id. */");
         aOstr.println ("  int " + re.getLabel () + " = " + re.getOrdinal () + ";");
@@ -207,7 +209,7 @@ public class OtherFilesGenJava
       aOstr.println ("  String[] tokenImage = {");
       aOstr.println ("    \"<EOF>\",");
 
-      for (final TokenProduction aTokenProduction : grammar ().rexprList ())
+      for (final TokenProduction aTokenProduction : aGrammar.rexprList ())
       {
         final TokenProduction aTp = (aTokenProduction);
         final List <RegExprSpec> aRespecs = aTp.getRespecs ();

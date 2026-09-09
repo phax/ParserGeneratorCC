@@ -43,6 +43,7 @@ import java.util.List;
 
 import com.helger.base.system.EJavaVersion;
 import com.helger.pgcc.CPG;
+import com.helger.pgcc.context.GrammarState;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.parser.AbstractCodeGenerator;
 import com.helger.pgcc.parser.JavaCCErrors;
@@ -182,22 +183,23 @@ public class ParseGenJava extends AbstractCodeGenerator
     final boolean bHasCharset = eJavaVersion.isNewerOrEqualsThan (EJavaVersion.JDK_1_6);
     final boolean bEmptyTypeVar = eJavaVersion.isNewerOrEqualsThan (EJavaVersion.JDK_1_7);
 
-    final List <String> aTn = new ArrayList <> (grammar ().getToolNameList ());
+    final GrammarState aGrammar = grammar ();
+    final List <String> aTn = new ArrayList <> (aGrammar.getToolNameList ());
     aTn.add (CPG.APP_NAME);
 
     // This is the first line generated -- the the comment line at the top of
     // the generated parser
-    genCodeLine ("/* " + getIdString (aTn, grammar ().getParserName () + ".java") + " */");
+    genCodeLine ("/* " + getIdString (aTn, aGrammar.getParserName () + ".java") + " */");
 
     boolean bImplementsExists = false;
 
-    if (!grammar ().cuToInsertionPoint1 ().isEmpty ())
+    if (!aGrammar.cuToInsertionPoint1 ().isEmpty ())
     {
-      final Token aFirstToken = grammar ().cuToInsertionPoint1 ().get (0);
+      final Token aFirstToken = aGrammar.cuToInsertionPoint1 ().get (0);
       printTokenSetup (aFirstToken);
       setColToStart ();
       Token t;
-      for (final Token aToken : grammar ().cuToInsertionPoint1 ())
+      for (final Token aToken : aGrammar.cuToInsertionPoint1 ())
       {
         t = aToken;
         if (t.kind == JavaCCParserConstants.IMPLEMENTS)
@@ -222,11 +224,11 @@ public class ParseGenJava extends AbstractCodeGenerator
     {
       genCode (" implements ");
     }
-    genCode (grammar ().getParserName () + "Constants ");
-    if (grammar ().cuToInsertionPoint2 ().isNotEmpty ())
+    genCode (aGrammar.getParserName () + "Constants ");
+    if (aGrammar.cuToInsertionPoint2 ().isNotEmpty ())
     {
-      printTokenSetup (grammar ().cuToInsertionPoint2 ().get (0));
-      for (final Token aToken : grammar ().cuToInsertionPoint2 ())
+      printTokenSetup (aGrammar.cuToInsertionPoint2 ().get (0));
+      for (final Token aToken : aGrammar.cuToInsertionPoint2 ())
       {
         printToken (aToken);
       }
@@ -245,7 +247,7 @@ public class ParseGenJava extends AbstractCodeGenerator
     else
     {
       genCodeLine ("  /** Generated Token Manager. */");
-      genCodeLine ("  public " + grammar ().getParserName () + "TokenManager token_source;");
+      genCodeLine ("  public " + aGrammar.getParserName () + "TokenManager token_source;");
       if (!Options.isJavaUserCharStream ())
       {
         genCodeLine ("  " + getCharStreamName () + " jj_input_stream;");
@@ -264,7 +266,7 @@ public class ParseGenJava extends AbstractCodeGenerator
       genCodeLine ("  /** current depth */");
       genCodeLine ("  private int jj_depth;");
     }
-    if (grammar ().getJJ2Index () != 0)
+    if (aGrammar.getJJ2Index () != 0)
     {
       genCodeLine ("  private Token jj_scanpos, jj_lastpos;");
       genCodeLine ("  private int jj_la;");
@@ -278,8 +280,8 @@ public class ParseGenJava extends AbstractCodeGenerator
     if (Options.isErrorReporting ())
     {
       genCodeLine ("  private int jj_gen;");
-      genCodeLine ("  final private int[] jj_la1 = new int[" + grammar ().getMaskIndex () + "];");
-      final int nTokenMaskSize = (grammar ().getTokenCount () - 1) / 32 + 1;
+      genCodeLine ("  final private int[] jj_la1 = new int[" + aGrammar.getMaskIndex () + "];");
+      final int nTokenMaskSize = (aGrammar.getTokenCount () - 1) / 32 + 1;
       for (int i = 0; i < nTokenMaskSize; i++)
       {
         genCodeLine ("  static private int[] jj_la1_" + i + ";");
@@ -294,15 +296,15 @@ public class ParseGenJava extends AbstractCodeGenerator
       {
         genCodeLine ("	private static void jj_la1_init_" + i + "() {");
         genCode ("	   jj_la1_" + i + " = new int[] {");
-        for (final int [] tokenMask : grammar ().maskVals ())
+        for (final int [] tokenMask : aGrammar.maskVals ())
           genCode ("0x" + Integer.toHexString (tokenMask[i]) + ",");
         genCodeLine ("};");
         genCodeLine ("	}");
       }
     }
-    if (grammar ().getJJ2Index () != 0 && Options.isErrorReporting ())
+    if (aGrammar.getJJ2Index () != 0 && Options.isErrorReporting ())
     {
-      genCodeLine ("  private final JJCalls[] jj_2_rtns = new JJCalls[" + grammar ().getJJ2Index () + "];");
+      genCodeLine ("  private final JJCalls[] jj_2_rtns = new JJCalls[" + aGrammar.getJJ2Index () + "];");
       genCodeLine ("  private " + eOutputLanguage.getTypeBoolean () + " jj_rescan = false;");
       genCodeLine ("  private int jj_gc = 0;");
     }
@@ -316,11 +318,11 @@ public class ParseGenJava extends AbstractCodeGenerator
         genCodeLine ("   * Constructor with user supplied CharStream.");
         genCodeLine ("   * @param stream stream to init with");
         genCodeLine ("   */");
-        genCodeLine ("  public " + grammar ().getParserName () + "(final CharStream stream) {");
+        genCodeLine ("  public " + aGrammar.getParserName () + "(final CharStream stream) {");
         if (Options.isTokenManagerUsesParser ())
-          genCodeLine ("	 token_source = new " + grammar ().getParserName () + "TokenManager(this, stream);");
+          genCodeLine ("	 token_source = new " + aGrammar.getParserName () + "TokenManager(this, stream);");
         else
-          genCodeLine ("	 token_source = new " + grammar ().getParserName () + "TokenManager(stream);");
+          genCodeLine ("	 token_source = new " + aGrammar.getParserName () + "TokenManager(stream);");
         genCodeLine ("	 token = new Token();");
         if (Options.isCacheTokens ())
         {
@@ -338,11 +340,11 @@ public class ParseGenJava extends AbstractCodeGenerator
         if (Options.isErrorReporting ())
         {
           genCodeLine ("	 jj_gen = 0;");
-          if (grammar ().getMaskIndex () > 0)
+          if (aGrammar.getMaskIndex () > 0)
           {
-            genCodeLine ("	 for (int i = 0; i < " + grammar ().getMaskIndex () + "; i++) jj_la1[i] = -1;");
+            genCodeLine ("	 for (int i = 0; i < " + aGrammar.getMaskIndex () + "; i++) jj_la1[i] = -1;");
           }
-          if (grammar ().getJJ2Index () != 0)
+          if (aGrammar.getJJ2Index () != 0)
           {
             genCodeLine ("	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();");
           }
@@ -382,19 +384,19 @@ public class ParseGenJava extends AbstractCodeGenerator
         {
           genCodeLine ("	 jj_lookingAhead = false;");
         }
-        if (grammar ().isJJTreeGenerated ())
+        if (aGrammar.isJJTreeGenerated ())
         {
           genCodeLine ("	 jjtree.reset();");
         }
         if (Options.isErrorReporting ())
         {
           genCodeLine ("	 jj_gen = 0;");
-          if (grammar ().getMaskIndex () > 0)
+          if (aGrammar.getMaskIndex () > 0)
           {
-            genCodeLine ("   for (int i = 0; i < " + grammar ().getMaskIndex () + "; i++)");
+            genCodeLine ("   for (int i = 0; i < " + aGrammar.getMaskIndex () + "; i++)");
             genCodeLine ("     jj_la1[i] = -1;");
           }
-          if (grammar ().getJJ2Index () != 0)
+          if (aGrammar.getJJ2Index () != 0)
           {
             genCodeLine ("   for (int i = 0; i < jj_2_rtns.length; i++)");
             genCodeLine ("     jj_2_rtns[i] = new JJCalls();");
@@ -413,7 +415,7 @@ public class ParseGenJava extends AbstractCodeGenerator
             genCodeLine ("   * Constructor with InputStream.");
             genCodeLine ("   * @param stream input stream");
             genCodeLine ("   */");
-            genCodeLine ("  public " + grammar ().getParserName () + "(final java.io.InputStream stream) {");
+            genCodeLine ("  public " + aGrammar.getParserName () + "(final java.io.InputStream stream) {");
             genCodeLine ("	  this(stream, null);");
             genCodeLine ("  }");
             genCodeNewLine ();
@@ -426,14 +428,14 @@ public class ParseGenJava extends AbstractCodeGenerator
           if (bHasCharset)
           {
             genCodeLine ("  public " +
-                         grammar ().getParserName () +
+                         aGrammar.getParserName () +
                          "(final java.io.InputStream stream, final java.nio.charset.Charset encoding) {");
             genCodeLine ("   jj_input_stream = new " + getCharStreamName () + "(stream, encoding, 1, 1);");
           }
           else
           {
             genCodeLine ("  public " +
-                         grammar ().getParserName () +
+                         aGrammar.getParserName () +
                          "(final java.io.InputStream stream, final String encoding) {");
             genCodeLine ("   try {");
             genCodeLine ("     jj_input_stream = new " + getCharStreamName () + "(stream, encoding, 1, 1);");
@@ -444,10 +446,10 @@ public class ParseGenJava extends AbstractCodeGenerator
 
           if (Options.isTokenManagerUsesParser ())
             genCodeLine ("	 token_source = new " +
-                         grammar ().getParserName () +
+                         aGrammar.getParserName () +
                          "TokenManager(this, jj_input_stream);");
           else
-            genCodeLine ("	 token_source = new " + grammar ().getParserName () + "TokenManager(jj_input_stream);");
+            genCodeLine ("	 token_source = new " + aGrammar.getParserName () + "TokenManager(jj_input_stream);");
           genCodeLine ("	 token = new Token();");
           if (Options.isCacheTokens ())
           {
@@ -465,11 +467,11 @@ public class ParseGenJava extends AbstractCodeGenerator
           if (Options.isErrorReporting ())
           {
             genCodeLine ("	 jj_gen = 0;");
-            if (grammar ().getMaskIndex () > 0)
+            if (aGrammar.getMaskIndex () > 0)
             {
-              genCodeLine ("	 for (int i = 0; i < " + grammar ().getMaskIndex () + "; i++) jj_la1[i] = -1;");
+              genCodeLine ("	 for (int i = 0; i < " + aGrammar.getMaskIndex () + "; i++) jj_la1[i] = -1;");
             }
-            if (grammar ().getJJ2Index () != 0)
+            if (aGrammar.getJJ2Index () != 0)
             {
               genCodeLine ("	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();");
             }
@@ -532,15 +534,15 @@ public class ParseGenJava extends AbstractCodeGenerator
           {
             genCodeLine ("    jj_depth = -1;");
           }
-          if (grammar ().isJJTreeGenerated ())
+          if (aGrammar.isJJTreeGenerated ())
           {
             genCodeLine ("	 jjtree.reset();");
           }
           if (Options.isErrorReporting ())
           {
             genCodeLine ("	 jj_gen = 0;");
-            genCodeLine ("	 for (int i = 0; i < " + grammar ().getMaskIndex () + "; i++) jj_la1[i] = -1;");
-            if (grammar ().getJJ2Index () != 0)
+            genCodeLine ("	 for (int i = 0; i < " + aGrammar.getMaskIndex () + "; i++) jj_la1[i] = -1;");
+            if (aGrammar.getJJ2Index () != 0)
             {
               genCodeLine ("	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();");
             }
@@ -557,7 +559,7 @@ public class ParseGenJava extends AbstractCodeGenerator
         genCodeLine ("   * Constructor with InputStream.");
         genCodeLine ("   * @param stream char stream");
         genCodeLine ("   */");
-        genCodeLine ("  public " + grammar ().getParserName () + "(final " + sReaderInterfaceName + " stream) {");
+        genCodeLine ("  public " + aGrammar.getParserName () + "(final " + sReaderInterfaceName + " stream) {");
         genCodeLine ("	 jj_input_stream = new " + getCharStreamName () + "(stream, 1, 1);");
         _genCtorTail ();
         genCodeLine ("  }");
@@ -570,7 +572,7 @@ public class ParseGenJava extends AbstractCodeGenerator
           genCodeLine ("   * Constructor with CharSequence.");
           genCodeLine ("   * @param aInput the whole content to be parsed");
           genCodeLine ("   */");
-          genCodeLine ("  public " + grammar ().getParserName () + "(final CharSequence aInput) {");
+          genCodeLine ("  public " + aGrammar.getParserName () + "(final CharSequence aInput) {");
           genCodeLine ("	 jj_input_stream = new " + getCharStreamName () + "(aInput, 1, 1);");
           _genCtorTail ();
           genCodeLine ("  }");
@@ -599,7 +601,7 @@ public class ParseGenJava extends AbstractCodeGenerator
           genCodeLine ("   * Constructor with InputStream.");
           genCodeLine ("   * @param sDSL String representation to be parsed");
           genCodeLine ("   */");
-          genCodeLine ("  public " + grammar ().getParserName () + "(final String sDSL) {");
+          genCodeLine ("  public " + aGrammar.getParserName () + "(final String sDSL) {");
           genCodeLine ("	   this(new " + sStringReaderClass + "(sDSL));");
           genCodeLine ("  }");
           genCodeNewLine ();
@@ -637,7 +639,7 @@ public class ParseGenJava extends AbstractCodeGenerator
       genCodeLine ("   * Constructor with user supplied Token Manager.");
       genCodeLine ("   * @param tm Token manager to use");
       genCodeLine ("   */");
-      genCodeLine ("  public " + grammar ().getParserName () + "(final TokenManager tm) {");
+      genCodeLine ("  public " + aGrammar.getParserName () + "(final TokenManager tm) {");
     }
     else
     {
@@ -646,9 +648,9 @@ public class ParseGenJava extends AbstractCodeGenerator
       genCodeLine ("   * @param tm Token manager to use");
       genCodeLine ("   */");
       genCodeLine ("  public " +
-                   grammar ().getParserName () +
+                   aGrammar.getParserName () +
                    "(final " +
-                   grammar ().getParserName () +
+                   aGrammar.getParserName () +
                    "TokenManager tm) {");
     }
     genCodeLine ("	 token_source = tm;");
@@ -668,11 +670,11 @@ public class ParseGenJava extends AbstractCodeGenerator
     if (Options.isErrorReporting ())
     {
       genCodeLine ("	 jj_gen = 0;");
-      if (grammar ().getMaskIndex () > 0)
+      if (aGrammar.getMaskIndex () > 0)
       {
-        genCodeLine ("	 for (int i = 0; i < " + grammar ().getMaskIndex () + "; i++) jj_la1[i] = -1;");
+        genCodeLine ("	 for (int i = 0; i < " + aGrammar.getMaskIndex () + "; i++) jj_la1[i] = -1;");
       }
-      if (grammar ().getJJ2Index () != 0)
+      if (aGrammar.getJJ2Index () != 0)
       {
         genCodeLine ("	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();");
       }
@@ -693,7 +695,7 @@ public class ParseGenJava extends AbstractCodeGenerator
       genCodeLine ("   * Reinitialise");
       genCodeLine ("   * @param tm Token manager to use");
       genCodeLine ("   */");
-      genCodeLine ("  public void ReInit(final " + grammar ().getParserName () + "TokenManager tm) {");
+      genCodeLine ("  public void ReInit(final " + aGrammar.getParserName () + "TokenManager tm) {");
     }
     genCodeLine ("	 token_source = tm;");
     genCodeLine ("	 token = new Token();");
@@ -709,18 +711,18 @@ public class ParseGenJava extends AbstractCodeGenerator
     {
       genCodeLine ("    jj_depth = -1;");
     }
-    if (grammar ().isJJTreeGenerated ())
+    if (aGrammar.isJJTreeGenerated ())
     {
       genCodeLine ("	 jjtree.reset();");
     }
     if (Options.isErrorReporting ())
     {
       genCodeLine ("	 jj_gen = 0;");
-      if (grammar ().getMaskIndex () > 0)
+      if (aGrammar.getMaskIndex () > 0)
       {
-        genCodeLine ("	 for (int i = 0; i < " + grammar ().getMaskIndex () + "; i++) jj_la1[i] = -1;");
+        genCodeLine ("	 for (int i = 0; i < " + aGrammar.getMaskIndex () + "; i++) jj_la1[i] = -1;");
       }
-      if (grammar ().getJJ2Index () != 0)
+      if (aGrammar.getJJ2Index () != 0)
       {
         genCodeLine ("	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();");
       }
@@ -753,7 +755,7 @@ public class ParseGenJava extends AbstractCodeGenerator
     if (Options.isErrorReporting ())
     {
       genCodeLine ("      jj_gen++;");
-      if (grammar ().getJJ2Index () != 0)
+      if (aGrammar.getJJ2Index () != 0)
       {
         genCodeLine ("      if (++jj_gc > 100) {");
         genCodeLine ("        jj_gc = 0;");
@@ -786,7 +788,7 @@ public class ParseGenJava extends AbstractCodeGenerator
     genCodeLine ("    throw generateParseException();");
     genCodeLine ("  }");
     genCodeNewLine ();
-    if (grammar ().getJJ2Index () != 0)
+    if (aGrammar.getJJ2Index () != 0)
     {
       if (false)
         genCodeLine ("  @SuppressWarnings(\"serial\")");
@@ -917,7 +919,7 @@ public class ParseGenJava extends AbstractCodeGenerator
                    ">();");
       genCodeLine ("  private int[] jj_expentry;");
       genCodeLine ("  private int jj_kind = -1;");
-      if (grammar ().getJJ2Index () != 0)
+      if (aGrammar.getJJ2Index () != 0)
       {
         genCodeLine ("  private int[] jj_lasttokens = new int[100];");
         genCodeLine ("  private int jj_endpos;");
@@ -971,16 +973,16 @@ public class ParseGenJava extends AbstractCodeGenerator
                    "[] la1tokens = new " +
                    eOutputLanguage.getTypeBoolean () +
                    "[" +
-                   grammar ().getTokenCount () +
+                   aGrammar.getTokenCount () +
                    "];");
       genCodeLine ("    if (jj_kind >= 0) {");
       genCodeLine ("      la1tokens[jj_kind] = true;");
       genCodeLine ("      jj_kind = -1;");
       genCodeLine ("    }");
-      genCodeLine ("    for (int i = 0; i < " + grammar ().getMaskIndex () + "; i++) {");
+      genCodeLine ("    for (int i = 0; i < " + aGrammar.getMaskIndex () + "; i++) {");
       genCodeLine ("      if (jj_la1[i] == jj_gen) {");
       genCodeLine ("        for (int j = 0; j < 32; j++) {");
-      for (int i = 0; i < (grammar ().getTokenCount () - 1) / 32 + 1; i++)
+      for (int i = 0; i < (aGrammar.getTokenCount () - 1) / 32 + 1; i++)
       {
         genCodeLine ("          if ((jj_la1_" + i + "[i] & (1<<j)) != 0) {");
         genCode ("            la1tokens[");
@@ -992,14 +994,14 @@ public class ParseGenJava extends AbstractCodeGenerator
       genCodeLine ("        }");
       genCodeLine ("      }");
       genCodeLine ("    }");
-      genCodeLine ("    for (int i = 0; i < " + grammar ().getTokenCount () + "; i++) {");
+      genCodeLine ("    for (int i = 0; i < " + aGrammar.getTokenCount () + "; i++) {");
       genCodeLine ("      if (la1tokens[i]) {");
       genCodeLine ("        jj_expentry = new int[1];");
       genCodeLine ("        jj_expentry[0] = i;");
       genCodeLine ("        jj_expentries.add(jj_expentry);");
       genCodeLine ("      }");
       genCodeLine ("    }");
-      if (grammar ().getJJ2Index () != 0)
+      if (aGrammar.getJJ2Index () != 0)
       {
         genCodeLine ("    jj_endpos = 0;");
         genCodeLine ("    jj_rescan_token();");
@@ -1014,7 +1016,7 @@ public class ParseGenJava extends AbstractCodeGenerator
       {
         // Add the lexical state onto the exception message
         genCodeLine ("    return new ParseException(token, exptokseq, tokenImage, token_source == null ? null : " +
-                     grammar ().getParserName () +
+                     aGrammar.getParserName () +
                      "TokenManager.lexStateNames[token_source.curLexState]);");
       }
       else
@@ -1145,11 +1147,11 @@ public class ParseGenJava extends AbstractCodeGenerator
       genCodeNewLine ();
     }
 
-    if (grammar ().getJJ2Index () != 0 && Options.isErrorReporting ())
+    if (aGrammar.getJJ2Index () != 0 && Options.isErrorReporting ())
     {
       genCodeLine ("  private void jj_rescan_token() {");
       genCodeLine ("    jj_rescan = true;");
-      genCodeLine ("    for (int i = 0; i < " + grammar ().getJJ2Index () + "; i++) {");
+      genCodeLine ("    for (int i = 0; i < " + aGrammar.getJJ2Index () + "; i++) {");
       genCodeLine ("      try {");
       genCodeLine ("        JJCalls p = jj_2_rtns[i];");
       genCodeLine ("        do {");
@@ -1158,7 +1160,7 @@ public class ParseGenJava extends AbstractCodeGenerator
       genCodeLine ("            jj_scanpos = p.first;");
       genCodeLine ("            jj_lastpos = p.first;");
       genCodeLine ("            switch (i) {");
-      for (int i = 0; i < grammar ().getJJ2Index (); i++)
+      for (int i = 0; i < aGrammar.getJJ2Index (); i++)
       {
         genCodeLine ("              case " + i + ": jj_3_" + (i + 1) + "(); break;");
       }
@@ -1188,7 +1190,7 @@ public class ParseGenJava extends AbstractCodeGenerator
       genCodeNewLine ();
     }
 
-    if (grammar ().getJJ2Index () != 0 && Options.isErrorReporting ())
+    if (aGrammar.getJJ2Index () != 0 && Options.isErrorReporting ())
     {
       genCodeLine ("  static final class JJCalls {");
       genCodeLine ("	 int gen;");
@@ -1199,12 +1201,12 @@ public class ParseGenJava extends AbstractCodeGenerator
       genCodeNewLine ();
     }
 
-    if (grammar ().cuFromInsertionPoint2 ().isNotEmpty ())
+    if (aGrammar.cuFromInsertionPoint2 ().isNotEmpty ())
     {
-      printTokenSetup (grammar ().cuFromInsertionPoint2 ().getFirstOrNull ());
+      printTokenSetup (aGrammar.cuFromInsertionPoint2 ().getFirstOrNull ());
       setColToStart ();
       Token t = null;
-      for (final Token aElement : grammar ().cuFromInsertionPoint2 ())
+      for (final Token aElement : aGrammar.cuFromInsertionPoint2 ())
       {
         t = aElement;
         printToken (t);
@@ -1213,7 +1215,7 @@ public class ParseGenJava extends AbstractCodeGenerator
     }
     genCodeNewLine ();
 
-    saveOutput (Options.getOutputDirectory () + File.separator + grammar ().getParserName () + getFileExtension ());
+    saveOutput (Options.getOutputDirectory () + File.separator + aGrammar.getParserName () + getFileExtension ());
   }
 
 }

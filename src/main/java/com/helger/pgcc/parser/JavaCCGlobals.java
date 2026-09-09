@@ -585,12 +585,13 @@ public final class JavaCCGlobals
    */
   protected static void printTokenOnly (@NonNull final Token t, @NonNull final PrintWriter aOstr)
   {
-    for (; grammar ().getCurrentLine () < t.beginLine; grammar ().incCurrentLine ())
+    final GrammarState aGrammar = grammar ();
+    for (; aGrammar.getCurrentLine () < t.beginLine; aGrammar.incCurrentLine ())
     {
       aOstr.println ();
-      grammar ().setCurrentColumn (1);
+      aGrammar.setCurrentColumn (1);
     }
-    for (; grammar ().getCurrentColumn () < t.beginColumn; grammar ().incCurrentColumn ())
+    for (; aGrammar.getCurrentColumn () < t.beginColumn; aGrammar.incCurrentColumn ())
     {
       aOstr.print (" ");
     }
@@ -598,13 +599,13 @@ public final class JavaCCGlobals
       aOstr.print (addUnicodeEscapes (t.image));
     else
       aOstr.print (t.image);
-    grammar ().setCurrentLine (t.endLine);
-    grammar ().setCurrentColumn (t.endColumn + 1);
+    aGrammar.setCurrentLine (t.endLine);
+    aGrammar.setCurrentColumn (t.endColumn + 1);
     final char cLast = t.image.charAt (t.image.length () - 1);
     if (cLast == '\n' || cLast == '\r')
     {
-      grammar ().incCurrentLine ();
-      grammar ().setCurrentColumn (1);
+      aGrammar.incCurrentLine ();
+      aGrammar.setCurrentColumn (1);
     }
   }
 
@@ -692,12 +693,13 @@ public final class JavaCCGlobals
   public static String printTokenOnly (@NonNull final Token t)
   {
     final StringBuilder aSB = new StringBuilder (t.image.length () * 2);
-    for (; grammar ().getCurrentLine () < t.beginLine; grammar ().incCurrentLine ())
+    final GrammarState aGrammar = grammar ();
+    for (; aGrammar.getCurrentLine () < t.beginLine; aGrammar.incCurrentLine ())
     {
       aSB.append ('\n');
-      grammar ().setCurrentColumn (1);
+      aGrammar.setCurrentColumn (1);
     }
-    for (; grammar ().getCurrentColumn () < t.beginColumn; grammar ().incCurrentColumn ())
+    for (; aGrammar.getCurrentColumn () < t.beginColumn; aGrammar.incCurrentColumn ())
     {
       aSB.append (' ');
     }
@@ -705,13 +707,13 @@ public final class JavaCCGlobals
       aSB.append (addUnicodeEscapes (t.image));
     else
       aSB.append (t.image);
-    grammar ().setCurrentLine (t.endLine);
-    grammar ().setCurrentColumn (t.endColumn + 1);
+    aGrammar.setCurrentLine (t.endLine);
+    aGrammar.setCurrentColumn (t.endColumn + 1);
     final char cLast = t.image.charAt (t.image.length () - 1);
     if (cLast == '\n' || cLast == '\r')
     {
-      grammar ().incCurrentLine ();
-      grammar ().setCurrentColumn (1);
+      aGrammar.incCurrentLine ();
+      aGrammar.setCurrentColumn (1);
     }
     return aSB.toString ();
   }

@@ -84,7 +84,8 @@ public class Semanticize
                             "is more than 1.  Set option FORCE_LA_CHECK to true to force checking.");
     }
 
-    final GrammarState grammar = grammar ();
+    final GrammarState aGrammar = grammar ();
+    final GrammarState grammar = aGrammar;
     /*
      * The following walks the entire parse tree to convert all LOOKAHEAD's that are not at choice
      * points (but at beginning of sequences) and converts them to trivial choices. This way, their
@@ -432,7 +433,7 @@ public class Semanticize
     if (!Options.isUserTokenManager ())
     {
       final FixRJustNames aFrjn = new FixRJustNames ();
-      for (final TokenProduction aTokenProduction : grammar ().rexprList ())
+      for (final TokenProduction aTokenProduction : aGrammar.rexprList ())
       {
         final TokenProduction aTp = (aTokenProduction);
         final List <RegExprSpec> aRespecs = aTp.getRespecs ();
@@ -462,7 +463,7 @@ public class Semanticize
 
     if (Options.isUserTokenManager ())
     {
-      for (final TokenProduction aTokenProduction : grammar ().rexprList ())
+      for (final TokenProduction aTokenProduction : aGrammar.rexprList ())
       {
         final TokenProduction aTp = (aTokenProduction);
         final List <RegExprSpec> aRespecs = aTp.getRespecs ();
@@ -471,13 +472,13 @@ public class Semanticize
           final RegExprSpec aRes = (aRegExprSpec);
           if (aRes.getRexp () instanceof final ExpRJustName jn)
           {
-            final AbstractExpRegularExpression aRexp = grammar ().namedTokensTable ().get (jn.getLabel ());
+            final AbstractExpRegularExpression aRexp = aGrammar.namedTokensTable ().get (jn.getLabel ());
             if (aRexp == null)
             {
-              jn.setOrdinal (grammar ().getAndIncTokenCount ());
-              grammar ().namedTokensTable ().put (jn.getLabel (), jn);
-              grammar ().orderedNameTokens ().add (jn);
-              grammar ().namesOfTokens ().put (Integer.valueOf (jn.getOrdinal ()), jn.getLabel ());
+              jn.setOrdinal (aGrammar.getAndIncTokenCount ());
+              aGrammar.namedTokensTable ().put (jn.getLabel (), jn);
+              aGrammar.orderedNameTokens ().add (jn);
+              aGrammar.namesOfTokens ().put (Integer.valueOf (jn.getOrdinal ()), jn.getLabel ());
             }
             else
             {
@@ -499,7 +500,7 @@ public class Semanticize
      */
     if (Options.isUserTokenManager ())
     {
-      for (final TokenProduction aTokenProduction : grammar ().rexprList ())
+      for (final TokenProduction aTokenProduction : aGrammar.rexprList ())
       {
         final TokenProduction aTp = (aTokenProduction);
         final List <RegExprSpec> aRespecs = aTp.getRespecs ();
@@ -507,7 +508,7 @@ public class Semanticize
         {
           final RegExprSpec aRes = (aRegExprSpec);
           final Integer aIi = Integer.valueOf (aRes.getRexp ().getOrdinal ());
-          if (grammar ().namesOfTokens ().get (aIi) == null)
+          if (aGrammar.namesOfTokens ().get (aIi) == null)
           {
             JavaCCErrors.warning (aRes.getRexp (),
                                   "Unlabeled regular expression cannot be referred to by " +
@@ -529,7 +530,7 @@ public class Semanticize
     while (bEmptyUpdate)
     {
       bEmptyUpdate = false;
-      for (final AbstractNormalProduction aNormalProduction : grammar ().bnfProductions ())
+      for (final AbstractNormalProduction aNormalProduction : aGrammar.bnfProductions ())
       {
         final AbstractNormalProduction aProd = aNormalProduction;
         if (emptyExpansionExists (aProd.getExpansion ()))
@@ -548,7 +549,7 @@ public class Semanticize
       // The following code checks that all ZeroOrMore, ZeroOrOne, and OneOrMore
       // nodes
       // do not contain expansions that can expand to the empty token list.
-      for (final AbstractNormalProduction aNormalProduction : grammar ().bnfProductions ())
+      for (final AbstractNormalProduction aNormalProduction : aGrammar.bnfProductions ())
       {
         ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new EmptyChecker ());
       }
@@ -558,7 +559,7 @@ public class Semanticize
       // productions that it can expand to without consuming any tokens. Once
       // this is
       // done, a left-recursion check can be performed.
-      for (final AbstractNormalProduction prod : grammar ().bnfProductions ())
+      for (final AbstractNormalProduction prod : aGrammar.bnfProductions ())
       {
         _addLeftMost (prod, prod.getExpansion ());
       }
@@ -568,7 +569,7 @@ public class Semanticize
       // been determined to participate in a left recursive loop, it is not
       // tried
       // in any other loop.
-      for (final AbstractNormalProduction prod : grammar ().bnfProductions ())
+      for (final AbstractNormalProduction prod : aGrammar.bnfProductions ())
       {
         if (prod.getWalkStatus () == 0)
         {
@@ -584,7 +585,7 @@ public class Semanticize
       // This is not done if option USER_TOKEN_MANAGER is set to true.
       if (!Options.isUserTokenManager ())
       {
-        for (final TokenProduction aTokenProduction : grammar ().rexprList ())
+        for (final TokenProduction aTokenProduction : aGrammar.rexprList ())
         {
           final TokenProduction aTp = (aTokenProduction);
           final List <RegExprSpec> aRespecs = aTp.getRespecs ();
@@ -619,7 +620,7 @@ public class Semanticize
        */
       if (JavaCCErrors.getErrorCount () == 0)
       {
-        for (final AbstractNormalProduction aNormalProduction : grammar ().bnfProductions ())
+        for (final AbstractNormalProduction aNormalProduction : aGrammar.bnfProductions ())
         {
           ExpansionTreeWalker.preOrderWalk (aNormalProduction.getExpansion (), new LookaheadChecker ());
         }

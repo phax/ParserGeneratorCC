@@ -50,6 +50,7 @@ import com.helger.annotation.WillNotClose;
 import com.helger.base.system.EJavaVersion;
 import com.helger.pgcc.JavaVersionHelper;
 import com.helger.pgcc.PGVersion;
+import com.helger.pgcc.context.GrammarState;
 import com.helger.pgcc.context.ProcessState;
 import com.helger.pgcc.output.OutputFile;
 import com.helger.pgcc.parser.JavaCCErrors;
@@ -116,17 +117,18 @@ public class FilesJava
 
   private static void _writePackageName (@NonNull @WillNotClose final PrintWriter aOstr)
   {
-    if (grammar ().cuToInsertionPoint1 ().isNotEmpty () && grammar ().cuToInsertionPoint1 ().get (0).kind == PACKAGE)
+    final GrammarState aGrammar = grammar ();
+    if (aGrammar.cuToInsertionPoint1 ().isNotEmpty () && aGrammar.cuToInsertionPoint1 ().get (0).kind == PACKAGE)
     {
-      for (int i = 1; i < grammar ().cuToInsertionPoint1 ().size (); i++)
+      for (int i = 1; i < aGrammar.cuToInsertionPoint1 ().size (); i++)
       {
-        if (grammar ().cuToInsertionPoint1 ().get (i).kind == SEMICOLON)
+        if (aGrammar.cuToInsertionPoint1 ().get (i).kind == SEMICOLON)
         {
-          grammar ().setCurrentLine (grammar ().cuToInsertionPoint1 ().get (0).beginLine);
-          grammar ().setCurrentColumn (grammar ().cuToInsertionPoint1 ().get (0).beginColumn);
+          aGrammar.setCurrentLine (aGrammar.cuToInsertionPoint1 ().get (0).beginLine);
+          aGrammar.setCurrentColumn (aGrammar.cuToInsertionPoint1 ().get (0).beginColumn);
           for (int j = 0; j <= i; j++)
           {
-            printToken (grammar ().cuToInsertionPoint1 ().get (j), aOstr);
+            printToken (aGrammar.cuToInsertionPoint1 ().get (j), aOstr);
           }
           aOstr.println ();
           aOstr.println ();

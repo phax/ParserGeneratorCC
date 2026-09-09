@@ -46,6 +46,7 @@ import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.pgcc.PGPrinter;
+import com.helger.pgcc.context.GrammarState;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
@@ -313,11 +314,12 @@ public class ParseEngine
     // The state variables.
     EState eState = EState.NOOPENSTM;
     int nIndentAmt = 0;
-    final boolean [] aCasedValues = new boolean [grammar ().getTokenCount ()];
+    final GrammarState aGrammar = grammar ();
+    final boolean [] aCasedValues = new boolean [aGrammar.getTokenCount ()];
     String sRetval = "";
     ExpLookahead aLa;
     Token t = null;
-    final int nTokenMaskSize = (grammar ().getTokenCount () - 1) / 32 + 1;
+    final int nTokenMaskSize = (aGrammar.getTokenCount () - 1) / 32 + 1;
     int [] aTokenMask = null;
     final EOutputLanguage eOutputLanguage = m_aCodeGenerator.getOutputLanguage ();
 
@@ -363,10 +365,10 @@ public class ParseEngine
             sRetval += INDENT_DEC + "\n" + "default:" + INDENT_INC;
             if (Options.isErrorReporting ())
             {
-              sRetval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
-              grammar ().incMaskIndex ();
+              sRetval += "\njj_la1[" + aGrammar.getMaskIndex () + "] = jj_gen;";
+              aGrammar.incMaskIndex ();
             }
-            grammar ().maskVals ().add (aTokenMask);
+            aGrammar.maskVals ().add (aTokenMask);
             sRetval += "\n" + "if (";
             nIndentAmt++;
             break;
@@ -392,9 +394,9 @@ public class ParseEngine
            */
           if (m_aFirstSet == null)
           {
-            m_aFirstSet = new boolean [grammar ().getTokenCount ()];
+            m_aFirstSet = new boolean [aGrammar.getTokenCount ()];
           }
-          for (int i = 0; i < grammar ().getTokenCount (); i++)
+          for (int i = 0; i < aGrammar.getTokenCount (); i++)
           {
             m_aFirstSet[i] = false;
           }
@@ -429,7 +431,7 @@ public class ParseEngine
                 else
                   sRetval += "jj_ntk == -1 ? jj_ntk_f() : jj_ntk";
                 sRetval += ") {" + INDENT_INC;
-                for (int i = 0; i < grammar ().getTokenCount (); i++)
+                for (int i = 0; i < aGrammar.getTokenCount (); i++)
                 {
                   aCasedValues[i] = false;
                 }
@@ -446,7 +448,7 @@ public class ParseEngine
               default:
                 throw new IllegalStateException ();
             }
-            for (int i = 0; i < grammar ().getTokenCount (); i++)
+            for (int i = 0; i < aGrammar.getTokenCount (); i++)
             {
               if (m_aFirstSet[i] && !aCasedValues[i])
               {
@@ -456,7 +458,7 @@ public class ParseEngine
                 final int nJ1 = i / 32;
                 final int nJ2 = i % 32;
                 aTokenMask[nJ1] |= 1 << nJ2;
-                final String s = grammar ().namesOfTokens ().get (Integer.valueOf (i));
+                final String s = aGrammar.namesOfTokens ().get (Integer.valueOf (i));
                 if (s == null)
                   sRetval += i;
                 else
@@ -495,10 +497,10 @@ public class ParseEngine
             sRetval += INDENT_DEC + "\ndefault:" + INDENT_INC;
             if (Options.isErrorReporting ())
             {
-              sRetval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
-              grammar ().incMaskIndex ();
+              sRetval += "\njj_la1[" + aGrammar.getMaskIndex () + "] = jj_gen;";
+              aGrammar.incMaskIndex ();
             }
-            grammar ().maskVals ().add (aTokenMask);
+            aGrammar.maskVals ().add (aTokenMask);
             sRetval += "\nif (";
             nIndentAmt++;
             break;
@@ -506,7 +508,7 @@ public class ParseEngine
             throw new IllegalStateException ();
         }
 
-        final int nInternalIndex = grammar ().incAndGetJJ2Index ();
+        final int nInternalIndex = aGrammar.incAndGetJJ2Index ();
         // At this point, la.la_expansion.internal_name must be "".
         assert aLa.getLaExpansion ().getInternalName ().equals ("");
         aLa.getLaExpansion ().setInternalName ("_", nInternalIndex);
@@ -550,9 +552,9 @@ public class ParseEngine
         sRetval += INDENT_DEC + "\n" + "default:" + INDENT_INC;
         if (Options.isErrorReporting ())
         {
-          sRetval += "\njj_la1[" + grammar ().getMaskIndex () + "] = jj_gen;";
-          grammar ().maskVals ().add (aTokenMask);
-          grammar ().incMaskIndex ();
+          sRetval += "\njj_la1[" + aGrammar.getMaskIndex () + "] = jj_gen;";
+          aGrammar.maskVals ().add (aTokenMask);
+          aGrammar.incMaskIndex ();
         }
         sRetval += aActions[nIndex];
         break;
@@ -972,6 +974,7 @@ public class ParseEngine
     ExpLookahead [] aConds;
     String [] aActions;
     final EOutputLanguage eOutputLanguage = m_aCodeGenerator.getOutputLanguage ();
+    final GrammarState aGrammar = grammar ();
     if (e instanceof final AbstractExpRegularExpression e_nrw)
     {
       sRetval += "\n";
@@ -998,7 +1001,7 @@ public class ParseEngine
       }
       else
       {
-        final String sLabel = grammar ().namesOfTokens ().get (Integer.valueOf (e_nrw.getOrdinal ()));
+        final String sLabel = aGrammar.namesOfTokens ().get (Integer.valueOf (e_nrw.getOrdinal ()));
         if (sLabel != null)
         {
           sRetval += "jj_consume_token(" + sLabel + sTail;
@@ -1073,7 +1076,7 @@ public class ParseEngine
           if (!Options.booleanValue (Options.USEROPTION__CPP_IGNORE_ACTIONS) && !e_nrw.getActionTokens ().isEmpty ())
           {
             m_aCodeGenerator.printTokenSetup (e_nrw.getActionTokens ().get (0));
-            grammar ().setCurrentColumn (1);
+            aGrammar.setCurrentColumn (1);
             for (final Token aElement : e_nrw.getActionTokens ())
             {
               t = aElement;
@@ -1130,7 +1133,7 @@ public class ParseEngine
                 // all the
                 // expansion choices with if (!error)
                 boolean bWrap_in_block = false;
-                if (!grammar ().isJJTreeGenerated ())
+                if (!aGrammar.isJJTreeGenerated ())
                 {
                   switch (eOutputLanguage)
                   {
@@ -1281,7 +1284,7 @@ public class ParseEngine
                         if (!aList.isEmpty ())
                         {
                           m_aCodeGenerator.printTokenSetup (aList.get (0));
-                          grammar ().setCurrentColumn (1);
+                          aGrammar.setCurrentColumn (1);
                           for (final Token aElement : aList)
                           {
                             t = aElement;
@@ -1300,7 +1303,7 @@ public class ParseEngine
                         if (!e_nrw.getFinallyblk ().isEmpty ())
                         {
                           m_aCodeGenerator.printTokenSetup (e_nrw.getFinallyblk ().get (0));
-                          grammar ().setCurrentColumn (1);
+                          aGrammar.setCurrentColumn (1);
                           for (final Token aElement : e_nrw.getFinallyblk ())
                           {
                             t = aElement;
@@ -1906,7 +1909,8 @@ public class ParseEngine
   {
     m_aCodeGenerator = aCodeGenerator;
     final EOutputLanguage eOutputLanguage = m_aCodeGenerator.getOutputLanguage ();
-    for (final AbstractNormalProduction p : grammar ().bnfProductions ())
+    final GrammarState aGrammar = grammar ();
+    for (final AbstractNormalProduction p : aGrammar.bnfProductions ())
     {
       if (p instanceof final CodeProductionCpp cp)
       {
@@ -1922,11 +1926,11 @@ public class ParseEngine
         {
           Token t = (cp.getReturnTypeTokens ().get (0));
           aCodeGenerator.printTokenSetup (t);
-          grammar ().setCurrentColumn (1);
+          aGrammar.setCurrentColumn (1);
           aCodeGenerator.printLeadingComments (t);
           aCodeGenerator.genCode (" " + (p.getAccessMod () != null ? p.getAccessMod () + " " : ""));
-          grammar ().setCurrentLine (t.beginLine);
-          grammar ().setCurrentColumn (t.beginColumn);
+          aGrammar.setCurrentLine (t.beginLine);
+          aGrammar.setCurrentColumn (t.beginColumn);
           aCodeGenerator.printTokenOnly (t);
           for (int i = 1; i < cp.getReturnTypeTokens ().size (); i++)
           {
@@ -1969,7 +1973,7 @@ public class ParseEngine
         if (!cp.getCodeTokens ().isEmpty ())
         {
           aCodeGenerator.printTokenSetup (cp.getCodeTokens ().get (0));
-          grammar ().decCurrentLine ();
+          aGrammar.decCurrentLine ();
           aCodeGenerator.printTokenList (cp.getCodeTokens ());
         }
         aCodeGenerator.genCodeNewLine ();
@@ -1990,11 +1994,11 @@ public class ParseEngine
           }
           Token t = jp.getReturnTypeTokens ().get (0);
           aCodeGenerator.printTokenSetup (t);
-          grammar ().setCurrentColumn (1);
+          aGrammar.setCurrentColumn (1);
           aCodeGenerator.printLeadingComments (t);
           aCodeGenerator.genCode ("  " + (p.getAccessMod () != null ? p.getAccessMod () + " " : ""));
-          grammar ().setCurrentLine (t.beginLine);
-          grammar ().setCurrentColumn (t.beginColumn);
+          aGrammar.setCurrentLine (t.beginLine);
+          aGrammar.setCurrentColumn (t.beginColumn);
           aCodeGenerator.printTokenOnly (t);
           for (int i = 1; i < jp.getReturnTypeTokens ().size (); i++)
           {
@@ -2034,7 +2038,7 @@ public class ParseEngine
           if (!jp.getCodeTokens ().isEmpty ())
           {
             aCodeGenerator.printTokenSetup ((jp.getCodeTokens ().get (0)));
-            grammar ().decCurrentLine ();
+            aGrammar.decCurrentLine ();
             aCodeGenerator.printTokenList (jp.getCodeTokens ());
           }
           aCodeGenerator.genCodeNewLine ();

@@ -61,6 +61,10 @@ The generated parser gets an additional `CharSequence` based constructor and `Re
 # News and noteworthy
 
 v3.0.0 - 2026-06-09
+* The code generators resolve `lexer ()`, `grammar ()`, `tokenizerBuild ()` and `optionValues ()` into a local variable instead of calling them once per use.
+  Each call is a `ThreadLocal` lookup, and they sat in the innermost loops - `LexGenJava.start` alone made 184 of them, 175 inside loops, and `LexGenCpp.start` 157.
+  1069 calls across 35 methods became 35 locals; generating `grammars/JavaCC.jj` drops from 13.3 ms to 11.3 ms and `grammars/CobolParser.jj` from 20.2 ms to 17.0 ms (best of 25 runs after 8 warm ups).
+  Generated output is unchanged
 * The remaining `instanceof` tests that were followed by a cast use pattern matching now, in `ParseEngine`, `Semanticize`, `ExpRCharacterList`, `ExpRChoice`, `ExpRStringLiteral`, `JJDoc`, `LexGenCpp` and `Options`.
   `LexGenCpp` had three casts of `lexer ().getCurRE ()` in one condition where the Java backend already had one binding, so the two backends read alike again.
   This also removes a latent `ClassCastException` in `Options.setInputFileOption`, which tested `aObject instanceof Integer` but cast `aRealSrc`; only `&&` short circuiting kept it unreachable, because the grammar can produce a `List<String>` but never a `List<Integer>`.

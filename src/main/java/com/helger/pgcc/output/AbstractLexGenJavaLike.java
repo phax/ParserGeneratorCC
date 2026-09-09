@@ -81,8 +81,9 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
    */
   protected static int _getIndex (final String sName)
   {
-    for (int i = 0; i < lexer ().getLexStateName ().length; i++)
-      if (lexer ().getLexStateName ()[i] != null && lexer ().getLexStateName ()[i].equals (sName))
+    final LexerState aLexer = lexer ();
+    for (int i = 0; i < aLexer.getLexStateName ().length; i++)
+      if (aLexer.getLexStateName ()[i] != null && aLexer.getLexStateName ()[i].equals (sName))
         return i;
 
     throw new IllegalStateException ("Should never come here");
@@ -94,15 +95,16 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
    */
   protected static void checkEmptyStringMatch ()
   {
-    final boolean [] aSeen = new boolean [lexer ().getMaxLexStates ()];
-    final boolean [] aDone = new boolean [lexer ().getMaxLexStates ()];
+    final LexerState aLexer = lexer ();
+    final boolean [] aSeen = new boolean [aLexer.getMaxLexStates ()];
+    final boolean [] aDone = new boolean [aLexer.getMaxLexStates ()];
 
-    Outer: for (int i = 0; i < lexer ().getMaxLexStates (); i++)
+    Outer: for (int i = 0; i < aLexer.getMaxLexStates (); i++)
     {
       if (aDone[i] ||
-          lexer ().getInitMatch ()[i] == 0 ||
-          lexer ().getInitMatch ()[i] == Integer.MAX_VALUE ||
-          lexer ().getCanMatchAnyChar ()[i] != -1)
+          aLexer.getInitMatch ()[i] == 0 ||
+          aLexer.getInitMatch ()[i] == Integer.MAX_VALUE ||
+          aLexer.getCanMatchAnyChar ()[i] != -1)
         continue;
 
       aDone[i] = true;
@@ -110,63 +112,63 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
       final StringBuilder aCycle = new StringBuilder ();
       String sReList = "";
 
-      for (int k = 0; k < lexer ().getMaxLexStates (); k++)
+      for (int k = 0; k < aLexer.getMaxLexStates (); k++)
         aSeen[k] = false;
 
       int j = i;
       aSeen[i] = true;
-      aCycle.append (lexer ().getLexStateName ()[j]).append ("-->");
-      while (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]] != null)
+      aCycle.append (aLexer.getLexStateName ()[j]).append ("-->");
+      while (aLexer.getNewLexState ()[aLexer.getInitMatch ()[j]] != null)
       {
-        aCycle.append (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]]);
-        if (aSeen[j = _getIndex (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]])])
+        aCycle.append (aLexer.getNewLexState ()[aLexer.getInitMatch ()[j]]);
+        if (aSeen[j = _getIndex (aLexer.getNewLexState ()[aLexer.getInitMatch ()[j]])])
           break;
 
         aCycle.append ("-->");
         aDone[j] = true;
         aSeen[j] = true;
-        if (lexer ().getInitMatch ()[j] == 0 ||
-            lexer ().getInitMatch ()[j] == Integer.MAX_VALUE ||
-            lexer ().getCanMatchAnyChar ()[j] != -1)
+        if (aLexer.getInitMatch ()[j] == 0 ||
+            aLexer.getInitMatch ()[j] == Integer.MAX_VALUE ||
+            aLexer.getCanMatchAnyChar ()[j] != -1)
           continue Outer;
         if (nLen != 0)
           sReList += "; ";
         sReList += "line " +
-                   lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getLineNumber () +
+                   aLexer.getRexprs ()[aLexer.getInitMatch ()[j]].getLineNumber () +
                    ", column " +
-                   lexer ().getRexprs ()[lexer ().getInitMatch ()[j]].getColumnNumber ();
+                   aLexer.getRexprs ()[aLexer.getInitMatch ()[j]].getColumnNumber ();
         nLen++;
       }
 
-      if (lexer ().getNewLexState ()[lexer ().getInitMatch ()[j]] == null)
-        aCycle.append (lexer ().getLexStateName ()[lexer ().getLexStates ()[lexer ().getInitMatch ()[j]]]);
+      if (aLexer.getNewLexState ()[aLexer.getInitMatch ()[j]] == null)
+        aCycle.append (aLexer.getLexStateName ()[aLexer.getLexStates ()[aLexer.getInitMatch ()[j]]]);
 
-      for (int k = 0; k < lexer ().getMaxLexStates (); k++)
-        lexer ().getCanLoop ()[k] |= aSeen[k];
+      for (int k = 0; k < aLexer.getMaxLexStates (); k++)
+        aLexer.getCanLoop ()[k] |= aSeen[k];
 
-      lexer ().setHasLoop (true);
-      final String sLabel = lexer ().getRexprs ()[lexer ().getInitMatch ()[i]].getLabel ();
+      aLexer.setHasLoop (true);
+      final String sLabel = aLexer.getRexprs ()[aLexer.getInitMatch ()[i]].getLabel ();
       if (nLen == 0)
       {
-        JavaCCErrors.warning (lexer ().getRexprs ()[lexer ().getInitMatch ()[i]],
+        JavaCCErrors.warning (aLexer.getRexprs ()[aLexer.getInitMatch ()[i]],
                               "Regular expression" +
                                                                                   (StringHelper.isEmpty (sLabel) ? ""
                                                                                                                  : " for " +
                                                                                                                    sLabel) +
                                                                                   " can be matched by the empty string (\"\") in lexical state " +
-                                                                                  lexer ().getLexStateName ()[i] +
+                                                                                  aLexer.getLexStateName ()[i] +
                                                                                   ". This can result in an endless loop of " +
                                                                                   "empty string matches.");
       }
       else
       {
-        JavaCCErrors.warning (lexer ().getRexprs ()[lexer ().getInitMatch ()[i]],
+        JavaCCErrors.warning (aLexer.getRexprs ()[aLexer.getInitMatch ()[i]],
                               "Regular expression" +
                                                                                   (StringHelper.isEmpty (sLabel) ? ""
                                                                                                                  : " for " +
                                                                                                                    sLabel) +
                                                                                   " can be matched by the empty string (\"\") in lexical state " +
-                                                                                  lexer ().getLexStateName ()[i] +
+                                                                                  aLexer.getLexStateName ()[i] +
                                                                                   ". This regular expression along with the " +
                                                                                   "regular expressions at " +
                                                                                   sReList +
@@ -198,23 +200,24 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
                                                                                                           throws IOException
   {
     final Map <String, Object> aOptions = Options.getAllOptions ();
-    aOptions.put ("maxOrdinal", Integer.valueOf (lexer ().getMaxOrdinal ()));
-    aOptions.put ("maxLexStates", Integer.valueOf (lexer ().getMaxLexStates ()));
-    aOptions.put ("hasEmptyMatch", Boolean.valueOf (lexer ().isHasEmptyMatch ()));
-    aOptions.put ("hasSkip", Boolean.valueOf (lexer ().isHasSkip ()));
-    aOptions.put ("hasMore", Boolean.valueOf (lexer ().isHasMore ()));
-    aOptions.put ("hasSpecial", Boolean.valueOf (lexer ().isHasSpecial ()));
-    aOptions.put ("hasMoreActions", Boolean.valueOf (lexer ().isHasMoreActions ()));
-    aOptions.put ("hasSkipActions", Boolean.valueOf (lexer ().isHasSkipActions ()));
-    aOptions.put ("hasTokenActions", Boolean.valueOf (lexer ().isHasTokenActions ()));
-    aOptions.put ("stateSetSize", Integer.valueOf (lexer ().getStateSetSize ()));
+    final LexerState aLexer = lexer ();
+    aOptions.put ("maxOrdinal", Integer.valueOf (aLexer.getMaxOrdinal ()));
+    aOptions.put ("maxLexStates", Integer.valueOf (aLexer.getMaxLexStates ()));
+    aOptions.put ("hasEmptyMatch", Boolean.valueOf (aLexer.isHasEmptyMatch ()));
+    aOptions.put ("hasSkip", Boolean.valueOf (aLexer.isHasSkip ()));
+    aOptions.put ("hasMore", Boolean.valueOf (aLexer.isHasMore ()));
+    aOptions.put ("hasSpecial", Boolean.valueOf (aLexer.isHasSpecial ()));
+    aOptions.put ("hasMoreActions", Boolean.valueOf (aLexer.isHasMoreActions ()));
+    aOptions.put ("hasSkipActions", Boolean.valueOf (aLexer.isHasSkipActions ()));
+    aOptions.put ("hasTokenActions", Boolean.valueOf (aLexer.isHasTokenActions ()));
+    aOptions.put ("stateSetSize", Integer.valueOf (aLexer.getStateSetSize ()));
     aOptions.put ("hasActions",
-                  Boolean.valueOf (lexer ().isHasMoreActions () ||
-                                   lexer ().isHasSkipActions () ||
-                                   lexer ().isHasTokenActions ()));
-    aOptions.put ("tokMgrClassName", lexer ().getTokenMgrClassName ());
+                  Boolean.valueOf (aLexer.isHasMoreActions () ||
+                                   aLexer.isHasSkipActions () ||
+                                   aLexer.isHasTokenActions ()));
+    aOptions.put ("tokMgrClassName", aLexer.getTokenMgrClassName ());
     int x = 0;
-    for (final int l : lexer ().getMaxLongsReqd ())
+    for (final int l : aLexer.getMaxLongsReqd ())
       x = Math.max (x, l);
     aOptions.put ("maxLongs", Integer.valueOf (x));
     aOptions.put ("cu_name", grammar ().getParserName ());

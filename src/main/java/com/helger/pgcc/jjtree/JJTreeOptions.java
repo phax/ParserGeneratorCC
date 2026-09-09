@@ -35,6 +35,7 @@
 package com.helger.pgcc.jjtree;
 
 import java.io.File;
+import java.util.Map;
 
 import com.helger.base.string.StringHelper;
 import com.helger.pgcc.parser.JavaCCErrors;
@@ -62,37 +63,38 @@ public class JJTreeOptions extends Options
   {
     Options.init ();
 
-    optionValues ().put ("MULTI", Boolean.FALSE);
-    optionValues ().put ("NODE_DEFAULT_VOID", Boolean.FALSE);
-    optionValues ().put ("NODE_SCOPE_HOOK", Boolean.FALSE);
-    optionValues ().put ("NODE_USES_PARSER", Boolean.FALSE);
-    optionValues ().put ("BUILD_NODE_FILES", Boolean.TRUE);
-    optionValues ().put ("VISITOR", Boolean.FALSE);
-    optionValues ().put ("VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME", Boolean.FALSE);
-    optionValues ().put ("TRACK_TOKENS", Boolean.FALSE);
+    final Map <String, Object> aOptionValues = optionValues ();
+    aOptionValues.put ("MULTI", Boolean.FALSE);
+    aOptionValues.put ("NODE_DEFAULT_VOID", Boolean.FALSE);
+    aOptionValues.put ("NODE_SCOPE_HOOK", Boolean.FALSE);
+    aOptionValues.put ("NODE_USES_PARSER", Boolean.FALSE);
+    aOptionValues.put ("BUILD_NODE_FILES", Boolean.TRUE);
+    aOptionValues.put ("VISITOR", Boolean.FALSE);
+    aOptionValues.put ("VISITOR_METHOD_NAME_INCLUDES_TYPE_NAME", Boolean.FALSE);
+    aOptionValues.put ("TRACK_TOKENS", Boolean.FALSE);
 
-    optionValues ().put ("NODE_PREFIX", "AST");
-    optionValues ().put ("NODE_PACKAGE", "");
-    optionValues ().put ("NODE_EXTENDS", "");
-    optionValues ().put ("NODE_CLASS", "");
-    optionValues ().put ("NODE_FACTORY", "");
-    optionValues ().put ("NODE_INCLUDES", "");
-    optionValues ().put ("OUTPUT_FILE", "");
-    optionValues ().put ("VISITOR_DATA_TYPE", "");
-    optionValues ().put ("VISITOR_RETURN_TYPE", "Object");
-    optionValues ().put ("VISITOR_EXCEPTION", "");
+    aOptionValues.put ("NODE_PREFIX", "AST");
+    aOptionValues.put ("NODE_PACKAGE", "");
+    aOptionValues.put ("NODE_EXTENDS", "");
+    aOptionValues.put ("NODE_CLASS", "");
+    aOptionValues.put ("NODE_FACTORY", "");
+    aOptionValues.put ("NODE_INCLUDES", "");
+    aOptionValues.put ("OUTPUT_FILE", "");
+    aOptionValues.put ("VISITOR_DATA_TYPE", "");
+    aOptionValues.put ("VISITOR_RETURN_TYPE", "Object");
+    aOptionValues.put ("VISITOR_EXCEPTION", "");
 
-    optionValues ().put ("JJTREE_OUTPUT_DIRECTORY", "");
+    aOptionValues.put ("JJTREE_OUTPUT_DIRECTORY", "");
 
     // TODO :: 2013/07/23 -- This appears to be a duplicate from the parent
     // class
-    optionValues ().put (Options.USEROPTION__JDK_VERSION, Options.DEFAULT_JDK_VERSION);
+    aOptionValues.put (Options.USEROPTION__JDK_VERSION, Options.DEFAULT_JDK_VERSION);
 
     // Also appears to be a duplicate
-    optionValues ().put (Options.USEROPTION__CPP_NAMESPACE, "");
+    aOptionValues.put (Options.USEROPTION__CPP_NAMESPACE, "");
 
     // Also appears to be a duplicate
-    optionValues ().put (Options.USEROPTION__CPP_IGNORE_ACTIONS, Boolean.FALSE);
+    aOptionValues.put (Options.USEROPTION__CPP_IGNORE_ACTIONS, Boolean.FALSE);
   }
 
   /**

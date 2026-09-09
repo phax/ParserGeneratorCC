@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.helger.collection.commons.CommonsArrayList;
+import com.helger.pgcc.context.GrammarState;
 import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.exp.AbstractExpRegularExpression;
 import com.helger.pgcc.parser.exp.ExpAction;
@@ -377,7 +378,8 @@ public abstract class AbstractJavaCCParserInternals
    */
   protected static void addregexpr (@NonNull final TokenProduction p)
   {
-    grammar ().rexprList ().add (p);
+    final GrammarState aGrammar = grammar ();
+    aGrammar.rexprList ().add (p);
     if (Options.isUserTokenManager ())
     {
       if (p.getLexStates () == null || p.getLexStates ().length != 1 || !p.getLexStates ()[0].equals ("DEFAULT"))
@@ -400,12 +402,12 @@ public abstract class AbstractJavaCCParserInternals
           JavaCCErrors.parseError (p, "Multiple occurrence of \"" + p.getLexStates ()[i] + "\" in lexical state list.");
         }
       }
-      if (grammar ().lexStateS2I ().get (p.getLexStates ()[i]) == null)
+      if (aGrammar.lexStateS2I ().get (p.getLexStates ()[i]) == null)
       {
         final Integer aIi = Integer.valueOf (PGCCContext.current ().parserBuild ().getAndIncNextFreeLexState ());
-        grammar ().lexStateS2I ().put (p.getLexStates ()[i], aIi);
-        grammar ().lexStateI2S ().put (aIi, p.getLexStates ()[i]);
-        grammar ().simpleTokensTable ().put (p.getLexStates ()[i], new HashMap <> ());
+        aGrammar.lexStateS2I ().put (p.getLexStates ()[i], aIi);
+        aGrammar.lexStateI2S ().put (aIi, p.getLexStates ()[i]);
+        aGrammar.simpleTokensTable ().put (p.getLexStates ()[i], new HashMap <> ());
       }
     }
   }
