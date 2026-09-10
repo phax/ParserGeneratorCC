@@ -108,7 +108,9 @@ public class CodeGeneratorJava extends DefaultJJTreeVisitor
           }
         }
         else
-          if (aParentNode instanceof ASTBNFZeroOrOne || aParentNode instanceof ASTBNFZeroOrMore || aParentNode instanceof ASTBNFOneOrMore)
+          if (aParentNode instanceof ASTBNFZeroOrOne ||
+              aParentNode instanceof ASTBNFZeroOrMore ||
+              aParentNode instanceof ASTBNFOneOrMore)
           {
             bNeedClose = false;
             break;

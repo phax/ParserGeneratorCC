@@ -2179,8 +2179,7 @@ public class ParseEngine
               Expansion aTmp = e_nrw.getUnitAt (1);
               while (aTmp instanceof final ExpNonTerminal aNonTerminal)
               {
-                final AbstractNormalProduction aNtprod = (grammar ().productionTable ()
-                                                                    .get (aNonTerminal.getName ()));
+                final AbstractNormalProduction aNtprod = (grammar ().productionTable ().get (aNonTerminal.getName ()));
                 if (aNtprod instanceof AbstractCodeProduction)
                   break;
                 aTmp = aNtprod.getExpansion ();

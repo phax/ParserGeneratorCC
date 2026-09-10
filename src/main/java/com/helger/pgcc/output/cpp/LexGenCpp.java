@@ -436,45 +436,40 @@ public class LexGenCpp extends AbstractLexGenJavaLike
           {
             case SPECIAL:
               aLexer.setHasSkipActions (aLexer.isHasSkipActions () |
-                                          (aLexer.getActions ()[aLexer.getCurRE ().getOrdinal ()] != null) ||
-                                          (aLexer.getNewLexState ()[aLexer.getCurRE ().getOrdinal ()] != null));
+                                        (aLexer.getActions ()[aLexer.getCurRE ().getOrdinal ()] != null) ||
+                                        (aLexer.getNewLexState ()[aLexer.getCurRE ().getOrdinal ()] != null));
               aLexer.setHasSpecial (true);
               aLexer.getToSpecial ()[aLexer.getCurRE ().getOrdinal () / 64] |= 1L <<
-                                                                                   (aLexer.getCurRE ().getOrdinal () %
-                                                                                    64);
+                                                                               (aLexer.getCurRE ().getOrdinal () % 64);
               aLexer.getToSkip ()[aLexer.getCurRE ().getOrdinal () / 64] |= 1L <<
-                                                                                (aLexer.getCurRE ().getOrdinal () %
-                                                                                 64);
+                                                                            (aLexer.getCurRE ().getOrdinal () % 64);
               break;
             case SKIP:
               aLexer.setHasSkipActions (aLexer.isHasSkipActions () |
-                                          (aLexer.getActions ()[aLexer.getCurRE ().getOrdinal ()] != null));
+                                        (aLexer.getActions ()[aLexer.getCurRE ().getOrdinal ()] != null));
               aLexer.setHasSkip (true);
               aLexer.getToSkip ()[aLexer.getCurRE ().getOrdinal () / 64] |= 1L <<
-                                                                                (aLexer.getCurRE ().getOrdinal () %
-                                                                                 64);
+                                                                            (aLexer.getCurRE ().getOrdinal () % 64);
               break;
             case MORE:
               aLexer.setHasMoreActions (aLexer.isHasMoreActions () |
-                                          (aLexer.getActions ()[aLexer.getCurRE ().getOrdinal ()] != null));
+                                        (aLexer.getActions ()[aLexer.getCurRE ().getOrdinal ()] != null));
               aLexer.setHasMore (true);
               aLexer.getToMore ()[aLexer.getCurRE ().getOrdinal () / 64] |= 1L <<
-                                                                                (aLexer.getCurRE ().getOrdinal () %
-                                                                                 64);
+                                                                            (aLexer.getCurRE ().getOrdinal () % 64);
 
               if (aLexer.getNewLexState ()[aLexer.getCurRE ().getOrdinal ()] != null)
                 aLexer.getCanReachOnMore ()[_getIndex (aLexer.getNewLexState ()[aLexer.getCurRE ()
-                                                                                            .getOrdinal ()])] = true;
+                                                                                      .getOrdinal ()])] = true;
               else
                 aLexer.getCanReachOnMore ()[aLexer.getLexStateIndex ()] = true;
 
               break;
             case TOKEN:
               aLexer.setHasTokenActions (aLexer.isHasTokenActions () |
-                                           (aLexer.getActions ()[aLexer.getCurRE ().getOrdinal ()] != null));
+                                         (aLexer.getActions ()[aLexer.getCurRE ().getOrdinal ()] != null));
               aLexer.getToToken ()[aLexer.getCurRE ().getOrdinal () / 64] |= 1L <<
-                                                                                 (aLexer.getCurRE ().getOrdinal () %
-                                                                                  64);
+                                                                             (aLexer.getCurRE ().getOrdinal () % 64);
               break;
             default:
               throw new IllegalStateException ();
@@ -1233,8 +1228,7 @@ public class LexGenCpp extends AbstractLexGenJavaLike
 
         genCodeLine ("      case " + i + " : {");
 
-        if (aLexer.getInitMatch ()[aLexer.getLexStates ()[i]] == i &&
-            aLexer.getCanLoop ()[aLexer.getLexStates ()[i]])
+        if (aLexer.getInitMatch ()[aLexer.getLexStates ()[i]] == i && aLexer.getCanLoop ()[aLexer.getLexStates ()[i]])
         {
           genCodeLine ("         if (jjmatchedPos == -1)");
           genCodeLine ("         {");
@@ -1246,12 +1240,8 @@ public class LexGenCpp extends AbstractLexGenJavaLike
                        aLexer.getLexStates ()[i] +
                        "] == input_stream->getBeginColumn())");
           genCodeLine ("               errorHandler->lexicalError(JJString(\"(\"Error: Bailing out of infinite loop caused by repeated empty string matches \" + \"at line \" + input_stream->getBeginLine() + \", \" + \"column \" + input_stream->getBeginColumn() + \".\")), this);");
-          genCodeLine ("            jjemptyLineNo[" +
-                       aLexer.getLexStates ()[i] +
-                       "] = input_stream->getBeginLine();");
-          genCodeLine ("            jjemptyColNo[" +
-                       aLexer.getLexStates ()[i] +
-                       "] = input_stream->getBeginColumn();");
+          genCodeLine ("            jjemptyLineNo[" + aLexer.getLexStates ()[i] + "] = input_stream->getBeginLine();");
+          genCodeLine ("            jjemptyColNo[" + aLexer.getLexStates ()[i] + "] = input_stream->getBeginColumn();");
           genCodeLine ("            jjbeenHere[" + aLexer.getLexStates ()[i] + "] = true;");
           genCodeLine ("         }");
         }
@@ -1315,8 +1305,7 @@ public class LexGenCpp extends AbstractLexGenJavaLike
 
         genCodeLine ("      case " + i + " : {");
 
-        if (aLexer.getInitMatch ()[aLexer.getLexStates ()[i]] == i &&
-            aLexer.getCanLoop ()[aLexer.getLexStates ()[i]])
+        if (aLexer.getInitMatch ()[aLexer.getLexStates ()[i]] == i && aLexer.getCanLoop ()[aLexer.getLexStates ()[i]])
         {
           genCodeLine ("         if (jjmatchedPos == -1)");
           genCodeLine ("         {");
@@ -1328,12 +1317,8 @@ public class LexGenCpp extends AbstractLexGenJavaLike
                        aLexer.getLexStates ()[i] +
                        "] == input_stream->getBeginColumn())");
           genCodeLine ("               errorHandler->lexicalError(JJString(\"(\"Error: Bailing out of infinite loop caused by repeated empty string matches \" + \"at line \" + input_stream->getBeginLine() + \", \" + \"column \" + input_stream->getBeginColumn() + \".\")), this);");
-          genCodeLine ("            jjemptyLineNo[" +
-                       aLexer.getLexStates ()[i] +
-                       "] = input_stream->getBeginLine();");
-          genCodeLine ("            jjemptyColNo[" +
-                       aLexer.getLexStates ()[i] +
-                       "] = input_stream->getBeginColumn();");
+          genCodeLine ("            jjemptyLineNo[" + aLexer.getLexStates ()[i] + "] = input_stream->getBeginLine();");
+          genCodeLine ("            jjemptyColNo[" + aLexer.getLexStates ()[i] + "] = input_stream->getBeginColumn();");
           genCodeLine ("            jjbeenHere[" + aLexer.getLexStates ()[i] + "] = true;");
           genCodeLine ("         }");
         }
@@ -1397,8 +1382,7 @@ public class LexGenCpp extends AbstractLexGenJavaLike
 
         genCodeLine ("      case " + i + " : {");
 
-        if (aLexer.getInitMatch ()[aLexer.getLexStates ()[i]] == i &&
-            aLexer.getCanLoop ()[aLexer.getLexStates ()[i]])
+        if (aLexer.getInitMatch ()[aLexer.getLexStates ()[i]] == i && aLexer.getCanLoop ()[aLexer.getLexStates ()[i]])
         {
           genCodeLine ("         if (jjmatchedPos == -1)");
           genCodeLine ("         {");
@@ -1412,12 +1396,8 @@ public class LexGenCpp extends AbstractLexGenJavaLike
           genCodeLine ("               errorHandler->lexicalError(JJString(\"Error: Bailing out of infinite loop caused by repeated empty string matches " +
                        "at line \" + input_stream->getBeginLine() + \", " +
                        "column \" + input_stream->getBeginColumn() + \".\"), this);");
-          genCodeLine ("            jjemptyLineNo[" +
-                       aLexer.getLexStates ()[i] +
-                       "] = input_stream->getBeginLine();");
-          genCodeLine ("            jjemptyColNo[" +
-                       aLexer.getLexStates ()[i] +
-                       "] = input_stream->getBeginColumn();");
+          genCodeLine ("            jjemptyLineNo[" + aLexer.getLexStates ()[i] + "] = input_stream->getBeginLine();");
+          genCodeLine ("            jjemptyColNo[" + aLexer.getLexStates ()[i] + "] = input_stream->getBeginColumn();");
           genCodeLine ("            jjbeenHere[" + aLexer.getLexStates ()[i] + "] = true;");
           genCodeLine ("         }");
         }

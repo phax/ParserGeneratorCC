@@ -152,30 +152,30 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
       {
         JavaCCErrors.warning (aLexer.getRexprs ()[aLexer.getInitMatch ()[i]],
                               "Regular expression" +
-                                                                                  (StringHelper.isEmpty (sLabel) ? ""
-                                                                                                                 : " for " +
-                                                                                                                   sLabel) +
-                                                                                  " can be matched by the empty string (\"\") in lexical state " +
-                                                                                  aLexer.getLexStateName ()[i] +
-                                                                                  ". This can result in an endless loop of " +
-                                                                                  "empty string matches.");
+                                                                              (StringHelper.isEmpty (sLabel) ? ""
+                                                                                                             : " for " +
+                                                                                                               sLabel) +
+                                                                              " can be matched by the empty string (\"\") in lexical state " +
+                                                                              aLexer.getLexStateName ()[i] +
+                                                                              ". This can result in an endless loop of " +
+                                                                              "empty string matches.");
       }
       else
       {
         JavaCCErrors.warning (aLexer.getRexprs ()[aLexer.getInitMatch ()[i]],
                               "Regular expression" +
-                                                                                  (StringHelper.isEmpty (sLabel) ? ""
-                                                                                                                 : " for " +
-                                                                                                                   sLabel) +
-                                                                                  " can be matched by the empty string (\"\") in lexical state " +
-                                                                                  aLexer.getLexStateName ()[i] +
-                                                                                  ". This regular expression along with the " +
-                                                                                  "regular expressions at " +
-                                                                                  sReList +
-                                                                                  " forms the cycle \n   " +
-                                                                                  aCycle.append ("\ncontaining regular expressions with empty matches.")
-                                                                                        .append (" This can result in an endless loop of empty string matches.")
-                                                                                        .toString ());
+                                                                              (StringHelper.isEmpty (sLabel) ? ""
+                                                                                                             : " for " +
+                                                                                                               sLabel) +
+                                                                              " can be matched by the empty string (\"\") in lexical state " +
+                                                                              aLexer.getLexStateName ()[i] +
+                                                                              ". This regular expression along with the " +
+                                                                              "regular expressions at " +
+                                                                              sReList +
+                                                                              " forms the cycle \n   " +
+                                                                              aCycle.append ("\ncontaining regular expressions with empty matches.")
+                                                                                    .append (" This can result in an endless loop of empty string matches.")
+                                                                                    .toString ());
       }
     }
   }
@@ -196,8 +196,8 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
     return 0xffff;
   }
 
-  public void writeTemplate (final String sName, @Nullable final Map <String, Object> aAdditionalOptions)
-                                                                                                          throws IOException
+  public void writeTemplate (final String sName,
+                             @Nullable final Map <String, Object> aAdditionalOptions) throws IOException
   {
     final Map <String, Object> aOptions = Options.getAllOptions ();
     final LexerState aLexer = lexer ();

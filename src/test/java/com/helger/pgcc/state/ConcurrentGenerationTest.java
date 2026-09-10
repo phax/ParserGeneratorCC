@@ -80,8 +80,9 @@ public final class ConcurrentGenerationTest
     FilesJava.setReadFromClassPath (true);
   }
 
-  private static GoldenManifest _generate (final String sRun, final File aGrammar, final String... aOptions)
-                                                                                                             throws Exception
+  private static GoldenManifest _generate (final String sRun,
+                                           final File aGrammar,
+                                           final String... aOptions) throws Exception
   {
     final File aOutDir = new File (WORK_DIR, sRun);
     FileOperationManager.INSTANCE.deleteDirRecursiveIfExisting (aOutDir);

@@ -150,10 +150,10 @@ public final class SelfGenerate
       final File aJJTreeGrammar = new File ("src/main/jjtree", "JJTree.jjt");
       final File aJJTreeDir = _outputDirOf (aTargetDir, aJJTreeGrammar);
       _run ("JJTree.jjt",
-            new JJTree ().main (new String [] { "-JDK_VERSION=" + JDK_VERSION, "-JAVA_TEMPLATE_TYPE=" +
-                                                                               JAVA_TEMPLATE_TYPE,
-                                                "-OUTPUT_DIRECTORY=" + aJJTreeDir.getAbsolutePath (), aJJTreeGrammar
-                                                                                                                    .getAbsolutePath () }));
+            new JJTree ().main (new String [] { "-JDK_VERSION=" + JDK_VERSION,
+                                                "-JAVA_TEMPLATE_TYPE=" + JAVA_TEMPLATE_TYPE,
+                                                "-OUTPUT_DIRECTORY=" + aJJTreeDir.getAbsolutePath (),
+                                                aJJTreeGrammar.getAbsolutePath () }));
       _run ("JJTree.jj",
             com.helger.pgcc.parser.Main.mainProgram ("-JDK_VERSION=" + JDK_VERSION,
                                                      "-JAVA_TEMPLATE_TYPE=" + JAVA_TEMPLATE_TYPE,

@@ -429,8 +429,8 @@ public final class NodeFilesJava
     }
   }
 
-  private static void _generateMultiNode_java (@NonNull final OutputFile aOutputFile, final String sNodeType)
-                                                                                                              throws IOException
+  private static void _generateMultiNode_java (@NonNull final OutputFile aOutputFile,
+                                               final String sNodeType) throws IOException
   {
     try (final PrintWriter aOstr = aOutputFile.getPrintWriter ())
     {

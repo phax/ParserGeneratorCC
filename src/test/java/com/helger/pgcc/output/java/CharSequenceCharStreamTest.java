@@ -237,10 +237,12 @@ public final class CharSequenceCharStreamTest
 
     // Note: an empty input is not part of this - SimpleCharStream reports the EOF token at 0:0
     // because it reads back an untouched buffer slot
-    for (final String sInput : new String [] { "abc", "abc;\r\ndef;\rghi;\njkl", "\t\tabc\t;\tdef",
-                                               "\"a string\";\r\n\"another\"", aLong.toString (), _letters (4093) +
-                                                                                                  ";" +
-                                                                                                  _letters (8193),
+    for (final String sInput : new String [] { "abc",
+                                               "abc;\r\ndef;\rghi;\njkl",
+                                               "\t\tabc\t;\tdef",
+                                               "\"a string\";\r\n\"another\"",
+                                               aLong.toString (),
+                                               _letters (4093) + ";" + _letters (8193),
                                                "\"" + _letters (12345) + "\";" + _letters (4096) })
     {
       assertEquals ("Token stream differs for an input of length " + sInput.length (),

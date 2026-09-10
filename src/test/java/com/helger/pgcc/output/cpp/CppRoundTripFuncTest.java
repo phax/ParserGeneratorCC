@@ -133,8 +133,8 @@ public final class CppRoundTripFuncTest
   /**
    * A string literal containing a quote or a backslash becomes the label of a case in the generated
    * switch over the current character. Both have to be escaped there, and for a long time only the
-   * Java backend did it - the C++ token manager came out with an empty and an unterminated character
-   * literal in its switch and did not compile.
+   * Java backend did it - the C++ token manager came out with an empty and an unterminated
+   * character literal in its switch and did not compile.
    *
    * @throws Exception
    *         on any failure

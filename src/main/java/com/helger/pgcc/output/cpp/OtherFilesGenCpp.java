@@ -171,7 +171,7 @@ public class OtherFilesGenCpp
       s_ostr.println ("  /** End of File. */");
       s_ostr.println (sConstPrefix + "  int _EOF = 0;");
       for (final java.util.Iterator <AbstractExpRegularExpression> it = aGrammar.orderedNameTokens ().iterator (); it
-                                                                                                                       .hasNext ();)
+                                                                                                                     .hasNext ();)
       {
         aRe = it.next ();
         s_ostr.println ("  /** RegularExpression Id. */");

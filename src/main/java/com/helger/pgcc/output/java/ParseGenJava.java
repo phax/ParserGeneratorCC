@@ -445,9 +445,7 @@ public class ParseGenJava extends AbstractCodeGenerator
           }
 
           if (Options.isTokenManagerUsesParser ())
-            genCodeLine ("	 token_source = new " +
-                         aGrammar.getParserName () +
-                         "TokenManager(this, jj_input_stream);");
+            genCodeLine ("	 token_source = new " + aGrammar.getParserName () + "TokenManager(this, jj_input_stream);");
           else
             genCodeLine ("	 token_source = new " + aGrammar.getParserName () + "TokenManager(jj_input_stream);");
           genCodeLine ("	 token = new Token();");

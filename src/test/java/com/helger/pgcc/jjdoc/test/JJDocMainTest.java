@@ -52,8 +52,8 @@ public class JJDocMainTest extends AbstractJavaCCTestCase
   {
     final ESuccess eResult = JJDocMain.mainProgram (new String [] { "-OUTPUT_FILE:" +
                                                                     getJJDocOutputDirectory () +
-                                                                    "JavaCC.html", getJJInputDirectory () +
-                                                                                   "JavaCC.jj" });
+                                                                    "JavaCC.html",
+                                                                    getJJInputDirectory () + "JavaCC.jj" });
     assertTrue (eResult.isSuccess ());
   }
 
@@ -61,7 +61,7 @@ public class JJDocMainTest extends AbstractJavaCCTestCase
   public void testMainProgramText () throws Exception
   {
     assertTrue (JJDocMain.mainProgram (new String [] { "-OUTPUT_FILE:" + getJJDocOutputDirectory () + "JavaCC.txt",
-                                                       "-TEXT:true", getJJInputDirectory () + "JavaCC.jj" })
-                         .isSuccess ());
+                                                       "-TEXT:true",
+                                                       getJJInputDirectory () + "JavaCC.jj" }).isSuccess ());
   }
 }

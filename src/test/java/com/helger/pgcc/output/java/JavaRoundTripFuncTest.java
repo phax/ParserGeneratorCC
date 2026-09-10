@@ -90,14 +90,15 @@ public final class JavaRoundTripFuncTest
                                       "\"he\\\"llo\" // trailing comment\n";
 
   /** What the lexer must produce for {@link #INPUT}: the token constant name and the image */
-  private static final String [] [] EXPECTED = { { "SELECT", "select" }, { "SELECTOR", "selector" }, { "IDENT",
-                                                                                                       "selecting" }, {
-                                                                                                                        "NUMBER",
-                                                                                                                        "12" },
-                                                 { "PLUS", "+" }, { "PLUSPLUS", "++" }, { "ARROW", "->" }, { "MINUS",
-                                                                                                             "-" }, {
-                                                                                                                      "IDENT",
-                                                                                                                      "abc" },
+  private static final String [] [] EXPECTED = { { "SELECT", "select" },
+                                                 { "SELECTOR", "selector" },
+                                                 { "IDENT", "selecting" },
+                                                 { "NUMBER", "12" },
+                                                 { "PLUS", "+" },
+                                                 { "PLUSPLUS", "++" },
+                                                 { "ARROW", "->" },
+                                                 { "MINUS", "-" },
+                                                 { "IDENT", "abc" },
                                                  { "STRING", "\"he\\\"llo\"" } };
 
   @BeforeClass
