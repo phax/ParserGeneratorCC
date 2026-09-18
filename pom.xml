@@ -174,7 +174,7 @@
       what a release build has to work with. See the "selfhost" profile for building this project
       with its own generator.
     -->
-    <ph-javacc-maven-plugin.version>5.0.2</ph-javacc-maven-plugin.version>
+    <ph-javacc-maven-plugin.version>5.0.3</ph-javacc-maven-plugin.version>
   </properties>
 
   <build>
