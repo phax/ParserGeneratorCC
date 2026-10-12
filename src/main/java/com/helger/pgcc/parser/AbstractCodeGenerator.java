@@ -33,8 +33,6 @@
  */
 package com.helger.pgcc.parser;
 
-import org.jspecify.annotations.Nullable;
-
 import static com.helger.pgcc.parser.JavaCCGlobals.addUnicodeEscapes;
 import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
@@ -45,13 +43,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import com.helger.base.string.StringHelper;
 import com.helger.base.io.nonblocking.NonBlockingBufferedWriter;
 import com.helger.base.io.nonblocking.NonBlockingStringWriter;
 import com.helger.io.file.FileHelper;
-import com.helger.pgcc.context.LexerState;
-import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.output.EOutputLanguage;
 import com.helger.pgcc.output.UnsupportedOutputLanguageException;
 import com.helger.pgcc.utils.OutputFileGenerator;
@@ -342,20 +338,20 @@ public abstract class AbstractCodeGenerator
    */
   protected final String getStringForTokenOnly (@NonNull final Token t)
   {
-    String sRetval = "";
+    final StringBuilder sRetval = new StringBuilder ();
     for (; m_nLine < t.beginLine; m_nLine++)
     {
-      sRetval += "\n";
+      sRetval.append ("\n");
       m_nCol = 1;
     }
     for (; m_nCol < t.beginColumn; m_nCol++)
     {
-      sRetval += " ";
+      sRetval.append (" ");
     }
     if (t.kind == JavaCCParserConstants.STRING_LITERAL || t.kind == JavaCCParserConstants.CHARACTER_LITERAL)
-      sRetval += addUnicodeEscapes (t.image);
+      sRetval.append (addUnicodeEscapes (t.image));
     else
-      sRetval += t.image;
+      sRetval.append (t.image);
     m_nLine = t.endLine;
     m_nCol = t.endColumn + 1;
     if (t.image.length () > 0)
@@ -368,7 +364,7 @@ public abstract class AbstractCodeGenerator
       }
     }
 
-    return sRetval;
+    return sRetval.toString ();
   }
 
   /**
@@ -391,7 +387,7 @@ public abstract class AbstractCodeGenerator
    */
   protected final String getStringToPrint (@NonNull final Token t)
   {
-    String sRetval = "";
+    final StringBuilder sRetval = new StringBuilder ();
     Token aTt = t.specialToken;
     if (aTt != null)
     {
@@ -399,12 +395,12 @@ public abstract class AbstractCodeGenerator
         aTt = aTt.specialToken;
       while (aTt != null)
       {
-        sRetval += getStringForTokenOnly (aTt);
+        sRetval.append (getStringForTokenOnly (aTt));
         aTt = aTt.next;
       }
     }
 
-    return sRetval + getStringForTokenOnly (t);
+    return sRetval.append (getStringForTokenOnly (t)).toString ();
   }
 
   /**

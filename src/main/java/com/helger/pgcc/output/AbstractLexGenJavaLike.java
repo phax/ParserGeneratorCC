@@ -34,10 +34,11 @@
 
 package com.helger.pgcc.output;
 
+import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
+
 import java.io.IOException;
 import java.util.Map;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.base.string.StringHelper;
@@ -46,7 +47,6 @@ import com.helger.pgcc.context.PGCCContext;
 import com.helger.pgcc.parser.AbstractCodeGenerator;
 import com.helger.pgcc.parser.JavaCCErrors;
 import com.helger.pgcc.parser.Options;
-import static com.helger.pgcc.parser.JavaCCGlobals.grammar;
 
 /**
  * What the two token manager generators genuinely share.
@@ -110,7 +110,7 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
       aDone[i] = true;
       int nLen = 0;
       final StringBuilder aCycle = new StringBuilder ();
-      String sReList = "";
+      final StringBuilder sReList = new StringBuilder ();
 
       for (int k = 0; k < aLexer.getMaxLexStates (); k++)
         aSeen[k] = false;
@@ -132,11 +132,11 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
             aLexer.getCanMatchAnyChar ()[j] != -1)
           continue Outer;
         if (nLen != 0)
-          sReList += "; ";
-        sReList += "line " +
-                   aLexer.getRexprs ()[aLexer.getInitMatch ()[j]].getLineNumber () +
-                   ", column " +
-                   aLexer.getRexprs ()[aLexer.getInitMatch ()[j]].getColumnNumber ();
+          sReList.append ("; ");
+        sReList.append ("line ")
+               .append (aLexer.getRexprs ()[aLexer.getInitMatch ()[j]].getLineNumber ())
+               .append (", column ")
+               .append (aLexer.getRexprs ()[aLexer.getInitMatch ()[j]].getColumnNumber ());
         nLen++;
       }
 
@@ -171,11 +171,11 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
                                                                               aLexer.getLexStateName ()[i] +
                                                                               ". This regular expression along with the " +
                                                                               "regular expressions at " +
-                                                                              sReList +
-                                                                              " forms the cycle \n   " +
-                                                                              aCycle.append ("\ncontaining regular expressions with empty matches.")
-                                                                                    .append (" This can result in an endless loop of empty string matches.")
-                                                                                    .toString ());
+                                                                              sReList.append (" forms the cycle \n   ")
+                                                                                     .append (aCycle.append ("\ncontaining regular expressions with empty matches.")
+                                                                                                    .append (" This can result in an endless loop of empty string matches.")
+                                                                                                    .toString ())
+                                                                                     .toString ());
       }
     }
   }
@@ -196,6 +196,7 @@ public abstract class AbstractLexGenJavaLike extends AbstractCodeGenerator
     return 0xffff;
   }
 
+  @Override
   public void writeTemplate (final String sName,
                              @Nullable final Map <String, Object> aAdditionalOptions) throws IOException
   {
